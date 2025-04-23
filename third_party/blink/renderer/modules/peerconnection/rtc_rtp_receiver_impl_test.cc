@@ -38,8 +38,9 @@ class RTCRtpReceiverImplTest : public ::testing::Test {
     main_thread_ = blink::scheduler::GetSingleThreadTaskRunnerForTesting();
     track_map_ = base::MakeRefCounted<blink::WebRtcMediaStreamTrackAdapterMap>(
         dependency_factory_.Get(), main_thread_);
-    peer_connection_ = new rtc::RefCountedObject<blink::MockPeerConnectionImpl>(
-        dependency_factory_.Get(), nullptr);
+    peer_connection_ =
+        new webrtc::RefCountedObject<blink::MockPeerConnectionImpl>(
+            dependency_factory_.Get(), nullptr);
   }
 
   void TearDown() override {
@@ -98,7 +99,7 @@ class RTCRtpReceiverImplTest : public ::testing::Test {
       std::unique_ptr<blink::WebRtcMediaStreamTrackAdapterMap::AdapterRef>*
           track_ref,
       base::RunLoop* run_loop) {
-    mock_webrtc_receiver_ = new rtc::RefCountedObject<MockRtpReceiver>();
+    mock_webrtc_receiver_ = new webrtc::RefCountedObject<MockRtpReceiver>();
     *track_ref = track_map_->GetOrCreateRemoteTrackAdapter(webrtc_track);
     run_loop->Quit();
   }
@@ -109,8 +110,8 @@ class RTCRtpReceiverImplTest : public ::testing::Test {
   Persistent<blink::MockPeerConnectionDependencyFactory> dependency_factory_;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
   scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_map_;
-  rtc::scoped_refptr<blink::MockPeerConnectionImpl> peer_connection_;
-  rtc::scoped_refptr<MockRtpReceiver> mock_webrtc_receiver_;
+  webrtc::scoped_refptr<blink::MockPeerConnectionImpl> peer_connection_;
+  webrtc::scoped_refptr<MockRtpReceiver> mock_webrtc_receiver_;
   std::unique_ptr<RTCRtpReceiverImpl> receiver_;
 };
 
@@ -156,7 +157,7 @@ TEST_F(RTCRtpReceiverImplTest, GetStats) {
 
   // Make the mock return a blink version of the |webtc_report|. The mock does
   // not perform any stats filtering, we just set it to a dummy value.
-  rtc::scoped_refptr<webrtc::RTCStatsReport> webrtc_report =
+  webrtc::scoped_refptr<webrtc::RTCStatsReport> webrtc_report =
       webrtc::RTCStatsReport::Create(webrtc::Timestamp::Micros(0));
   webrtc_report->AddStats(std::make_unique<webrtc::RTCInboundRtpStreamStats>(
       "stats-id", webrtc::Timestamp::Micros(1234)));

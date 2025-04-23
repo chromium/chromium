@@ -12,5 +12,8 @@
 name = "windows_aarch64_gnullvm"
 version = "0.52.6"
 
+[package.metadata.gnrt]
+is_placeholder = true
+
 [features]
 

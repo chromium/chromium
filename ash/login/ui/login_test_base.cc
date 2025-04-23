@@ -68,7 +68,8 @@ std::unique_ptr<views::Widget> LoginTestBase::CreateWidgetWithContent(
 
   params.delegate = new views::WidgetDelegate();
   params.delegate->SetInitiallyFocusedView(content);
-  params.delegate->SetOwnedByWidget(true);
+  params.delegate->SetOwnedByWidget(
+      views::WidgetDelegate::OwnedByWidgetPassKey());
 
   // Set the widget to the lock screen container, since a test may change the
   // session state to locked, which will hide all widgets not associated with

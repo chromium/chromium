@@ -24,10 +24,11 @@
 
 namespace media {
 
-class D3D12VideoEncodeH265ReferenceFrameManager {
+class D3D12VideoEncodeH265ReferenceFrameManager
+    : public D3D12VideoEncodeDecodedPictureBuffers<kMaxDpbSize> {
  public:
-  explicit D3D12VideoEncodeH265ReferenceFrameManager(size_t max_num_ref_frames);
-  ~D3D12VideoEncodeH265ReferenceFrameManager();
+  D3D12VideoEncodeH265ReferenceFrameManager();
+  ~D3D12VideoEncodeH265ReferenceFrameManager() override;
 
   void EndFrame(uint32_t pic_order_count, uint32_t temporal_layer_id);
 
@@ -38,7 +39,9 @@ class D3D12VideoEncodeH265ReferenceFrameManager {
       base::span<uint32_t> list0_reference_frames);
 
  private:
-  size_t max_num_ref_frames_ = 0;
+  using D3D12VideoEncodeDecodedPictureBuffers::InsertCurrentFrame;
+  using D3D12VideoEncodeDecodedPictureBuffers::ReplaceWithCurrentFrame;
+
   absl::InlinedVector<D3D12_VIDEO_ENCODER_REFERENCE_PICTURE_DESCRIPTOR_HEVC,
                       kMaxDpbSize>
       descriptors_;
@@ -103,9 +106,7 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeH265Delegate
   D3D12_VIDEO_ENCODER_ENCODEFRAME_INPUT_ARGUMENTS input_arguments_{};
   std::array<UINT, 16> list0_reference_frames_{};
 
-  std::optional<D3D12VideoEncodeDecodedPictureBuffers<kMaxDpbSize>> dpb_;
-  std::optional<D3D12VideoEncodeH265ReferenceFrameManager>
-      reference_frame_manager_;
+  D3D12VideoEncodeH265ReferenceFrameManager reference_frame_manager_;
 
   H26xAnnexBBitstreamBuilder packed_header_{
       /*insert_emulation_prevention_bytes=*/true};

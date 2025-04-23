@@ -486,6 +486,31 @@ void TabContainerImpl::NotifyTabstripBubbleClosed() {
   }
 }
 
+void TabContainerImpl::OnSplitCreated(const std::vector<int>& indices) {
+  for (const int index : indices) {
+    Tab* const tab = GetTabAtModelIndex(index);
+    CHECK(tab->split().has_value());
+    tab->UpdateInsets();
+  }
+
+  AnimateToIdealBounds();
+}
+
+void TabContainerImpl::OnSplitRemoved(const std::vector<int>& indices) {
+  for (const int index : indices) {
+    Tab* const tab = GetTabAtModelIndex(index);
+    CHECK(!tab->split().has_value());
+
+    // Hide hover effects since the split is removed.
+    if (!tab->mouse_hovered()) {
+      tab->HideHover(TabStyle::HideHoverStyle::kImmediate);
+    }
+    tab->UpdateInsets();
+  }
+
+  AnimateToIdealBounds();
+}
+
 std::optional<int> TabContainerImpl::GetModelIndexOf(
     const TabSlotView* slot_view) const {
   return tabs_view_model_.GetIndexOfView(slot_view);

@@ -22,8 +22,8 @@
 #include "media/base/mock_media_log.h"
 #include "media/base/status.h"
 #include "media/base/video_decoder_config.h"
-#include "media/gpu/chromeos/default_video_frame_converter.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
+#include "media/gpu/chromeos/frame_resource_converter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libdrm/src/include/drm/drm_fourcc.h"
@@ -56,6 +56,29 @@ MATCHER_P(MatchesDecoderBuffer, buffer, "") {
   DCHECK(arg);
   return arg->MatchesForTesting(*buffer);
 }
+
+class FakeFrameResourceConverter : public FrameResourceConverter {
+ public:
+  static std::unique_ptr<FrameResourceConverter> Create() {
+    return base::WrapUnique<FrameResourceConverter>(
+        new FakeFrameResourceConverter());
+  }
+
+  FakeFrameResourceConverter(const FakeFrameResourceConverter&) = delete;
+  FakeFrameResourceConverter& operator=(const FakeFrameResourceConverter&) =
+      delete;
+
+ private:
+  FakeFrameResourceConverter() = default;
+  ~FakeFrameResourceConverter() override = default;
+
+  // FrameResourceConverter overrides.
+  void ConvertFrameImpl(scoped_refptr<FrameResource> frame) override {
+    // It is fine to output a nullptr VideoFrame. The output frames are not
+    // checked.
+    Output(nullptr);
+  }
+};
 
 class MockVideoFramePool : public DmabufVideoFramePool {
  public:
@@ -205,7 +228,7 @@ class VideoDecoderPipelineTest
             std::numeric_limits<int>::max()),
         gpu::GpuDriverBugWorkarounds(),
         base::SingleThreadTaskRunner::GetCurrentDefault(), std::move(pool),
-        DefaultFrameConverter::Create(),
+        FakeFrameResourceConverter::Create(),
         VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
         std::make_unique<MockMediaLog>(),
         // This callback needs to be configured in the individual tests.

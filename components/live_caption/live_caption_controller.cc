@@ -90,6 +90,8 @@ void LiveCaptionController::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kLiveCaptionMaskOffensiveWords, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(prefs::kHeadlessCaptionEnabled, false,
+                                /*flags=*/0);
 
   // Initially default the language to en-US. The language
   // preference value will be set to a default language when Live Caption is
@@ -193,16 +195,6 @@ const std::string LiveCaptionController::GetLanguageCode() const {
   return prefs::GetLiveCaptionLanguageCode(profile_prefs());
 }
 
-bool LiveCaptionController::DispatchTranscription(
-    CaptionBubbleContext* caption_bubble_context,
-    const media::SpeechRecognitionResult& result) {
-  if (!caption_bubble_controller()) {
-    return false;
-  }
-  return caption_bubble_controller()->OnTranscription(caption_bubble_context,
-                                                      result);
-}
-
 void LiveCaptionController::OnError(
     CaptionBubbleContext* caption_bubble_context,
     CaptionBubbleErrorType error_type,
@@ -214,24 +206,6 @@ void LiveCaptionController::OnError(
   caption_bubble_controller()->OnError(caption_bubble_context, error_type,
                                        std::move(error_clicked_callback),
                                        std::move(error_silenced_callback));
-}
-
-void LiveCaptionController::OnAudioStreamEnd(
-    CaptionBubbleContext* caption_bubble_context) {
-  if (!caption_bubble_controller()) {
-    return;
-  }
-  caption_bubble_controller()->OnAudioStreamEnd(caption_bubble_context);
-}
-
-void LiveCaptionController::OnLanguageIdentificationEvent(
-    CaptionBubbleContext* caption_bubble_context,
-    const media::mojom::LanguageIdentificationEventPtr& event) {
-  // TODO(crbug.com/40167928): Implement the UI for language identification.
-  if (caption_bubble_controller()) {
-    return caption_bubble_controller()->OnLanguageIdentificationEvent(
-        caption_bubble_context, event);
-  }
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)

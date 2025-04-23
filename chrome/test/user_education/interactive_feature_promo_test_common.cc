@@ -22,3 +22,26 @@ InteractiveFeaturePromoTestCommon::UseDefaultTrackerAllowingPromos::operator=(
     UseDefaultTrackerAllowingPromos&&) noexcept = default;
 InteractiveFeaturePromoTestCommon::UseDefaultTrackerAllowingPromos::
     ~UseDefaultTrackerAllowingPromos() = default;
+
+InteractiveFeaturePromoTestCommon::UseDefaultTrackerAllowingPromosWithParams::
+    UseDefaultTrackerAllowingPromosWithParams(
+        std::vector<base::test::FeatureRefAndParams> features_with_params_,
+        TrackerInitializationMode initialization_mode_)
+    : features_with_params(std::move(features_with_params_)),
+      initialization_mode(initialization_mode_) {
+  for (const auto& feature_and_params : features_with_params) {
+    for (const auto& param : feature_and_params.params) {
+      CHECK(param.first.starts_with("x_"))
+          << "IPH feature parameters must start with \"x_\" so the Feature "
+             "Engagement system ignores them.";
+    }
+  }
+}
+InteractiveFeaturePromoTestCommon::UseDefaultTrackerAllowingPromosWithParams::
+    UseDefaultTrackerAllowingPromosWithParams(
+        UseDefaultTrackerAllowingPromosWithParams&&) noexcept = default;
+InteractiveFeaturePromoTestCommon::UseDefaultTrackerAllowingPromosWithParams&
+InteractiveFeaturePromoTestCommon::UseDefaultTrackerAllowingPromosWithParams::
+operator=(UseDefaultTrackerAllowingPromosWithParams&&) noexcept = default;
+InteractiveFeaturePromoTestCommon::UseDefaultTrackerAllowingPromosWithParams::
+    ~UseDefaultTrackerAllowingPromosWithParams() = default;

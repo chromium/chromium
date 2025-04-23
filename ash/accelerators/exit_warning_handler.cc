@@ -45,6 +45,8 @@ const int kWindowCornerRadius = 2;
 const int kHorizontalMarginAroundText = 100;
 const int kVerticalMarginAroundText = 100;
 
+}  // namespace
+
 class ExitWarningWidgetDelegateView : public views::WidgetDelegateView {
  public:
   ExitWarningWidgetDelegateView() : text_width_(0) {
@@ -97,8 +99,6 @@ class ExitWarningWidgetDelegateView : public views::WidgetDelegateView {
   std::u16string text_;
   int text_width_;
 };
-
-}  // namespace
 
 ExitWarningHandler::ExitWarningHandler()
     : state_(IDLE), stub_timer_for_test_(false) {}

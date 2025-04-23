@@ -229,6 +229,18 @@ void MockClipboardHost::WriteUnsanitizedCustomFormat(
   unsanitized_custom_data_map_.Set("web " + format, std::move(data_copy));
 }
 
+void MockClipboardHost::RegisterClipboardListener(
+    mojo::PendingRemote<mojom::blink::ClipboardListener> listener) {
+  clipboard_listener_.reset();
+  clipboard_listener_.Bind(std::move(listener));
+}
+
+void MockClipboardHost::OnClipboardDataChanged() {
+  if (clipboard_listener_) {
+    clipboard_listener_->OnClipboardDataChanged();
+  }
+}
+
 #if BUILDFLAG(IS_MAC)
 void MockClipboardHost::WriteStringToFindPboard(const String& text) {}
 #endif

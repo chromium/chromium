@@ -461,11 +461,8 @@ TEST(FormStructureRationalizationEngine, TestDEOverflowRuleIsApplied) {
 // Test that a house number field not followed by an apartment is treated
 // as a ADDRESS_HOME_HOUSE_NUMBER_AND_APT in Poland.
 TEST(FormStructureRationalizationEngine, TestPLHouseNumberAndAptChanged) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kTestFeatureForFormStructureRationalizationEngine,
-       features::kAutofillUsePLAddressModel},
-      {});
+  base::test::ScopedFeatureList feature_list{
+      kTestFeatureForFormStructureRationalizationEngine};
 
   std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
       {u"Imię", u"n", NAME_FIRST},
@@ -489,11 +486,8 @@ TEST(FormStructureRationalizationEngine, TestPLHouseNumberAndAptChanged) {
 // Test that the actions are not applied since there is apartment related field
 // after ADDRESS_HOME_HOUSE_NUMBER (for Poland).
 TEST(FormStructureRationalizationEngine, TestPLHouseNumberAndAptNoChange) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kTestFeatureForFormStructureRationalizationEngine,
-       features::kAutofillUsePLAddressModel},
-      {});
+  base::test::ScopedFeatureList feature_list{
+      kTestFeatureForFormStructureRationalizationEngine};
 
   std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
       {u"Imię", u"n", NAME_FIRST},
@@ -518,11 +512,8 @@ TEST(FormStructureRationalizationEngine, TestPLHouseNumberAndAptNoChange) {
 // Test that the actions are applied if there is no next field after
 // ADDRESS_HOME_HOUSE_NUMBER (for Poland).
 TEST(FormStructureRationalizationEngine, TestPLHouseNumberAndAptWithNoNext) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kTestFeatureForFormStructureRationalizationEngine,
-       features::kAutofillUsePLAddressModel},
-      {});
+  base::test::ScopedFeatureList feature_list{
+      kTestFeatureForFormStructureRationalizationEngine};
 
   std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
       {u"Imię", u"n", NAME_FIRST},
@@ -544,11 +535,8 @@ TEST(FormStructureRationalizationEngine, TestPLHouseNumberAndAptWithNoNext) {
 // ADDRESS_HOME_LINE2 are reclassified as ADDRESS_HOME_STREET_ADDRESS for PL
 // forms.
 TEST(FormStructureRationalizationEngine, TestPLAddressLine1WithNoNext) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kTestFeatureForFormStructureRationalizationEngine,
-       features::kAutofillUsePLAddressModel},
-      {});
+  base::test::ScopedFeatureList feature_list{
+      kTestFeatureForFormStructureRationalizationEngine};
 
   std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
       {u"Imię", u"n", NAME_FIRST},
@@ -570,11 +558,8 @@ TEST(FormStructureRationalizationEngine, TestPLAddressLine1WithNoNext) {
 // repeated ADDRESS_HOME_LINE1 are reclassified as ADDRESS_HOME_LINE1 and
 // ADDRESS_HOME_LINE2 for IT forms.
 TEST(FormStructureRationalizationEngine, TestITAddressLine1WithAL1Next) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kTestFeatureForFormStructureRationalizationEngine,
-       features::kAutofillUseITAddressModel},
-      {});
+  base::test::ScopedFeatureList feature_list{
+      kTestFeatureForFormStructureRationalizationEngine};
 
   std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
       {u"Nome", u"nome", NAME_FIRST},
@@ -597,11 +582,8 @@ TEST(FormStructureRationalizationEngine, TestITAddressLine1WithAL1Next) {
 // ADDRESS_HOME_LINE2 are reclassified as ADDRESS_HOME_STREET_ADDRESS for IT
 // forms.
 TEST(FormStructureRationalizationEngine, TestITAddressLine1WithNoNext) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kTestFeatureForFormStructureRationalizationEngine,
-       features::kAutofillUseITAddressModel},
-      {});
+  base::test::ScopedFeatureList feature_list{
+      kTestFeatureForFormStructureRationalizationEngine};
 
   std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
       {u"Nome", u"nome", NAME_FIRST},

@@ -76,16 +76,17 @@ namespace {
 // This is initialized in the constructor, and then in CreatePrimaryHost().
 int64_t primary_display_id = -1;
 
-// The compositor memory limit when display size is larger than a threshold.
+// The compositor memory limit when display size is larger than
+// `kUICompositorMemoryLimitDisplaySizeThreshold`.
 constexpr int kUICompositorLargeDisplayMemoryLimitMB = 1024;
-// The compositor memory limit when both the display size and device memory
-// are greater than some thresholds.
-constexpr int kUICompositorLargeDisplayandRamMemoryLimitMB = 2048;
+// The compositor memory limit when the device memory is greater than
+// `kUICompositorMemoryLimitRamCapacityThreshold`.
+constexpr int kUICompositorLargeRamMemoryLimitMB = 2048;
 // The display size threshold, above which the larger memory limits are used.
 // Pixel size was chosen to trigger for 4K+ displays. See: crbug.com/1261776
 constexpr int kUICompositorMemoryLimitDisplaySizeThreshold = 3500;
-// The RAM capacity threshold in MB. When the device has a 4k+ display and
-// 16GB+ of memory, configure the compositor to use a higher memory limit.
+// The RAM capacity threshold in MB. When the device has 16GB+ of memory,
+// configure the compositor to use a higher memory limit.
 constexpr int kUICompositorMemoryLimitRamCapacityThreshold = 16 * 1024;
 
 // An UMA signal for the current effective resolution/dpi is sent at this rate.
@@ -1062,10 +1063,13 @@ AshWindowTreeHost* WindowTreeHostManager::AddWindowTreeHostForDisplay(
                display.GetSizeInPixel().height()) >
       kUICompositorMemoryLimitDisplaySizeThreshold) {
     params_with_bounds.compositor_memory_limit_mb =
-        base::SysInfo::AmountOfPhysicalMemoryMB() >=
-                kUICompositorMemoryLimitRamCapacityThreshold
-            ? kUICompositorLargeDisplayandRamMemoryLimitMB
-            : kUICompositorLargeDisplayMemoryLimitMB;
+        kUICompositorLargeDisplayMemoryLimitMB;
+  }
+
+  if (base::SysInfo::AmountOfPhysicalMemoryMB() >=
+      kUICompositorMemoryLimitRamCapacityThreshold) {
+    params_with_bounds.compositor_memory_limit_mb =
+        kUICompositorLargeRamMemoryLimitMB;
   }
 
   // The AshWindowTreeHost ends up owned by the RootWindowControllers created

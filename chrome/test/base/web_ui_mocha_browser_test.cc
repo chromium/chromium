@@ -243,7 +243,33 @@ testing::AssertionResult WebUIMochaBrowserTest::RunTestOnWebContents(
 
   // Report individual JS test results if reporting is enabled.
   if (sub_test_reporter_) {
+    // ResultDB limits test identifiers to 512 bytes. However, GTest code isn't
+    // privy to the exact schema used (for that, see TestResultsTracker::
+    // SaveSummaryAsJSON). Here, it is simply assumed that test name length can
+    // be estimated as a sum of the lengths of the GTest fixture name, GTest
+    // test name, and Mocha JS test name, plus a few extra bytes for delimiters.
+    // Retrieve GTest fixture name and GTest test name to build an estimate.
+    const testing::TestInfo* info =
+        testing::UnitTest::GetInstance()->current_test_info();
+    CHECK(info);
+
     for (const auto& sub_test_result : sub_test_results) {
+      // Estimate the final test identifier length. Allocate 3 bytes for
+      // delimiters.
+      size_t estimate = strlen(info->name()) + strlen(info->test_suite_name()) +
+                        sub_test_result.name.size() + 3ul;
+
+      if (estimate > 512ul) {
+        testing::Message msg;
+        msg << "Test name too long. Test identifier size estimate is "
+            << estimate << ". ResultDB limits test identifiers to 512 bytes. "
+            << "Please reduce total test name length by at least "
+            << (estimate - 512ul) << " bytes.  name=\"" << info->name()
+            << "\", test_suite_name=\"" << info->test_suite_name()
+            << "\", js_test_name=\"" << sub_test_result.name << "\"";
+        return testing::AssertionFailure(msg);
+      }
+
       sub_test_reporter_->Report(sub_test_result.name, sub_test_result.duration,
                                  sub_test_result.failure_reason);
     }
@@ -278,8 +304,12 @@ void WebUIMochaBrowserTest::RunTestWithoutTestLoader(
   RunTest(file, trigger, /*skip_test_loader=*/true);
 }
 
-void WebUIMochaBrowserTest::DisableSubTestResultReporting() {
-  sub_test_reporter_.reset();
+void WebUIMochaBrowserTest::SetSubTestResultReportingEnabled(bool enabled) {
+  if (enabled) {
+    sub_test_reporter_ = std::make_unique<SubTestReporter>();
+  } else {
+    sub_test_reporter_.reset();
+  }
 }
 
 testing::AssertionResult WebUIMochaBrowserTest::SimulateTestLoader(

@@ -15,6 +15,7 @@ class CollaborationService;
 
 class Browser;
 class ShareKitService;
+class TabGroupService;
 
 namespace data_sharing {
 
@@ -23,7 +24,8 @@ class DataSharingUIDelegateIOS : public DataSharingUIDelegate {
  public:
   explicit DataSharingUIDelegateIOS(
       ShareKitService* share_kit_service,
-      collaboration::CollaborationService* collaboration_service);
+      collaboration::CollaborationService* collaboration_service,
+      TabGroupService* tab_group_service);
   ~DataSharingUIDelegateIOS() override;
 
   DataSharingUIDelegateIOS(const DataSharingUIDelegateIOS&) = delete;
@@ -42,6 +44,7 @@ class DataSharingUIDelegateIOS : public DataSharingUIDelegate {
 
   raw_ptr<ShareKitService> share_kit_service_;
   raw_ptr<collaboration::CollaborationService> collaboration_service_;
+  raw_ptr<TabGroupService> tab_group_service_;
 
   base::WeakPtrFactory<DataSharingUIDelegateIOS> weak_ptr_factory_{this};
 };

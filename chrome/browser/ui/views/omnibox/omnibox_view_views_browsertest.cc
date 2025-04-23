@@ -13,6 +13,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -1030,9 +1031,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsUIATest, GetSelectionAndBounds) {
   int range_end_offset = offsets[selection_range.end()];
 
   int left_bound =
-      display::win::ScreenWin::DIPToScreenRect(
-          HWNDForView(omnibox_view_views),
-          gfx::Rect(range_start_offset + bounds_in_screen.x(), 0, 0, 0))
+      display::win::GetScreenWin()
+          ->DIPToScreenRect(
+              HWNDForView(omnibox_view_views),
+              gfx::Rect(range_start_offset + bounds_in_screen.x(), 0, 0, 0))
           .x();
 
   // Adust `textfield_rect` to account for the border.

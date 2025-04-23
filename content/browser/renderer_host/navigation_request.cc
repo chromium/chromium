@@ -173,6 +173,7 @@
 #include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+#include "services/network/public/mojom/reconnect_event_observer.mojom.h"
 #include "services/network/public/mojom/supports_loading_mode.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-shared.h"
@@ -2070,7 +2071,8 @@ NavigationRequest::NavigationRequest(
       storage_partition->GetNetworkContext()->PreconnectSockets(
           1, common_params_->url, network::mojom::CredentialsMode::kInclude,
           GetIsolationInfo().network_anonymization_key(),
-          net::MutableNetworkTrafficAnnotationTag());
+          net::MutableNetworkTrafficAnnotationTag(),
+          /*keepalive_config=*/std::nullopt, mojo::NullRemote());
     }
   }
 
@@ -2821,12 +2823,12 @@ void NavigationRequest::BeginNavigationImpl() {
     return;
   }
 
-  if (!post_commit_error_page_html_.empty()) {
-    OnRequestFailedInternal(
-        network::URLLoaderCompletionStatus(net_error_),
-        true /* skip_throttles  */,
-        post_commit_error_page_html_ /* error_page_content */,
-        false /* collapse_frame */);
+  if (browser_initiated_error_navigation_type_ !=
+      BrowserInitiatedErrorNavigationType::kNone) {
+    OnRequestFailedInternal(network::URLLoaderCompletionStatus(net_error_),
+                            true /* skip_throttles  */,
+                            error_page_html_ /* error_page_content */,
+                            false /* collapse_frame */);
     // DO NOT ADD CODE after this. The previous call to OnRequestFailedInternal
     // has destroyed the NavigationRequest.
     return;
@@ -5252,10 +5254,19 @@ NavigationRequest::ComputeErrorPageProcess() {
   }
 
   if (state_ < NavigationRequest::CANCELING) {
-    CHECK(!post_commit_error_page_html_.empty());
-    // Post-commit error page normally goes through the "non-error page"
-    // navigation path, so treat them specially here too.
-    return ErrorPageProcess::kPostCommitErrorPage;
+    CHECK(browser_initiated_error_navigation_type_ !=
+          BrowserInitiatedErrorNavigationType::kNone);
+
+    if (browser_initiated_error_navigation_type_ ==
+        BrowserInitiatedErrorNavigationType::kPostCommit) {
+      // Post-commit error page normally goes through the "non-error page"
+      // navigation path, so treat them specially here too.
+      return ErrorPageProcess::kPostCommitErrorPage;
+    }
+
+    // Otherwise, this is a normal browser-initiated error navigation, which
+    // should fall out of this block and use existing process selection
+    // behavior.
   }
 
   // By policy we can isolate all error pages from both the current and
@@ -5883,10 +5894,32 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
             network::features::kRendererSideContentDecoding));
         // If content decoding is required, perform the decoding in the network
         // service.
+
+        // Attempt to create the data pipe needed for content decoding.
+        auto data_pipe_pair =
+            network::ContentDecodingInterceptor::CreateDataPipePair(
+                network::ContentDecodingInterceptor::ClientType::kDownload);
+        if (!data_pipe_pair) {
+          // Handle data pipe creation failure. This is rare but can happen if
+          // shared memory is exhausted. In such a situation, the page load will
+          // likely fail anyway as resources cannot be properly loaded. However,
+          // we should avoid crashing the browser process or attempting to
+          // download the raw encoded body. Instead, just abort the navigation
+          // request.
+          OnRequestFailedInternal(
+              network::URLLoaderCompletionStatus(net::ERR_ABORTED),
+              /*skip_throttles=*/false,
+              /*error_page_content=*/std::nullopt,
+              /*collapse_frame=*/false);
+          // DO NOT ADD CODE after this. The previous call to
+          // OnRequestFailedInternal has destroyed the NavigationRequest.
+          return;
+        }
         network::ContentDecodingInterceptor::InterceptOnNetworkService(
             *GetNetworkService(),
             response_head_->client_side_content_decoding_types,
-            url_loader_client_endpoints_, response_body_);
+            url_loader_client_endpoints_, response_body_,
+            std::move(*data_pipe_pair));
       }
       download_manager->InterceptNavigation(
           std::move(resource_request), redirect_chain_, response_head_.Clone(),
@@ -6899,9 +6932,15 @@ void NavigationRequest::UpdateNavigationHandleTimingsOnResponseReceived(
       response_head_->load_timing.connect_timing.ssl_start;
 
   if (is_first_response) {
+    CHECK(!navigation_handle_timing_.first_fetch_start_time.has_value());
     DCHECK(navigation_handle_timing_.first_request_start_time.is_null());
     DCHECK(navigation_handle_timing_.first_response_start_time.is_null());
     DCHECK(navigation_handle_timing_.first_loader_callback_time.is_null());
+
+    if (!response_head_->request_start.is_null()) {
+      navigation_handle_timing_.first_fetch_start_time =
+          response_head_->request_start;
+    }
     navigation_handle_timing_.first_request_start_time =
         response_head_->load_timing.send_start;
     navigation_handle_timing_.first_response_start_time =
@@ -6938,6 +6977,10 @@ void NavigationRequest::UpdateNavigationHandleTimingsOnResponseReceived(
   navigation_handle_timing_.final_request_ssl_delay = ssl_delay;
 
   if (response_head_->load_timing_internal_info) {
+    navigation_handle_timing_.create_stream_delay =
+        response_head_->load_timing_internal_info->create_stream_delay;
+    navigation_handle_timing_.connected_callback_delay =
+        response_head_->load_timing_internal_info->connected_callback_delay;
     navigation_handle_timing_.initialize_stream_delay =
         response_head_->load_timing_internal_info->initialize_stream_delay;
     // Reset `load_timing_internal_info` to make sure that isn't exposed.

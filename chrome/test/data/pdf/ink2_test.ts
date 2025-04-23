@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AnnotationMode, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationMode, Ink2Manager, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -36,16 +36,16 @@ chrome.test.runTests([
     loadTimeData.overrideValues({'pdfTextAnnotationsEnabled': false});
     viewerToolbar.strings = Object.assign({}, viewerToolbar.strings);
     await microtasksFinished();
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
 
     viewerToolbar.setAnnotationMode(AnnotationMode.DRAW);
     await microtasksFinished();
     chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
     mockMetricsPrivate.assertCount(UserAction.ENTER_INK2_ANNOTATION_MODE, 1);
 
-    viewerToolbar.setAnnotationMode(AnnotationMode.NONE);
+    viewerToolbar.setAnnotationMode(AnnotationMode.OFF);
     await microtasksFinished();
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
     mockMetricsPrivate.assertCount(UserAction.EXIT_INK2_ANNOTATION_MODE, 1);
     chrome.test.succeed();
   },
@@ -82,7 +82,7 @@ chrome.test.runTests([
     // Initial state, no metrics recorded.
     assertMetrics(
         {ink2: {enter: 0, exit: 0}, text: {enter: 0, exit: 0}, sidepanel: 0});
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
 
     // NONE -> TEXT
     viewerToolbar.setAnnotationMode(AnnotationMode.TEXT);
@@ -92,9 +92,9 @@ chrome.test.runTests([
         {ink2: {enter: 0, exit: 0}, text: {enter: 1, exit: 0}, sidepanel: 1});
 
     // TEXT -> NONE
-    viewerToolbar.setAnnotationMode(AnnotationMode.NONE);
+    viewerToolbar.setAnnotationMode(AnnotationMode.OFF);
     await microtasksFinished();
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
     assertMetrics(
         {ink2: {enter: 0, exit: 0}, text: {enter: 1, exit: 1}, sidepanel: 1});
 
@@ -122,9 +122,9 @@ chrome.test.runTests([
         {ink2: {enter: 2, exit: 1}, text: {enter: 2, exit: 2}, sidepanel: 2});
 
     // DRAW -> NONE
-    viewerToolbar.setAnnotationMode(AnnotationMode.NONE);
+    viewerToolbar.setAnnotationMode(AnnotationMode.OFF);
     await microtasksFinished();
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
     assertMetrics(
         {ink2: {enter: 2, exit: 2}, text: {enter: 2, exit: 2}, sidepanel: 2});
 
@@ -143,7 +143,7 @@ chrome.test.runTests([
     viewerToolbar.strings = Object.assign({}, viewerToolbar.strings);
     await microtasksFinished();
 
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
 
     viewerToolbar.setAnnotationMode(AnnotationMode.DRAW);
     await microtasksFinished();
@@ -155,12 +155,12 @@ chrome.test.runTests([
     chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
     chrome.test.assertTrue(isVisible(sidePanel));
 
-    viewerToolbar.setAnnotationMode(AnnotationMode.NONE);
+    viewerToolbar.setAnnotationMode(AnnotationMode.OFF);
     await microtasksFinished();
     mockMetricsPrivate.assertCount(UserAction.EXIT_INK2_ANNOTATION_MODE, 1);
 
     // The side panel should be hidden when annotation mode is disabled.
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
     chrome.test.assertFalse(isVisible(sidePanel));
 
     chrome.test.succeed();
@@ -180,7 +180,7 @@ chrome.test.runTests([
     const textPanelQuery = 'viewer-text-side-panel';
 
     // Panels are not in the DOM in NONE annotation mode.
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
     chrome.test.assertFalse(!!viewer.shadowRoot.querySelector(textPanelQuery));
     chrome.test.assertFalse(!!viewer.shadowRoot.querySelector(drawPanelQuery));
 
@@ -201,10 +201,53 @@ chrome.test.runTests([
     chrome.test.assertFalse(isVisible(textPanel));
 
     // Both removed from the DOM again when annotation mode is disabled.
-    viewerToolbar.setAnnotationMode(AnnotationMode.NONE);
+    viewerToolbar.setAnnotationMode(AnnotationMode.OFF);
     await microtasksFinished();
     chrome.test.assertFalse(!!viewer.shadowRoot.querySelector(textPanelQuery));
     chrome.test.assertFalse(!!viewer.shadowRoot.querySelector(drawPanelQuery));
+
+    chrome.test.succeed();
+  },
+
+  async function testTextboxVisibility() {
+    // Enable text annotations.
+    loadTimeData.overrideValues({'pdfTextAnnotationsEnabled': true});
+    viewerToolbar.strings = Object.assign({}, viewerToolbar.strings);
+    await microtasksFinished();
+
+    // Annotation mode off. Textbox is not in the DOM.
+    viewerToolbar.setAnnotationMode(AnnotationMode.OFF);
+    await microtasksFinished();
+    let textbox = viewer.shadowRoot.querySelector('ink-text-box');
+    chrome.test.assertFalse(!!textbox);
+
+    // Text annotation mode. Textbox is in the DOM but isn't visible.
+    viewerToolbar.setAnnotationMode(AnnotationMode.TEXT);
+    await microtasksFinished();
+    textbox = viewer.shadowRoot.querySelector('ink-text-box');
+    chrome.test.assertTrue(!!textbox);
+    chrome.test.assertFalse(isVisible(textbox));
+
+    // Textbox message from backend makes textbox visible.
+    Ink2Manager.getInstance().dispatchEvent(new CustomEvent(
+        'update-text-box',
+        {detail: {height: 100, locationX: 400, locationY: 300, width: 100}}));
+    await microtasksFinished();
+    chrome.test.assertTrue(isVisible(textbox));
+
+    // Switching to a different annotation mode removes the box from the DOM.
+    viewerToolbar.setAnnotationMode(AnnotationMode.DRAW);
+    await microtasksFinished();
+    textbox = viewer.shadowRoot.querySelector('ink-text-box');
+    chrome.test.assertFalse(!!textbox);
+
+    // Text annotation mode. Switching back to text puts the box back in the
+    // DOM, but does not immediately make it visible.
+    viewerToolbar.setAnnotationMode(AnnotationMode.TEXT);
+    await microtasksFinished();
+    textbox = viewer.shadowRoot.querySelector('ink-text-box');
+    chrome.test.assertTrue(!!textbox);
+    chrome.test.assertFalse(isVisible(textbox));
 
     chrome.test.succeed();
   },

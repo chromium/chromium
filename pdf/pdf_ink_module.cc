@@ -314,6 +314,12 @@ bool PdfInkModule::OnMessage(const base::Value::Dict& message) {
           {"setAnnotationBrush",
            &PdfInkModule::HandleSetAnnotationBrushMessage},
           {"setAnnotationMode", &PdfInkModule::HandleSetAnnotationModeMessage},
+          {"getTextAnnotFontNames",
+           &PdfInkModule::HandleGetTextAnnotFontNamesMessage},
+          {"setTextAnnotationFont",
+           &PdfInkModule::HandleSetTextAnnotationFontMessage},
+          {"setTextAnnotTextBoxRect",
+           &PdfInkModule::HandleSetTextAnnotTextBoxRectMessage},
       });
 
   auto it = kMessageHandlers.find(*message.FindString("type"));
@@ -1026,7 +1032,9 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
 
 void PdfInkModule::HandleSetAnnotationModeMessage(
     const base::Value::Dict& message) {
-  enabled_ = message.FindBool("enable").value();
+  const std::string* mode = message.FindString("mode");
+  CHECK(mode);
+  enabled_ = *mode == "draw";
   client_->OnAnnotationModeToggled(enabled_);
   if (enabled_ && !loaded_data_from_pdf_) {
     loaded_data_from_pdf_ = true;
@@ -1041,6 +1049,24 @@ void PdfInkModule::HandleSetAnnotationModeMessage(
     }
   }
   MaybeSetCursor();
+}
+
+void PdfInkModule::HandleGetTextAnnotFontNamesMessage(
+    const base::Value::Dict& message) {
+  // TODO(crbug.com/409439509): Fill in this method. For now, just create it
+  // so the backend doesn't CHECK when it's sent from the frontend.
+}
+
+void PdfInkModule::HandleSetTextAnnotationFontMessage(
+    const base::Value::Dict& message) {
+  // TODO(crbug.com/409439509): Fill in this method. For now, just create it
+  // so the backend doesn't CHECK when it's sent from the frontend.
+}
+
+void PdfInkModule::HandleSetTextAnnotTextBoxRectMessage(
+    const base::Value::Dict& message) {
+  // TODO(crbug.com/409439509): Fill in this method. For now, just create it
+  // so the backend doesn't CHECK when it's sent from the frontend.
 }
 
 PdfInkBrush& PdfInkModule::GetDrawingBrush() {

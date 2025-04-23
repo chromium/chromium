@@ -49,6 +49,7 @@ class ConversionUtils {
             @Nullable String syncTabId,
             @Nullable String lastKnownTabTitle,
             @Nullable String lastKnownTabUrl,
+            @Nullable String previousTabUrl,
             @Nullable GroupMember affectedUser,
             boolean affectedUserIsSelf,
             GroupMember triggeringUser,
@@ -79,6 +80,7 @@ class ConversionUtils {
             attribution.tabMetadata.syncTabId = syncTabId;
             attribution.tabMetadata.lastKnownTitle = lastKnownTabTitle;
             attribution.tabMetadata.lastKnownUrl = lastKnownTabUrl;
+            attribution.tabMetadata.previousUrl = previousTabUrl;
         }
         attribution.affectedUser = affectedUser;
         attribution.affectedUserIsSelf = affectedUserIsSelf;

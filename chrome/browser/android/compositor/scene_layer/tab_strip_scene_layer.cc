@@ -94,12 +94,12 @@ TabStripSceneLayer::~TabStripSceneLayer() = default;
 void TabStripSceneLayer::SetConstants(JNIEnv* env,
                                       jint reorder_background_top_margin,
                                       jint reorder_background_bottom_margin,
-                                      jint reorder_background_padding_start,
-                                      jint reorder_background_padding_end,
+                                      jint reorder_background_padding_short,
+                                      jint reorder_background_padding_long,
                                       jint reorder_background_corner_radius) {
   GroupIndicatorLayer::SetConstants(
       reorder_background_top_margin, reorder_background_bottom_margin,
-      reorder_background_padding_start, reorder_background_padding_end,
+      reorder_background_padding_short, reorder_background_padding_long,
       reorder_background_corner_radius);
 }
 
@@ -395,6 +395,8 @@ void TabStripSceneLayer::PutStripTabLayer(
     jint id,
     jint close_resource_id,
     jint close_hover_bg_resource_id,
+    jboolean is_close_keyboard_focused,
+    jint close_keyboard_focus_ring_resource_id,
     jint divider_resource_id,
     jint handle_resource_id,
     jint handle_outline_resource_id,
@@ -422,6 +424,12 @@ void TabStripSceneLayer::PutStripTabLayer(
     jboolean is_loading,
     jfloat spinner_rotation,
     jfloat opacity,
+    jboolean is_keyboard_focused,
+    jint keyboard_focus_ring_resource_id,
+    jint keyboard_focus_ring_color,
+    jint keyboard_focus_ring_offset,
+    jint stroke_width,
+    jfloat folio_foot_length,
     const JavaParamRef<jobject>& jlayer_title_cache,
     const JavaParamRef<jobject>& jresource_manager) {
   LayerTitleCache* layer_title_cache =
@@ -450,16 +458,27 @@ void TabStripSceneLayer::PutStripTabLayer(
   ui::Resource* close_button_hover_resource =
       resource_manager->GetStaticResourceWithTint(close_hover_bg_resource_id,
                                                   close_hover_bg_tint, true);
+  ui::Resource* close_button_keyboard_focus_ring_resource =
+      resource_manager->GetStaticResourceWithTint(
+          close_keyboard_focus_ring_resource_id, keyboard_focus_ring_color,
+          true);
   ui::Resource* divider_resource = resource_manager->GetStaticResourceWithTint(
       divider_resource_id, divider_tint, true);
+  ui::NinePatchResource* keyboard_focus_ring_drawable =
+      ui::NinePatchResource::From(resource_manager->GetStaticResourceWithTint(
+          keyboard_focus_ring_resource_id, keyboard_focus_ring_color));
 
   layer->SetProperties(
-      id, close_button_resource, close_button_hover_resource, divider_resource,
-      tab_handle_resource, tab_handle_outline_resource, foreground,
-      shouldShowTabOutline, close_pressed, toolbar_width, x, y, width, height,
-      content_offset_y, divider_offset_x, bottom_margin, top_margin,
-      close_button_padding, close_button_alpha, is_start_divider_visible,
-      is_end_divider_visible, is_loading, spinner_rotation, opacity);
+      id, close_button_resource, close_button_hover_resource,
+      is_close_keyboard_focused, close_button_keyboard_focus_ring_resource,
+      divider_resource, tab_handle_resource, tab_handle_outline_resource,
+      foreground, shouldShowTabOutline, close_pressed, toolbar_width, x, y,
+      width, height, content_offset_y, divider_offset_x, bottom_margin,
+      top_margin, close_button_padding, close_button_alpha,
+      is_start_divider_visible, is_end_divider_visible, is_loading,
+      spinner_rotation, opacity, is_keyboard_focused,
+      keyboard_focus_ring_drawable, keyboard_focus_ring_offset, stroke_width,
+      folio_foot_length);
 }
 
 void TabStripSceneLayer::PutGroupIndicatorLayer(
@@ -467,7 +486,7 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
     const base::android::JavaParamRef<jobject>& jobj,
     jboolean incognito,
     jboolean foreground,
-    jboolean show_reorder_background,
+    jboolean collapsed,
     jboolean show_bubble,
     const base::android::JavaParamRef<jobject>& jgroup_token,
     jint tint,
@@ -484,13 +503,25 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
     jfloat bottom_indicator_height,
     jfloat bubble_padding,
     jfloat bubble_size,
-    const JavaParamRef<jobject>& jlayer_title_cache) {
+    jboolean is_keyboard_focused,
+    jint keyboard_focus_ring_resource_id,
+    jint keyboard_focus_ring_color,
+    jint keyboard_focus_ring_offset,
+    jint keyboard_focus_ring_width,
+    const JavaParamRef<jobject>& jlayer_title_cache,
+    const JavaParamRef<jobject>& jresource_manager) {
   LayerTitleCache* layer_title_cache =
       LayerTitleCache::FromJavaObject(jlayer_title_cache);
 
   // Reuse existing layer if it exists.
   scoped_refptr<GroupIndicatorLayer> layer =
       GetNextGroupIndicatorLayer(layer_title_cache);
+
+  ui::ResourceManager* resource_manager =
+      ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
+  ui::NinePatchResource* keyboard_focus_ring_drawable =
+      ui::NinePatchResource::From(resource_manager->GetStaticResourceWithTint(
+          keyboard_focus_ring_resource_id, keyboard_focus_ring_color));
 
   // Foreground if needed.
   if (foreground != layer->foreground()) {
@@ -504,12 +535,14 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
   const tab_groups::TabGroupId& group_token =
       tab_groups::TabGroupId::FromRawToken(
           base::android::TokenAndroid::FromJavaToken(env, jgroup_token));
-  layer->SetProperties(
-      group_token, tint, reorder_background_tint, bubble_tint, incognito,
-      foreground, show_bubble, show_reorder_background, x, y, width, height,
-      title_start_padding, title_end_padding, corner_radius,
-      bottom_indicator_width, bottom_indicator_height, bubble_padding,
-      bubble_size, tab_strip_layer_->bounds().height());
+  layer->SetProperties(group_token, tint, reorder_background_tint, bubble_tint,
+                       incognito, foreground, collapsed, show_bubble, x, y,
+                       width, height, title_start_padding, title_end_padding,
+                       corner_radius, bottom_indicator_width,
+                       bottom_indicator_height, bubble_padding, bubble_size,
+                       tab_strip_layer_->bounds().height(), is_keyboard_focused,
+                       keyboard_focus_ring_drawable, keyboard_focus_ring_offset,
+                       keyboard_focus_ring_width);
 }
 
 scoped_refptr<TabHandleLayer> TabStripSceneLayer::GetNextTabLayer(

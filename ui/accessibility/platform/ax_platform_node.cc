@@ -4,7 +4,6 @@
 
 #include "ui/accessibility/platform/ax_platform_node.h"
 
-#include "base/check_deref.h"
 #include "base/debug/crash_logging.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
@@ -68,16 +67,18 @@ void AXPlatformNode::SetAXModeChangeAllowed(bool allow) {
 }
 
 AXPlatformNodeId AXPlatformNode::GetUniqueId() const {
-  // Must not be called before `Init()`.
-  return CHECK_DEREF(GetDelegate()).GetUniqueId();
+  // Must not be called before `Init()` or after `Destroy()`.
+  return GetDelegate()->GetUniqueId();
 }
 
 std::string AXPlatformNode::ToString() const {
-  return GetDelegate() ? GetDelegate()->ToString() : "No delegate";
+  // Must not be called before `Init()` or after `Destroy()`.
+  return GetDelegate()->ToString();
 }
 
 std::string AXPlatformNode::SubtreeToString() const {
-  return GetDelegate() ? GetDelegate()->SubtreeToString() : "No delegate";
+  // Must not be called before `Init()` or after `Destroy()`.
+  return GetDelegate()->SubtreeToString();
 }
 
 std::ostream& operator<<(std::ostream& stream, AXPlatformNode& node) {

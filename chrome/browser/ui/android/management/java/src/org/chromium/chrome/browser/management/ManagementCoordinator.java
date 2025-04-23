@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.management;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** The class responsible for setting up ManagementPage. */
+@NullMarked
 class ManagementCoordinator {
     private final ManagementMediator mMediator;
     private final ManagementView mView;

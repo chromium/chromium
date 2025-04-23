@@ -70,7 +70,7 @@ using testing::SizeIs;
 using testing::UnorderedElementsAre;
 using testing::WithArg;
 
-constexpr GaiaId::Literal kAccountId("TestAccountId");
+constexpr GaiaId::Literal kDefaultGaiaId("TestGaiaId");
 constexpr char kLocalCacheGuid[] = "TestLocalCacheGuid";
 
 MATCHER_P(EntityDataHasSpecifics, session_specifics_matcher, "") {
@@ -83,7 +83,7 @@ sync_pb::DataTypeState GetDataTypeStateWithInitialSyncDone() {
   state.set_initial_sync_state(
       sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   state.set_cache_guid(kLocalCacheGuid);
-  state.set_authenticated_account_id(kAccountId.ToString());
+  state.set_authenticated_obfuscated_gaia_id(kDefaultGaiaId.ToString());
   state.mutable_progress_marker()->set_data_type_id(
       GetSpecificsFieldNumberFromDataType(syncer::SESSIONS));
   return state;
@@ -215,7 +215,7 @@ class SessionSyncBridgeTest : public ::testing::Test {
     syncer::DataTypeActivationRequest request;
     request.error_handler = base::DoNothing();
     request.cache_guid = kLocalCacheGuid;
-    request.authenticated_account_id = CoreAccountId::FromGaiaId(kAccountId);
+    request.authenticated_gaia_id = kDefaultGaiaId;
 
     base::test::TestFuture<std::unique_ptr<syncer::DataTypeActivationResponse>>
         sync_starting_cb;

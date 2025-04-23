@@ -80,9 +80,7 @@ class AutofillStructuredAddress : public testing::Test {
  public:
   AutofillStructuredAddress() {
     features_.InitWithFeatures({features::kAutofillUseINAddressModel,
-                                features::kAutofillUseITAddressModel,
-                                features::kAutofillUseNLAddressModel,
-                                features::kAutofillUsePLAddressModel},
+                                features::kAutofillUseNLAddressModel},
                                {});
   }
 

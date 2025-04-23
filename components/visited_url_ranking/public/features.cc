@@ -93,7 +93,7 @@ constexpr base::FeatureParam<std::string>
     kVisitedURLRankingDeduplicationExcludedPrefixes{
         &kVisitedURLRankingDeduplication,
         /*name=*/"url_deduplication_excluded_prefixes",
-        /*default_value=*/"www."};
+        /*default_value=*/"www.; login.corp.; myaccount.; accounts.;"};
 
 BASE_FEATURE(kVisitedURLRankingDecorations,
              "VisitedURLRankingDecorations",
@@ -154,7 +154,7 @@ BASE_FEATURE(kGroupSuggestionService,
 constexpr base::FeatureParam<bool> kGroupSuggestionEnableRecentlyOpened{
     &kGroupSuggestionService,
     /*name=*/"group_suggestion_enable_recently_opened",
-    /*default_value=*/true};
+    /*default_value=*/false};
 
 constexpr base::FeatureParam<bool> kGroupSuggestionEnableSwitchBetween{
     &kGroupSuggestionService,
@@ -165,5 +165,15 @@ constexpr base::FeatureParam<bool> kGroupSuggestionEnableSimilarSource{
     &kGroupSuggestionService,
     /*name=*/"group_suggestion_enable_similar_source",
     /*default_value=*/true};
+
+constexpr base::FeatureParam<bool> kGroupSuggestionEnableSameOrigin{
+    &kGroupSuggestionService,
+    /*name=*/"group_suggestion_enable_same_origin",
+    /*default_value=*/false};
+
+constexpr base::FeatureParam<bool> kGroupSuggestionEnableTabSwitcherOnly{
+    &kGroupSuggestionService,
+    /*name=*/"group_suggestion_enable_tab_switcher_only",
+    /*default_value=*/false};
 
 }  // namespace visited_url_ranking::features

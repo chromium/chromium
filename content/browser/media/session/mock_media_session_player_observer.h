@@ -61,7 +61,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
 
   // Simulate that a new player started.
   // Returns the player_id.
-  int StartNewPlayer();
+  int StartNewPlayer(bool is_playing = true);
 
   // Returns whether |player_id| is playing.
   bool IsPlaying(size_t player_id);
@@ -81,6 +81,10 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   // Set |has_sufficiently_visible_video| for |player_id|.
   void SetHasSufficientlyVisibleVideo(size_t player_id,
                                       bool has_sufficiently_visible_video);
+
+  // Simulate picture in picture availability for |player_id|.
+  void SetIsPictureInPictureAvailable(size_t player_id,
+                                      bool is_picture_in_picture_available);
 
   int received_suspend_calls() const;
   int received_resume_calls() const;
@@ -111,6 +115,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
     bool supports_device_switching_ = true;
     bool has_sufficiently_visible_video_ = false;
     std::string auto_picture_in_picture_info_;
+    bool is_picture_in_picture_available_ = false;
   };
 
   // Basic representation of the players. The position in the vector is the

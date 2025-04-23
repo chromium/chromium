@@ -11,12 +11,15 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.WindowManager;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Calculates the part of a View that is displayed on the screen, not occluded and not cropped.
  *
  * <p>Calculation identical to androidx.test.espresso.matcher.ViewMatchers for compatibility of
  * ViewInteractions. Can return > 100%.
  */
+@NullMarked
 class DisplayedPortion {
     View mView;
     int mViewWidth;
@@ -31,11 +34,14 @@ class DisplayedPortion {
     float mVisibleAreaWidth;
     float mVisibleAreaHeight;
 
+    public DisplayedPortion(View view) {
+        mView = view;
+    }
+
     /** Calculate the current {@link DisplayedPortion} of a View. */
     static DisplayedPortion ofView(View view) {
-        DisplayedPortion result = new DisplayedPortion();
+        DisplayedPortion result = new DisplayedPortion(view);
         Rect visibleParts = new Rect();
-        result.mView = view;
 
         boolean visibleAtAll = view.getGlobalVisibleRect(visibleParts);
         if (!visibleAtAll) {

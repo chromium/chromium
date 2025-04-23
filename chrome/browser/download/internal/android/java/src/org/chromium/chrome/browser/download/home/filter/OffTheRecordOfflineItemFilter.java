@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.download.home.filter;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.components.offline_items_collection.OfflineItem;
 
@@ -11,6 +14,7 @@ import org.chromium.components.offline_items_collection.OfflineItem;
  * A {@link OfflineItemFilter} responsible for pruning out off the record items if we are not
  * showing them for this instance of the download manager.
  */
+@NullMarked
 public class OffTheRecordOfflineItemFilter extends OfflineItemFilter {
     private final boolean mIncludeOffTheRecordItems;
 
@@ -29,7 +33,8 @@ public class OffTheRecordOfflineItemFilter extends OfflineItemFilter {
 
         try {
             // Only show downloads from primary OTR profile if mIncludeOffTheRecordItems is true.
-            boolean isPrimaryOtr = OtrProfileId.deserialize(item.otrProfileId).isPrimaryOtrId();
+            OtrProfileId profileId = OtrProfileId.deserialize(assumeNonNull(item.otrProfileId));
+            boolean isPrimaryOtr = assumeNonNull(profileId).isPrimaryOtrId();
             return !(mIncludeOffTheRecordItems && isPrimaryOtr);
         } catch (IllegalStateException e) {
             return true;

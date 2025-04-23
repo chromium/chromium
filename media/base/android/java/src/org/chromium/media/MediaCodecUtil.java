@@ -440,40 +440,40 @@ class MediaCodecUtil {
 
     // List of supported HW encoders.
     @IntDef({
-        HWEncoder.QcomVp8,
-        HWEncoder.QcomH264,
-        HWEncoder.ExynosVp8,
-        HWEncoder.ExynosVp9,
-        HWEncoder.ExynosH264,
-        HWEncoder.MediatekH264,
-        HWEncoder.HisiH264,
-        HWEncoder.SpreadtrumH264
+        HWEncoder.QCOM_VP8,
+        HWEncoder.QCOM_H264,
+        HWEncoder.EXYNOS_VP8,
+        HWEncoder.EXYNOS_VP9,
+        HWEncoder.EXYNOS_H264,
+        HWEncoder.MEDIATEK_H264,
+        HWEncoder.HISI_H264,
+        HWEncoder.SPREADTRUM_H264
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface HWEncoder {
-        int QcomVp8 = 0;
-        int QcomH264 = 1;
-        int ExynosVp8 = 2;
-        int ExynosVp9 = 3;
-        int ExynosH264 = 4;
-        int MediatekH264 = 5;
-        int HisiH264 = 6;
-        int SpreadtrumH264 = 7;
+        int QCOM_VP8 = 0;
+        int QCOM_H264 = 1;
+        int EXYNOS_VP8 = 2;
+        int EXYNOS_VP9 = 3;
+        int EXYNOS_H264 = 4;
+        int MEDIATEK_H264 = 5;
+        int HISI_H264 = 6;
+        int SPREADTRUM_H264 = 7;
         int NUM_ENTRIES = 8;
     }
 
     private static String getMimeForHWEncoder(@HWEncoder int encoder) {
         switch (encoder) {
-            case HWEncoder.QcomVp8:
-            case HWEncoder.ExynosVp8:
+            case HWEncoder.QCOM_VP8:
+            case HWEncoder.EXYNOS_VP8:
                 return MimeTypes.VIDEO_VP8;
-            case HWEncoder.ExynosVp9:
+            case HWEncoder.EXYNOS_VP9:
                 return MimeTypes.VIDEO_VP9;
-            case HWEncoder.QcomH264:
-            case HWEncoder.ExynosH264:
-            case HWEncoder.MediatekH264:
-            case HWEncoder.HisiH264:
-            case HWEncoder.SpreadtrumH264:
+            case HWEncoder.QCOM_H264:
+            case HWEncoder.EXYNOS_H264:
+            case HWEncoder.MEDIATEK_H264:
+            case HWEncoder.HISI_H264:
+            case HWEncoder.SPREADTRUM_H264:
                 return MimeTypes.VIDEO_H264;
         }
         return "";
@@ -482,18 +482,18 @@ class MediaCodecUtil {
     private static String getPrefixForHWEncoder(@HWEncoder int encoder) {
         // NOTE: Prefixes must be lower case since the comparison is done in lower case.
         switch (encoder) {
-            case HWEncoder.QcomVp8:
-            case HWEncoder.QcomH264:
+            case HWEncoder.QCOM_VP8:
+            case HWEncoder.QCOM_H264:
                 return "qcom";
-            case HWEncoder.ExynosVp8:
-            case HWEncoder.ExynosVp9:
-            case HWEncoder.ExynosH264:
+            case HWEncoder.EXYNOS_VP8:
+            case HWEncoder.EXYNOS_VP9:
+            case HWEncoder.EXYNOS_H264:
                 return "exynos";
-            case HWEncoder.MediatekH264:
+            case HWEncoder.MEDIATEK_H264:
                 return "mtk";
-            case HWEncoder.HisiH264:
+            case HWEncoder.HISI_H264:
                 return "hisi";
-            case HWEncoder.SpreadtrumH264:
+            case HWEncoder.SPREADTRUM_H264:
                 return "sprd";
         }
         return "";
@@ -501,16 +501,16 @@ class MediaCodecUtil {
 
     private static int getMinSDKForHWEncoder(@HWEncoder int encoder) {
         switch (encoder) {
-            case HWEncoder.QcomVp8:
-            case HWEncoder.QcomH264:
-            case HWEncoder.ExynosH264:
-            case HWEncoder.HisiH264:
-            case HWEncoder.ExynosVp8:
-            case HWEncoder.ExynosVp9:
+            case HWEncoder.QCOM_VP8:
+            case HWEncoder.QCOM_H264:
+            case HWEncoder.EXYNOS_H264:
+            case HWEncoder.HISI_H264:
+            case HWEncoder.EXYNOS_VP8:
+            case HWEncoder.EXYNOS_VP9:
                 return Build.VERSION_CODES.N;
-            case HWEncoder.MediatekH264:
+            case HWEncoder.MEDIATEK_H264:
                 return Build.VERSION_CODES.O_MR1;
-            case HWEncoder.SpreadtrumH264:
+            case HWEncoder.SPREADTRUM_H264:
                 return Build.VERSION_CODES.R;
         }
         return -1;
@@ -519,14 +519,14 @@ class MediaCodecUtil {
     private static @BitrateAdjuster.Type int getBitrateAdjusterTypeForHWEncoder(
             @HWEncoder int decoder) {
         switch (decoder) {
-            case HWEncoder.QcomVp8:
-            case HWEncoder.QcomH264:
-            case HWEncoder.ExynosVp8:
+            case HWEncoder.QCOM_VP8:
+            case HWEncoder.QCOM_H264:
+            case HWEncoder.EXYNOS_VP8:
                 return BitrateAdjuster.Type.NO_ADJUSTMENT;
-            case HWEncoder.ExynosH264:
-            case HWEncoder.MediatekH264:
-            case HWEncoder.HisiH264:
-            case HWEncoder.SpreadtrumH264:
+            case HWEncoder.EXYNOS_H264:
+            case HWEncoder.MEDIATEK_H264:
+            case HWEncoder.HISI_H264:
+            case HWEncoder.SPREADTRUM_H264:
                 return BitrateAdjuster.Type.FRAMERATE_ADJUSTMENT;
         }
         throw new IllegalArgumentException("Invalid HWEncoder decoder parameter.");

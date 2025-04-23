@@ -4,7 +4,10 @@
 
 #include "services/network/url_loader_util.h"
 
+#include <algorithm>
+
 #include "base/containers/enum_set.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "net/base/elements_upload_data_stream.h"
@@ -24,12 +27,15 @@
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/header_util.h"
+#include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/sri_message_signatures.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_request.mojom-shared.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/sec_header_helpers.h"
 
 namespace network::url_loader_util {
@@ -280,6 +286,22 @@ class FileElementReader : public net::UploadFileElementReader {
 };
 
 }  // namespace
+
+// Returns if `request` is fetch upload request with a streaming body.
+bool HasFetchStreamingUploadBody(const ResourceRequest& request) {
+  const ResourceRequestBody* request_body = request.request_body.get();
+  if (!request_body) {
+    return false;
+  }
+  const std::vector<DataElement>* elements = request_body->elements();
+  if (elements->size() != 1u) {
+    return false;
+  }
+  const auto& element = elements->front();
+  return element.type() == mojom::DataElementDataView::Tag::kChunkedDataPipe &&
+         element.As<network::DataElementChunkedDataPipe>().read_only_once();
+}
+
 std::unique_ptr<net::UploadDataStream> CreateUploadDataStream(
     ResourceRequestBody* body,
     std::vector<base::File>& opened_files,
@@ -621,8 +643,8 @@ void ConfigureUrlRequest(const ResourceRequest& request,
     url_request.set_socket_tag(request.socket_tag);
   }
 
-  url_request.set_allows_device_bound_sessions(
-      request.allows_device_bound_sessions);
+  url_request.set_allows_device_bound_session_registration(
+      request.allows_device_bound_session_registration);
 }
 
 void SetRequestCredentials(
@@ -659,6 +681,110 @@ void SetRequestCredentials(
   if (!policies_allow_credentials) {
     url_request.SetLoadFlags(url_request.load_flags() | net::LOAD_BYPASS_CACHE);
   }
+}
+
+const mojom::ClientSecurityState* SelectClientSecurityState(
+    const mojom::ClientSecurityState*
+        url_loader_factory_params_client_security_state,
+    const mojom::ClientSecurityState* trusted_params_client_security_state) {
+  if (trusted_params_client_security_state) {
+    return trusted_params_client_security_state;
+  }
+  return url_loader_factory_params_client_security_state;
+}
+
+mojom::URLResponseHeadPtr BuildResponseHead(
+    const net::URLRequest& url_request,
+    const net::cookie_util::ParsedRequestCookies& request_cookies,
+    network::mojom::IPAddressSpace client_address_space,
+    network::mojom::IPAddressSpace response_address_space,
+    int32_t url_load_options,
+    bool load_with_storage_access,
+    bool is_load_timing_enabled,
+    bool include_load_timing_internal_info_with_response,
+    base::TimeTicks response_start) {
+  auto response = mojom::URLResponseHead::New();
+  response->request_time = url_request.request_time();
+  response->response_time = url_request.response_time();
+  response->original_response_time = url_request.original_response_time();
+  response->headers = url_request.response_headers();
+  response->parsed_headers =
+      PopulateParsedHeaders(response->headers.get(), url_request.url());
+
+  url_request.GetCharset(&response->charset);
+  response->content_length = url_request.GetExpectedContentSize();
+  url_request.GetMimeType(&response->mime_type);
+
+  const net::HttpResponseInfo& response_info = url_request.response_info();
+  response->was_fetched_via_spdy = response_info.was_fetched_via_spdy;
+  response->was_alpn_negotiated = response_info.was_alpn_negotiated;
+  response->alpn_negotiated_protocol = response_info.alpn_negotiated_protocol;
+  response->alternate_protocol_usage = response_info.alternate_protocol_usage;
+  response->connection_info = response_info.connection_info;
+  response->remote_endpoint = response_info.remote_endpoint;
+  response->was_fetched_via_cache = url_request.was_cached();
+  response->is_validated = (response_info.cache_entry_status ==
+                            net::HttpResponseInfo::ENTRY_VALIDATED);
+  response->proxy_chain = url_request.proxy_chain();
+  response->network_accessed = response_info.network_accessed;
+  response->async_revalidation_requested =
+      response_info.async_revalidation_requested;
+  response->was_in_prefetch_cache =
+      !(url_request.load_flags() & net::LOAD_PREFETCH) &&
+      response_info.unused_since_prefetch;
+  response->did_use_shared_dictionary = response_info.did_use_shared_dictionary;
+  response->device_bound_session_usage =
+      static_cast<network::mojom::DeviceBoundSessionUsage>(
+          url_request.device_bound_session_usage());
+
+  // IsInclude() true means the cookie was sent.
+  response->was_cookie_in_request = std::ranges::any_of(
+      url_request.maybe_sent_cookies(),
+      [](const auto& cookie_with_access_result) {
+        return cookie_with_access_result.access_result.status.IsInclude();
+      });
+
+  if (is_load_timing_enabled) {
+    url_request.GetLoadTimingInfo(&response->load_timing);
+  }
+
+  if (include_load_timing_internal_info_with_response) {
+    response->load_timing_internal_info =
+        url_request.GetLoadTimingInternalInfo();
+  }
+  CHECK(include_load_timing_internal_info_with_response ||
+        !response->load_timing_internal_info);
+
+  if (url_request.ssl_info().cert.get()) {
+    response->cert_status = url_request.ssl_info().cert_status;
+    if ((url_load_options & mojom::kURLLoadOptionSendSSLInfoWithResponse) ||
+        (net::IsCertStatusError(url_request.ssl_info().cert_status) &&
+         (url_load_options &
+          mojom::kURLLoadOptionSendSSLInfoForCertificateError))) {
+      response->ssl_info = url_request.ssl_info();
+    }
+  }
+
+  response->request_cookies = request_cookies;
+  response->request_start = url_request.creation_time();
+  response->response_start = response_start;
+  response->encoded_data_length = url_request.GetTotalReceivedBytes();
+  response->auth_challenge_info = url_request.auth_challenge_info();
+  response->has_range_requested = url_request.extra_request_headers().HasHeader(
+      net::HttpRequestHeaders::kRange);
+  response->dns_aliases =
+      base::ToVector(url_request.response_info().dns_aliases);
+  // [spec]: https://fetch.spec.whatwg.org/#http-network-or-cache-fetch
+  // 13. Set response’s request-includes-credentials to includeCredentials.
+  response->request_include_credentials = url_request.allow_credentials();
+  response->client_address_space = client_address_space;
+  response->response_address_space = response_address_space;
+  response->load_with_storage_access = load_with_storage_access;
+
+  url_request.GetClientSideContentDecodingTypes(
+      &response->client_side_content_decoding_types);
+
+  return response;
 }
 
 }  // namespace network::url_loader_util

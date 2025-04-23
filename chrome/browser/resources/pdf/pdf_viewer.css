@@ -49,14 +49,11 @@ viewer-toolbar {
 }
 
 #sidenav-container {
+  border-inline-end: 1px solid var(--viewer-border-color);
   overflow: hidden;
   transition: transform 250ms cubic-bezier(.6, 0, 0, 1), visibility 250ms;
   visibility: visible;
   width: var(--viewer-pdf-sidenav-width);
-}
-
-:host-context([pdfcr23enabled]) #sidenav-container {
-  border-inline-end: 1px solid var(--viewer-border-color);
 }
 
 #sidenav-container.floating {
@@ -174,3 +171,14 @@ viewer-ink-host {
   /* color-surface */
   --cr-toast-text-color: rgb(31, 31, 31);
 }
+
+<if expr="enable_pdf_ink2">
+.text-box-container {
+  height: calc(100% - var(--horizontal-scrollbar-width, 0px));
+  left: 0;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  width: calc(100% - var(--vertical-scrollbar-width, 0px));
+}
+</if>

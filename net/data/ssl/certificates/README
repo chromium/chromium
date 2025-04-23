@@ -143,10 +143,6 @@ unit tests.
     A certificate and private key valid for a number of test names. See
     [test_names] in ee.cnf. Other names may be added as needed.
 
-- bad_validity.pem
-    A certificate and private key only valid on 0001-01-01. Windows refuses to
-    parse this certificate.
-
 - spdy_pooling.pem : Used to test the handling of spdy IP connection pooling
 
 - subjectAltName_sanity_check.pem : Used to test the handling of various types

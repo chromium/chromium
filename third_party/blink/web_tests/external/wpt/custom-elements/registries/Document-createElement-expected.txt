@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] createElement should use the specified scoped registry
+  assert_true: expected true got false
+[FAIL] createElement should create a builtin element regardless of a custom element registry specified
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+[FAIL] createElement should create an upgrade candidate when there is no matching definition in the specified registry
+  assert_equals: expected "HTMLElement" but got "GlobalABElement"
+[FAIL] createElement should create an upgrade candidate and the candidate should be upgraded when the element is defined
+  assert_true: expected true got false
+[FAIL] createElement on a non-HTML document should still handle registries correctly
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+Harness: the test ran to completion.
+

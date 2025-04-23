@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] customElementRegistry on a failed custom element created by calling createElement on CustomElementRegistry should return the registry
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] customElementRegistry on a failed custom element created by setting innerHTML should return the associated scoped registry
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+Harness: the test ran to completion.
+

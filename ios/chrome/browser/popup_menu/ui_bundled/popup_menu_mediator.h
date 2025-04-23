@@ -36,13 +36,13 @@ class WebStateList;
 @interface PopupMenuMediator
     : NSObject <BrowserContainerConsumer, PopupMenuActionHandlerDelegate>
 
-// Initializes the mediator with whether it `isIncognito`, a `readingListModel`
+// Initializes the mediator with whether it is `incognito`, a `readingListModel`
 // used to display the badge for the reading list entry, and a
 // `browserPolicyConnector` used to check if the browser is managed by policy.
-- (instancetype)initWithIsIncognito:(BOOL)isIncognito
-                   readingListModel:(ReadingListModel*)readingListModel
-             browserPolicyConnector:
-                 (BrowserPolicyConnectorIOS*)browserPolicyConnector
+- (instancetype)initWithReadingListModel:(ReadingListModel*)readingListModel
+                         policyConnector:
+                             (BrowserPolicyConnectorIOS*)browserPolicyConnector
+                               incognito:(BOOL)incognito
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

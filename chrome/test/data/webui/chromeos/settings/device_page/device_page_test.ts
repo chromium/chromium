@@ -932,7 +932,7 @@ suite('<settings-device-page>', () => {
       await flushTasks();
 
       assertTrue(audioPage.getIsInputMutedForTest());
-      assertEquals('settings:mic-off', inputMuteButton.ironIcon);
+      assertEquals('os-settings:mic-off', inputMuteButton.ironIcon);
     });
 
     test('simulate setting input gain slider', async () => {

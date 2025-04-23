@@ -5,6 +5,7 @@
 #ifndef UI_GTK_GTK_UI_H_
 #define UI_GTK_GTK_UI_H_
 
+#include <array>
 #include <map>
 #include <memory>
 #include <optional>
@@ -198,7 +199,10 @@ class GtkUi : public ui::LinuxUiAndTheme {
   // while Chrome is running.  This 3D array is indexed first by whether the
   // frame is translucent (0) or solid(1), then by whether the frame is normal
   // (0) or tiled (1), then by whether the frame is maximized (0) or not (1).
-  std::unique_ptr<ui::WindowFrameProvider> frame_providers_[2][2][2];
+  std::array<
+      std::array<std::array<std::unique_ptr<ui::WindowFrameProvider>, 2>, 2>,
+      2>
+      frame_providers_;
 
   // Objects to notify when the window frame button order changes.
   base::ObserverList<ui::WindowButtonOrderObserver>::Unchecked

@@ -35,6 +35,13 @@ class ClearOperation {
   }
 }
 
+class SetOperation {
+  async run(data) {
+    sharedStorage.set('key-set-from-worklet', 'value');
+  }
+}
+
 register('test-operation', TestOperation);
 register('test-url-selection-operation', TestURLSelectionOperation);
 register('clear-operation', ClearOperation);
+register('set-operation', SetOperation);

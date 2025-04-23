@@ -66,9 +66,11 @@ export interface EntityDataManagerProxy {
   getOptInStatus(): Promise<boolean>;
 
   /**
-   * Sets the opt-in status for AutofillAi for the current user.
+   * Sets the opt-in status for AutofillAi for the current user. Returns whether
+   * setting was successful, which more precisely means whether the user is
+   * eligible to opt into Autofill AI.
    */
-  setOptInStatus(optedIn: boolean): void;
+  setOptInStatus(optedIn: boolean): Promise<boolean>;
 }
 
 export class EntityDataManagerProxyImpl implements EntityDataManagerProxy {
@@ -111,7 +113,7 @@ export class EntityDataManagerProxyImpl implements EntityDataManagerProxy {
   }
 
   setOptInStatus(optedIn: boolean) {
-    chrome.autofillPrivate.setAutofillAiOptInStatus(optedIn);
+    return chrome.autofillPrivate.setAutofillAiOptInStatus(optedIn);
   }
 
   static getInstance() {

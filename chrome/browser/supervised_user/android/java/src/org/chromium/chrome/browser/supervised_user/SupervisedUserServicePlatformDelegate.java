@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.supervised_user;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 
+@NullMarked
 class SupervisedUserServicePlatformDelegate {
     /** Closes all open incognito tabs */
     @CalledByNative

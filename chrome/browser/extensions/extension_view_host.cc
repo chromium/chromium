@@ -11,12 +11,12 @@
 #include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
-#include "chrome/browser/ui/browser.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/color_chooser.h"
 #include "content/public/browser/file_select_listener.h"
+#include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -29,29 +29,25 @@
 
 namespace extensions {
 
+ExtensionViewHost::Delegate::Delegate() = default;
+ExtensionViewHost::Delegate::~Delegate() = default;
+
 ExtensionViewHost::ExtensionViewHost(
     const Extension* extension,
     content::SiteInstance* site_instance,
     content::BrowserContext* browser_context_param,
     const GURL& url,
     mojom::ViewType host_type,
-    Browser* browser)
+    std::unique_ptr<Delegate> delegate)
     : ExtensionHost(extension,
                     site_instance,
                     browser_context_param,
                     url,
                     host_type),
-      browser_(browser) {
+      delegate_(std::move(delegate)) {
   // Not used for panels, see PanelHost.
   DCHECK(host_type == mojom::ViewType::kExtensionPopup ||
          host_type == mojom::ViewType::kExtensionSidePanel);
-
-  // The browser should always be associated with the same original profile as
-  // this view host. The profiles may not be identical (i.e., one may be the
-  // off-the-record version of the other) in the case of a spanning-mode
-  // extension creating a popup in an incognito window.
-  DCHECK(!GetBrowser() || Profile::FromBrowserContext(browser_context())
-                              ->IsSameOrParent(GetBrowser()->profile()));
 
   // Attach WebContents helpers. Extension tabs automatically get them attached
   // in TabHelpers::AttachTabHelpers, but popups don't.
@@ -71,10 +67,6 @@ ExtensionViewHost::~ExtensionViewHost() {
   for (auto& observer : modal_dialog_host_observers_) {
     observer.OnHostDestroying();
   }
-}
-
-Browser* ExtensionViewHost::GetBrowser() {
-  return browser_;
 }
 
 bool ExtensionViewHost::UnhandledKeyboardEvent(
@@ -146,9 +138,7 @@ content::WebContents* ExtensionViewHost::OpenURLFromTab(
     case WindowOpenDisposition::OFF_THE_RECORD: {
       // Only allow these from hosts that are bound to a browser (e.g. popups).
       // Otherwise they are not driven by a user gesture.
-      return GetBrowser() ? GetBrowser()->OpenURL(
-                                params, std::move(navigation_handle_callback))
-                          : nullptr;
+      return delegate_->OpenURL(params, std::move(navigation_handle_callback));
     }
     default:
       return nullptr;
@@ -171,8 +161,7 @@ ExtensionViewHost::PreHandleKeyboardEvent(
     return content::KeyboardEventProcessingResult::NOT_HANDLED_IS_SHORTCUT;
 
   // Handle higher priority browser shortcuts such as ctrl-w.
-  return GetBrowser() ? GetBrowser()->PreHandleKeyboardEvent(source, event)
-                      : content::KeyboardEventProcessingResult::NOT_HANDLED;
+  return delegate_->PreHandleKeyboardEvent(source, event);
 }
 
 bool ExtensionViewHost::HandleKeyboardEvent(
@@ -205,7 +194,7 @@ void ExtensionViewHost::RunFileChooser(
 std::unique_ptr<content::EyeDropper> ExtensionViewHost::OpenEyeDropper(
     content::RenderFrameHost* frame,
     content::EyeDropperListener* listener) {
-  return GetBrowser() ? GetBrowser()->OpenEyeDropper(frame, listener) : nullptr;
+  return delegate_->OpenEyeDropper(frame, listener);
 }
 
 void ExtensionViewHost::ResizeDueToAutoResize(content::WebContents* source,
@@ -256,7 +245,7 @@ void ExtensionViewHost::RemoveObserver(
 }
 
 WindowController* ExtensionViewHost::GetExtensionWindowController() const {
-  return browser_ ? browser_->extension_window_controller() : nullptr;
+  return delegate_->GetExtensionWindowController();
 }
 
 content::WebContents* ExtensionViewHost::GetVisibleWebContents() const {

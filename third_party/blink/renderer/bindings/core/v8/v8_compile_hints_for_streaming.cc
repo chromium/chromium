@@ -46,12 +46,17 @@ CompileHintsForStreaming::Builder::Build(
   // has_hot_timestamp.
   CHECK(!hot_cached_metadata_for_local_compile_hints || has_hot_timestamp);
   v8::ScriptCompiler::CompileOptions additional_compile_options =
-      magic_comment_mode_ == v8_compile_hints::MagicCommentMode::kAlways ||
-              (magic_comment_mode_ == v8_compile_hints::MagicCommentMode::
-                                          kWhenProducingCodeCache &&
-               has_hot_timestamp)
-          ? v8::ScriptCompiler::kFollowCompileHintsMagicComment
-          : v8::ScriptCompiler::kNoCompileOptions;
+      v8::ScriptCompiler::CompileOptions::kNoCompileOptions;
+  if (magic_comment_mode_ ==
+      v8_compile_hints::MagicCommentMode::kOnlyTopLevel) {
+    additional_compile_options =
+        v8::ScriptCompiler::kFollowCompileHintsMagicComment;
+  } else if (magic_comment_mode_ ==
+             v8_compile_hints::MagicCommentMode::kTopLevelAndFunctions) {
+    additional_compile_options = v8::ScriptCompiler::CompileOptions(
+        v8::ScriptCompiler::kFollowCompileHintsMagicComment |
+        v8::ScriptCompiler::kFollowCompileHintsPerFunctionMagicComment);
+  }
 
   if (might_generate_crowdsourced_compile_hints_) {
     return std::make_unique<CompileHintsForStreaming>(

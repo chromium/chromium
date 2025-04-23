@@ -114,8 +114,8 @@ bool GpuMemoryBufferImplIOSurface::Map() {
   if (map_count_++)
     return true;
 
-  IOReturn status = IOSurfaceLock(io_surface_.get(), lock_flags_, nullptr);
-  DCHECK_NE(status, kIOReturnCannotLock) << " lock_flags_: " << lock_flags_;
+  kern_return_t status = IOSurfaceLock(io_surface_.get(), lock_flags_, nullptr);
+  DCHECK_EQ(status, KERN_SUCCESS) << " lock_flags_: " << lock_flags_;
   return true;
 }
 

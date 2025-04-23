@@ -49,7 +49,7 @@ class PLATFORM_EXPORT P2PSocketClientImpl
   // |dscp|. Return value is the unique packet_id for this packet.
   uint64_t Send(const net::IPEndPoint& address,
                 base::span<const uint8_t> data,
-                const rtc::PacketOptions& options) override;
+                const webrtc::AsyncSocketPacketOptions& options) override;
   void FlushBatch() override;
 
   // Setting socket options.
@@ -87,7 +87,7 @@ class PLATFORM_EXPORT P2PSocketClientImpl
   // condition.
   void SendWithPacketId(const net::IPEndPoint& address,
                         base::span<const uint8_t> data,
-                        const rtc::PacketOptions& options,
+                        const webrtc::AsyncSocketPacketOptions& options,
                         uint64_t packet_id);
 
   // network::mojom::blink::P2PSocketClient interface.
@@ -107,9 +107,9 @@ class PLATFORM_EXPORT P2PSocketClientImpl
   raw_ptr<blink::P2PSocketClientDelegate> delegate_;
   State state_;
 
-  // Packets sent with rtc::PacketOptions::batchable being true are collected
-  // here until a packet with rtc::PacketOptions::last_packet_in_batch is
-  // signalled.
+  // Packets sent with webrtc::AsyncSocketPacketOptions::batchable being true
+  // are collected here until a packet with
+  // webrtc::AsyncSocketPacketOptions::last_packet_in_batch is signalled.
   WTF::Vector<network::mojom::blink::P2PSendPacketPtr> batched_send_packets_;
   WTF::Vector<WTF::Vector<uint8_t>> batched_packets_storage_;
   // Attribute recording if we're currently awaiting OnSendWatchComplete.

@@ -8,9 +8,9 @@
 
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 
 namespace extensions {
@@ -80,7 +80,7 @@ void WebstoreReinstaller::OnInstallPromptDone(
     return;
   }
 
-  if (!ExtensionSystem::Get(profile())->extension_service()->UninstallExtension(
+  if (!ExtensionRegistrar::Get(profile())->UninstallExtension(
           id(), UNINSTALL_REASON_REINSTALL, nullptr)) {
     // Run the callback now, because AbortInstall() doesn't do it.
     RunCallback(

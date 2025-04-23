@@ -1153,16 +1153,6 @@ interface InstallEvent : ExtendableEvent
     attribute @@toStringTag
     method addRoutes
     method constructor
-interface LanguageDetector
-    static method availability
-    static method create
-    attribute @@toStringTag
-    getter expectedInputLanguages
-    getter inputQuota
-    method constructor
-    method destroy
-    method detect
-    method measureInputUsage
 interface LanguageModel : EventTarget
     static method availability
     static method create

@@ -19,7 +19,7 @@ items:
   value: false
 label: Safe Browsing enable state for trusted sources
 owners:
-- dpr-eng@google.com
+- cbe-cep-eng@google.com
 - zmin@chromium.org
 schema:
   type: boolean

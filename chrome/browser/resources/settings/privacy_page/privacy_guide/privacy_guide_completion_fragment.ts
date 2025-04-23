@@ -82,13 +82,13 @@ export class PrivacyGuideCompletionFragmentElement extends
     };
   }
 
-  private isNoLinkLayout_: boolean;
-  private shouldShowAiSettings_: boolean;
-  private shouldShowPrivacySandbox_: boolean;
-  private shouldShowWaa_: boolean;
+  declare private isNoLinkLayout_: boolean;
+  declare private shouldShowAiSettings_: boolean;
+  declare private shouldShowPrivacySandbox_: boolean;
+  declare private shouldShowWaa_: boolean;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
-  private shouldShowV2AdPrivacySubLabel_: boolean;
+  declare private shouldShowV2AdPrivacySubLabel_: boolean;
   private privacySandboxBrowserProxy_: PrivacySandboxBrowserProxy =
       PrivacySandboxBrowserProxyImpl.getInstance();
 

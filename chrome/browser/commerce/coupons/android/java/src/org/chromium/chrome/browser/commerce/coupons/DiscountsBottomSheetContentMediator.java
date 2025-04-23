@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.commerce.core.DiscountClusterType;
 import org.chromium.components.commerce.core.DiscountInfo;
+import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -52,14 +53,18 @@ public class DiscountsBottomSheetContentMediator {
     }
 
     public void requestShowContent(Callback<Boolean> contentReadyCallback) {
+        ShoppingService shoppingService =
+                ShoppingServiceFactory.getForProfile(mTabSupplier.get().getProfile());
+        if (shoppingService == null || !shoppingService.isDiscountEligibleToShowOnNavigation()) {
+            contentReadyCallback.onResult(false);
+        }
+        shoppingService.getDiscountInfoForUrl(
+                mTabSupplier.get().getUrl(),
+                (url, infoList) -> {
+                    updateModelList(infoList);
+                    contentReadyCallback.onResult(mModelList.size() > 0);
+                });
         mCopyButtonClickedHistogramRecorded = false;
-        ShoppingServiceFactory.getForProfile(mTabSupplier.get().getProfile())
-                .getDiscountInfoForUrl(
-                        mTabSupplier.get().getUrl(),
-                        (url, infoList) -> {
-                            updateModelList(infoList);
-                            contentReadyCallback.onResult(mModelList.size() > 0);
-                        });
     }
 
     public void closeContent() {
@@ -80,6 +85,8 @@ public class DiscountsBottomSheetContentMediator {
                                     mContext.getString(R.string.discount_code_copy_button_text));
             if (info.expiryTimeSec.isPresent()) {
                 propertyModelBuilder.with(EXPIRY_TIME, formatExpiryTime(info.expiryTimeSec.get()));
+            } else {
+                propertyModelBuilder.with(EXPIRY_TIME, null);
             }
             PropertyModel propertyModel = propertyModelBuilder.build();
             propertyModel.set(

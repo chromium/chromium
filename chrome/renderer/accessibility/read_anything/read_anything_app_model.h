@@ -130,9 +130,11 @@ class ReadAnythingAppModel {
   bool redraw_required() const { return redraw_required_; }
   void reset_redraw_required() { redraw_required_ = false; }
 
-  bool selection_from_action() const { return selection_from_action_; }
-  void set_selection_from_action(bool selection_from_action) {
-    selection_from_action_ = selection_from_action;
+  bool selection_from_reading_mode() const {
+    return selection_from_reading_mode_;
+  }
+  void set_selection_from_reading_mode(bool selection_from_action) {
+    selection_from_reading_mode_ = selection_from_action;
   }
 
   const std::string& base_language_code() const { return base_language_code_; }
@@ -238,6 +240,8 @@ class ReadAnythingAppModel {
   bool IsDocs() const;
   bool IsReload() const;
 
+  const std::set<ui::AXNodeID>* GetCurrentlyVisibleNodes() const;
+
   ui::AXNode* GetAXNode(const ui::AXNodeID& ax_node_id) const;
 
   // Inserts `id` into `non_ignored_ids` if it corresponds to a node that should
@@ -259,8 +263,6 @@ class ReadAnythingAppModel {
       read_anything::mojom::Colors color);
 
   void OnScroll(bool on_selection, bool from_reading_mode) const;
-
-  void OnSelection(ax::mojom::EventFrom event_from);
 
   void Reset(std::vector<ui::AXNodeID> content_node_ids);
 
@@ -437,7 +439,7 @@ class ReadAnythingAppModel {
   bool requires_distillation_ = false;
   bool reset_draw_timer_ = false;
   bool requires_post_process_selection_ = false;
-  bool selection_from_action_ = false;
+  bool selection_from_reading_mode_ = false;
 
   // For screen2x data collection, Chrome is launched from the CLI to open one
   // webpage. We record the result of the distill() call for this entire

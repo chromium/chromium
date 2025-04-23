@@ -42,6 +42,9 @@ enum class InProductHelpType : NSInteger {
   kSettingsInOverflowMenu,
   /// Help bubble for swiping on the feed.
   kFeedSwipe,
+  /// Help bubble for account switching via the account particle disc on the New
+  /// Tab page.
+  kSwitchAccountsWithNTPAccountParticleDisc,
 };
 
 #endif  // IOS_CHROME_BROWSER_BUBBLE_PUBLIC_IN_PRODUCT_HELP_TYPE_H_

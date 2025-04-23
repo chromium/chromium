@@ -92,6 +92,11 @@ enum XRDepthDataFormat {
   kUnsignedShort = 3,
 };
 
+enum XRDepthType {
+  kRaw = 1,
+  kSmooth = 2,
+};
+
 // Structure used to configure depth sensing API at session creation.
 // If the device is unable to create the session given the preferences expressed
 // in the options, the session will not have depth sensing API enabled. In case
@@ -109,6 +114,10 @@ struct XRDepthOptions {
   // we are allowed to select the optimal XRDepthDataFormat ourselves (this will
   // usually match whatever the backing device's APIs support by default).
   array<XRDepthDataFormat> data_format_preferences;
+  // Ordered array of depth sensing data type preferences. The device will
+  // attempt to support depth starting with the lowest-indexed one. However,
+  // failure to do so will not block creation of a session with depth sensing.
+  array<XRDepthType> depth_type_request;
 };
 
 struct XRSessionOptions {

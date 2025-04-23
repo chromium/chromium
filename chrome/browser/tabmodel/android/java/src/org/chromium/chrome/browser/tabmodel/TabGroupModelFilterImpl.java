@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.tabmodel.TabGroupUtils.areAnyTabsPartOfSharedGroup;
 import static org.chromium.chrome.browser.tabmodel.TabList.INVALID_TAB_INDEX;
 
 import android.util.Pair;
@@ -189,7 +190,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         int offset = 0;
         for (Tab tab : tabs) {
             if (tabModel.indexOf(tab) == -1) {
-                assert false : "Tried to close a tab from another model!";
+                assert false : "Tried to move a tab from another model!";
                 continue;
             }
             tabModel.moveTab(tab.getId(), newIndex >= curIndex ? newIndex : newIndex + offset++);
@@ -254,6 +255,9 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                 : "Attempting to merge groups from different model";
 
         List<Tab> tabsToMerge = getRelatedTabList(sourceTabId);
+        if (areAnyTabsPartOfSharedGroup(mTabModel, tabsToMerge, destinationTab.getTabGroupId())) {
+            return;
+        }
         int destinationIndexInTabModel = getTabModelDestinationIndex(destinationTab);
 
         if (!skipUpdateTabModel && needToUpdateTabModel(tabsToMerge, destinationIndexInTabModel)) {
@@ -361,6 +365,8 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         List<Tab> tabsToMerge = new ArrayList<>();
         tabsToMerge.addAll(tabs);
         tabsToMerge.add(destinationTab);
+
+        if (areAnyTabsPartOfSharedGroup(mTabModel, tabs, destinationTab.getTabGroupId())) return;
         boolean willMergingCreateNewGroup = willMergingCreateNewGroup(tabsToMerge);
 
         List<Tab> mergedTabs = new ArrayList<>();
@@ -624,7 +630,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         mIsUndoing = isChangingGroups;
 
         // Notify that the tab will be removed from its current group.
-        if (isTabInTabGroup(tab)) {
+        if (isTabInTabGroup(tab) && isChangingGroups) {
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                 observer.willMoveTabOutOfGroup(
                         tab, /* destinationTabGroupId= */ originalTabGroupId);
@@ -641,6 +647,16 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         // Else we can ignore tabs that remain at the same index if they are not changing root IDs.
 
         mIsUndoing = false;
+
+        // When moving a tab `resetWithListOfTabs` is invoked. This iterates over all tabs and sets
+        // resets all the maps. One side effect of this is that there is a period where some tabs
+        // are finished undoing and others are not. This means there is transiently a one to many
+        // relationship between group id and root ids. Ensure the entry in the map is for the
+        // original group id and root id of the most recently undone tab so that listeners of
+        // `didMergeTabToGroup` can look up information about the tab group correctly.
+        if (originalTabGroupId != null) {
+            mGroupIdToRootIdMap.put(originalTabGroupId, originalRootId);
+        }
 
         // If undoing results in restoring a tab into a different group then notify observers it was
         // added.
@@ -750,7 +766,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         if (mRootIdToGroupMap.containsKey(rootId)) {
             mRootIdToGroupMap.get(rootId).addTab(tab.getId(), getTabModel());
 
-            if (willMergingCreateNewGroup) {
+            if (!mIsResetting && willMergingCreateNewGroup) {
                 // TODO(crbug.com/40173284): Update UMA for Context menu creation.
                 if (tab.getLaunchType() == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP) {
                     if (mShouldRecordUma) {

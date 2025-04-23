@@ -414,8 +414,12 @@ void TestSyncService::SetTypesWithUnsyncedData(const DataTypeSet& types) {
 
 void TestSyncService::GetTypesWithUnsyncedData(
     DataTypeSet requested_types,
-    base::OnceCallback<void(DataTypeSet)> cb) const {
-  std::move(cb).Run(base::Intersection(requested_types, unsynced_types_));
+    base::OnceCallback<void(absl::flat_hash_map<DataType, size_t>)> cb) const {
+  absl::flat_hash_map<DataType, size_t> unsynced_data_counts;
+  for (auto type : base::Intersection(requested_types, unsynced_types_)) {
+    unsynced_data_counts[type] = 1;
+  }
+  std::move(cb).Run(std::move(unsynced_data_counts));
 }
 
 void TestSyncService::SetLocalDataDescriptions(

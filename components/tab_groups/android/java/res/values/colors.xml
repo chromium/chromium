@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <!-- Tab Group color picker related colors. These should not be used elsewhere. -->
+    <color name="tab_group_color_picker_blue">@color/tab_group_color_picker_blue_dark</color>
+    <color name="tab_group_color_picker_blue_incognito">@color/tab_group_color_picker_blue_light</color>
+    <color name="tab_group_color_picker_cyan">@color/tab_group_color_picker_cyan_dark</color>
+    <color name="tab_group_color_picker_cyan_incognito">@color/tab_group_color_picker_cyan_light</color>
+    <color name="tab_group_color_picker_green">@color/tab_group_color_picker_green_dark</color>
+    <color name="tab_group_color_picker_green_incognito">@color/tab_group_color_picker_green_light</color>
+    <color name="tab_group_color_picker_grey">@color/tab_group_color_picker_grey_dark</color>
+    <color name="tab_group_color_picker_grey_incognito">@color/tab_group_color_picker_grey_light</color>
+    <color name="tab_group_color_picker_orange">@color/tab_group_color_picker_orange_dark</color>
+    <color name="tab_group_color_picker_orange_incognito">@color/tab_group_color_picker_orange_light</color>
+    <color name="tab_group_color_picker_pink">@color/tab_group_color_picker_pink_dark</color>
+    <color name="tab_group_color_picker_pink_incognito">@color/tab_group_color_picker_pink_light</color>
+    <color name="tab_group_color_picker_purple">@color/tab_group_color_picker_purple_dark</color>
+    <color name="tab_group_color_picker_purple_incognito">@color/tab_group_color_picker_purple_light</color>
+    <color name="tab_group_color_picker_red">@color/tab_group_color_picker_red_dark</color>
+    <color name="tab_group_color_picker_red_incognito">@color/tab_group_color_picker_red_light</color>
+    <color name="tab_group_color_picker_yellow">@color/tab_group_color_picker_yellow_dark</color>
+    <color name="tab_group_color_picker_yellow_incognito">@color/tab_group_color_picker_yellow_light</color>
+    <color name="tab_group_tab_strip_title_text_color_incognito">@color/baseline_neutral_20</color>
+</resources>

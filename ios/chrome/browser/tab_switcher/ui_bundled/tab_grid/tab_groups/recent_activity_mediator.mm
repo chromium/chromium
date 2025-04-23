@@ -10,6 +10,7 @@
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_avatar_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
@@ -19,6 +20,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/recent_activity_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/recent_activity_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/recent_activity_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/recent_activity_log_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -34,8 +36,6 @@ namespace {
 
 // The size of a favicon image.
 const CGFloat kFaviconSize = 20;
-// The size of an avatar image.
-const CGFloat kAvatarSize = 30;
 
 // The maximum number of logs to query, and thus display in the list.
 const int kMaxNumberOfLogs = 5;
@@ -59,7 +59,7 @@ const int kMaxNumberOfLogs = 5;
   std::unique_ptr<web::WebState::CreateParams> _webStateCreationParams;
 }
 
-- (instancetype)initWithtabGroup:(base::WeakPtr<const TabGroup>)tabGroup
+- (instancetype)initWithTabGroup:(base::WeakPtr<const TabGroup>)tabGroup
                 messagingService:
                     (collaboration::messaging::MessagingBackendService*)
                         messagingService
@@ -207,32 +207,24 @@ const int kMaxNumberOfLogs = 5;
 
   NSMutableArray<RecentActivityLogItem*>* items = [[NSMutableArray alloc] init];
 
-  for (auto& log : _messagingService->GetActivityLog(params)) {
+  for (collaboration::messaging::ActivityLogItem& log :
+       _messagingService->GetActivityLog(params)) {
     RecentActivityLogItem* item = [[RecentActivityLogItem alloc] init];
+    if (log.show_favicon && log.activity_metadata.tab_metadata.has_value() &&
+        log.activity_metadata.tab_metadata.value().last_known_url.has_value()) {
+      item.faviconURL = GURL(
+          log.activity_metadata.tab_metadata.value().last_known_url.value());
+    }
     item.title = base::SysUTF16ToNSString(log.title_text);
     item.actionDescription = base::SysUTF16ToNSString(log.description_text);
-    item.timestamp = base::SysUTF16ToNSString(log.time_delta_text);
-    item.favicon = SymbolWithPalette(
-        DefaultSymbolWithPointSize(kGlobeAmericasSymbol, kFaviconSize),
-        @[ [UIColor colorNamed:kGrey400Color] ]);
+    item.elapsedTime = base::SysUTF16ToNSString(log.time_delta_text);
     item.action = log.action;
     item.activityMetadata = log.activity_metadata;
 
-    // Get a favicon from the URL and set it to `item`.
-    if (log.show_favicon && log.activity_metadata.tab_metadata.has_value()) {
-      _faviconLoader->FaviconForPageUrlOrHost(
-          GURL(log.activity_metadata.tab_metadata.value()
-                   .last_known_url.value()),
-          kFaviconSize, ^(FaviconAttributes* attributes) {
-            // Skip synchronously returned default favicon.
-            if (attributes.usesDefaultImage) {
-              return;
-            }
-            if (attributes.faviconImage) {
-              item.favicon = attributes.faviconImage;
-            }
-          });
-    }
+    UIImage* defaultFavicon = SymbolWithPalette(
+        DefaultSymbolWithPointSize(kGlobeAmericasSymbol, kFaviconSize),
+        @[ [UIColor colorNamed:kGrey400Color] ]);
+    item.attributes = [FaviconAttributes attributesWithImage:defaultFavicon];
 
     // Get a user's icon from the avatar URL and set it to `item`.
     // The image is asynchronously loaded.
@@ -251,7 +243,8 @@ const int kMaxNumberOfLogs = 5;
         config.displayName = user->display_name.empty()
                                  ? base::SysUTF8ToNSString(user->email)
                                  : base::SysUTF8ToNSString(user->display_name);
-        config.avatarSize = CGSizeMake(kAvatarSize, kAvatarSize);
+        config.avatarSize = CGSizeMake(kRecentActivityLogAvatarSize,
+                                       kRecentActivityLogAvatarSize);
         item.avatarPrimitive = _shareKitService->AvatarImage(config);
       }
     }
@@ -260,6 +253,22 @@ const int kMaxNumberOfLogs = 5;
   }
 
   [_consumer populateItems:items];
+}
+
+#pragma mark - TableViewFaviconDataSource
+
+- (void)faviconForPageURL:(CrURL*)URL
+               completion:(void (^)(FaviconAttributes*))completion {
+  _faviconLoader->FaviconForPageUrl(URL.gurl, kFaviconSize, kFaviconSize,
+                                    /*fallback_to_google_server=*/false,
+                                    ^(FaviconAttributes* attributes) {
+                                      if (attributes.usesDefaultImage) {
+                                        return;
+                                      }
+                                      if (attributes.faviconImage) {
+                                        completion(attributes);
+                                      }
+                                    });
 }
 
 @end

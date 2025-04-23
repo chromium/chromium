@@ -71,9 +71,9 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
     private static final String PREF_PRIVACY_GUIDE = "privacy_guide";
     private static final String PREF_INCOGNITO_LOCK = "incognito_lock";
     private static final String PREF_JAVASCRIPT_OPTIMIZER = "javascript_optimizer";
+    private static final String PREF_INCOGNITO_TRACKING_PROTECTIONS =
+            "incognito_tracking_protections";
     @VisibleForTesting static final String PREF_DO_NOT_TRACK = "do_not_track";
-    @VisibleForTesting static final String PREF_FP_PROTECTION = "fp_protection";
-    @VisibleForTesting static final String PREF_IP_PROTECTION = "ip_protection";
     @VisibleForTesting static final String PREF_THIRD_PARTY_COOKIES = "third_party_cookies";
     @VisibleForTesting static final String PREF_TRACKING_PROTECTION = "tracking_protection";
 
@@ -86,16 +86,10 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
 
         SettingsUtils.addPreferencesFromResource(this, R.xml.privacy_preferences);
 
-        Preference fpProtectionPreference = findPreference(PREF_FP_PROTECTION);
-        fpProtectionPreference.setVisible(shouldShowFpProtectionUi());
-
-        Preference ipProtectionPreference = findPreference(PREF_IP_PROTECTION);
-        ipProtectionPreference.setVisible(shouldShowIpProtectionUi());
-        ipProtectionPreference.setOnPreferenceClickListener(
-                preference -> {
-                    RecordUserAction.record("Settings.IpProtection.OpenedFromPrivacyPage");
-                    return false;
-                });
+        Preference incognitoTrackingProtectionsPreference =
+                findPreference(PREF_INCOGNITO_TRACKING_PROTECTIONS);
+        incognitoTrackingProtectionsPreference.setVisible(
+                shouldShowIncognitoTrackingProtectionsUi());
 
         Preference sandboxPreference = findPreference(PREF_PRIVACY_SANDBOX);
         // Overwrite the click listener to pass a correct referrer to the fragment.
@@ -345,22 +339,6 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                             : R.string.text_off);
         }
 
-        Preference ipProtectionPref = findPreference(PREF_IP_PROTECTION);
-        if (ipProtectionPref != null) {
-            ipProtectionPref.setSummary(
-                    UserPrefs.get(getProfile()).getBoolean(Pref.IP_PROTECTION_ENABLED)
-                            ? R.string.text_on
-                            : R.string.text_off);
-        }
-
-        Preference fpProtectionPref = findPreference(PREF_FP_PROTECTION);
-        if (fpProtectionPref != null) {
-            fpProtectionPref.setSummary(
-                    UserPrefs.get(getProfile()).getBoolean(Pref.FINGERPRINTING_PROTECTION_ENABLED)
-                            ? R.string.text_on
-                            : R.string.text_off);
-        }
-
         Preference preloadPagesPreference = findPreference(PREF_PRELOAD_PAGES);
         if (preloadPagesPreference != null) {
             preloadPagesPreference.setSummary(
@@ -437,14 +415,9 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                 || ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD);
     }
 
-    private boolean shouldShowIpProtectionUi() {
-        return !showTrackingProtectionUi()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_UX);
-    }
-
-    private boolean shouldShowFpProtectionUi() {
-        return !showTrackingProtectionUi()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_UX);
+    private boolean shouldShowIncognitoTrackingProtectionsUi() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_UX)
+                || ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_UX);
     }
 
     @Override

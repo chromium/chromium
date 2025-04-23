@@ -66,6 +66,8 @@ class WebAppDatabase {
   // - No version/version 0 is the original version.
   // - Version 1 introduces the UserInstalled install source, migration between
   //   0 and 1 add or remove this source.
+  // - Version 2 migrates shortcut apps to DIY apps, ensures platform user
+  //   display mode is set, and fixes partial install state inconsistencies.
   static int GetCurrentDatabaseVersion();
 
  private:
@@ -84,6 +86,22 @@ class WebAppDatabase {
 
   void MigrateDatabase(ProtobufState& state);
   void MigrateInstallSourceAddUserInstalled(
+      ProtobufState& state,
+      std::set<webapps::AppId>& changed_apps);
+  // Migrates apps that were created as shortcuts (empty scope or installed via
+  // "Create shortcut") to be DIY apps with a valid scope derived from the start
+  // URL.
+  void MigrateShortcutAppsToDiyApps(ProtobufState& state,
+                                    std::set<webapps::AppId>& changed_apps);
+  // Ensures that the user display mode is set for the current platform in the
+  // sync proto. If it's missing, it derives it from the other platform's
+  // setting or defaults to STANDALONE.
+  void MigrateDefaultDisplayModeToPlatformDisplayMode(
+      ProtobufState& state,
+      std::set<webapps::AppId>& changed_apps);
+  // Corrects the install_state for apps that claim OS integration but lack the
+  // necessary OS integration state data.
+  void MigratePartiallyInstalledAppsToCorrectState(
       ProtobufState& state,
       std::set<webapps::AppId>& changed_apps);
 

@@ -26,6 +26,7 @@
 #include "components/performance_manager/render_process_user_data.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
@@ -503,7 +504,9 @@ std::optional<blink::mojom::PermissionStatus> PerformanceManagerTabHelper::
 
   // Return current status.
   return permission_controller->GetPermissionStatusForCurrentDocument(
-      blink::PermissionType::NOTIFICATIONS,
+      content::PermissionDescriptorUtil::
+          CreatePermissionDescriptorForPermissionType(
+              blink::PermissionType::NOTIFICATIONS),
       web_contents()->GetPrimaryMainFrame());
 #endif  // BUILDFLAG(IS_ANDROID)
 }

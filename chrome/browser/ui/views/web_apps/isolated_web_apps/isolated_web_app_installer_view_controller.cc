@@ -527,7 +527,7 @@ IsolatedWebAppInstallerViewController::CreateDialogDelegate(
   auto delegate = std::make_unique<OnCompleteDialogDelegate>();
   delegate->set_internal_name(
       IsolatedWebAppInstallerView::kInstallerWidgetName);
-  delegate->SetOwnedByWidget(true);
+  delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
   delegate->SetContentsView(std::move(contents_view));
   delegate->SetModalType(ui::mojom::ModalType::kWindow);
   delegate->SetShowCloseButton(false);

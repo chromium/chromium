@@ -55,10 +55,10 @@ export class ShoppingInsightsAppElement extends PolymerElement {
     };
   }
 
-  productInfo: ProductInfo;
-  priceInsightsInfo: PriceInsightsInfo;
-  private isProductTrackable_: boolean;
-  private isProductTracked_: boolean;
+  declare productInfo: ProductInfo;
+  declare priceInsightsInfo: PriceInsightsInfo;
+  declare private isProductTrackable_: boolean;
+  declare private isProductTracked_: boolean;
   private shoppingApi_: ShoppingServiceBrowserProxy =
       ShoppingServiceBrowserProxyImpl.getInstance();
 

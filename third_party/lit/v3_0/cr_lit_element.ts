@@ -119,28 +119,6 @@ export class CrLitElement extends LitElement {
     this.ensureInitialRender();
   }
 
-  // Overriding '_$changeProperty'. This is a workaround for two separate but
-  // related issues, where changedProperties are incorrectly not reporting
-  // 'undefined' as the initial previous value for wrapped properties (when
-  // 'accessor' is used).
-  // 1) See https://github.com/lit/lit/pull/4934#issuecomment-2717518391 and
-  //    minimal repro at http://shortn/_5l2Q3hBfr0. This is the 1st part of this
-  //    workaround, see 2nd part in `patchPropertiesObject()` below. These are
-  //    fixed in Lit ToT and will be included in a future Lit version (greater
-  //    than v3.2.1).
-  // 2) See https://github.com/lit/lit/issues/4916 and minimal repro at
-  //    http://shortn/_Y1zls6LZjN, (similar to #1 above but happens when the
-  //    initial value is passed from the parent). This is not fixed as of this
-  //    writing, ongoing discussion.
-  //
-  //  Need to use ts-ignore because of overriding requires using the minified
-  //  internal name of '_$changeProperty' which is 'C'.
-  //  @ts-ignore
-  override C(name: PropertyKey, oldValue: any, options: any) {
-    // @ts-ignore
-    super.C(name, this.hasUpdated ? oldValue : undefined, options);
-  }
-
   override willUpdate(_changedProperties: PropertyValues<this>) {
     this.willUpdatePending_ = true;
   }
@@ -182,15 +160,12 @@ export class CrLitElement extends LitElement {
   }
 
   // Modifies the 'properties' object by:
-  //  1) automatically specifying "attribute: <attr_name>" for each reactive
+  //  -  automatically specifying "attribute: <attr_name>" for each reactive
   //     property where attr_name is a dash-case equivalent of the property's
   //     name. For example a 'fooBar' property will be mapped to a 'foo-bar'
   //     attribute, matching Polymer's behavior, instead of Lit's default
   //     behavior (which would map to 'foobar'). This is done to make it easier
   //     to migrate Polymer elements to Lit.
-  //  2) Automatically adding 'wrapped: true' for properties that are declared
-  //     using the 'accessor' keyword, to work around a Lit bug (see reference
-  //     below).
   private static patchPropertiesObject() {
     if (!this.hasOwnProperty('properties')) {
       // Return early if there's no `properties` block on the element.
@@ -207,15 +182,6 @@ export class CrLitElement extends LitElement {
         // Specify a dash-case attribute name, derived from the property name,
         // similar to what Polymer did.
         (value as Mutable<typeof value>).attribute = toDashCase(key);
-      }
-
-      // Workaround#2 for
-      // https://github.com/lit/lit/pull/4934#issuecomment-2717518391, minimal
-      // repro at http://shortn/_FCrUJIGsR7.
-      // TODO(dpapad): Remove this when third_party/lit is rolled to a version
-      // that includes the fix.
-      if (this.prototype.hasOwnProperty(key)) {
-        (value as {wrapped?: boolean}).wrapped = true;
       }
     }
 

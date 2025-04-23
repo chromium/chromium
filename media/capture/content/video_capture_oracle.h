@@ -5,6 +5,7 @@
 #ifndef MEDIA_CAPTURE_CONTENT_VIDEO_CAPTURE_ORACLE_H_
 #define MEDIA_CAPTURE_CONTENT_VIDEO_CAPTURE_ORACLE_H_
 
+#include <array>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -54,6 +55,7 @@ class CAPTURE_EXPORT VideoCaptureOracle {
   base::TimeDelta min_capture_period() const {
     return smoothing_sampler_.min_capture_period();
   }
+
   void SetMinCapturePeriod(base::TimeDelta period);
 
   // Sets the range of acceptable capture sizes and whether a fixed aspect ratio
@@ -69,6 +71,19 @@ class CAPTURE_EXPORT VideoCaptureOracle {
   //
   // See: SetMinSizeChangePeriod().
   void SetAutoThrottlingEnabled(bool enabled);
+
+  // Specifies whether the oracle should detect animation and try to target
+  // the animation frame rate. If |enabled|, the oracle will try to detect a
+  // majority damaged rect and its animation frame rate, and will respect the
+  // minimum damaged pixel ratio of the majority rect's area among all damaged
+  // rect areas set by |majority_damaged_pixel_min_ratio|. If the threshold not
+  // met, it will not use the animated content frame rate.
+  void SetAnimationFpsLockIn(bool enabled,
+                             float majority_damaged_pixel_min_ratio) {
+    content_sampler_.SetEnabled(enabled);
+    content_sampler_.SetMajorityDamagedRectMinRatio(
+        majority_damaged_pixel_min_ratio);
+  }
 
   // Get/Update the source content size.  Changes may not have an immediate
   // effect on the proposed capture size, as the oracle will prevent too-
@@ -223,7 +238,7 @@ class CAPTURE_EXPORT VideoCaptureOracle {
 
   // Stores the last |event_time| from the last observation/decision.  Used to
   // sanity-check that event times are monotonically non-decreasing.
-  base::TimeTicks last_event_time_[kNumEvents];
+  std::array<base::TimeTicks, kNumEvents> last_event_time_;
 
   // Updated by the last call to ObserveEventAndDecideCapture() with the
   // estimated duration of the next frame to sample.  This is zero if the method
@@ -264,7 +279,7 @@ class CAPTURE_EXPORT VideoCaptureOracle {
   // a ring-buffer, and should only be accessed by the Get/SetFrameTimestamp()
   // methods.
   enum { kMaxFrameTimestamps = 16 };
-  base::TimeTicks frame_timestamps_[kMaxFrameTimestamps];
+  std::array<base::TimeTicks, kMaxFrameTimestamps> frame_timestamps_;
 
   // Recent average buffer pool utilization for capture.
   FeedbackSignalAccumulator<base::TimeTicks> buffer_pool_utilization_;

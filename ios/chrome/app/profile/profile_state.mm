@@ -229,6 +229,7 @@
 }
 
 - (void)sceneStateConnected:(SceneState*)sceneState {
+  _lastSceneConnection = base::TimeTicks::Now();
   [sceneState addObserver:self];
   [_connectedSceneStates addObject:sceneState];
   [_observers profileState:self sceneConnected:sceneState];
@@ -266,8 +267,9 @@
       break;
 
     case SceneActivationLevelDisconnected:
-      [_connectedSceneStates removeObject:sceneState];
       [sceneState removeObserver:self];
+      [_connectedSceneStates removeObject:sceneState];
+      [_observers profileState:self sceneDisconnected:sceneState];
       break;
 
     case SceneActivationLevelBackground:

@@ -55,6 +55,12 @@ const char kHistogramGWSNavigationStartToFirstLoaderCallback[] =
     HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToFirstLoaderCallback";
 const char kHistogramGWSNavigationStartToOnComplete[] =
     HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToOnComplete";
+const char kHistogramGWSFirstFetchStartToFirstRequestStart[] =
+    HISTOGRAM_PREFIX "NavigationTiming.FirstFetchStartToFirstRequestStart";
+const char kHistogramGWSCreateStreamDelay[] =
+    HISTOGRAM_PREFIX "NavigationTiming.CreateStreamDelay";
+const char kHistogramGWSConnectedCallbackDelay[] =
+    HISTOGRAM_PREFIX "NavigationTiming.ConnectedCallbackDelay";
 const char kHistogramGWSInitializeStreamDelay[] =
     HISTOGRAM_PREFIX "NavigationTiming.InitializeStreamDelay";
 
@@ -392,6 +398,14 @@ void GWSPageLoadMetricsObserver::RecordNavigationTimingHistograms() {
       internal::kHistogramGWSNavigationStartToFinalLoaderCallback,
       timing.final_loader_callback_time - navigation_start_time);
 
+  // To avoid affecting other metrics, check `first_fetch_start_time`
+  // separately.
+  if (timing.first_fetch_start_time.has_value()) {
+    PAGE_LOAD_SHORT_HISTOGRAM(
+        internal::kHistogramGWSFirstFetchStartToFirstRequestStart,
+        timing.first_request_start_time - *timing.first_fetch_start_time);
+  }
+
   PAGE_LOAD_SHORT_HISTOGRAM(
       internal::kHistogramGWSConnectTimingFirstRequestDomainLookupDelay,
       timing.first_request_domain_lookup_delay);
@@ -410,6 +424,10 @@ void GWSPageLoadMetricsObserver::RecordNavigationTimingHistograms() {
   PAGE_LOAD_SHORT_HISTOGRAM(
       internal::kHistogramGWSConnectTimingFinalRequestSslDelay,
       timing.final_request_ssl_delay);
+  PAGE_LOAD_SHORT_HISTOGRAM(internal::kHistogramGWSCreateStreamDelay,
+                            timing.create_stream_delay);
+  PAGE_LOAD_SHORT_HISTOGRAM(internal::kHistogramGWSConnectedCallbackDelay,
+                            timing.connected_callback_delay);
   PAGE_LOAD_SHORT_HISTOGRAM(internal::kHistogramGWSInitializeStreamDelay,
                             timing.initialize_stream_delay);
 

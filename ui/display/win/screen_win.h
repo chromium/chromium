@@ -17,23 +17,19 @@
 #include "ui/display/win/color_profile_reader.h"
 #include "ui/display/win/screen_win_display.h"
 #include "ui/display/win/uwp_text_scale_factor.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/mojom/dxgi_info.mojom.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/win/singleton_hwnd_observer.h"
 
-namespace gfx {
-class Display;
-class Point;
-class PointF;
-class Rect;
-class Size;
-}   // namespace gfx
-
-namespace display {
-namespace win {
+namespace display::win {
 
 class ScreenWinDisplay;
+class FallbackScreenWin;
 
 namespace internal {
 class DisplayInfo;
@@ -43,8 +39,6 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
                                  public ColorProfileReader::Client,
                                  public UwpTextScaleFactor::Observer {
  public:
-  ScreenWin();
-
   ScreenWin(const ScreenWin&) = delete;
   ScreenWin& operator=(const ScreenWin&) = delete;
 
@@ -53,20 +47,22 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   // Converts a screen physical point to a screen DIP point.
   // The DPI scale is performed relative to the display containing the physical
   // point.
-  static gfx::PointF ScreenToDIPPoint(const gfx::PointF& pixel_point);
+  virtual gfx::PointF ScreenToDIPPoint(const gfx::PointF& pixel_point) const;
 
   // Converts a screen DIP point to a screen physical point.
   // The DPI scale is performed relative to the display containing the DIP
   // point.
-  static gfx::Point DIPToScreenPoint(const gfx::Point& dip_point);
+  virtual gfx::Point DIPToScreenPoint(const gfx::Point& dip_point) const;
 
   // Converts a client physical point relative to |hwnd| to a client DIP point.
   // The DPI scale is performed relative to |hwnd| using an origin of (0, 0).
-  static gfx::Point ClientToDIPPoint(HWND hwnd, const gfx::Point& client_point);
+  virtual gfx::Point ClientToDIPPoint(HWND hwnd,
+                                      const gfx::Point& client_point) const;
 
   // Converts a client DIP point relative to |hwnd| to a client physical point.
   // The DPI scale is performed relative to |hwnd| using an origin of (0, 0).
-  static gfx::Point DIPToClientPoint(HWND hwnd, const gfx::Point& dip_point);
+  virtual gfx::Point DIPToClientPoint(HWND hwnd,
+                                      const gfx::Point& dip_point) const;
 
   // WARNING: There is no right way to scale sizes and rects.
   // Sometimes you may need the enclosing rect (which favors transformations
@@ -80,7 +76,8 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   // The DPI scale is performed relative to the display nearest to |hwnd|.
   // If |hwnd| is null, scaling will be performed to the display nearest to
   // |pixel_bounds|.
-  static gfx::Rect ScreenToDIPRect(HWND hwnd, const gfx::Rect& pixel_bounds);
+  virtual gfx::Rect ScreenToDIPRect(HWND hwnd,
+                                    const gfx::Rect& pixel_bounds) const;
 
   // Converts a screen DIP rect to a screen physical rect.
   // If |hwnd| is null, scaling will be performed using the DSF of the display
@@ -88,27 +85,31 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   // of the display nearest to |hwnd|.  Thus if an existing HWND is moving to a
   // different display, it's often more correct to pass null for |hwnd| to get
   // the new display's scale factor rather than the old one's.
-  static gfx::Rect DIPToScreenRect(HWND hwnd, const gfx::Rect& dip_bounds);
+  virtual gfx::Rect DIPToScreenRect(HWND hwnd,
+                                    const gfx::Rect& dip_bounds) const;
 
   // Converts a client physical rect to a client DIP rect.
   // The DPI scale is performed relative to |hwnd| using an origin of (0, 0).
-  static gfx::Rect ClientToDIPRect(HWND hwnd, const gfx::Rect& pixel_bounds);
+  virtual gfx::Rect ClientToDIPRect(HWND hwnd,
+                                    const gfx::Rect& pixel_bounds) const;
 
   // Converts a client DIP rect to a client physical rect.
   // The DPI scale is performed relative to |hwnd| using an origin of (0, 0).
-  static gfx::Rect DIPToClientRect(HWND hwnd, const gfx::Rect& dip_bounds);
+  virtual gfx::Rect DIPToClientRect(HWND hwnd,
+                                    const gfx::Rect& dip_bounds) const;
 
   // Converts a physical size to a DIP size.
   // The DPI scale is performed relative to the display nearest to |hwnd|.
-  static gfx::Size ScreenToDIPSize(HWND hwnd, const gfx::Size& size_in_pixels);
+  virtual gfx::Size ScreenToDIPSize(HWND hwnd,
+                                    const gfx::Size& size_in_pixels) const;
 
   // Converts a DIP size to a physical size.
   // The DPI scale is performed relative to the display nearest to |hwnd|.
-  static gfx::Size DIPToScreenSize(HWND hwnd, const gfx::Size& dip_size);
+  virtual gfx::Size DIPToScreenSize(HWND hwnd, const gfx::Size& dip_size) const;
 
   // Returns the number of physical pixels per inch for a display associated
   // with the point.
-  static gfx::Vector2dF GetPixelsPerInch(const gfx::PointF& point);
+  virtual gfx::Vector2dF GetPixelsPerInch(const gfx::PointF& point) const;
 
   // Returns the result of GetSystemMetrics for |metric| scaled to |monitor|'s
   // DPI. Use this function if you're already working with screen pixels, as
@@ -118,57 +119,58 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   // Note that metrics which correspond to elements drawn by Windows
   // (specifically frame and resize handles) will be scaled by DPI only and not
   // by Text Zoom or other accessibility features.
-  static int GetSystemMetricsForMonitor(HMONITOR monitor, int metric);
+  virtual int GetSystemMetricsForMonitor(HMONITOR monitor, int metric) const;
 
   // Returns the result of GetSystemMetrics for |metric| in DIP.
   // Use this function if you need to work in DIP and can tolerate cascading
   // rounding errors towards screen pixels.
-  static int GetSystemMetricsInDIP(int metric);
+  virtual int GetSystemMetricsInDIP(int metric) const;
 
   // Returns |hwnd|'s scale factor, including accessibility adjustments.
-  static float GetScaleFactorForHWND(HWND hwnd);
+  virtual float GetScaleFactorForHWND(HWND hwnd) const;
 
   // Returns the unmodified DPI for a particular |hwnd|, without accessibility
   // adjustments.
-  static int GetDPIForHWND(HWND hwnd);
+  virtual int GetDPIForHWND(HWND hwnd) const;
 
   // Converts dpi to scale factor, including accessibility adjustments.
-  static float GetScaleFactorForDPI(int dpi);
+  virtual float GetScaleFactorForDPI(int dpi) const;
 
   // Returns the system's global scale factor, ignoring the value of
   // --force-device-scale-factor. Only use this if you are working with Windows
   // metrics global to the system. Otherwise you should call
   // GetScaleFactorForHWND() to get the correct scale factor for the monitor
   // you are targeting.
-  static float GetSystemScaleFactor();
+  virtual float GetSystemScaleFactor() const;
 
   // Set a callback to use to query the status of HDR. This callback will be
   // called when the status of HDR may have changed.
   using RequestHDRStatusCallback = base::RepeatingClosure;
-  static void SetRequestHDRStatusCallback(
+  virtual void SetRequestHDRStatusCallback(
       RequestHDRStatusCallback request_hdr_status_callback);
 
   // Set information gathered from DXGI adapters and outputs (e.g, HDR
   // parameters).
-  static void SetDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info);
+  virtual void SetDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info);
 
   // Returns the ScreenWinDisplay with the given id, or a default object if an
   // unrecognized id was specified or if this was called during a screen update.
-  static ScreenWinDisplay GetScreenWinDisplayWithDisplayId(int64_t id);
+  virtual ScreenWinDisplay GetScreenWinDisplayWithDisplayId(int64_t id) const;
 
   // Returns the display id for the given monitor info.
-  static int64_t DisplayIdFromMonitorInfo(const MONITORINFOEX& monitor_info);
+  virtual int64_t DisplayIdFromMonitorInfo(
+      const MONITORINFOEX& monitor_info) const;
 
   // Updates the display infos to make sure they have the right scale factors.
   // This is called before handling WM_DPICHANGED messages, to be sure that we
   // have the right scale factors for the screens.
-  static void UpdateDisplayInfos();
+  virtual void UpdateDisplayInfos();
 
   // Updates the display infos if it appears that Windows state has changed
   // in a way that requires the display infos to be updated. This currently
   // only detects when the primary monitor changes, which it does when a monitor
   // is added or removed.
-  static void UpdateDisplayInfosIfNeeded();
+  virtual void UpdateDisplayInfosIfNeeded();
 
   // Returns the HWND associated with the NativeWindow.
   virtual HWND GetHWNDFromNativeWindow(gfx::NativeWindow view) const;
@@ -184,9 +186,19 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   virtual std::optional<bool> IsWindowOnCurrentVirtualDesktop(
       gfx::NativeWindow window) const;
 
+  // Resets cached fallback screen for testing. Has no effect if there is no
+  // fallback screen. Fallback screen remembers forced device scale factor at
+  // the time of creation and thus has to be reset in unit tests running in the
+  // same process, similar to Display::ResetForceDeviceScaleFactorForTesting().
+  static void ResetFallbackScreenForTesting();
+
  protected:
+  friend class FallbackScreenWin;
+
   FRIEND_TEST_ALL_PREFIXES(ScreenWinTestSingleDisplay1x,
                            DisconnectPrimaryDisplay);
+
+  ScreenWin();
 
   // `initialize_from_system` is true if the ScreenWin should be initialized
   // from the Windows desktop environment, e.g., the monitor information and
@@ -262,8 +274,13 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   virtual ScreenWinDisplay GetScreenWinDisplay(
       std::optional<MONITORINFOEX> monitor_info) const;
 
+  // Returns the result of GetSystemMetrics for |metric| scaled to the specified
+  // |scale_factor|.
+  int GetSystemMetricsForScaleFactor(float scale_factor, int metric) const;
+
  private:
   void Initialize();
+
   void OnWndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
 
   // Returns the result of calling |getter| with |value| on the global
@@ -271,10 +288,6 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   template <typename Getter, typename GetterType>
   static ScreenWinDisplay GetScreenWinDisplayVia(Getter getter,
                                                  GetterType value);
-
-  // Returns the result of GetSystemMetrics for |metric| scaled to the specified
-  // |scale_factor|.
-  int GetSystemMetricsForScaleFactor(float scale_factor, int metric) const;
 
   //-----------------------------------------------------------------
   // UwpTextScaleFactor::Observer:
@@ -322,7 +335,10 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   HMONITOR primary_monitor_ = nullptr;
 };
 
-}  // namespace win
-}  // namespace display
+// Returns a ScreenWin instance. If one does not exist, creates a fallback
+// ScreenWin instance that may be replaced with the real one later if necessary.
+DISPLAY_EXPORT ScreenWin* GetScreenWin();
+
+}  // namespace display::win
 
 #endif  // UI_DISPLAY_WIN_SCREEN_WIN_H_

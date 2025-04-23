@@ -276,8 +276,8 @@ TEST_F(BookmarkClientBaseTest, SuggestedFolder_ExplicitSave) {
   // Save another bookmark to the suggested folder explicitly, even though the
   // system wouldn't normally suggest it.
   const GURL normal_bookmark_url1 = GURL("http://example.com/normal_1");
-  bookmarks::AddIfNotBookmarked(model(), normal_bookmark_url1, u"bookmark 1",
-                                suggested_folder);
+  model()->AddNewURL(suggested_folder, suggested_folder->children().size(),
+                     u"bookmark 1", normal_bookmark_url1);
   node = model()->GetMostRecentlyAddedUserNodeForURL(normal_bookmark_url1);
   ASSERT_EQ(node->parent(), suggested_folder);
 

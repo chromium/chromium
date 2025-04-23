@@ -518,14 +518,10 @@ protocol::Response InspectorLayerTreeAgent::snapshotCommandLog(
   const String& json = snapshot->SnapshotCommandLog()->ToJSONString();
   std::vector<uint8_t> cbor;
   if (json.Is8Bit()) {
-    crdtp::json::ConvertJSONToCBOR(
-        crdtp::span<uint8_t>(json.Characters8(), json.length()), &cbor);
+    crdtp::json::ConvertJSONToCBOR(crdtp::span<uint8_t>(json.Span8()), &cbor);
   } else {
-    crdtp::json::ConvertJSONToCBOR(
-        crdtp::span<uint16_t>(
-            reinterpret_cast<const uint16_t*>(json.Characters16()),
-            json.length()),
-        &cbor);
+    crdtp::json::ConvertJSONToCBOR(crdtp::span<uint16_t>(json.SpanUint16()),
+                                   &cbor);
   }
   auto log_value = protocol::Value::parseBinary(cbor.data(), cbor.size());
   *command_log = protocol::ValueConversions<

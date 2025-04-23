@@ -132,13 +132,6 @@ class SavedTabGroupUtils {
       Profile* profile,
       const base::Uuid& saved_id);
 
-  // Moves an open saved tab group from `source_browser` to `target_browser`.
-  static void MoveGroupToExistingWindow(
-      Browser* source_browser,
-      Browser* target_browser,
-      const tab_groups::TabGroupId& local_group_id,
-      const base::Uuid& saved_group_id);
-
   // Activates the first tab in the saved group. If a tab in the group is
   // already activated, then we focus the window the group belongs to instead.
   static void FocusFirstTabOrWindowInOpenGroup(

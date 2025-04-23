@@ -497,6 +497,10 @@ void BrowsingDataRemoverImpl::RemoveImpl(
     storage_partition_remove_mask |=
         StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS_INTERNAL;
   }
+  if (remove_mask & DATA_TYPE_INTEREST_GROUPS_USER_CLEAR) {
+    storage_partition_remove_mask |=
+        StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS_USER_CLEAR;
+  }
   if (remove_mask & DATA_TYPE_SHARED_STORAGE) {
     storage_partition_remove_mask |=
         StoragePartition::REMOVE_DATA_MASK_SHARED_STORAGE;
@@ -612,10 +616,8 @@ void BrowsingDataRemoverImpl::RemoveImpl(
       if (web_contents->GetBrowserContext() == browser_context_) {
         web_contents->GetController().GetBackForwardCache().Flush(
             storage_key_filter);
-        // TODO(crbug.com/401116317): Apply storage_key_filter to the prerender
-        // cache.
-        web_contents->GetPrerenderHostRegistry()->CancelAllHosts(
-            PrerenderFinalStatus::kBrowsingDataRemoved);
+        web_contents->GetPrerenderHostRegistry()->CancelHostsByOriginFilter(
+            storage_key_filter, PrerenderFinalStatus::kBrowsingDataRemoved);
         if (base::FeatureList::IsEnabled(
                 features::kPrefetchBrowsingDataRemoval)) {
           PrefetchService* prefetch_service =

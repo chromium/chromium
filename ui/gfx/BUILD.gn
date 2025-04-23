@@ -246,6 +246,8 @@ component("gfx") {
       "win/text_analysis_source.h",
       "win/window_impl.cc",
       "win/window_impl.h",
+      "win/wuc_backdrop.cc",
+      "win/wuc_backdrop.h",
     ]
   }
   if (is_apple) {

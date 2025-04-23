@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/tabs/tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_collection_storage.h"
 #include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
-#include "chrome/browser/ui/tabs/tab_model.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace tabs {
 
@@ -26,13 +26,12 @@ UnpinnedTabCollection::~UnpinnedTabCollection() = default;
 
 std::optional<size_t>
 UnpinnedTabCollection::GetDirectChildIndexOfCollectionContainingTab(
-    const TabModel* tab_model) const {
-  CHECK(tab_model);
-  if (tab_model->GetParentCollection(GetPassKey()) == this) {
-    return GetIndexOfTab(tab_model).value();
+    const TabInterface* tab) const {
+  CHECK(tab);
+  if (tab->GetParentCollection(GetPassKey()) == this) {
+    return GetIndexOfTab(tab).value();
   } else {
-    TabCollection* parent_collection =
-        tab_model->GetParentCollection(GetPassKey());
+    TabCollection* parent_collection = tab->GetParentCollection(GetPassKey());
     while (parent_collection && !ContainsCollection(parent_collection)) {
       parent_collection = parent_collection->GetParentCollection();
     }
@@ -52,7 +51,7 @@ void UnpinnedTabCollection::MoveGroupToRecursive(
   if (index == static_cast<int>(TabCountRecursive())) {
     AddCollection(std::move(removed_collection), ChildCount());
   } else {
-    const tabs::TabModel* const tab_at_destination =
+    const tabs::TabInterface* const tab_at_destination =
         GetTabAtIndexRecursive(index);
     const size_t index_to_move =
         GetDirectChildIndexOfCollectionContainingTab(tab_at_destination)

@@ -23,8 +23,6 @@ class NavigationHandle;
 class WebContents;
 }
 
-enum class WindowOpenDisposition;
-
 // Contains data that is passed from the UI thread to the IO thread at the
 // beginning of each navigation. The class is instantiated on the UI thread,
 // then a copy created using Clone is passed to the content::ResourceRequestInfo
@@ -40,14 +38,13 @@ class ChromeNavigationUIData : public content::NavigationUIData {
   ~ChromeNavigationUIData() override;
 
   // Creates an instance of ChromeNavigationUIData associated with the given
-  // |web_contents| with the given |disposition|.
+  // |web_contents|.
   // If |is_using_https_as_default_scheme|, this is a typed main frame
   // navigation where the omnibox used HTTPS as the default URL scheme because
   // the user didn't type a scheme (e.g. they entered "example.com" and we
   // are navigating to https://example.com).
   static std::unique_ptr<ChromeNavigationUIData> CreateForMainFrameNavigation(
       content::WebContents* web_contents,
-      WindowOpenDisposition disposition,
       bool is_using_https_as_default_scheme,
       bool force_no_https_upgrade);
 
@@ -75,7 +72,6 @@ class ChromeNavigationUIData : public content::NavigationUIData {
     return offline_page_data_.get();
   }
 #endif
-  WindowOpenDisposition window_open_disposition() const { return disposition_; }
   bool is_no_state_prefetching() const { return is_no_state_prefetching_; }
   bool is_using_https_as_default_scheme() const {
     return is_using_https_as_default_scheme_;
@@ -104,7 +100,6 @@ class ChromeNavigationUIData : public content::NavigationUIData {
       offline_page_data_;
 #endif
 
-  WindowOpenDisposition disposition_;
   bool is_no_state_prefetching_ = false;
 
   // True if the navigation was initiated by typing in the omnibox but the typed

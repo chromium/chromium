@@ -132,8 +132,6 @@ suite('CookiesPageTest', function() {
     assertTrue(isChildVisible(page, '#blockThirdPartyIncognito'));
     // By default these toggles should be hidden.
     assertFalse(isChildVisible(page, '#blockThirdPartyToggle'));
-    assertFalse(isChildVisible(page, '#ipProtectionToggle'));
-    assertFalse(isChildVisible(page, '#fingerprintingProtectionToggle'));
   });
 
   test('ElementVisibility', async function() {
@@ -150,8 +148,6 @@ suite('CookiesPageTest', function() {
     assertTrue(isChildVisible(page, '#block3pcIncognito'));
     // By default these toggles should be hidden.
     assertFalse(isChildVisible(page, '#blockThirdPartyToggle'));
-    assertFalse(isChildVisible(page, '#ipProtectionToggle'));
-    assertFalse(isChildVisible(page, '#fingerprintingProtectionToggle'));
   });
 
   // TODO(crbug.com/370008370): Remove once AlwaysBlock3pcsIncognito launched.
@@ -597,75 +593,6 @@ suite('TrackingProtectionSettings', function() {
         await testMetricsBrowserProxy.whenCalled('recordAction'));
     assertEquals(
         page.getPref('tracking_protection.block_all_3pc_toggle_enabled.value'),
-        true);
-  });
-});
-
-suite('ActSettings', function() {
-  let page: SettingsCookiesPageElement;
-  let settingsPrefs: SettingsPrefsElement;
-  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      isIpProtectionUxEnabled: true,
-      isFingerprintingProtectionUxEnabled: true,
-    });
-    resetRouterForTesting();
-
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
-
-    page = document.createElement('settings-cookies-page');
-    page.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(page);
-    flush();
-  });
-
-  test('CheckVisibility', function() {
-    // Settings are visible
-    assertTrue(isChildVisible(page, '#ipProtectionToggle'));
-    assertTrue(isChildVisible(page, '#fingerprintingProtectionToggle'));
-  });
-
-  test('ToggleIpProtection', async function() {
-    page.set('prefs.tracking_protection.ip_protection_enabled.value', false);
-    const ipProtectionToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#ipProtectionToggle')!;
-    assertTrue(!!ipProtectionToggle);
-
-    ipProtectionToggle.click();
-    const result =
-        await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
-    assertEquals(PrivacyElementInteractions.IP_PROTECTION, result);
-    assertEquals(
-        page.getPref('tracking_protection.ip_protection_enabled.value'), true);
-  });
-
-  test('ToggleFingerprintingProtection', async function() {
-    page.set(
-        'prefs.tracking_protection.fingerprinting_protection_enabled.value',
-        false);
-    const fingerprintingProtectionToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#fingerprintingProtectionToggle')!;
-    assertTrue(!!fingerprintingProtectionToggle);
-
-    fingerprintingProtectionToggle.click();
-    const result =
-        await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
-    assertEquals(PrivacyElementInteractions.FINGERPRINTING_PROTECTION, result);
-    assertEquals(
-        page.getPref(
-            'tracking_protection.fingerprinting_protection_enabled.value'),
         true);
   });
 });

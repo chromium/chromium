@@ -136,11 +136,11 @@ PASS window.cached_screen.availHeight is 0
 PASS window.cached_screen.availLeft is 0
 PASS window.cached_screen.availTop is 0
 PASS window.cached_screen.availWidth is 0
-PASS window.cached_screen.colorDepth is 0
+PASS window.cached_screen.colorDepth is 24
 PASS window.cached_screen.height is 0
 PASS window.cached_screen.isExtended is false
 PASS window.cached_screen.onchange is null
-PASS window.cached_screen.pixelDepth is 0
+PASS window.cached_screen.pixelDepth is 24
 PASS window.cached_screen.width is 0
 PASS window.cached_screen_orientation.angle is 0
 PASS window.cached_screen_orientation.onchange is null

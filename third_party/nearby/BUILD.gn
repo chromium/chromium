@@ -8,8 +8,6 @@ if (is_chromeos_device) {
 }
 import("//build/config/rust.gni")
 
-assert(enable_rust, "Nearby Presence requires rust to be enabled")
-
 # Nearby Config
 config("nearby_include_config") {
   include_dirs = [
@@ -22,14 +20,6 @@ config("nearby_include_config") {
     # For bloom filter.
     "//third_party/smhasher/src",
   ]
-}
-
-# TODO(crbug.com/362502228): Remove upon completion of BleL2capServerSocket.
-config("unused_private_field_warning") {
-  cflags = []
-  if (is_clang) {
-    cflags += [ "-Wno-unused-private-field" ]
-  }
 }
 
 config("nearby_defines") {
@@ -138,6 +128,7 @@ source_set("connections_implementation") {
     ":nearby_defines",
   ]
   sources = [
+    "src/connections/implementation/awdl_endpoint_channel.cc",
     "src/connections/implementation/base_bwu_handler.cc",
     "src/connections/implementation/base_endpoint_channel.cc",
     "src/connections/implementation/base_pcp_handler.cc",
@@ -177,6 +168,7 @@ source_set("connections_implementation") {
     "src/connections/implementation/wifi_lan_service_info.cc",
   ]
   public = [
+    "src/connections/implementation/awdl_endpoint_channel.h",
     "src/connections/implementation/base_bwu_handler.h",
     "src/connections/implementation/base_endpoint_channel.h",
     "src/connections/implementation/base_pcp_handler.h",
@@ -323,6 +315,7 @@ source_set("connections_implementation_mediums") {
     "src/connections/implementation/mediums/advertisements/advertisement_util.cc",
     "src/connections/implementation/mediums/advertisements/data_element.cc",
     "src/connections/implementation/mediums/advertisements/dct_advertisement.cc",
+    "src/connections/implementation/mediums/awdl.cc",
     "src/connections/implementation/mediums/ble.cc",
     "src/connections/implementation/mediums/ble_v2.cc",
     "src/connections/implementation/mediums/ble_v2/advertisement_read_result.cc",
@@ -349,6 +342,7 @@ source_set("connections_implementation_mediums") {
     "src/connections/implementation/mediums/advertisements/advertisement_util.h",
     "src/connections/implementation/mediums/advertisements/data_element.h",
     "src/connections/implementation/mediums/advertisements/dct_advertisement.h",
+    "src/connections/implementation/mediums/awdl.h",
     "src/connections/implementation/mediums/ble.h",
     "src/connections/implementation/mediums/ble_v2.h",
     "src/connections/implementation/mediums/ble_v2/advertisement_read_result.h",
@@ -664,6 +658,7 @@ source_set("platform_api_comm") {
     ":nearby_defines",
   ]
   sources = [
+    "src/internal/platform/implementation/awdl.h",
     "src/internal/platform/implementation/ble.h",
     "src/internal/platform/implementation/ble_v2.h",
     "src/internal/platform/implementation/bluetooth_adapter.h",
@@ -1013,11 +1008,9 @@ source_set("platform_public_comm") {
   public_configs = [
     ":nearby_include_config",
     ":nearby_defines",
-
-    # TODO(crbug.com/362502228): Remove upon completion of BleL2capServerSocket.
-    ":unused_private_field_warning",
   ]
   sources = [
+    "src/internal/platform/awdl.cc",
     "src/internal/platform/ble.cc",
     "src/internal/platform/ble_v2.cc",
     "src/internal/platform/bluetooth_classic.cc",
@@ -1028,6 +1021,7 @@ source_set("platform_public_comm") {
     "src/internal/platform/wifi_lan.cc",
   ]
   public = [
+    "src/internal/platform/awdl.h",
     "src/internal/platform/ble.h",
     "src/internal/platform/ble_v2.h",
     "src/internal/platform/bluetooth_adapter.h",
@@ -1179,6 +1173,7 @@ source_set("presence_internal") {
     "src/presence/implementation/connection_authenticator_impl.cc",
     "src/presence/implementation/credential_manager_impl.cc",
     "src/presence/implementation/ldt.cc",
+    "src/presence/implementation/ldt_stub.c",
     "src/presence/implementation/scan_manager.cc",
     "src/presence/implementation/service_controller_impl.cc",
   ]
@@ -1195,6 +1190,7 @@ source_set("presence_internal") {
     "src/presence/implementation/credential_manager.h",
     "src/presence/implementation/credential_manager_impl.h",
     "src/presence/implementation/ldt.h",
+    "src/presence/implementation/np_ldt.h",
     "src/presence/implementation/scan_manager.h",
     "src/presence/implementation/service_controller.h",
     "src/presence/implementation/service_controller_impl.h",
@@ -1213,7 +1209,6 @@ source_set("presence_internal") {
     ":presence_mediums",
     ":presence_types",
     "//third_party/abseil-cpp:absl",
-    "//third_party/beto-core:ldt_np_adv_ffi",
     "//third_party/boringssl:boringssl",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]

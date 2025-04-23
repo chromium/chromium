@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/filling/form_autofill_history.h"
 
+#include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
@@ -68,10 +69,8 @@ void FormAutofillHistory::AddFormFillEntry(
   }
 
   history_.front().filling_product = filling_product;
-  CHECK_EQ(filled_fields.size(), filled_autofill_fields.size());
-  for (size_t i = 0; i < filled_fields.size(); ++i) {
-    const FormFieldData* const field = filled_fields[i];
-    const AutofillField* const autofill_field = filled_autofill_fields[i];
+  for (const auto [field, autofill_field] :
+       base::zip(filled_fields, filled_autofill_fields)) {
     // During refills, a field that was previously filled in the original
     // fill operation, with initial value `A` and filled value `B`, might be
     // refilled with a newer value `C`. We do not store this so that upon

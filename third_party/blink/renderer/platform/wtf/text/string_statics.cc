@@ -132,13 +132,11 @@ bool NewlineThenWhitespaceStringsTable::IsNewlineThenWhitespaces(
     return false;
   }
   if (view.Is8Bit()) {
-    return std::all_of(view.Characters8() + 1,
-                       view.Characters8() + view.length(),
-                       [](LChar ch) { return ch == ' '; });
+    return std::ranges::all_of(view.Span8().subspan(1u),
+                               [](LChar ch) { return ch == ' '; });
   }
-  return std::all_of(view.Characters16() + 1,
-                     view.Characters16() + view.length(),
-                     [](UChar ch) { return ch == ' '; });
+  return std::ranges::all_of(view.Span16().subspan(1u),
+                             [](UChar ch) { return ch == ' '; });
 }
 
 void StringStatics::Init() {

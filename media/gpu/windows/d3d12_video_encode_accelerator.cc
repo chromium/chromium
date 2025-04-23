@@ -136,9 +136,29 @@ EncoderStatus D3D12VideoEncodeAccelerator::Initialize(
     return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
-  if (config.HasSpatialLayer()) {
-    MEDIA_LOG(ERROR, media_log_) << "Only L1T{1,2,3} mode is supported";
+  if (config.HasSpatialLayer() || config.HasTemporalLayer()) {
+    MEDIA_LOG(ERROR, media_log_) << "Only L1T1 mode is supported";
     return {EncoderStatus::Codes::kEncoderInitializationError};
+  }
+
+  SupportedProfiles profiles = GetSupportedProfiles();
+  auto profile = std::ranges::find(profiles, config.output_profile,
+                                   &SupportedProfile::profile);
+  if (profile == std::ranges::end(profiles)) {
+    MEDIA_LOG(ERROR, media_log_) << "Unsupported output profile "
+                                 << GetProfileName(config.output_profile);
+    return {EncoderStatus::Codes::kEncoderUnsupportedProfile};
+  }
+
+  if (config.input_visible_size.width() > profile->max_resolution.width() ||
+      config.input_visible_size.height() > profile->max_resolution.height() ||
+      config.input_visible_size.width() < profile->min_resolution.width() ||
+      config.input_visible_size.height() < profile->min_resolution.height()) {
+    MEDIA_LOG(ERROR, media_log_)
+        << "Unsupported resolution: " << config.input_visible_size.ToString()
+        << ", supported resolution: " << profile->min_resolution.ToString()
+        << " to " << profile->max_resolution.ToString();
+    return {EncoderStatus::Codes::kEncoderUnsupportedConfig};
   }
 
   error_occurred_ = false;
@@ -216,29 +236,6 @@ size_t D3D12VideoEncodeAccelerator::GetBitstreamBuffersSizeForTesting() const {
 
 void D3D12VideoEncodeAccelerator::InitializeTask(const Config& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
-
-  SupportedProfiles profiles = GetSupportedProfiles();
-  auto profile = std::ranges::find(profiles, config.output_profile,
-                                   &SupportedProfile::profile);
-  if (profile == std::ranges::end(profiles)) {
-    return NotifyError(
-        {EncoderStatus::Codes::kEncoderUnsupportedProfile,
-         base::StringPrintf("Unsupported output profile %s",
-                            GetProfileName(config.output_profile))});
-  }
-
-  if (config.input_visible_size.width() > profile->max_resolution.width() ||
-      config.input_visible_size.height() > profile->max_resolution.height() ||
-      config.input_visible_size.width() < profile->min_resolution.width() ||
-      config.input_visible_size.height() < profile->min_resolution.height()) {
-    return NotifyError(
-        {EncoderStatus::Codes::kEncoderUnsupportedConfig,
-         base::StringPrintf(
-             "Unsupported resolution: %s, supported resolution: %s to %s",
-             config.input_visible_size.ToString(),
-             profile->min_resolution.ToString(),
-             profile->max_resolution.ToString())});
-  }
 
   copy_command_queue_ = D3D12CopyCommandQueueWrapper::Create(device_.Get());
   if (!copy_command_queue_) {

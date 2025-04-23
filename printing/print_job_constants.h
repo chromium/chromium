@@ -102,8 +102,6 @@ extern const char kSettingPagesPerSheet[];
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kSettingPinValue[];
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kSettingPolicies[];
 COMPONENT_EXPORT(PRINTING_BASE)
-extern const char kSettingPreviewIsFromArc[];
-COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingPreviewModifiable[];
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingPrintToGoogleDrive[];
@@ -170,6 +168,8 @@ COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingIppClientType[];
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingIppClientVersion[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingPreviewIsFromArc[];
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingPrinterManuallySelected[];
 COMPONENT_EXPORT(PRINTING_BASE)

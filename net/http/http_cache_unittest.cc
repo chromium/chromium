@@ -34,6 +34,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_request_args.h"
@@ -153,10 +154,6 @@ void TestLoadTimingCachedResponse(const LoadTimingInfo& load_timing_info) {
   EXPECT_TRUE(load_timing_info.request_start_time.is_null());
   EXPECT_TRUE(load_timing_info.request_start.is_null());
   EXPECT_TRUE(load_timing_info.receive_headers_end.is_null());
-}
-
-void DeferCallback(bool* defer) {
-  *defer = true;
 }
 
 class DeleteCacheCompletionCallback
@@ -767,6 +764,29 @@ TransportInfo CachedTestTransportInfo() {
 // See also: HttpCache::GenerateCacheKey(..)
 std::string GenerateCacheKey(const std::string& url) {
   return "1/0/" + url;
+}
+
+// Test helper: Sets a `ConnectedCallback` that captures connection arguments
+// into the returned `TestFuture` and returns `ERR_IO_PENDING` to pause the
+// transaction immediately after connecting. Tests use the future to wait
+// for connection and resume the transaction later.
+base::test::TestFuture<TransportInfo, CompletionOnceCallback> ExpectConnected(
+    HttpTransaction& transaction) {
+  base::test::TestFuture<TransportInfo, CompletionOnceCallback>
+      connected_future;
+  transaction.SetConnectedCallback(
+      connected_future
+          .GetRepeatingCallback<const TransportInfo&, CompletionOnceCallback>()
+          .Then(base::BindRepeating([]() -> int { return ERR_IO_PENDING; })));
+  return connected_future;
+}
+
+// Test helper function to resume an `HttpTransaction` that was paused after
+// connecting (typically via a mechanism like `ExpectConnected`).
+void ContinueAfterConnect(
+    base::test::TestFuture<TransportInfo, CompletionOnceCallback>
+        connected_future) {
+  std::get<1>(connected_future.Take()).Run(OK);
 }
 
 }  // namespace
@@ -4331,6 +4351,8 @@ TEST_F(HttpCacheSimpleGetTest, ParallelValidationCancelReader) {
 
   int kNumTransactions = 4;
   std::vector<std::unique_ptr<Context>> context_list;
+  base::test::TestFuture<TransportInfo, CompletionOnceCallback>
+      connected_future;
 
   for (int i = 0; i < kNumTransactions; ++i) {
     context_list.push_back(std::make_unique<Context>());
@@ -4342,7 +4364,7 @@ TEST_F(HttpCacheSimpleGetTest, ParallelValidationCancelReader) {
     MockHttpRequest* this_request = &request;
     if (i == 3) {
       this_request = &validate_request;
-      c->trans->SetBeforeNetworkStartCallback(base::BindOnce(&DeferCallback));
+      connected_future = ExpectConnected(*c->trans);
     }
 
     c->result = c->trans->Start(this_request, c->callback.callback(),
@@ -4397,7 +4419,7 @@ TEST_F(HttpCacheSimpleGetTest, ParallelValidationCancelReader) {
 
   // Resume network start for headers_transaction. It will doom the entry as it
   // will be a 200 and will go to network for the response body.
-  context_list[3]->trans->ResumeNetworkStart();
+  ContinueAfterConnect(std::move(connected_future));
 
   // The pending transactions will be added to a new entry as writers.
   base::RunLoop().RunUntilIdle();
@@ -4471,6 +4493,8 @@ TEST_F(HttpCacheSimpleGetTest, ParallelWritingCancelWriter) {
 
   const int kNumTransactions = 3;
   std::vector<std::unique_ptr<Context>> context_list;
+  base::test::TestFuture<TransportInfo, CompletionOnceCallback>
+      connected_future;
 
   for (int i = 0; i < kNumTransactions; ++i) {
     context_list.push_back(std::make_unique<Context>());
@@ -4482,7 +4506,7 @@ TEST_F(HttpCacheSimpleGetTest, ParallelWritingCancelWriter) {
     MockHttpRequest* this_request = &request;
     if (i == 2) {
       this_request = &validate_request;
-      c->trans->SetBeforeNetworkStartCallback(base::BindOnce(&DeferCallback));
+      connected_future = ExpectConnected(*c->trans);
     }
 
     c->result = c->trans->Start(this_request, c->callback.callback(),
@@ -4522,8 +4546,7 @@ TEST_F(HttpCacheSimpleGetTest, ParallelWritingCancelWriter) {
 
   // Resume network start for headers_transaction. It will doom the existing
   // entry and create a new entry due to validation returning a 200.
-  auto& c = context_list[2];
-  c->trans->ResumeNetworkStart();
+  ContinueAfterConnect(std::move(connected_future));
 
   base::RunLoop().RunUntilIdle();
 
@@ -5163,6 +5186,8 @@ TEST_F(HttpCacheSimpleGetTest, ParallelWritersStopCachingNoOp) {
 
   const int kNumTransactions = 3;
   std::vector<std::unique_ptr<Context>> context_list;
+  base::test::TestFuture<TransportInfo, CompletionOnceCallback>
+      connected_future;
 
   for (int i = 0; i < kNumTransactions; ++i) {
     context_list.push_back(std::make_unique<Context>());
@@ -5174,7 +5199,7 @@ TEST_F(HttpCacheSimpleGetTest, ParallelWritersStopCachingNoOp) {
     MockHttpRequest* this_request = &request;
     if (i == 2) {
       this_request = &validate_request;
-      c->trans->SetBeforeNetworkStartCallback(base::BindOnce(&DeferCallback));
+      connected_future = ExpectConnected(*c->trans);
     }
 
     c->result = c->trans->Start(this_request, c->callback.callback(),
@@ -5197,8 +5222,7 @@ TEST_F(HttpCacheSimpleGetTest, ParallelWritersStopCachingNoOp) {
   context_list[0]->trans->StopCaching();
 
   // Resume network start for headers_transaction.
-  auto& c = context_list[2];
-  c->trans->ResumeNetworkStart();
+  ContinueAfterConnect(std::move(connected_future));
   base::RunLoop().RunUntilIdle();
   // After validation old entry will be doomed and headers_transaction will be
   // added to the new entry.
@@ -5235,7 +5259,9 @@ TEST_F(HttpCacheSimpleGetTest, ParallelValidationCancelHeaders) {
     ASSERT_THAT(c->result, IsOk());
 
     if (i == 0) {
-      c->trans->SetBeforeNetworkStartCallback(base::BindOnce(&DeferCallback));
+      c->trans->SetConnectedCallback(base::BindLambdaForTesting(
+          [&](const TransportInfo& info, CompletionOnceCallback callback)
+              -> int { return ERR_IO_PENDING; }));
     }
 
     c->result =
@@ -5498,8 +5524,7 @@ TEST_F(HttpCacheTest, DoomDoesNotSetHints) {
   Context c1;
   c1.result = cache.CreateTransaction(&c1.trans);
   ASSERT_THAT(c1.result, IsOk());
-  c1.trans->SetBeforeNetworkStartCallback(
-      base::BindOnce([](bool* defer) { *defer = true; }));
+  auto connected_future = ExpectConnected(*c1.trans);
   c1.result =
       c1.trans->Start(&request1, c1.callback.callback(), NetLogWithSource());
   ASSERT_THAT(c1.result, IsError(ERR_IO_PENDING));
@@ -5525,7 +5550,7 @@ TEST_F(HttpCacheTest, DoomDoesNotSetHints) {
   c2.callback.WaitForResult();
   ReadAndVerifyTransaction(c2.trans.get(), kSimpleGET_Transaction);
 
-  c1.trans->ResumeNetworkStart();
+  ContinueAfterConnect(std::move(connected_future));
   c1.callback.WaitForResult();
   ReadAndVerifyTransaction(c1.trans.get(), kSimpleGET_Transaction);
 
@@ -12139,8 +12164,6 @@ class HttpCacheHugeResourceTest
                                IOBuffer* buf,
                                int buf_len);
 
-  static void SetFlagOnBeforeNetworkStart(bool* started, bool* /* defer */);
-
   // Size of resource to be tested.
   static const int64_t kTotalSize = 5000LL * 1000 * 1000;
 };
@@ -12204,12 +12227,6 @@ int HttpCacheHugeResourceTest::LargeBufferReader(int64_t content_length,
   EXPECT_LE(offset, content_length);
   int num = std::min(static_cast<int64_t>(buf_len), content_length - offset);
   return num;
-}
-
-// static
-void HttpCacheHugeResourceTest::SetFlagOnBeforeNetworkStart(bool* started,
-                                                            bool* /* defer */) {
-  *started = true;
 }
 
 // static
@@ -12318,8 +12335,11 @@ TEST_P(HttpCacheHugeResourceTest,
 
   bool network_transaction_started = false;
   if (stop_caching_phase == TransactionPhase::AFTER_NETWORK_READ) {
-    http_transaction->SetBeforeNetworkStartCallback(base::BindOnce(
-        &SetFlagOnBeforeNetworkStart, &network_transaction_started));
+    http_transaction->SetConnectedCallback(base::BindLambdaForTesting(
+        [&](const TransportInfo& info, CompletionOnceCallback callback) -> int {
+          network_transaction_started = true;
+          return OK;
+        }));
   }
 
   rv = http_transaction->Start(&request, callback.callback(),

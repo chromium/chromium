@@ -37,6 +37,39 @@ bool IsTextForReadAnything(ui::AXNode* node, bool is_pdf, bool is_docs) {
   return (GetHtmlTag(node, is_pdf, is_docs).length() == 0) || is_list_marker;
 }
 
+bool IsIgnored(const ui::AXNode* const ax_node, bool is_pdf) {
+  if (ax_node->IsIgnored()) {
+    return true;
+  }
+
+  // PDFs processed with OCR have additional nodes that mark the start and end
+  // of a page. The start of a page is indicated with a `kBanner` node that has
+  // a child static text node. Ignore both. The end of a page is indicated with
+  // a `kContentInfo` node that has a child static text node. Ignore the static
+  // text node but keep the `kContentInfo` so a line break can be inserted in
+  // between pages during `a11y::GetHtmlTagForPDF()`.
+  const ax::mojom::Role role = ax_node->GetRole();
+  if (is_pdf) {
+    // The text content of the aforementioned `kBanner` or `kContentInfo` node
+    // is the same as the text content of its child static text node.
+    const ui::AXNode* const parent = ax_node->GetParent();
+    if (const std::string_view text = ax_node->GetTextContentUTF8();
+        text == l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_BEGIN)) {
+      if (role == ax::mojom::Role::kBanner ||
+          (parent && parent->GetRole() == ax::mojom::Role::kBanner)) {
+        return true;
+      }
+    } else if (text == l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_END) &&
+               parent && parent->GetRole() == ax::mojom::Role::kContentInfo) {
+      return true;
+    }
+  }
+
+  // Ignore interactive elements, except for text fields and aria-related
+  // support fields.
+  return (ui::IsControl(role) && !ui::IsTextField(role)) || ui::IsSelect(role);
+}
+
 std::string GetHtmlTag(ui::AXNode* ax_node, bool is_pdf, bool is_docs) {
   std::string html_tag =
       ax_node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
@@ -151,7 +184,7 @@ std::string GetImageDataUrl(ui::AXNode* ax_node) {
   return url;
 }
 
-std::u16string GetTextContent(ui::AXNode* ax_node, bool is_docs) {
+std::u16string GetTextContent(ui::AXNode* ax_node, bool is_docs, bool is_pdf) {
   // For Google Docs, because the content is rendered in canvas, we distill
   // text from the "Annotated Canvas"
   // (https://sites.google.com/corp/google.com/docs-canvas-migration/home)
@@ -178,6 +211,32 @@ std::u16string GetTextContent(ui::AXNode* ax_node, bool is_docs) {
       }
     }
   }
+
+  // TODO(crbug.com//40927698): Investigate how we can remove this. Possibly by
+  // improving distillation for pdfs.
+  if (is_pdf) {
+    std::u16string filtered_string(ax_node->GetTextContentUTF16());
+    // When we receive text from a pdf node, there are return characters at each
+    // visual line break in the page. If these aren't filtered, one of two
+    // things could happen:
+    // 1) part of the same sentence will be read as separate segments, causing
+    //    choppy speech (e.g. without filtering, 'This is a long sentence with
+    //    \n\r a line break.' will read and highlight "This is a long sentence
+    //    with" and "a line break" separately.
+    // 2) parts of the sentence are not highlighted at all because GetNextWord
+    //    using accessible text boundaries continues returning the line break
+    //    infinitely (and we thus break out of the infinite loop and instead
+    //    highlight nothing).
+    if (is_pdf && filtered_string.size() > 0) {
+      size_t pos = filtered_string.find_first_of(u"\n\r");
+      while (pos != std::string::npos && pos < filtered_string.size() - 2) {
+        filtered_string.replace(pos, 1, u" ");
+        pos = filtered_string.find_first_of(u"\n\r");
+      }
+    }
+    return filtered_string;
+  }
+
   return ax_node->GetTextContentUTF16();
 }
 

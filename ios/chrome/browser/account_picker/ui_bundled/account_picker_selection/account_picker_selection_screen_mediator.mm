@@ -117,11 +117,6 @@
   configurator.selected = [identity isEqual:self.selectedIdentity];
 }
 
-- (void)handleIdentityListChanged {
-  [self loadIdentityItemConfigurators];
-  [self.consumer reloadAllIdentities];
-}
-
 - (void)handleIdentityUpdated:(id<SystemIdentity>)identity {
   AccountPickerSelectionScreenIdentityItemConfigurator* configurator = nil;
   for (AccountPickerSelectionScreenIdentityItemConfigurator* cursor in self
@@ -138,7 +133,8 @@
 #pragma mark -  IdentityManagerObserver
 
 - (void)onAccountsOnDeviceChanged {
-  [self handleIdentityListChanged];
+  [self loadIdentityItemConfigurators];
+  [self.consumer reloadAllIdentities];
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {

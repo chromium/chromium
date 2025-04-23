@@ -71,13 +71,9 @@ class LookalikeUrlDecider : public web::WebStatePolicyDecider,
         web::WebStatePolicyDecider::PolicyDecision::Allow());
   }
 
-  WEB_STATE_USER_DATA_KEY_DECL();
-
  private:
   raw_ptr<web::WebState> web_state_ = nullptr;
 };
-
-WEB_STATE_USER_DATA_KEY_IMPL(LookalikeUrlDecider)
 
 }  // namespace
 

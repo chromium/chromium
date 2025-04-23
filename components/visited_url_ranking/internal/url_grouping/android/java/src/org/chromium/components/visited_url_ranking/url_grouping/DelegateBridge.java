@@ -38,6 +38,18 @@ public class DelegateBridge {
     public void showSuggestion(
             GroupSuggestions groupSuggestions, JniOnceCallback<UserResponseMetadata> callback) {
         // TODO(crbug.com/397221723): Only show suggestions to corresponding window.
+        if (mJavaDelegates.isEmpty()) {
+            int suggestion_id;
+            if (groupSuggestions == null
+                    || groupSuggestions.groupSuggestions == null
+                    || groupSuggestions.groupSuggestions.isEmpty()) {
+                suggestion_id = 0;
+            } else {
+                suggestion_id = groupSuggestions.groupSuggestions.get(0).suggestionId;
+            }
+            callback.onResult(new UserResponseMetadata(suggestion_id, UserResponse.NOT_SHOWN));
+            return;
+        }
         for (GroupSuggestionsService.Delegate javaDelegate : mJavaDelegates) {
             javaDelegate.showSuggestion(groupSuggestions, (result) -> callback.onResult(result));
         }

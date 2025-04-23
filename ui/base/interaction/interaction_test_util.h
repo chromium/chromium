@@ -153,10 +153,14 @@ class InteractionTestUtil {
 
     // Tries to select tab `index` in `tab_collection`. The collection could be
     // a tabbed pane, browser/tabstrip, or similar. Note that `index` is
-    // zero-indexed.
-    virtual ActionResult SelectTab(TrackedElement* tab_collection,
-                                   size_t index,
-                                   InputType input_type);
+    // zero-indexed. The index after the selection is verified; if for whatever
+    // reason it should not be `index`, specify
+    // `expected_index_after_selection`.
+    virtual ActionResult SelectTab(
+        TrackedElement* tab_collection,
+        size_t index,
+        InputType input_type,
+        std::optional<size_t> expected_index_after_selection);
 
     // Tries to select item `index` in `dropdown`. The collection could be
     // a listbox, combobox, or similar. Note that `index` is zero-indexed.
@@ -219,10 +223,14 @@ class InteractionTestUtil {
 
   // Simulate selecting the `index`-th tab (zero-indexed) of `tab_collection`.
   // Will fail if the target object is not a supported type, if `index` is out
-  // of bounds, or if `input_type` is not supported.
-  ActionResult SelectTab(TrackedElement* tab_collection,
-                         size_t index,
-                         InputType input_type = InputType::kDontCare);
+  // of bounds, or if `input_type` is not supported. The index after the
+  // selection will be verified; if for whatever reason it should not be
+  // `index`, specify `expected_index_after_selection`.
+  ActionResult SelectTab(
+      TrackedElement* tab_collection,
+      size_t index,
+      InputType input_type = InputType::kDontCare,
+      std::optional<size_t> expected_index_after_selection = std::nullopt);
 
   // Simulate selecting item `index` in `dropdown`. The collection could be
   // a listbox, combobox, or similar. Will fail if the target object is not a

@@ -15,7 +15,9 @@
 #include "base/scoped_observation.h"
 #include "components/data_sharing/internal/android/data_sharing_conversion_bridge.h"
 #include "components/data_sharing/internal/android/data_sharing_network_loader_android.h"
+#include "components/data_sharing/internal/android/fake_preview_server_proxy.h"
 #include "components/data_sharing/internal/data_sharing_service_impl.h"
+#include "components/data_sharing/internal/preview_server_proxy.h"
 #include "components/data_sharing/public/android/conversion_utils.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/logger.h"
@@ -318,6 +320,28 @@ JNI_DataSharingServiceImpl_GetDataSharingUrlForTesting(
       GroupToken(GroupId(ConvertJavaStringToUTF8(env, j_group_id)),
                  ConvertJavaStringToUTF8(env, j_access_token)));
   return url::GURLAndroid::FromNativeGURL(env, url);
+}
+
+void DataSharingServiceAndroid::SetSharedEntitiesPreviewForTesting(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& j_group_id) {
+  auto fake_proxy = std::make_unique<FakePreviewServerProxy>();
+  data_sharing::SharedTabGroupPreview preview;
+  preview.title = "my group title";
+
+  for (int i = 0; i < 3; i++) {
+    preview.tabs.emplace_back(
+        GURL("https://google.com/" + base::NumberToString(i)));
+  }
+  data_sharing::SharedDataPreview sharedDataPreview;
+  sharedDataPreview.shared_tab_group_preview = std::move(preview);
+  data_sharing::DataSharingService::SharedDataPreviewOrFailureOutcome outcome =
+      std::move(sharedDataPreview);
+
+  fake_proxy->SetSharedEntitiesPreviewForTesting(
+      GroupId(ConvertJavaStringToUTF8(j_group_id)), std::move(outcome));
+
+  data_sharing_service_->SetPreviewServerProxyForTesting(std::move(fake_proxy));
 }
 
 }  // namespace data_sharing

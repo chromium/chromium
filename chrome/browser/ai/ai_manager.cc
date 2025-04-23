@@ -42,6 +42,8 @@
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/common/page_visibility_state.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/on_device_model/public/cpp/capabilities.h"
@@ -288,12 +290,29 @@ on_device_model::Capabilities GetExpectedCapabilities(
   return capabilities;
 }
 
+on_device_model::mojom::Priority GetPriorityFromVisibility(
+    content::RenderFrameHost* rfh) {
+  if (!rfh) {
+    // If there is no rfh, this is a service worker. Treat as foreground always.
+    return on_device_model::mojom::Priority::kForeground;
+  }
+  return rfh->GetVisibilityState() == content::PageVisibilityState::kVisible
+             ? on_device_model::mojom::Priority::kForeground
+             : on_device_model::mojom::Priority::kBackground;
+}
+
 }  // namespace
 
-AIManager::AIManager(content::BrowserContext* browser_context)
+AIManager::AIManager(content::BrowserContext* browser_context,
+                     content::RenderFrameHost* rfh)
     : component_observer_(
           std::make_unique<AIOnDeviceModelComponentObserver>(this)),
-      browser_context_(browser_context) {}
+      context_bound_object_set_(GetPriorityFromVisibility(rfh)),
+      browser_context_(browser_context) {
+  if (rfh && rfh->GetRenderWidgetHost()) {
+    widget_observer_.Observe(rfh->GetRenderWidgetHost());
+  }
+}
 
 AIManager::~AIManager() = default;
 
@@ -350,9 +369,7 @@ AIManager::CreateLanguageModelInternal(
     on_device_model::Capabilities capabilities,
     AIContextBoundObjectSet& context_bound_object_set,
     base::OnceCallback<void(AILanguageModelOrCreationError)> callback,
-    const std::optional<const AILanguageModel::Context>& context,
-    std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-        override_session) {
+    const std::optional<const AILanguageModel::Context>& context) {
   blink::mojom::AILanguageModelParamsPtr language_model_params =
       GetLanguageModelParams();
 
@@ -400,7 +417,6 @@ AIManager::CreateLanguageModelInternal(
           },
           browser_context_->GetWeakPtr(), std::ref(context_bound_object_set),
           context, std::ref(*this), std::move(callback)));
-  task->set_override_session(std::move(override_session));
   task->Start();
   return task;
 }
@@ -753,9 +769,7 @@ void AIManager::CreateLanguageModelForCloning(
     AIContextBoundObjectSet& context_bound_object_set,
     const AILanguageModel::Context& context,
     mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
-        client_remote,
-    std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-        override_session) {
+        client_remote) {
   auto create_language_model_callback = base::BindOnce(
       [](AIContextBoundObjectSet& context_bound_object_set,
          mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
@@ -779,8 +793,7 @@ void AIManager::CreateLanguageModelForCloning(
   // clone should be provided.
   auto task = CreateLanguageModelInternal(
       std::move(sampling_params), capabilities, context_bound_object_set,
-      std::move(create_language_model_callback), context,
-      std::move(override_session));
+      std::move(create_language_model_callback), context);
   // The on-device model must be available before the existing language model
   // was created, so the `CreateLanguageModelOnDeviceSessionTask` should
   // complete without waiting for the on-device model availability changes.
@@ -847,4 +860,18 @@ void AIManager::OnTextModelDownloadProgressChange(
     uint64_t downloaded_bytes,
     uint64_t total_bytes) {
   SendDownloadProgressUpdate(downloaded_bytes, total_bytes);
+}
+
+void AIManager::RenderWidgetHostVisibilityChanged(
+    content::RenderWidgetHost* widget_host,
+    bool became_visible) {
+  context_bound_object_set_.SetPriority(
+      became_visible ? on_device_model::mojom::Priority::kForeground
+                     : on_device_model::mojom::Priority::kBackground);
+}
+
+void AIManager::RenderWidgetHostDestroyed(
+    content::RenderWidgetHost* widget_host) {
+  DCHECK(widget_observer_.IsObservingSource(widget_host));
+  widget_observer_.Reset();
 }

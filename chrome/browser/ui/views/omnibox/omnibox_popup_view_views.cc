@@ -207,7 +207,7 @@ OmniboxPopupViewViews::OmniboxPopupViewViews(OmniboxViewViews* omnibox_view,
   }
 
   // The contents is owned by the LocationBarView.
-  set_owned_by_client();
+  set_owned_by_client(OwnedByClientPassKey());
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -353,15 +353,18 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
     row_view->SetVisible(true);
 
     const AutocompleteMatch& match = GetMatchAtIndex(i);
+    const auto group_id = match.suggestion_group_id;
     std::u16string current_row_header =
-        match.suggestion_group_id.has_value() && !force_hide_row_header
+        group_id.has_value() &&
+                (!force_hide_row_header ||
+                 group_id.value() == omnibox::GroupId::GROUP_CONTEXTUAL_SEARCH)
             ? autocomplete_controller->result().GetHeaderForSuggestionGroup(
-                  match.suggestion_group_id.value())
+                  group_id.value())
             : u"";
     const bool row_hidden = controller()->IsSuggestionHidden(match);
-    const bool group_hidden = match.suggestion_group_id.has_value() &&
-                              controller()->IsSuggestionGroupHidden(
-                                  match.suggestion_group_id.value());
+    const bool group_hidden =
+        group_id.has_value() &&
+        controller()->IsSuggestionGroupHidden(group_id.value());
     // Show the header if it's distinct from the previous match's header.
     if (!current_row_header.empty() &&
         current_row_header != previous_row_header) {

@@ -246,6 +246,7 @@ class BASE_EXPORT GSL_OWNER DictValue {
  public:
   using iterator = detail::dict_iterator;
   using const_iterator = detail::const_dict_iterator;
+  using value_type = detail::const_dict_iterator::value_type;
 
   DictValue();
 

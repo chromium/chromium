@@ -11,4 +11,13 @@ found in the LICENSE file.
 
     <!-- Tab strip container hover color alpha values -->
     <item name="tsr_folio_tab_inactive_hover_alpha" format="float" type="dimen">0.08</item>
+
+    <!-- Tab strip group drag shadow alpha values -->
+    <item name="mini_thumbnail_placeholder_overlay_alpha" format="float" type="dimen">0.16</item>
+
+    <!-- Tab strip keyboard focus ring offset -->
+    <dimen name="tabstrip_keyfocus_offset">2dp</dimen>
+
+    <!-- Width of keyboard focus ring and tab group color line -->
+    <dimen name="tabstrip_strokewidth">2dp</dimen>
 </resources>

@@ -34,6 +34,7 @@
 #endif
 
 using ::testing::_;
+using ::testing::Mock;
 using ::testing::SaveArg;
 
 namespace ui {
@@ -88,9 +89,10 @@ void WaylandTestBase::SetUp() {
 
   // Wait for the client to flush all pending requests from initialization.
   SyncDisplay();
+  Mock::VerifyAndClearExpectations(&delegate_);
 
   // The surface must be activated before buffers are attached.
-  ActivateSurface(window_->root_surface()->get_surface_id());
+  ActivateSurface(delegate_);
 
   EXPECT_EQ(0u,
             DeviceDataManager::GetInstance()->GetTouchscreenDevices().size());
@@ -156,38 +158,86 @@ void WaylandTestBase::SendConfigureEvent(uint32_t surface_id,
                                          const gfx::Size& size,
                                          const wl::ScopedWlArray& states,
                                          std::optional<uint32_t> serial) {
-  PostToServerAndWait([size, surface_id, states,
-                       serial](wl::TestWaylandServerThread* server) {
-    auto* surface = server->GetObject<wl::MockSurface>(surface_id);
-    ASSERT_TRUE(surface);
-    auto* xdg_surface = surface->xdg_surface();
-    ASSERT_TRUE(xdg_surface);
+  PostToServerAndWait(
+      [size, surface_id, states, serial](wl::TestWaylandServerThread* server) {
+        auto* surface = server->GetObject<wl::MockSurface>(surface_id);
+        ASSERT_TRUE(surface);
+        auto* xdg_surface = surface->xdg_surface();
+        ASSERT_TRUE(xdg_surface);
 
-    const int32_t width = size.width();
-    const int32_t height = size.height();
-    // In xdg_shell_v6+, both surfaces send serial configure event and toplevel
-    // surfaces send other data like states, heights and widths.
-    // Please note that toplevel surfaces may not exist if the surface was
-    // created for the popup role.
-    wl::ScopedWlArray surface_states(states);
-    if (xdg_surface->xdg_toplevel()) {
-      xdg_toplevel_send_configure(xdg_surface->xdg_toplevel()->resource(),
-                                  width, height, surface_states.get());
-    } else {
-      ASSERT_TRUE(xdg_surface->xdg_popup()->resource());
-      xdg_popup_send_configure(xdg_surface->xdg_popup()->resource(), 0, 0,
-                               width, height);
-    }
-    xdg_surface_send_configure(
-        xdg_surface->resource(),
-        serial.has_value() ? serial.value() : server->GetNextSerial());
-  });
+        const int32_t width = size.width();
+        const int32_t height = size.height();
+        // In xdg_shell_v6+, both surfaces send serial configure event and
+        // toplevel surfaces send other data like states, heights and widths.
+        // Please note that toplevel surfaces may not exist if the surface was
+        // created for the popup role.
+        wl::ScopedWlArray surface_states(states);
+        if (xdg_surface->xdg_toplevel()) {
+          xdg_toplevel_send_configure(xdg_surface->xdg_toplevel()->resource(),
+                                      width, height, surface_states.get());
+        } else {
+          ASSERT_TRUE(xdg_surface->xdg_popup()->resource());
+          xdg_popup_send_configure(xdg_surface->xdg_popup()->resource(), 0, 0,
+                                   width, height);
+        }
+        xdg_surface_send_configure(
+            xdg_surface->resource(),
+            serial.has_value() ? serial.value() : server->GetNextSerial());
+      });
 }
 
-void WaylandTestBase::ActivateSurface(uint32_t surface_id,
-                                      std::optional<uint32_t> serial) {
+void WaylandTestBase::ActivateSurface(
+    MockWaylandPlatformWindowDelegate& window_delegate,
+    std::optional<uint32_t> serial) {
+  WaylandWindow* window = window_delegate.window();
+  CHECK(window_delegate.window());
+
+  ASSERT_FALSE(window->IsSurfaceConfigured());
+  EXPECT_CALL(window_delegate,
+              OnWindowStateChanged(PlatformWindowState::kUnknown,
+                                   PlatformWindowState::kNormal));
+
   wl::ScopedWlArray state({XDG_TOPLEVEL_STATE_ACTIVATED});
-  SendConfigureEvent(surface_id, {0, 0}, state, serial);
+  SendConfigureEvent(window->root_surface()->get_surface_id(), gfx::Size(0, 0),
+                     state, serial);
+
+  Mock::VerifyAndClearExpectations(&window_delegate);
+  EXPECT_NE(PlatformWindowState::kUnknown, window->GetPlatformWindowState());
+  EXPECT_FALSE(window->IsSurfaceConfigured());
+}
+
+void WaylandTestBase::MapSurface(
+    MockWaylandPlatformWindowDelegate& window_delegate) {
+  CHECK(window_delegate.window());
+  SyncDisplay();
+
+  WaylandWindow* window = window_delegate.window();
+  ASSERT_FALSE(window->IsSurfaceConfigured());
+  ASSERT_NE(PlatformWindowState::kUnknown, window->GetPlatformWindowState());
+  ASSERT_EQ(0U, window->root_surface()->buffer_id());
+
+  uint32_t surface_id = window->root_surface()->get_surface_id();
+  PostToServerAndWait([surface_id, geometry = window->GetBoundsInDIP()](
+                          wl::TestWaylandServerThread* server) {
+    auto* surface = server->GetObject<wl::MockSurface>(surface_id);
+    ASSERT_TRUE(surface);
+    ASSERT_TRUE(surface->xdg_surface());
+    EXPECT_CALL(*surface->xdg_surface(), SetWindowGeometry(geometry));
+    EXPECT_CALL(*surface->xdg_surface(), AckConfigure(_));
+  });
+
+  // This emulates a buffer attachment to `window` by simply triggering
+  // OnSequencePoint, which is the entry point in WaylandWindow for it.
+  // In production, it's called by frame manager, just before attaching the
+  // buffer.
+  window->OnSequencePoint(window_delegate.viz_seq());
+
+  Mock::VerifyAndClearExpectations(&window_delegate);
+  ASSERT_TRUE(window->IsSurfaceConfigured());
+  PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
+    auto* surface = server->GetObject<wl::MockSurface>(surface_id);
+    Mock::VerifyAndClearExpectations(surface->xdg_surface());
+  });
 }
 
 void WaylandTestBase::MaybeSetUpXkb() {

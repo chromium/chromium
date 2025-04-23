@@ -110,6 +110,9 @@
 }
 
 - (void)stop {
+  [_trackingPriceCoordinator stop];
+  _trackingPriceCoordinator.delegate = nil;
+  _trackingPriceCoordinator = nil;
   _notificationsObserver.delegate = nil;
   [_notificationsObserver disconnect];
   _notificationsObserver = nil;

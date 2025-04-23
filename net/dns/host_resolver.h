@@ -206,7 +206,7 @@ class NET_EXPORT HostResolver {
   // intermediate endpoint candidates in the middle of the resolution.
   //
   // A client owns an instance of this class. Destruction cancels the request.
-  class ServiceEndpointRequest {
+  class NET_EXPORT_PRIVATE ServiceEndpointRequest {
    public:
     class Delegate {
      public:
@@ -273,6 +273,11 @@ class NET_EXPORT HostResolver {
 
     // Change the priority of this request.
     virtual void ChangeRequestPriority(RequestPriority priority) = 0;
+
+    // TODO(crbug.com/403373872): Remove this method once we identify the cause
+    // of the bug.
+    // Returns a string representation of the state of the request.
+    virtual std::string DebugString() const;
   };
 
   // Handler for an activation of probes controlled by a HostResolver. Created

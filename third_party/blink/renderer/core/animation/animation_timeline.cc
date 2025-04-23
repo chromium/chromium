@@ -99,8 +99,11 @@ bool AnimationTimeline::NeedsAnimationTimingUpdate() {
   // We allow |last_current_phase_and_time_| to advance here when there
   // are no animations to allow animations spawned during style
   // recalc to not invalidate this flag.
-  if (animations_needing_update_.empty())
+  if (animations_needing_update_.empty()) {
     last_current_phase_and_time_ = current_phase_and_time;
+    // Make sure triggers get the chance to respond to the updated PhaseAndTime.
+    update_triggers_ = true;
+  }
 
   return !animations_needing_update_.empty();
 }
@@ -110,22 +113,24 @@ void AnimationTimeline::ServiceAnimations(TimingUpdateReason reason) {
 
   auto current_phase_and_time = CurrentPhaseAndTime();
 
-  if (IsProgressBased() &&
-      last_current_phase_and_time_ != current_phase_and_time) {
-    UpdateCompositorTimeline();
-  }
-
-  last_current_phase_and_time_ = current_phase_and_time;
-
-  if (RuntimeEnabledFeatures::AnimationTriggerEnabled()) {
-    // TODO(crbug.com/405085123): Looping over all |animations_| in every frame
-    // could be costly. It is likely there is an opportunity to optimize here.
-    for (Animation* animation : animations_) {
-      if (AnimationTrigger* trigger = animation->GetTriggerInternal()) {
-        trigger->ActionAnimation(animation);
+  if (IsProgressBased()) {
+    if (last_current_phase_and_time_ != current_phase_and_time) {
+      UpdateCompositorTimeline();
+      update_triggers_ = true;
+    }
+    if (RuntimeEnabledFeatures::AnimationTriggerEnabled()) {
+      if (update_triggers_) {
+        for (Animation* animation : animations_for_triggering_) {
+          if (AnimationTrigger* trigger = animation->GetTriggerInternal()) {
+            trigger->ActionAnimation(animation);
+          }
+        }
+        update_triggers_ = false;
       }
     }
   }
+
+  last_current_phase_and_time_ = current_phase_and_time;
 
   HeapVector<Member<Animation>> animations;
   animations.ReserveInitialCapacity(animations_needing_update_.size());
@@ -220,10 +225,23 @@ void AnimationTimeline::MarkPendingIfCompositorPropertyAnimationChanges(
   }
 }
 
+void AnimationTimeline::AddAnimationForTriggering(Animation* animation) {
+  AnimationTrigger* trigger = animation->GetTriggerInternal();
+  DCHECK(IsProgressBased() && trigger &&
+         trigger->GetTimelineInternal() == this);
+  animations_for_triggering_.insert(animation);
+  update_triggers_ = true;
+}
+
+void AnimationTimeline::RemoveAnimationForTriggering(Animation* animation) {
+  animations_for_triggering_.erase(animation);
+}
+
 void AnimationTimeline::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(animations_needing_update_);
   visitor->Trace(animations_);
+  visitor->Trace(animations_for_triggering_);
   ScriptWrappable::Trace(visitor);
 }
 

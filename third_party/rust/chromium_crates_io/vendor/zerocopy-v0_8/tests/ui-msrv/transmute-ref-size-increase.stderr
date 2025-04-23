@@ -1,9 +1,0 @@
-error[E0512]: cannot transmute between types of different sizes, or dependently-sized types
-  --> tests/ui-msrv/transmute-ref-size-increase.rs:17:33
-   |
-17 | const INCREASE_SIZE: &[u8; 2] = transmute_ref!(&0u8);
-   |                                 ^^^^^^^^^^^^^^^^^^^^
-   |
-   = note: source type: `u8` (8 bits)
-   = note: target type: `[u8; 2]` (16 bits)
-   = note: this error originates in the macro `$crate::assert_size_eq` (in Nightly builds, run with -Z macro-backtrace for more info)

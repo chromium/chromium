@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
+#include "components/trusted_vault/proto/vault.pb.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "net/http/http_status_code.h"
 
@@ -37,6 +38,9 @@ class FakeSecurityDomainService {
   using MaybeResponse =
       std::optional<std::pair<net::HttpStatusCode, std::string>>;
 
+  using JoinMemberMatcher = base::RepeatingCallback<bool(
+      const trusted_vault_pb::JoinSecurityDomainsRequest&)>;
+
   static std::unique_ptr<FakeSecurityDomainService> New(int epoch);
 
   virtual ~FakeSecurityDomainService() = 0;
@@ -53,6 +57,9 @@ class FakeSecurityDomainService {
   // If called, the security domain will accept a join request with the correct
   // epoch, as if MagicArch had just completed.
   virtual void pretend_there_are_members() = 0;
+
+  // Returns an HTTP 500 when the request matches |filter|.
+  virtual void fail_join_requests_matching(JoinMemberMatcher filter) = 0;
 
   // Simulates the user resetting the security domain.
   virtual void ResetSecurityDomain() = 0;

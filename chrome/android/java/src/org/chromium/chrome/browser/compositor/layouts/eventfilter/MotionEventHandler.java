@@ -84,4 +84,12 @@ public interface MotionEventHandler {
 
     /** Called on hover exit event. */
     void onHoverExit();
+
+    /**
+     * Called on mouse scroll event.
+     *
+     * @param horizontalAxisScroll The x/horizontal component of the scroll event.
+     * @param verticalAxisScroll The y/vertical component of the scroll event.
+     */
+    void onScroll(float horizontalAxisScroll, float verticalAxisScroll);
 }

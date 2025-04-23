@@ -284,14 +284,10 @@ ci.thin_tester(
                 ],
                 ci_only = True,
             ),
-            "extensions_unittests": targets.mixin(
-                ci_only = True,
-            ),
             "unit_tests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_15.unit_tests.filter",
                 ],
-                ci_only = True,
             ),
         },
     ),

@@ -55,6 +55,12 @@ found in the LICENSE file.
             android:icon="@drawable/reader_mode_prefs_icon"
             android:visible="false"
             android:orderInCategory="2" />
+        <item android:id="@+id/enable_price_tracking_menu_id"
+            android:title="@string/enable_price_tracking_menu_item"
+            android:icon="@drawable/price_tracking_disabled" />
+        <item android:id="@+id/disable_price_tracking_menu_id"
+            android:title="@string/disable_price_tracking_menu_item"
+            android:icon="@drawable/price_tracking_enabled_filled" />
         <item android:id="@+id/universal_install"
             android:title="@string/menu_add_to_homescreen"
             android:orderInCategory="2" />

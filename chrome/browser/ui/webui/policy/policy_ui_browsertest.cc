@@ -67,13 +67,12 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/download/download_prefs.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/install_verifier.h"
-#include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/account_id/account_id.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/simple_feature.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -875,9 +874,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionPolicyUITest,
       extensions::mojom::ManifestLocation::kExternalPolicyDownload);
 
   // Install extension.
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(extension_profile())
-          ->extension_service();
   scoped_refptr<const extensions::Extension> extension = builder.Build();
 
   // Bypass "signin_screen" feature only enabled for allowlisted extensions.
@@ -886,7 +882,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionPolicyUITest,
   // Disable extension install verification.
   extensions::ScopedInstallVerifierBypassForTest ignore_install_verification_;
 
-  service->OnExtensionInstalled(extension.get(), syncer::StringOrdinal(), 0);
+  extensions::ExtensionRegistrar::Get(extension_profile())
+      ->OnExtensionInstalled(extension.get(), syncer::StringOrdinal(), 0);
 
   policy::PolicyDomain policy_domain =
       UseSigninProfile() ? policy::POLICY_DOMAIN_SIGNIN_EXTENSIONS

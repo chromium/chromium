@@ -13,7 +13,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_delegate.h"
-#include "components/autofill/core/browser/integrators/autofill_compose_delegate.h"
+#include "components/autofill/core/browser/integrators/compose/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/integrators/identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
@@ -63,6 +63,10 @@ const EntityDataManager* AutofillClient::GetEntityDataManager() const {
 
 const PersonalDataManager& AutofillClient::GetPersonalDataManager() const {
   return const_cast<AutofillClient*>(this)->GetPersonalDataManager();
+}
+
+const ValuablesDataManager* AutofillClient::GetValuablesDataManager() const {
+  return const_cast<AutofillClient*>(this)->GetValuablesDataManager();
 }
 
 AutofillOptimizationGuide* AutofillClient::GetAutofillOptimizationGuide()
@@ -140,10 +144,6 @@ AutofillClient::GetPaymentsAutofillClient() const {
   // payments::PaymentsAutofillClient for a given platform this will return
   // nullptr.
   return const_cast<AutofillClient*>(this)->GetPaymentsAutofillClient();
-}
-
-ValuableManager* AutofillClient::GetValuableManager() {
-  return nullptr;
 }
 
 GeoIpCountryCode AutofillClient::GetVariationConfigCountryCode() const {

@@ -27,7 +27,9 @@ if (is_android) {
       "//chrome/browser/tab:java",
       "//chrome/browser/tabmodel:java",
       "//components/browser_ui/bottomsheet/android:java",
+      "//components/embedder_support/android:util_java",
       "//components/visited_url_ranking/public:public_java",
+      "//content/public/android:content_full_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
       "//ui/android:ui_java",
@@ -70,10 +72,13 @@ if (is_android) {
       "//chrome/browser/tab:java",
       "//chrome/browser/tabmodel:java",
       "//components/browser_ui/bottomsheet/android:java",
+      "//components/embedder_support/android:util_java",
       "//components/visited_url_ranking/public:public_java",
+      "//content/public/android:content_java",
       "//third_party/junit:junit",
       "//third_party/mockito:mockito_java",
       "//ui/android:ui_java",
+      "//url:gurl_junit_test_support",
       "//url:url_java",
     ]
   }

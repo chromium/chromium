@@ -42,6 +42,9 @@ enum RequestContext {
   // Requesting metadata when rendering ShopCard on Magic Stack (which
   // surfaces shopping related information on a user's URL or ShoppingList).
   CONTEXT_SHOP_CARD = 14;
+  // Requesting metadata when user starts glic, to determine if a page is
+  // eligible for glic zero state suggestions.
+  CONTEXT_GLIC_ZERO_STATE_SUGGESTIONS = 15;
 }
 
 message FieldTrial {

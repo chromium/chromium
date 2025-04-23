@@ -764,6 +764,16 @@ Called by update_debug_scenarios.py.-->
   </int>
 </enum>
 
+<!-- LINT.IfChange(SpareRendererAvailabilityWhenKilled) -->
+
+<enum name="SpareRendererAvailabilityWhenKilled">
+  <int value="0" label="KillSpareRenderer"/>
+  <int value="1" label="KillNonSpareRendererWithoutSpareRenderer"/>
+  <int value="2" label="KillNonSpareRendererWithSpareRenderer"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/crash/content/browser/crash_metrics_reporter_android.h:SpareRendererAvailabilityWhenKilled) -->
+
 <enum name="StabilityEventType">
   <summary>
     One of several separate stability metrics. The values are non-contiguous as

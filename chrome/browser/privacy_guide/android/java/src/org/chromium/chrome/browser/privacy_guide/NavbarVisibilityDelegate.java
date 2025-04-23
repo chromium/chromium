@@ -6,10 +6,13 @@ package org.chromium.chrome.browser.privacy_guide;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * A delegate class to compute the visibility of each button in Privacy Guide
  * {@link PrivacyGuideFragment}
  */
+@NullMarked
 class NavbarVisibilityDelegate {
     private final int mTotalSteps;
 

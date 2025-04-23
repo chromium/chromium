@@ -317,6 +317,11 @@ enum PermissionsPolicyFeature {
   // See https://github.com/webmachinelearning/translation-api
   kLanguageDetector = 134,
 
+  // "device-attributes" is a permissions policy that controls whether
+  // the Device Attributes API can be called.
+  // See https://wicg.github.io/WebApiDevice/device_attributes
+  kDeviceAttributes = 135,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_permissions_policy_enum.py in

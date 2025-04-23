@@ -185,10 +185,10 @@ InterpolationValue CSSIntrinsicLengthInterpolationType::
 
 InterpolationValue CSSIntrinsicLengthInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers&) const {
   const StyleIntrinsicLength& dimension =
-      StyleBuilderConverter::ConvertIntrinsicDimension(*state, value);
+      StyleBuilderConverter::ConvertIntrinsicDimension(state, value);
   return InterpolationValue(
       CreateInterpolableIntrinsicDimension(dimension),
       CSSIntrinsicLengthNonInterpolableValue::Create(dimension));

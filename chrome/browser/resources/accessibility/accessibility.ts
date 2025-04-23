@@ -22,6 +22,7 @@ enum AxMode {
   PDF_PRINTING = 1 << 7,
   PDF_OCR = 1 << 8,
   ANNOTATE_MAIN_NODE = 1 << 9,
+  FROM_PLATFORM = 1 << 10,
 }
 
 interface Data {
@@ -61,8 +62,6 @@ type WidgetData = Data&{
   widgetId: number,
 };
 
-type EnabledStatus = 'disabled'|'off'|'on';
-
 interface InitData {
   browsers: BrowserData[];
   pages: PageData[];
@@ -71,14 +70,15 @@ interface InitData {
 
   supportedApiTypes: string[];
   apiType: string;
-  locked: EnabledStatus;
+  locked: boolean;
+  isolate: boolean;
 
-  html: EnabledStatus;
-  native: EnabledStatus;
-  pdfPrinting: EnabledStatus;
-  extendedProperties: EnabledStatus;
-  text: EnabledStatus;
-  web: EnabledStatus;
+  html: boolean;
+  native: boolean;
+  pdfPrinting: boolean;
+  extendedProperties: boolean;
+  text: boolean;
+  web: boolean;
 }
 
 type RequestType = 'showOrRefreshTree';
@@ -250,6 +250,7 @@ function initialize() {
   bindCheckbox('extendedProperties', data.extendedProperties);
   bindCheckbox('html', data.html);
   bindDropdown('apiType', data.supportedApiTypes, data.apiType);
+  bindCheckbox('isolate', data.isolate);
   bindCheckbox('locked', data.locked);
 
   getRequiredElement('pages').textContent = '';
@@ -298,15 +299,9 @@ function initialize() {
   addWebUiListener('startOrStopEvents', startOrStopEvents);
 }
 
-function bindCheckbox(name: string, value: EnabledStatus) {
+function bindCheckbox(name: string, value: boolean) {
   const checkbox = getRequiredElement<HTMLInputElement>(name);
-  if (value === 'on') {
-    checkbox.checked = true;
-  }
-  if (value === 'disabled') {
-    checkbox.disabled = true;
-    checkbox.labels![0]!.classList.add('disabled');
-  }
+  checkbox.checked = value;
   checkbox.addEventListener('change', function() {
     browserProxy.setGlobalFlag(name, checkbox.checked);
     document.location.reload();
@@ -402,6 +397,8 @@ function formatRow(
     row.appendChild(createModeElement(
         AxMode.ANNOTATE_MAIN_NODE, pageData, 'extendedProperties',
         /* readOnly= */ true));
+    // AxMode.FROM_PLATFORM is unconditionally filtered out and is therefore
+    // never presented to renderers or the user.
   } else {
     const siteInfo = document.createElement('span');
     siteInfo.appendChild(formatValue(data, 'name'));

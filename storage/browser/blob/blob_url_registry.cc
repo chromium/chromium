@@ -58,13 +58,14 @@ void BlobUrlRegistry::AddReceiver(
     const url::Origin& renderer_origin,
     int render_process_host_id,
     mojo::PendingReceiver<blink::mojom::BlobURLStore> receiver,
+    base::RepeatingCallback<bool()> storage_access_check_callback,
     bool partitioning_disabled_by_policy,
     BlobURLValidityCheckBehavior validity_check_behavior) {
   worker_receivers_.Add(
       std::make_unique<storage::BlobURLStoreImpl>(
           storage_key, renderer_origin, render_process_host_id, AsWeakPtr(),
           validity_check_behavior, base::DoNothing(),
-          base::BindRepeating([]() -> bool { return false; }),
+          std::move(storage_access_check_callback),
           partitioning_disabled_by_policy),
       std::move(receiver));
 }
@@ -157,7 +158,12 @@ BlobUrlRegistry::MappingStatus BlobUrlRegistry::IsUrlMapped(
       return BlobUrlRegistry::MappingStatus::kIsMapped;
     }
     if (blob_url_key.origin() == storage_key.origin()) {
-      return BlobUrlRegistry::MappingStatus::kNotMappedCrossPartitionSameOrigin;
+      if (blob_url_key.IsFirstPartyContext()) {
+        return BlobUrlRegistry::MappingStatus::
+            kNotMappedCrossPartitionSameOriginAccessFirstPartyBlobURL;
+      }
+      return BlobUrlRegistry::MappingStatus::
+          kNotMappedCrossPartitionSameOriginAccessThirdPartyBlobURL;
     }
     // A fallback_ check isn't needed because a given Blob URL will either be
     // registered in this BlobUrlRegistry or registered in the fallback

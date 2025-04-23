@@ -82,10 +82,23 @@ BLINK_COMMON_EXPORT std::string GetPermissionString(PermissionType permission);
 // Get a list of all permission types.
 BLINK_COMMON_EXPORT const std::vector<PermissionType>& GetAllPermissionTypes();
 
-// Given |descriptor|, set |permission_type| to a corresponding PermissionType.
+// Given `PermissionDescriptorPtr`, return the corresponding `PermissionType` if
+// it exists.
 BLINK_COMMON_EXPORT std::optional<PermissionType>
-PermissionDescriptorToPermissionType(
+MaybePermissionDescriptorToPermissionType(
     const mojom::PermissionDescriptorPtr& descriptor);
+
+// Given `PermissionDescriptorPtr`, either return the corresponding
+// `PermissionType` or trigger a CHECK() failure.
+BLINK_COMMON_EXPORT PermissionType PermissionDescriptorToPermissionType(
+    const mojom::PermissionDescriptorPtr& descriptor);
+
+// Given a vector of `PermissionDescriptorPtr`s, return a vector of the
+// corresponding `PermissionType`s. Triggers a CHECK() failure if any
+// `PermissionDescriptorPtr` can't be mapped.
+BLINK_COMMON_EXPORT std::vector<PermissionType>
+PermissionDescriptorToPermissionTypes(
+    const std::vector<mojom::PermissionDescriptorPtr>& descriptors);
 
 // Ideally this would be an equivalent function to
 // |PermissionDescriptorToPermissionType| but for a

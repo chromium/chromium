@@ -30,7 +30,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "media/midi/midi_service.h"
 #include "media/midi/midi_service.mojom.h"
 #include "media/midi/task_service.h"
@@ -396,9 +396,7 @@ std::string MidiManagerAlsa::MidiPort::JSONValue() const {
 //               mapping and just use a UUID or other random string.
 //               http://crbug.com/465320
 std::string MidiManagerAlsa::MidiPort::OpaqueKey() const {
-  uint8_t hash[crypto::kSHA256Length];
-  crypto::SHA256HashString(JSONValue(), hash, sizeof(hash));
-  return base::HexEncode(hash);
+  return base::HexEncode(crypto::hash::Sha256(JSONValue()));
 }
 
 bool MidiManagerAlsa::MidiPort::MatchConnected(const MidiPort& query) const {

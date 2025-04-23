@@ -54,6 +54,7 @@ found in the LICENSE file.
       android:id="@+id/end_icon"
       android:layout_width="@dimen/account_selection_login_brand_icon_size"
       android:layout_height="wrap_content"
+      android:layout_marginEnd="1dp"
       android:importantForAccessibility="no"
       android:layout_gravity="center"
       android:visibility="gone"/>

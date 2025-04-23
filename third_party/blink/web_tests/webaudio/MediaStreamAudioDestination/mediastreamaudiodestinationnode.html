@@ -1,57 +1,50 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>
-      mediastreamaudiodestinationnode.html
-    </title>
+    <title>Validation of MediaStreamAudioDestinationNode API</title>
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
-    <script src="../resources/audit-util.js"></script>
-    <script src="../resources/audit.js"></script>
   </head>
   <body>
-    <script id="layout-test-code">
-      let audit = Audit.createTaskRunner();
+    <script>
+      'use strict';
 
-      audit.define(
-          {
-            label: 'test',
-            description: 'Basic tests for MediaStreamAudioDestinationNode API'
-          },
-          (task, should) => {
-            let context = new AudioContext();
+      test(() => {
+        const context = new AudioContext();
+        const mediaStreamDestination =
+            new MediaStreamAudioDestinationNode(context);
 
-            let mediaStreamDestination = context.createMediaStreamDestination();
+        // MediaStreamAudioDestinationNode should inherit AudioNode.
+        assert_true(
+            mediaStreamDestination instanceof AudioNode,
+            'mediaStreamDestination should be an instance of AudioNode');
 
-            // MediaStreamAudioDestinationNode should inherit AudioNode.
-            should(
-                mediaStreamDestination instanceof AudioNode,
-                'mediaStreamDestination instance')
-                .beTrue();
+        // Check the channel count boundary of 8 in constructor.
+        assert_throws_dom(
+            'NotSupportedError',
+            () => new MediaStreamAudioDestinationNode(
+                context, { channelCount: 9 }),
+            'MediaStreamAudioDestinationNode constructor should throw ' +
+                'NotSupportedError when channelCount is greater than 8');
 
-            // Check the channel count boundary of 8.
-            should(
-                () => mediaStreamDestination.channelCount = 9,
-                'Setting the channel count beyond 8')
-                .throw(DOMException, 'NotSupportedError');
+        // Check the channel count boundary of 8 using the setter.
+        assert_throws_dom(
+            'NotSupportedError',
+            () => { mediaStreamDestination.channelCount = 9; },
+            'Setting channelCount to a number greater than 8 ' +
+                'should throw NotSupportedError');
 
-            // Check number of inputs and outputs.
-            should(
-                mediaStreamDestination.numberOfInputs,
-                'mediaStreamDestination.numberOfInputs')
-                .beEqualTo(1);
+        // Check number of inputs and outputs.
+        assert_equals(mediaStreamDestination.numberOfInputs, 1,
+            'mediaStreamDestination.numberOfInputs should be 1');
 
-            // We should have no outputs
-            should(mediaStreamDestination.numberOfOutputs, 'Number of outputs')
-                .beEqualTo(0);
+        // We should have no outputs
+        assert_equals(mediaStreamDestination.numberOfOutputs, 0,
+            'mediaStreamDestination.numberOfOutputs should be 0');
 
-            // FIXME: add a test where we create a PeerConnection and call
-            // addStream(mediaStreamDestination.stream).
-
-            task.done();
-          });
-
-      audit.run();
+        // TODO(crbug.com/402714445): add a test where we create a
+        // `PeerConnection` and call `addStream(mediaStreamDestination.stream)`
+      }, 'Validation of MediaStreamAudioDestinationNode API');
     </script>
   </body>
 </html>

@@ -18,7 +18,7 @@ namespace {
 
 void OnNameCreatedForAddress(
     webrtc::MdnsResponderInterface::NameCreatedCallback callback,
-    const rtc::IPAddress& addr,
+    const webrtc::IPAddress& addr,
     const std::string& name,
     bool announcement_scheduled) {
   // We currently ignore whether there is an announcement sent for the name.
@@ -43,7 +43,7 @@ MdnsResponderAdapter::MdnsResponderAdapter(
 
 MdnsResponderAdapter::~MdnsResponderAdapter() = default;
 
-void MdnsResponderAdapter::CreateNameForAddress(const rtc::IPAddress& addr,
+void MdnsResponderAdapter::CreateNameForAddress(const webrtc::IPAddress& addr,
                                                 NameCreatedCallback callback) {
   if (!mdns_responder_ || !mdns_responder_.is_connected()) {
     LOG(ERROR) << "MdnsResponderAdapter::" << __func__ << ": mDNS responder"
@@ -59,7 +59,7 @@ void MdnsResponderAdapter::CreateNameForAddress(const rtc::IPAddress& addr,
       base::BindOnce(&OnNameCreatedForAddress, callback, addr));
 }
 
-void MdnsResponderAdapter::RemoveNameForAddress(const rtc::IPAddress& addr,
+void MdnsResponderAdapter::RemoveNameForAddress(const webrtc::IPAddress& addr,
                                                 NameRemovedCallback callback) {
   if (!mdns_responder_ || !mdns_responder_.is_connected()) {
     LOG(ERROR) << "MdnsResponderAdapter::" << __func__ << ": mDNS responder"

@@ -55,8 +55,8 @@ enum PipelineStatusCodes : StatusCodeType {
   // Deprecated: AUDIO_RENDERER_ERROR_SPLICE_FAILED = 20,
   PIPELINE_ERROR_EXTERNAL_RENDERER_FAILED = 21,
 
-  // Android only. Used as a signal to fallback MediaPlayerRenderer, and thus
-  // not exactly an 'error' per say.
+  // Android only. Used as a signal to fallback to the HLS demuxer if it is
+  // enabled.
   DEMUXER_ERROR_DETECTED_HLS = 22,
 
   // Used when hardware context is reset (e.g. OS sleep/resume), where we should

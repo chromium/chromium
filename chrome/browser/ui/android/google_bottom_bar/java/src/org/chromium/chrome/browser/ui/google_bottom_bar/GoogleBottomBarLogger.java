@@ -8,6 +8,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId;
 
 import java.lang.annotation.Retention;
@@ -19,6 +20,7 @@ import java.lang.annotation.RetentionPolicy;
  * <p>This class provides methods for recording various GBB-related events, such as the creation of
  * the bar, visibility of buttons, and button interactions.
  */
+@NullMarked
 class GoogleBottomBarLogger {
 
     // LINT.IfChange

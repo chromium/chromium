@@ -22,6 +22,9 @@
 - (void)openTabResumptionItem:(TabResumptionItem*)item {
 }
 
+- (void)trackShopCardItem:(TabResumptionItem*)item {
+}
+
 @end
 
 using TabResumptionItemTest = PlatformTest;

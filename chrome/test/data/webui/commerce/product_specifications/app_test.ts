@@ -2463,7 +2463,7 @@ suite('AppTest', () => {
             },
           }));
 
-      window.dispatchEvent(new Event('focus'));
+      callbackRouterRemote.onSyncStateChanged();
       await microtasksFinished();
 
       assertFalse(isVisible(appElement.$.error));

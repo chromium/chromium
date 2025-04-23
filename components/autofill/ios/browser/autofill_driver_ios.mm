@@ -268,15 +268,12 @@ void AutofillDriverIOS::ExtractForm(
   NOTIMPLEMENTED();
 }
 
-void AutofillDriverIOS::SendTypePredictionsToRenderer(
-    base::span<const raw_ptr<FormStructure, VectorExperimental>> forms) {
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::test::kAutofillShowTypePredictions)) {
-    return;
-  }
-  std::vector<FormDataPredictions> preds =
-      FormStructure::GetFieldTypePredictions(forms);
+void AutofillDriverIOS::ExposeDomNodeIDs() {}
 
+void AutofillDriverIOS::SendTypePredictionsToRenderer(
+    const FormStructure& form) {
+  CHECK(base::FeatureList::IsEnabled(
+      features::test::kAutofillShowTypePredictions));
   auto callback = [](AutofillDriver& driver,
                      const std::vector<FormDataPredictions>& preds) {
     web::WebFrame* frame = cast(&driver)->web_frame();
@@ -287,9 +284,10 @@ void AutofillDriverIOS::SendTypePredictionsToRenderer(
   };
 
   if (IsAcrossIframesEnabled()) {
-    router_->SendTypePredictionsToRenderer(callback, preds);
+    router_->SendTypePredictionsToRenderer(callback,
+                                           form.GetFieldTypePredictions());
   } else {
-    callback(*this, preds);
+    callback(*this, {form.GetFieldTypePredictions()});
   }
 }
 

@@ -35,13 +35,21 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.TestActivity;
 
 import java.util.ArrayList;
@@ -65,19 +73,31 @@ public class TabListEditorAddToGroupActionUnitTest {
     @Mock private Supplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
     @Mock private SelectionDelegate<Integer> mSelectionDelegate;
     @Mock private TabListEditorAction.ActionDelegate mActionDelegate;
+    @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
+    @Mock private Profile mProfile;
     @Mock private Drawable mDrawable;
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
 
     private TabListEditorAddToGroupAction mAction;
+    private Token mTabGroupId;
     private Activity mActivity;
 
     @Before
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
 
+        mTabGroupId = Token.createRandom();
+        when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabGroupModelFilterSupplier.get()).thenReturn(mTabGroupModelFilter);
+        when(mTabModel.getTabById(1)).thenReturn(mTab1);
+        when(mTabModel.getTabById(2)).thenReturn(mTab2);
+        TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
+        TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJniMock);
+        when(mTabGroupSyncFeaturesJniMock.isTabGroupSyncEnabled(mProfile)).thenReturn(true);
+
         mAction =
                 new TabListEditorAddToGroupAction(
                         mActivity,
@@ -165,6 +185,30 @@ public class TabListEditorAddToGroupActionUnitTest {
         mAction.configure(mTabGroupModelFilterSupplier, mSelectionDelegate, mActionDelegate, false);
 
         assertTrue(mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
+        assertEquals(2, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
+
+        tabIds.clear();
+        when(mSelectionDelegate.getSelectedItemsAsList()).thenReturn(tabIds);
+        mAction.onSelectionStateChange(tabIds);
+
+        assertFalse(mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
+        assertEquals(0, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
+    }
+
+    @Test
+    public void testOnSelectionStateChange_sharedGroupSelected() {
+        List<Integer> tabIds = new ArrayList<>(Arrays.asList(1, 2));
+        when(mTab1.getTabGroupId()).thenReturn(mTabGroupId);
+
+        SavedTabGroup savedTabGroup = new SavedTabGroup();
+        savedTabGroup.collaborationId = "collaborationId";
+
+        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(mTabGroupId)))
+                .thenReturn(savedTabGroup);
+        when(mSelectionDelegate.getSelectedItemsAsList()).thenReturn(tabIds);
+        mAction.configure(mTabGroupModelFilterSupplier, mSelectionDelegate, mActionDelegate, false);
+
+        assertFalse(mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
         assertEquals(2, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
 
         tabIds.clear();

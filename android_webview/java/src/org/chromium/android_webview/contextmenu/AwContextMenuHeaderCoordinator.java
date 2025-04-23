@@ -4,10 +4,12 @@
 
 package org.chromium.android_webview.contextmenu;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Coordinator for creating the context menu header */
+@NullMarked
 public class AwContextMenuHeaderCoordinator {
     private PropertyModel mModel;
 

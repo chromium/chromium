@@ -155,7 +155,7 @@ void LibcurlNetworkFetcherImpl::PostRequest(
   }
 
   base::flat_map<std::string, std::string> response_headers;
-  std::unique_ptr<std::string> response_body = std::make_unique<std::string>();
+  std::optional<std::string> response_body = std::string();
 
   base::WeakPtr<LibcurlNetworkFetcherImpl> weak_ptr =
       weak_factory_.GetWeakPtr();
@@ -171,7 +171,8 @@ void LibcurlNetworkFetcherImpl::PostRequest(
       curl_easy_setopt(curl_.get(), CURLOPT_HEADERDATA, &response_headers) ||
       curl_easy_setopt(curl_.get(), CURLOPT_WRITEFUNCTION,
                        &LibcurlNetworkFetcherImpl::CurlWriteStringCallback) ||
-      curl_easy_setopt(curl_.get(), CURLOPT_WRITEDATA, response_body.get()) ||
+      curl_easy_setopt(curl_.get(), CURLOPT_WRITEDATA,
+                       &response_body.value()) ||
       curl_easy_setopt(curl_.get(), CURLOPT_NOPROGRESS, 0) ||
       curl_easy_setopt(curl_.get(), CURLOPT_XFERINFOFUNCTION,
                        &LibcurlNetworkFetcherImpl::CurlTransferCallback) ||

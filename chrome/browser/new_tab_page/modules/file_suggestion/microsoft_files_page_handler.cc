@@ -340,6 +340,13 @@ void RecordThrottlingWaitTime(base::TimeDelta seconds) {
                           seconds);
 }
 
+// Emits what type of substitution occurred in the third variation:
+// `ntp_features::NtpSharepointModuleDataType::kCombinedSuggestions.`
+void RecordSubstitutionType(MicrosoftFilesSubstitutionType substitution_type) {
+  base::UmaHistogramEnumeration("NewTabPage.MicrosoftFiles.SubstitutionType",
+                                substitution_type);
+}
+
 }  // namespace
 
 // static
@@ -580,6 +587,8 @@ MicrosoftFilesPageHandler::GetTrendingFiles(base::Value::Dict result) {
     created_file->icon_url = icon_url;
     created_file->title = *title;
     created_file->item_url = GURL(*url);
+    created_file->recommendation_type =
+        file_suggestion::mojom::RecommendationType::kTrending;
     created_suggestions.push_back(std::move(created_file));
   }
 
@@ -597,7 +606,10 @@ MicrosoftFilesPageHandler::GetNonInsightFiles(const base::Value::List* values,
   num_files_in_response_ = num_files_in_response_.has_value()
                                ? num_files_in_response_.value() + values->size()
                                : values->size();
-
+  const file_suggestion::mojom::RecommendationType recommendation_type =
+      response_id == "recent"
+          ? file_suggestion::mojom::RecommendationType::kUsed
+          : file_suggestion::mojom::RecommendationType::kShared;
   for (const auto& suggestion : *values) {
     // Only allow a couple suggestions from the recent endpoint as the
     // response sends the files ordered by the
@@ -606,7 +618,8 @@ MicrosoftFilesPageHandler::GetNonInsightFiles(const base::Value::List* values,
     // for the files to be ordered by the shared date. The number of recent
     // suggestions is limited to avoid having to sort more files than needed
     // in `SortRecentlyUsedAndSharedFiles`.
-    if (response_id == "recent" &&
+    if (recommendation_type ==
+            file_suggestion::mojom::RecommendationType::kUsed &&
         (num_recent_suggestions ==
          ntp_features::kNtpMicrosoftFilesModuleMaxFilesParam.Get())) {
       break;
@@ -671,10 +684,12 @@ MicrosoftFilesPageHandler::GetNonInsightFiles(const base::Value::List* values,
     // be checked because they may arrive unordered in the response.
     base::TimeDelta time_difference =
         base::Time::Now().LocalMidnight() - sort_time.LocalMidnight();
-    if (response_id == "recent" &&
+    if (recommendation_type ==
+            file_suggestion::mojom::RecommendationType::kUsed &&
         time_difference.InDays() > kNumberOfDaysPerWeek) {
       break;
-    } else if (response_id == "shared" &&
+    } else if (recommendation_type ==
+                   file_suggestion::mojom::RecommendationType::kShared &&
                time_difference.InDays() > kNumberOfDaysPerWeek) {
       continue;
     }
@@ -683,7 +698,8 @@ MicrosoftFilesPageHandler::GetNonInsightFiles(const base::Value::List* values,
         file_suggestion::mojom::File::New();
     created_file->id = *id;
     created_file->justification_text =
-        response_id == "shared"
+        recommendation_type ==
+                file_suggestion::mojom::RecommendationType::kShared
             ? CreateJustificationTextForSharedFile(*shared_by)
             : CreateJustificationTextForRecentFile(sort_time);
     GURL icon_url = microsoft_modules_helper::GetFileIconUrl(*mime_type);
@@ -694,7 +710,9 @@ MicrosoftFilesPageHandler::GetNonInsightFiles(const base::Value::List* values,
     created_file->title =
         microsoft_modules_helper::GetFileName(*title, file_extension);
     created_file->item_url = GURL(*item_url);
-    if (response_id == "recent") {
+    created_file->recommendation_type = recommendation_type;
+    if (recommendation_type ==
+        file_suggestion::mojom::RecommendationType::kUsed) {
       num_recent_suggestions++;
     }
     unsorted_suggestions.emplace_back(sort_time, std::move(created_file));
@@ -876,14 +894,15 @@ MicrosoftFilesPageHandler::GetAggregatedFileSuggestions(
   // It's possible that less than the max allowed non-insight files are added,
   // in which case more trending files (if available) will be added to keep the
   // card full.
-  const size_t trending_files_limit =
+  const size_t initial_trending_files_limit =
       ntp_features::kNtpMicrosoftFilesModuleMaxTrendingFilesForCombinedParam
           .Get();
+  const size_t initial_non_insights_limit =
+      ntp_features::kNtpMicrosoftFilesModuleMaxNonInsightsFilesForCombinedParam
+          .Get();
   const size_t non_insights_limit =
-      trending_suggestions.size() >= trending_files_limit
-          ? ntp_features::
-                kNtpMicrosoftFilesModuleMaxNonInsightsFilesForCombinedParam
-                    .Get()
+      trending_suggestions.size() >= initial_trending_files_limit
+          ? initial_non_insights_limit
           : ntp_features::kNtpMicrosoftFilesModuleMaxFilesParam.Get() -
                 trending_suggestions.size();
 
@@ -893,8 +912,20 @@ MicrosoftFilesPageHandler::GetAggregatedFileSuggestions(
     }
     all_suggestions.push_back(suggestion->Clone());
   }
+  // Check whether there were more files added of either non-insights or
+  // trending files than their initial limits.
+  MicrosoftFilesSubstitutionType substitution_type =
+      MicrosoftFilesSubstitutionType::kNone;
+  if (all_suggestions.size() < initial_non_insights_limit &&
+      trending_suggestions.size() > initial_trending_files_limit) {
+    substitution_type = MicrosoftFilesSubstitutionType::kExtraTrending;
+  } else if (all_suggestions.size() > initial_non_insights_limit) {
+    substitution_type = MicrosoftFilesSubstitutionType::kExtraNonInsights;
+  }
+
   std::move(trending_suggestions.begin(), trending_suggestions.end(),
             std::back_inserter(all_suggestions));
+  RecordSubstitutionType(substitution_type);
   // Deduplicate to ensure trending suggestions are not duplicates of a used or
   // shared file.
   std::vector<file_suggestion::mojom::FilePtr> final_suggestions =

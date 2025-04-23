@@ -18,8 +18,6 @@
 
 namespace content {
 
-class IdentityRequestAccount;
-
 class MockPermissionDelegate
     : public FederatedIdentityPermissionContextDelegate {
  public:
@@ -77,7 +75,7 @@ class MockPermissionDelegate
               GetIdpSigninStatus,
               (const url::Origin&),
               (override));
-  MOCK_METHOD(std::vector<scoped_refptr<IdentityRequestAccount>>,
+  MOCK_METHOD(base::Value::List,
               GetAccounts,
               (const url::Origin& identity_provider),
               (override));

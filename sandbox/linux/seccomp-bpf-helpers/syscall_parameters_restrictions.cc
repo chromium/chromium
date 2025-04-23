@@ -21,6 +21,7 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "base/allocator/partition_alloc_features.h"
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/notreached.h"
@@ -355,10 +356,13 @@ ResultExpr RestrictFutex() {
       .Cases({FUTEX_LOCK_PI, FUTEX_UNLOCK_PI, FUTEX_TRYLOCK_PI,
               FUTEX_WAIT_REQUEUE_PI, FUTEX_CMP_REQUEUE_PI, FUTEX_LOCK_PI2},
              (base::KernelSupportsPriorityInheritanceFutex() &&
-              base::FeatureList::IsEnabled(
-                  base::features::kUsePriorityInheritanceMutex))
-                 ? Allow()
-                 : error)
+                      (base::FeatureList::IsEnabled(
+                           base::features::kUsePriorityInheritanceMutex) ||
+                       base::FeatureList::IsEnabled(
+                           base::features::
+                               kPartitionAllocUsePriorityInheritanceLocks))
+                  ? Allow()
+                  : error))
 #endif  // BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)
       .Default(error);
 }

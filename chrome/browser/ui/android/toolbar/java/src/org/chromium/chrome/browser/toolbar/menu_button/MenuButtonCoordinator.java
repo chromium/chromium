@@ -10,7 +10,6 @@ import android.animation.Animator;
 import android.app.Activity;
 import android.graphics.Canvas;
 import android.view.View;
-import android.view.View.OnKeyListener;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
@@ -30,6 +29,7 @@ import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.util.KeyboardNavigationListener;
 
 /**
  * Root component for the app menu button on the toolbar. Owns the MenuButton view and handles
@@ -90,6 +90,14 @@ public class MenuButtonCoordinator {
                                         themeColorProvider.getBrandedColorScheme()))
                         .with(MenuButtonProperties.IS_VISIBLE, true)
                         .with(MenuButtonProperties.STATE_SUPPLIER, menuButtonStateSupplier)
+                        .with(
+                                MenuButtonProperties.ON_KEY_LISTENER,
+                                new KeyboardNavigationListener() {
+                                    @Override
+                                    protected boolean handleEnterKeyPress() {
+                                        return onEnterKeyPress();
+                                    }
+                                })
                         .build();
         mMediator =
                 new MenuButtonMediator(
@@ -190,15 +198,6 @@ public class MenuButtonCoordinator {
     public void setClickable(boolean isClickable) {
         if (mMediator == null) return;
         mMediator.setClickable(isClickable);
-    }
-
-    /**
-     * Sets the on key listener for the underlying menu button.
-     * @param onKeyListener Listener for key events.
-     */
-    public void setOnKeyListener(OnKeyListener onKeyListener) {
-        if (mMenuButton == null) return;
-        mMenuButton.setOnKeyListener(onKeyListener);
     }
 
     public void destroy() {

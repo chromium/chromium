@@ -24,8 +24,9 @@ namespace persistent_cache {
 //
 // Example:
 //  BackendParamsManager params_manager(GetPath());
-//  if(params_manager.GetParamsSyncOrCreateAsync(BackendType::kSqlite, "key",
-//      std::move(callback)){
+//  if (params_manager.GetParamsSyncOrCreateAsync(BackendType::kSqlite, "key",
+//                                                AccessRights::kReadOnly,
+//                                                std::move(callback))) {
 //    // Params returned synchronously. Result can be used right away.
 //    //  ....
 //  } else {
@@ -34,6 +35,7 @@ namespace persistent_cache {
 //
 class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendParamsManager {
  public:
+  enum class AccessRights { kReadonly, kReadWrite };
   // `top_directory` is the where BackendParamsManager will try to find existing
   // files and create new ones.
   explicit BackendParamsManager(base::FilePath top_directory);
@@ -44,6 +46,7 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendParamsManager {
   // Use to get backend params matching parameters through `callback`.
   void GetParamsSyncOrCreateAsync(BackendType backend_type,
                                   const std::string& key,
+                                  AccessRights access_rights,
                                   CompletedCallback callback);
 
  private:
@@ -70,7 +73,8 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendParamsManager {
 
   static BackendParams CreateParamsSync(base::FilePath directory,
                                         BackendType backend_type,
-                                        const std::string& key);
+                                        const std::string& key,
+                                        AccessRights access_rights);
 
   // Saves params for later retrieval.
   void SaveParams(const std::string& key,

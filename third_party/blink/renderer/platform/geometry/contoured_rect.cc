@@ -16,31 +16,6 @@ namespace blink {
 
 using Corner = ContouredRect::Corner;
 
-namespace {
-
-float AdjustCurvature(float curvature,
-                      float origin_length,
-                      float target_length) {
-  if (curvature <= ContouredRect::CornerCurvature::kNotch) {
-    return 0;
-  }
-
-  // The computation only works on concave corners. So inverse to convex and
-  // inverse the result.
-  if (curvature < 1) {
-    return 1 / AdjustCurvature(1 / curvature, origin_length, target_length);
-  }
-
-  // Find the curvature whose half corner has the expected distance from the
-  // origin's half corner.
-  return Corner::CurvatureForHalfCorner(
-      (Corner::HalfCornerForCurvature(curvature) * origin_length +
-       (target_length - origin_length) / std::numbers::sqrt2) /
-      target_length);
-}
-
-}  // namespace
-
 String ContouredRect::CornerCurvature::ToString() const {
   return String::Format("tl:%.2f; tr:%.2f; bl:%.2f; br:%.2f", TopLeft(),
                         TopRight(), BottomLeft(), BottomRight());
@@ -136,19 +111,11 @@ Corner ContouredRect::Corner::AlignedToOrigin(const Corner& origin) const {
   const gfx::Vector2dF v4_offset = gfx::ScaleVector2d(
       gfx::NormalizeVector2d(origin.v4()), thickness_end * adjusted_offset.y());
 
-  const Corner adjusted_corner = {{origin.Start() + v1_offset + v2_offset,
-                                   origin.Outer() + v2_offset + v3_offset,
-                                   origin.End() + v3_offset + v4_offset,
-                                   origin.Center() + v4_offset + v1_offset},
-                                  curvature};
-
-  // For curvatures greater than 2 or lesser than 0.5, it is no longer possible
-  // to adjust using the offset, so instead we slightly adjust the curvature of
-  // the target corner to have |thickness| distance between the origin and the
-  // destination's half corners points.
-  return {adjusted_corner.vertices_,
-          AdjustCurvature(curvature, origin.DiagonalLength(),
-                          adjusted_corner.DiagonalLength())};
+  return Corner{{origin.Start() + v1_offset + v2_offset,
+                 origin.Outer() + v2_offset + v3_offset,
+                 origin.End() + v3_offset + v4_offset,
+                 origin.Center() + v4_offset + v1_offset},
+                curvature};
 }
 
 // static

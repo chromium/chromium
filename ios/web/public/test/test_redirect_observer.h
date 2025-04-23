@@ -57,8 +57,6 @@ class TestRedirectObserver final
   // be removed and the redirect chain originating from that URL will be stored
   // in `redirect_chains_`.
   std::set<GURL> expected_urls_;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 }  // namespace web

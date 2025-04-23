@@ -7,6 +7,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
@@ -28,6 +29,22 @@
 #include "url/origin.h"
 
 namespace content {
+
+class InterestGroupManagerImplTestPeer {
+ public:
+  static const InterestGroupKAnonymityManager& GetKAnonymityManager(
+      const InterestGroupManagerImpl& interest_group_manager) {
+    return *interest_group_manager.k_anonymity_manager_;
+  }
+};
+
+class InterestGroupKAnonymityManagerTestPeer {
+ public:
+  static size_t GetNumQueriesInProgress(
+      const InterestGroupKAnonymityManager& k_anonymity_manager) {
+    return k_anonymity_manager.queries_in_progress_.size();
+  }
+};
 
 namespace {
 
@@ -1008,6 +1025,10 @@ TEST_F(InterestGroupKAnonymityManagerTestWithMock,
     base::HistogramTester histograms;
     manager->JoinInterestGroup(group, top_frame);
     task_environment().FastForwardBy(base::Minutes(1));
+    EXPECT_EQ(
+        0,
+        InterestGroupKAnonymityManagerTestPeer::GetNumQueriesInProgress(
+            InterestGroupManagerImplTestPeer::GetKAnonymityManager(*manager)));
     EXPECT_THAT(delegate()->TakeQueryIDs(),
                 testing::ElementsAre(std::vector<std::string>(
                     {adKAnonKey, reportingIdsKAnonKey})));
@@ -1030,6 +1051,10 @@ TEST_F(InterestGroupKAnonymityManagerTestWithMock,
     base::HistogramTester histograms;
     manager->JoinInterestGroup(group, top_frame);
     task_environment().FastForwardBy(base::Minutes(1));
+    EXPECT_EQ(
+        0,
+        InterestGroupKAnonymityManagerTestPeer::GetNumQueriesInProgress(
+            InterestGroupManagerImplTestPeer::GetKAnonymityManager(*manager)));
     EXPECT_THAT(delegate()->TakeQueryIDs(), testing::IsEmpty());
     auto maybe_group = GetGroup(manager.get(), group.owner, group.name);
     ASSERT_TRUE(maybe_group);
@@ -1050,6 +1075,10 @@ TEST_F(InterestGroupKAnonymityManagerTestWithMock,
     base::HistogramTester histograms;
     manager->JoinInterestGroup(group, top_frame);
     task_environment().FastForwardBy(base::Minutes(1));
+    EXPECT_EQ(
+        0,
+        InterestGroupKAnonymityManagerTestPeer::GetNumQueriesInProgress(
+            InterestGroupManagerImplTestPeer::GetKAnonymityManager(*manager)));
     EXPECT_THAT(delegate()->TakeQueryIDs(),
                 testing::ElementsAre(std::vector<std::string>(
                     {adKAnonKey, reportingIdsKAnonKey})));

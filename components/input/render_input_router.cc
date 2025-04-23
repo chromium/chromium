@@ -213,6 +213,7 @@ void RenderInputRouter::SetDeviceScaleFactor(float device_scale_factor) {
 
 void RenderInputRouter::ProgressFlingIfNeeded(base::TimeTicks current_time) {
   TRACE_EVENT("input", "RenderInputRouter::ProgressFlingIfNeeded");
+  CHECK(fling_scheduler_);
   fling_scheduler_->ProgressFlingOnBeginFrameIfneeded(current_time);
 }
 
@@ -671,6 +672,12 @@ void RenderInputRouter::SetView(RenderWidgetHostViewInput* view) {
     return;
   }
   view_input_ = view->GetInputWeakPtr();
+}
+
+void RenderInputRouter::SetBeginFrameSourceForFlingScheduler(
+    viz::BeginFrameSource* begin_frame_source) {
+  CHECK(fling_scheduler_);
+  fling_scheduler_->SetBeginFrameSource(begin_frame_source);
 }
 
 void RenderInputRouter::ResetFrameWidgetInputInterfaces() {

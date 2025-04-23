@@ -34,6 +34,10 @@
 //     return;
 //   }
 //
+// `CHECK_IS_TEST` should not be used within functions named `*ForTesting`,
+// `*ForTests`, etc. because there is a presubmit check which warns against
+// calling such functions in production code.
+//
 // `CHECK_IS_TEST` is thread safe.
 //
 // An optional base::NotFatalUntil argument can be provided to make the

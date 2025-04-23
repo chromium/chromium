@@ -13,10 +13,10 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -24,6 +24,7 @@
 #include "base/win/access_token.h"
 #include "base/win/sid.h"
 #include "base/win/win_util.h"
+#include "base/win/windows_handle_util.h"
 #include "base/win/windows_version.h"
 #include "sandbox/features.h"
 #include "sandbox/win/src/acl.h"
@@ -73,10 +74,12 @@ sandbox::PolicyGlobal* MakeBrokerPolicyMemory() {
 }
 
 bool IsInheritableHandle(HANDLE handle) {
-  if (!handle)
+  if (!handle) {
     return false;
-  if (handle == INVALID_HANDLE_VALUE)
+  }
+  if (base::win::IsPseudoHandle(handle)) {
     return false;
+  }
   // File handles (FILE_TYPE_DISK) and pipe handles are known to be
   // inheritable.  Console handles (FILE_TYPE_CHAR) are not
   // inheritable via PROC_THREAD_ATTRIBUTE_HANDLE_LIST.
@@ -234,7 +237,9 @@ ConfigBase::~ConfigBase() {
   // `policy_maker_` holds a raw_ptr on `policy_`, so we need to make sure it
   // gets destroyed first.
   policy_maker_.reset();
-  policy_.ClearAndDelete();  // Allocated by MakeBrokerPolicyMemory.
+  sandbox::PolicyGlobal* policy = policy_.get();
+  policy_ = nullptr;
+  ::operator delete(policy);
 }
 
 sandbox::LowLevelPolicy* ConfigBase::PolicyMaker() {
@@ -469,8 +474,8 @@ PolicyBase::PolicyBase(std::string_view tag)
     : tag_(tag),
       config_(),
       config_ptr_(nullptr),
-      stdout_handle_(INVALID_HANDLE_VALUE),
-      stderr_handle_(INVALID_HANDLE_VALUE),
+      stdout_handle_(nullptr),
+      stderr_handle_(nullptr),
       delegate_data_(nullptr),
       dispatcher_(nullptr),
       job_() {}
@@ -528,7 +533,7 @@ ResultCode PolicyBase::SetStderrHandle(HANDLE handle) {
 
 void PolicyBase::AddHandleToShare(HANDLE handle) {
   CHECK(handle);
-  CHECK_NE(handle, INVALID_HANDLE_VALUE);
+  CHECK(!base::win::IsPseudoHandle(handle));
 
   // Ensure the handle can be inherited.
   bool result =

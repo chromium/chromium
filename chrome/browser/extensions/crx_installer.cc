@@ -26,6 +26,7 @@
 #include "chrome/browser/extensions/blocklist_check.h"
 #include "chrome/browser/extensions/convert_user_script.h"
 #include "chrome/browser/extensions/extension_assets_manager.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/extensions/install_approval.h"
@@ -43,6 +44,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/crx_file/crx_verifier.h"
+#include "components/sync/model/string_ordinal.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/content_verifier/content_verifier.h"
@@ -77,13 +79,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "components/user_manager/user_manager.h"
-#endif
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/extension_service.h"
-#else
-#include "chrome/browser/extensions/desktop_android/desktop_android_extension_system.h"
 #endif
 
 using content::BrowserThread;
@@ -1049,23 +1044,9 @@ void CrxInstaller::ReportSuccessFromUIThread() {
     }
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  ExtensionService* service =
-      ExtensionSystem::Get(profile_)->extension_service();
-  service->OnExtensionInstalled(extension(), page_ordinal_, install_flags_,
-                                std::move(ruleset_install_prefs_));
-#else
-  // TODO(crbug.com/403352172): Remove this block of code when there's a
-  // replacement for ExtensionService::OnExtensionInstalled(). It exists
-  // for prototyping and manual testing purposes.
-  DesktopAndroidExtensionSystem* system =
-      static_cast<DesktopAndroidExtensionSystem*>(
-          ExtensionSystem::Get(profile_));
-  scoped_refptr<Extension> mutable_extension =
-      const_cast<Extension*>(extension_.get());
-  std::string error;
-  CHECK(system->AddExtension(mutable_extension, error));
-#endif
+  registrar_->OnExtensionInstalled(extension(), page_ordinal_, install_flags_,
+                                   std::move(ruleset_install_prefs_));
+
   NotifyCrxInstallComplete(std::nullopt);
 }
 
@@ -1264,27 +1245,15 @@ void CrxInstaller::OnBrowserTerminating() {
 }
 
 GURL CrxInstaller::GetEffectiveUpdateURL(const Extension& extension) {
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/394876083): Use ExtensionManagement when it
-  // is ported to desktop Android.
-  return ManifestURL::GetUpdateURL(&extension);
-#else
   ExtensionManagement* extension_management =
       ExtensionManagementFactory::GetForBrowserContext(profile_);
   return extension_management->GetEffectiveUpdateURL(extension);
-#endif
 }
 
 bool CrxInstaller::UpdatesFromWebstore(const Extension& extension) {
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/394876083): Use ExtensionManagement when it
-  // is ported to desktop Android.
-  return true;
-#else
   ExtensionManagement* extension_management =
       ExtensionManagementFactory::GetForBrowserContext(profile_);
   return extension_management->UpdatesFromWebstore(extension);
-#endif
 }
 
 }  // namespace extensions

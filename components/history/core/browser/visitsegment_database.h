@@ -80,17 +80,6 @@ class VisitSegmentDatabase {
   // Deletes all the segment tables, returning true on success.
   bool DropSegmentTables();
 
-  // Removes the 'pres_index' column from the segments table and the
-  // presentation table is removed entirely.
-  bool MigratePresentationIndex();
-
-  // Runs ComputeSegmentName() to recompute 'name'. If multiple segments have
-  // the same name, they are merged by:
-  // 1. Choosing one arbitrary `segment_id` and updating all references.
-  // 2. Merging duplicate `segment_usage` entries (add up visit counts).
-  // 3. Deleting old data for the absorbed segment.
-  bool MigrateVisitSegmentNames();
-
  private:
   // Updates the `name` column for a single segment. Returns true on success.
   bool RenameSegment(SegmentID segment_id, const std::string& new_name);

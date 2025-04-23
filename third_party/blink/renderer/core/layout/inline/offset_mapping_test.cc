@@ -103,7 +103,7 @@ class OffsetMappingTest : public RenderingTest {
       Vector<unsigned> collapsed_indexes;
       for (const auto& unit : mapping.GetMappingUnitsForDOMRange(
                EphemeralRange::RangeOfContents(node))) {
-        if (unit.GetType() != OffsetMappingUnitType::kCollapsed) {
+        if (!unit.IsCollapsed()) {
           continue;
         }
         for (unsigned i = unit.DOMStart(); i < unit.DOMEnd(); ++i)

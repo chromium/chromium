@@ -60,8 +60,6 @@ class OverscrollActionsTabHelper
 
   base::ScopedObservation<web::WebState, web::WebStateObserver>
       web_state_observation_{this};
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_OVERSCROLL_ACTIONS_MODEL_OVERSCROLL_ACTIONS_TAB_HELPER_H_

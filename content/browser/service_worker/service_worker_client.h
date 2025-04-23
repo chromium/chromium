@@ -49,10 +49,9 @@ struct PolicyContainerPolicies;
 // Example:
 // When a new service worker registration is created, the browser process
 // iterates over all ServiceWorkerClients to find clients (frames,
-// dedicated workers if PlzDedicatedWorker is enabled, and shared workers) with
-// a URL inside the registration's scope, and has the container host watch the
-// registration in order to resolve navigator.serviceWorker.ready once the
-// registration settles, if need.
+// dedicated workers, and shared workers) with a URL inside the registration's
+// scope, and has the container host watch the registration in order to resolve
+// navigator.serviceWorker.ready once the registration settles, if need.
 class CONTENT_EXPORT ServiceWorkerClient final
     : public ServiceWorkerRegistration::Listener {
  public:
@@ -201,8 +200,8 @@ class CONTENT_EXPORT ServiceWorkerClient final
   mojo::PendingReceiver<blink::mojom::ServiceWorkerRunningStatusCallback>
   GetRunningStatusCallbackReceiver();
 
-  // |registration| claims the client (document, dedicated worker when
-  // PlzDedicatedWorker is enabled, or shared worker) to be controlled.
+  // `registration` claims the client (document, dedicated worker, or shared
+  // worker) to be controlled.
   void ClaimedByRegistration(
       scoped_refptr<ServiceWorkerRegistration> registration);
 

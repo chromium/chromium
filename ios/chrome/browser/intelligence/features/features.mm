@@ -22,18 +22,18 @@ bool IsPageActionMenuEnabled() {
   return base::FeatureList::IsEnabled(kPageActionMenu);
 }
 
-const char kExplainGeminiEditMenuParams[] = "ExplainGeminiEditMenuPosition";
+const char kExplainGeminiEditMenuParams[] = "PositionForExplainGeminiEditMenu";
 
-ExplainGeminiEditMenuPosition ExplainGeminiEditMenuPositionParam() {
+PositionForExplainGeminiEditMenu ExplainGeminiEditMenuPosition() {
   int param = base::GetFieldTrialParamByFeatureAsInt(
       kExplainGeminiEditMenu, kExplainGeminiEditMenuParams, 0);
   if (param == 1) {
-    return ExplainGeminiEditMenuPosition::kBeforeSearch;
+    return PositionForExplainGeminiEditMenu::kAfterEdit;
   }
   if (param == 2) {
-    return ExplainGeminiEditMenuPosition::kAfterSearch;
+    return PositionForExplainGeminiEditMenu::kAfterSearch;
   }
-  return ExplainGeminiEditMenuPosition::kDisabled;
+  return PositionForExplainGeminiEditMenu::kDisabled;
 }
 
 BASE_FEATURE(kExplainGeminiEditMenu,

@@ -27,7 +27,6 @@
 #include "chrome/browser/extensions/extension_sync_data.h"
 #include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/extensions/signin_test_util.h"
 #include "chrome/browser/extensions/test_blocklist.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
@@ -60,6 +59,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/management_policy.h"
+#include "extensions/browser/pending_extension_manager.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_url_handlers.h"
@@ -68,6 +68,7 @@
 
 using extensions::AccountExtensionTracker;
 using extensions::AppSorting;
+using extensions::ComponentLoader;
 using extensions::Extension;
 using extensions::ExtensionPrefs;
 using extensions::ExtensionRegistry;
@@ -262,7 +263,7 @@ TEST_F(ExtensionSyncServiceTest, DeferredSyncStartupPreInstalledComponent) {
   std::string manifest;
   ASSERT_TRUE(base::ReadFileToString(
       good0_path().Append(extensions::kManifestFilename), &manifest));
-  service()->component_loader()->Add(manifest, good0_path());
+  ComponentLoader::Get(profile())->Add(manifest, good0_path());
   ASSERT_FALSE(extension_system()->is_ready());
   service()->Init();
   ASSERT_TRUE(extension_system()->is_ready());
@@ -1555,7 +1556,7 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataEnableDisable) {
 
     // Disable it if the test case says so.
     if (!test_case.previous_disable_reasons.empty()) {
-      service()->DisableExtensionWithRawReasons(
+      registrar()->DisableExtensionWithRawReasons(
           passkey, id, test_case.previous_disable_reasons);
       ASSERT_TRUE(registry()->disabled_extensions().Contains(id));
     }

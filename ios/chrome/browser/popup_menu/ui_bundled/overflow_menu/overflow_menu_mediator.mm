@@ -58,6 +58,7 @@
 #import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_orderer.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
+#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reading_list/model/offline_url_utils.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_utils.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
@@ -81,6 +82,7 @@
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/price_tracked_items_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
+#import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/reminder_notifications_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -225,6 +227,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 @property(nonatomic, strong) OverflowMenuAction* openNewWindowAction;
 
 @property(nonatomic, strong) OverflowMenuAction* clearBrowsingDataAction;
+@property(nonatomic, strong) OverflowMenuAction* readerModeAction;
 @property(nonatomic, strong) OverflowMenuAction* followAction;
 @property(nonatomic, strong) OverflowMenuAction* addBookmarkAction;
 @property(nonatomic, strong) OverflowMenuAction* editBookmarkAction;
@@ -695,6 +698,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     self.AIPrototypeAction = [self openAIPrototypeAction];
   }
 
+  if (IsReaderModeAvailable()) {
+    self.readerModeAction = [self openReaderModeAction];
+  }
+
   if (send_tab_to_self::
           IsSendTabIOSPushNotificationsEnabledWithTabReminders()) {
     self.setTabReminderAction = [self newSetTabReminderAction];
@@ -733,6 +740,21 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     self.appActionsGroup, self.pageActionsGroup, self.editActionsGroup,
     self.helpActionsGroup
   ];
+}
+
+- (OverflowMenuAction*)openReaderModeAction {
+  __weak __typeof(self) weakSelf = self;
+  return [self
+      createOverflowMenuActionWithNameID:IDS_IOS_TOOLS_MENU_READER_MODE
+                              actionType:overflow_menu::ActionType::ReaderMode
+                              symbolName:kReaderModeSymbol
+                            systemSymbol:YES
+                        monochromeSymbol:NO
+                         accessibilityID:kToolsMenuOpenReaderMode
+                            hideItemText:nil
+                                 handler:^{
+                                   [weakSelf startReaderMode];
+                                 }];
 }
 
 - (OverflowMenuAction*)newFollowAction {
@@ -1984,6 +2006,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     actions.push_back(overflow_menu::ActionType::AIPrototype);
   }
 
+  if (IsReaderModeAvailable()) {
+    actions.push_back(overflow_menu::ActionType::ReaderMode);
+  }
+
   return actions;
 }
 
@@ -2056,6 +2082,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                      IsSendTabIOSPushNotificationsEnabledWithTabReminders()
                  ? self.setTabReminderAction
                  : nil;
+    case overflow_menu::ActionType::ReaderMode:
+      return self.readerModeAction;
   }
 }
 
@@ -2098,6 +2126,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       return [self openAIPrototypeAction];
     case overflow_menu::ActionType::SetTabReminder:
       return [self newSetTabReminderAction];
+    case overflow_menu::ActionType::ReaderMode:
+      return [self openReaderModeAction];
   }
 }
 
@@ -2326,6 +2356,12 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   [self dismissMenu];
   [self.reminderNotificationsHandler
       showSetTabReminderUI:SetTabReminderEntryPoint::kOverflowMenu];
+}
+
+// Opens the Reader mode UI.
+- (void)startReaderMode {
+  [self dismissMenu];
+  [self.readerModeHandler showReaderMode];
 }
 
 #pragma mark - Destinations Handlers

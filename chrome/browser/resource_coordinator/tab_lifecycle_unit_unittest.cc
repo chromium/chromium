@@ -87,7 +87,7 @@ class MockLifecycleUnitObserver : public LifecycleUnitObserver {
 };
 
 class MockPageLiveStateObserver
-    : public performance_manager::PageLiveStateObserverDefaultImpl {
+    : public performance_manager::PageLiveStateObserver {
  public:
   MOCK_METHOD(void,
               OnIsAutoDiscardableChanged,

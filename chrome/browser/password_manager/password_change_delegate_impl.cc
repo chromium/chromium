@@ -101,13 +101,14 @@ void NotifyPasswordChangeFinishedSuccessfully(
 void DisplayChangePasswordBubbleAutomatically(
     base::WeakPtr<content::WebContents> original_tab,
     base::WeakPtr<content::WebContents> tab_with_password_change) {
-  content::WebContents* contents = IsActive(original_tab) ? original_tab.get()
-                                   : IsActive(tab_with_password_change)
-                                       ? tab_with_password_change.get()
-                                       : nullptr;
-  if (contents) {
-    ManagePasswordsUIController::FromWebContents(contents)
-        ->ShowChangePasswordBubble();
+  for (auto web_content : {original_tab, tab_with_password_change}) {
+    if (!web_content) {
+      continue;
+    }
+    if (auto* manage_controller =
+            ManagePasswordsUIController::FromWebContents(web_content.get())) {
+      manage_controller->ShowChangePasswordBubble();
+    }
   }
 }
 

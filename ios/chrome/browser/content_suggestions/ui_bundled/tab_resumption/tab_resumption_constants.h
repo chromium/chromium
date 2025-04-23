@@ -14,4 +14,15 @@ extern NSString* const kTabResumptionViewIdentifier;
 // Mainly used in tests to avoid network requests.
 extern const char kTabResumptionShowItemImmediately[];
 
+// Accessibility ID for price tracking a URL on a recent Tab if the price
+// tracking action was successful.
+extern NSString* const kPriceTrackingOnTabSuccessAccessibilityID;
+
+// Accessibility ID for price tracking a URL on a recent Tab if the price
+// tracking action was not successful.
+extern NSString* const kPriceTrackingOnTabFailureAccessibilityID;
+
+// Category for price tracking the URL on a recent Tab snackbar.
+extern NSString* const kPriceTrackingOnTabSnackbarCategory;
+
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_TAB_RESUMPTION_TAB_RESUMPTION_CONSTANTS_H_

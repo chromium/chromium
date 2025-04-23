@@ -477,8 +477,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   aura::Window* dragged_window() { return dragged_window_.get(); }
 
-  // TODO(sammiequon): Remove some of these getters by using friend or helper
-  // function.
   RoundedLabelWidget* no_windows_widget() { return no_windows_widget_.get(); }
 
   views::Widget* desks_widget() { return desks_widget_.get(); }

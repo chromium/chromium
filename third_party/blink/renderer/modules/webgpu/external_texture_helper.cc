@@ -397,20 +397,18 @@ ExternalTexture CreateExternalTexture(
       context_provider_wrapper->ContextProvider().RasterContextProvider();
 
   if (use_copy_to_shared_image) {
-    // We don't need to specify a sync token since both CanvasResourceProvider
-    // and PaintCanvasVideoRenderer use the SharedGpuContext.
+    gpu::SyncToken sync_token;
     auto client_si =
-        resource_provider->GetBackingClientSharedImageForOverwrite();
+        resource_provider->GetBackingClientSharedImageForExternalWrite(
+            &sync_token, gpu::SharedImageUsageSet());
     gpu::Mailbox dest_mailbox(client_si ? client_si->mailbox()
                                         : gpu::Mailbox());
 
-    // The returned sync token is from the SharedGpuContext - it's ok to drop it
-    // here since WebGPUMailboxTexture::FromCanvasResource will generate a new
-    // sync token from the SharedContextState and wait on it anyway.
-    std::ignore = video_renderer->CopyVideoFrameToSharedImage(
+    // The returned sync token is from the SharedGpuContext.
+    sync_token = video_renderer->CopyVideoFrameToSharedImage(
         raster_context_provider, std::move(media_video_frame), dest_mailbox,
-        gpu::SyncToken(),
-        /*use_visible_rect=*/true);
+        sync_token, /*use_visible_rect=*/true);
+    resource_provider->EndExternalWrite(sync_token);
   } else {
     const gfx::Rect dest_rect = gfx::Rect(media_video_frame->natural_size());
     // Delegate video transformation to Dawn.

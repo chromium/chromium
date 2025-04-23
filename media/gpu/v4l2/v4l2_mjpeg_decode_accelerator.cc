@@ -645,7 +645,7 @@ bool V4L2MjpegDecodeAccelerator::CreateInputBuffers() {
     }
     for (size_t j = 0; j < buffer.length; ++j) {
       void* address =
-          device_->Mmap(NULL, planes[j].length, PROT_READ | PROT_WRITE,
+          device_->Mmap(nullptr, planes[j].length, PROT_READ | PROT_WRITE,
                         MAP_SHARED, planes[j].m.mem_offset);
       if (address == MAP_FAILED) {
         VPLOGF(1) << "mmap() failed";
@@ -731,7 +731,7 @@ bool V4L2MjpegDecodeAccelerator::CreateOutputBuffers() {
         return false;
       }
       void* address =
-          device_->Mmap(NULL, planes[j].length, PROT_READ | PROT_WRITE,
+          device_->Mmap(nullptr, planes[j].length, PROT_READ | PROT_WRITE,
                         MAP_SHARED, planes[j].m.mem_offset);
       if (address == MAP_FAILED) {
         VPLOGF(1) << "mmap() failed";

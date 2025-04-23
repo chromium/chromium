@@ -257,8 +257,8 @@ export class Panel implements PanelInterface {
     // Fully qualify the path here because this function might be called with a
     // window object belonging to the background page.
     window.location.assign(
-      chrome.extension.getURL('chromevox/mv3/panel/panel.html') +
-          PanelModeInfo[this.mode_].location);
+        chrome.runtime.getURL('chromevox/mv3/panel/panel.html') +
+        PanelModeInfo[this.mode_].location);
 
     $('main')!.hidden = (this.mode_ === PanelMode.FULLSCREEN_TUTORIAL);
     $('menus_background')!.hidden = (this.mode_ !== PanelMode.FULLSCREEN_MENUS);
@@ -427,7 +427,7 @@ export class Panel implements PanelInterface {
     // Change the url fragment to 'close', which signals the native code
     // to exit ChromeVox.
     window.location.assign(
-        chrome.extension.getURL('chromevox/mv3/panel/panel.html') + '#close');
+        chrome.runtime.getURL('chromevox/mv3/panel/panel.html') + '#close');
   }
 
   async closeMenusAndRestoreFocus(): Promise<void> {

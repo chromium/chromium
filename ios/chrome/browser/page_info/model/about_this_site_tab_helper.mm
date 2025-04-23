@@ -85,5 +85,3 @@ void AboutThisSiteTabHelper::OnOptimizationGuideDecision(
   about_this_site_metadata_ =
       metadata.ParsedMetadata<page_info::proto::AboutThisSiteMetadata>();
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(AboutThisSiteTabHelper)

@@ -62,9 +62,9 @@ export class SettingsPrivacySandboxPageElement extends
     };
   }
 
-  focusConfig: FocusConfig;
-  private isPrivacySandboxRestricted_: boolean;
-  private measurementLinkRowClass_: string;
+  declare focusConfig: FocusConfig;
+  declare private isPrivacySandboxRestricted_: boolean;
+  declare private measurementLinkRowClass_: string;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 

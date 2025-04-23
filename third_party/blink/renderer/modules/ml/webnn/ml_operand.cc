@@ -22,17 +22,23 @@ namespace blink {
 base::expected<MLOperand*, String> MLOperand::ValidateAndCreateInput(
     const webnn::ContextProperties& context_properties,
     MLGraphBuilder* builder,
-    V8MLOperandDataType::Enum data_type,
+    V8MLOperandDataType::Enum v8_data_type,
     Vector<uint32_t> dimensions,
     String name) {
   if (name.empty()) {
     return base::unexpected("The name is empty.");
   }
 
+  const webnn::OperandDataType data_type = FromBlinkDataType(v8_data_type);
+  if (!context_properties.data_type_limits.input.Has(data_type)) {
+    return base::unexpected(String(webnn::NotSupportedInputTypeError(
+        name.Utf8(), data_type, context_properties.data_type_limits.input)));
+  }
+
   ASSIGN_OR_RETURN(
       webnn::OperandDescriptor descriptor,
       webnn::OperandDescriptor::Create(
-          context_properties, FromBlinkDataType(data_type), dimensions,
+          context_properties, data_type, dimensions,
           webnn::GetErrorLabelPrefix(base::StrCat({"input ", name.Utf8()}))),
       [](std::string error) { return String(error); });
 

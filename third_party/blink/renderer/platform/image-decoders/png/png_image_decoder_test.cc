@@ -1875,6 +1875,30 @@ TEST_P(PNGTests, CriticalPrivateChunkBeforeIHDR) {
   EXPECT_TRUE(decoder->Failed());
 }
 
+// Regression tests for https://crbug.com/406054655
+TEST_P(PNGTests, MalformedPlteOrTrnsChunks) {
+  // See https://crbug.com/406054655#comment7 for description of the test files.
+  std::array<const char*, 4> kTestFiles = {
+      "basn3p01-based-long-plte.png",
+      "basn3p01-based-long-trns.png",
+      "basn3p01-based-long2-trns.png",
+      "basn3p01-based-ok.png",
+  };
+  for (const auto& kTestFile : kTestFiles) {
+    SCOPED_TRACE(testing::Message() << "Testing '" << kTestFile << "'");
+    scoped_refptr<SharedBuffer> data =
+        ReadFileToSharedBuffer(kDecodersTestingDir, kTestFile);
+    EXPECT_FALSE(data->empty());
+    auto decoder = CreatePNGDecoder();
+    decoder->SetData(data.get(), true);
+    const ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+    if (!decoder->Failed()) {
+      EXPECT_EQ(1u, decoder->FrameCount());
+      EXPECT_EQ(frame->GetStatus(), ImageFrame::kFrameComplete);
+    }
+  }
+}
+
 #if BUILDFLAG(SKIA_BUILD_RUST_PNG)
 INSTANTIATE_TEST_SUITE_P(RustEnabled,
                          AnimatedPNGTests,

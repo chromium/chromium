@@ -13,9 +13,9 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.color.MaterialColors;
-import com.google.android.material.elevation.ElevationOverlayProvider;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.CreationMode;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
@@ -177,18 +177,32 @@ public class TabUiThemeProvider {
                 return ColorStateList.valueOf(
                         MaterialColors.compositeARGBWithAlpha(baseColor, alpha));
             } else {
-                float backgroundElevation =
-                        context.getResources().getDimension(R.dimen.default_elevation_4);
-                @ColorInt
-                int baseColor =
-                        new ElevationOverlayProvider(context)
-                                .compositeOverlayWithThemeSurfaceColorIfNeeded(backgroundElevation);
+
+                @ColorInt int baseColor = SemanticColorUtils.getColorSurfaceContainerHigh(context);
                 int alpha =
                         context.getResources()
                                 .getInteger(R.integer.tab_grid_hovered_card_background_color_alpha);
                 return ColorStateList.valueOf(
                         MaterialColors.compositeARGBWithAlpha(baseColor, alpha));
             }
+        }
+    }
+
+    /**
+     * Returns the color used for tab selector list background based on the incognito mode and
+     * creation mode.
+     *
+     * @param context {@link Context} used to retrieve color.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @param creationMode The mode of creation of the tab selector list.
+     * @return The background color.
+     */
+    public static @ColorInt int getTabGridDialogBackgroundColor(
+            Context context, boolean isIncognito, @CreationMode int creationMode) {
+        if (creationMode == CreationMode.DIALOG) {
+            return getTabGridDialogBackgroundColor(context, isIncognito);
+        } else {
+            return ChromeColors.getPrimaryBackgroundColor(context, isIncognito);
         }
     }
 
@@ -299,10 +313,8 @@ public class TabUiThemeProvider {
             Context context, boolean isIncognito) {
         int backgroundTint =
                 isIncognito
-                        ? ContextCompat.getColor(
-                                context, R.color.default_bg_color_dark_elev_5_baseline)
-                        : ChromeColors.getSurfaceColor(
-                                context, R.dimen.tab_hover_card_bg_color_elev);
+                        ? ContextCompat.getColor(context, R.color.incognito_tab_hover_card_bg_color)
+                        : ContextCompat.getColor(context, R.color.tab_hover_card_bg_color);
         return ColorStateList.valueOf(backgroundTint);
     }
 
@@ -339,13 +351,18 @@ public class TabUiThemeProvider {
      *
      * @param context {@link Context} used to retrieve color.
      * @param isIncognito Whether the color is used for incognito mode.
+     * @param creationMode The mode of creation of the tab selector list.
      * @return The background color for the toolbar when tab switcher is in selection edit mode.
      */
     public static @ColorInt int getTabSelectionToolbarBackground(
-            Context context, boolean isIncognito) {
+            Context context, boolean isIncognito, @CreationMode int creationMode) {
         if (isIncognito) {
             return context.getColor(R.color.incognito_tab_list_editor_toolbar_bg_color);
         } else {
+            if (creationMode == CreationMode.DIALOG) {
+                return ContextCompat.getColor(context, R.color.tab_grid_dialog_bg_color);
+            }
+
             return MaterialColors.getColor(context, R.attr.colorSurface, TAG);
         }
     }

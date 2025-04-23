@@ -115,6 +115,9 @@ class InputServiceLinuxImpl::BlockingTaskRunnerHelper
                   UdevWatcher::Filter(kSubsystemHid, ""),
                   UdevWatcher::Filter(kSubsystemInput, ""),
               }});
+    if (!watcher_) {
+      return;
+    }
     watcher_->EnumerateExistingDevices();
   }
 

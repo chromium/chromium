@@ -39,6 +39,11 @@ using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
 
+MATCHER_P(PermissionTypeMatcher, id, "") {
+  return ::testing::Matches(::testing::Eq(id))(
+      blink::PermissionDescriptorToPermissionType(arg));
+}
+
 namespace content {
 
 namespace {
@@ -114,7 +119,8 @@ class IdleManagerTest : public RenderViewHostTestHarness {
   void SetPermissionStatus(blink::mojom::PermissionStatus permission_status) {
     ON_CALL(*permission_manager_,
             GetPermissionStatusForCurrentDocument(
-                blink::PermissionType::IDLE_DETECTION, main_rfh(),
+                PermissionTypeMatcher(blink::PermissionType::IDLE_DETECTION),
+                main_rfh(),
                 /*should_include_device_status*/ false))
         .WillByDefault(Return(permission_status));
   }

@@ -23,6 +23,11 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/task/task_features.h"
 #include "base/time/time_override.h"
+#include "build/blink_buildflags.h"
+
+#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)
+#include <BrowserEngineCore/BEkevent.h>
+#endif
 
 namespace base {
 
@@ -56,8 +61,21 @@ bool KqueueTimersSpuriouslyWakeUp() {
 }
 #endif
 
+int platform_kevent64(int kq,
+                      const struct kevent64_s* changelist,
+                      int nchanges,
+                      struct kevent64_s* eventlist,
+                      int nevents,
+                      unsigned int flags) {
+#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)
+  return be_kevent64(kq, changelist, nchanges, eventlist, nevents, flags);
+#else
+  return kevent64(kq, changelist, nchanges, eventlist, nevents, flags, nullptr);
+#endif
+}
+
 int ChangeOneEvent(const ScopedFD& kqueue, kevent64_s* event) {
-  return HANDLE_EINTR(kevent64(kqueue.get(), event, 1, nullptr, 0, 0, nullptr));
+  return HANDLE_EINTR(platform_kevent64(kqueue.get(), event, 1, nullptr, 0, 0));
 }
 
 }  // namespace
@@ -343,9 +361,9 @@ bool MessagePumpKqueue::WatchFileDescriptor(int fd,
     events.push_back(base_event);
   }
 
-  int rv = HANDLE_EINTR(kevent64(kqueue_.get(), events.data(),
-                                 checked_cast<int>(events.size()), nullptr, 0,
-                                 0, nullptr));
+  int rv = HANDLE_EINTR(platform_kevent64(kqueue_.get(), events.data(),
+                                          checked_cast<int>(events.size()),
+                                          nullptr, 0, 0));
   if (rv < 0) {
     DPLOG(ERROR) << "WatchFileDescriptor kevent64";
     return false;
@@ -436,9 +454,9 @@ bool MessagePumpKqueue::StopWatchingFileDescriptor(
     events.push_back(base_event);
   }
 
-  int rv = HANDLE_EINTR(kevent64(kqueue_.get(), events.data(),
-                                 checked_cast<int>(events.size()), nullptr, 0,
-                                 0, nullptr));
+  int rv = HANDLE_EINTR(platform_kevent64(kqueue_.get(), events.data(),
+                                          checked_cast<int>(events.size()),
+                                          nullptr, 0, 0));
   DPLOG_IF(ERROR, rv < 0) << "StopWatchingFileDescriptor kevent64";
 
   // The keys for the IDMap aren't recorded anywhere (they're attached to the
@@ -472,8 +490,8 @@ bool MessagePumpKqueue::DoInternalWork(Delegate* delegate,
   }
 
   int rv =
-      HANDLE_EINTR(kevent64(kqueue_.get(), nullptr, 0, events_.data(),
-                            checked_cast<int>(events_.size()), flags, nullptr));
+      HANDLE_EINTR(platform_kevent64(kqueue_.get(), nullptr, 0, events_.data(),
+                                     checked_cast<int>(events_.size()), flags));
   if (rv == 0) {
     // No events to dispatch so no need to call ProcessEvents().
     return false;

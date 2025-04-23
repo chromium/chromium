@@ -390,6 +390,8 @@ message ModelPrototypingResponse {
 }
 
 message ModelPrototypingMetadata {
+  // TODO: crbug.com/411195355 - Wire up IFTTT to the enums in the extension.
+
   // An optional tag to use for querying the record from MQLS logs.
   string logging_tag = 1;
 
@@ -400,4 +402,59 @@ message ModelPrototypingMetadata {
   // The email address of the user who uploaded the data. This will only be
   // populated for the TVC data upload.
   string user_email = 3;
+
+  // A session id, used for connecting multiple uploads across a single user
+  // session. The ids are generated client-side (in the extension) as a random
+  // UUID.
+  string session_id = 4;
+
+  // When this data was collected. Recorded by the client, so timestamps might
+  // not be consistent across data from different users. Combined with the
+  // `session_id` field, this field can be used to stitch together data from
+  // different uploads that belong to the same user session.
+  Timestamp collection_time = 5;
+
+  // The user-specified page annotation for the current page (if any).
+  // Note: This field is commonly empty, as most pages have no relevant
+  // annotation.
+  // Note: Some pages may have multiple annotations. For example, a shopping
+  // flow might combine the "view cart" and "checkout" steps.
+  // Note: DataPol annotation is set to ST_NOT_REQUIRED because, although this
+  // content is user-generated, it is fundamentally page metadata rather than
+  // user content.
+  repeated PageAnnotation page_annotation = 6;
+
+  // If a task was completed (or aborted), the user-annotated status of the
+  // task. For sessions spanning multiple uploads, this will only be set for
+  // the final upload in the session.
+  // Note: This field is commonly empty, as many data collection trajectories do
+  // not ask the user to annotate the task completion status.
+  TaskCompletionStatus task_completion_status = 7;
+
+  enum PageAnnotation {
+    PAGE_ANNOTATION_UNSPECIFIED = 0;
+
+    // Used for any page representing a shopping cart.
+    PAGE_ANNOTATION_SHOPPING_CART = 1;
+
+    // Used for any page representing a checkout or review order page.
+    PAGE_ANNOTATION_SHOPPING_CHECKOUT = 2;
+
+    // Used for any page representing a successful order / confirmation page.
+    PAGE_ANNOTATION_SHOPPING_SUCCESS = 3;
+  }
+
+  enum TaskCompletionStatus {
+    TASK_COMPLETION_STATUS_UNSPECIFIED = 0;
+
+    TASK_COMPLETION_STATUS_SUCCESS = 1;
+
+    TASK_COMPLETION_STATUS_FAILURE_UNCATEGORIZED = 2;
+
+    TASK_COMPLETION_STATUS_FAILURE_INFEASIBLE_TASK = 3;
+
+    TASK_COMPLETION_STATUS_FAILURE_AMBIGUOUS_TASK = 4;
+
+    TASK_COMPLETION_STATUS_FAILURE_SHOPPING_OUT_OF_STOCK = 5;
+  }
 }

@@ -10,6 +10,8 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/extension.h"
 #include "ui/base/clipboard/file_info.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 namespace extensions::api {
 
@@ -81,6 +83,19 @@ class DeveloperPrivateAPIFunction : public ExtensionFunction {
   const Extension* GetEnabledExtensionById(const ExtensionId& id);
 };
 
+class DeveloperPrivateAutoUpdateFunction : public DeveloperPrivateAPIFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.autoUpdate",
+                             DEVELOPERPRIVATE_AUTOUPDATE)
+
+ protected:
+  ~DeveloperPrivateAutoUpdateFunction() override;
+  ResponseAction Run() override;
+
+ private:
+  void OnComplete();
+};
+
 class DeveloperPrivateGetExtensionsInfoFunction
     : public DeveloperPrivateAPIFunction {
  public:
@@ -125,6 +140,26 @@ class DeveloperPrivateGetExtensionInfoFunction
       std::vector<api::developer_private::ExtensionInfo> infos);
 
   std::unique_ptr<ExtensionInfoGenerator> info_generator_;
+};
+
+class DeveloperPrivateGetExtensionSizeFunction
+    : public DeveloperPrivateAPIFunction {
+ public:
+  DeveloperPrivateGetExtensionSizeFunction();
+
+  DeveloperPrivateGetExtensionSizeFunction(
+      const DeveloperPrivateGetExtensionSizeFunction&) = delete;
+  DeveloperPrivateGetExtensionSizeFunction& operator=(
+      const DeveloperPrivateGetExtensionSizeFunction&) = delete;
+
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.getExtensionSize",
+                             DEVELOPERPRIVATE_GETEXTENSIONSIZE)
+
+ private:
+  ~DeveloperPrivateGetExtensionSizeFunction() override;
+  ResponseAction Run() override;
+
+  void OnSizeCalculated(const std::u16string& size);
 };
 
 class DeveloperPrivateGetProfileConfigurationFunction
@@ -381,6 +416,58 @@ class DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction
  private:
   ~DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction()
       override;
+};
+
+class DeveloperPrivateChoosePathFunction
+    : public DeveloperPrivateAPIFunction,
+      public ui::SelectFileDialog::Listener {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.choosePath",
+                             DEVELOPERPRIVATE_CHOOSEPATH)
+  DeveloperPrivateChoosePathFunction();
+
+  // ui::SelectFileDialog::Listener:
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override;
+  void FileSelectionCanceled() override;
+
+  // For testing:
+  void set_accept_dialog_for_testing(bool accept) {
+    accept_dialog_for_testing_ = accept;
+  }
+  void set_selected_file_for_testing(const ui::SelectedFileInfo& file) {
+    selected_file_for_testing_ = file;
+  }
+
+ protected:
+  ~DeveloperPrivateChoosePathFunction() override;
+  ResponseAction Run() override;
+
+ private:
+  // The dialog with the select file picker.
+  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
+
+  // For testing:
+  // Whether to accept or reject the select file dialog without showing it.
+  std::optional<bool> accept_dialog_for_testing_;
+  // File to load when accepting the select file dialog without showing it.
+  std::optional<ui::SelectedFileInfo> selected_file_for_testing_;
+};
+
+class DeveloperPrivateRequestFileSourceFunction
+    : public DeveloperPrivateAPIFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.requestFileSource",
+                             DEVELOPERPRIVATE_REQUESTFILESOURCE)
+  DeveloperPrivateRequestFileSourceFunction();
+
+ protected:
+  ~DeveloperPrivateRequestFileSourceFunction() override;
+  ResponseAction Run() override;
+
+ private:
+  void Finish(const std::string& file_contents);
+
+  std::optional<api::developer_private::RequestFileSource::Params> params_;
 };
 
 class DeveloperPrivateOpenDevToolsFunction

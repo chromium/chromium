@@ -24,6 +24,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
@@ -230,6 +231,8 @@ void ServiceWorkerHost::CreateBlobUrlStoreProvider(
   storage_partition_impl->GetBlobUrlRegistry()->AddReceiver(
       version()->key(), version()->key().origin(),
       GetProcessHost()->GetDeprecatedID(), std::move(receiver),
+      // Storage access can only be granted to dedicated workers.
+      base::BindRepeating([]() -> bool { return false; }),
       !(GetContentClient()->browser()->IsBlobUrlPartitioningEnabled(
           GetProcessHost()->GetBrowserContext())));
 }
@@ -265,8 +268,10 @@ blink::mojom::PermissionStatus ServiceWorkerHost::GetPermissionStatus(
 
   return process->GetBrowserContext()
       ->GetPermissionController()
-      ->GetPermissionStatusForWorker(permission_type, process,
-                                     GetBucketStorageKey().origin());
+      ->GetPermissionStatusForWorker(
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(permission_type),
+          process, GetBucketStorageKey().origin());
 }
 
 void ServiceWorkerHost::BindCacheStorageForBucket(
@@ -289,7 +294,8 @@ void ServiceWorkerHost::BindAIManager(
   auto* process = GetProcessHost();
   if (process) {
     GetContentClient()->browser()->BindAIManager(process->GetBrowserContext(),
-                                                 this, std::move(receiver));
+                                                 this, /*rfh=*/nullptr,
+                                                 std::move(receiver));
   }
 }
 

@@ -257,11 +257,9 @@ BASE_FEATURE(kTriggerNetworkDataMigration,
 // If disabled, the blue border is not used on ChromeOS.
 //
 // Motivation:
-//  The blue border behavior used to cause problems on ChromeOS - see
-//  crbug.com/1320262 for Ash (fixed) and crbug.com/1030925 for Lacros
-//  (relatively old bug - we would like to observe whether it's still
-//  there). This flag is introduced as means of disabling this feature in case
-//  of possible future regressions.
+//  The blue border behavior used to (still does, see below) cause problems on
+//  ChromeOS - see crbug.com/1320262 (fixed). This flag is introduced as means
+//  of disabling this feature in case of possible future regressions.
 //
 // TODO(crbug.com/40198577): Remove this flag once we confirm that blue border
 // works fine on ChromeOS.

@@ -44,10 +44,17 @@ const WrapperTypeInfo& DOMDataView::wrapper_type_info_ =
 DOMDataView* DOMDataView::Create(DOMArrayBufferBase* buffer,
                                  size_t byte_offset,
                                  size_t byte_length) {
+  return MakeGarbageCollected<DOMDataView>(buffer, byte_offset, byte_length);
+}
+
+DOMDataView::DOMDataView(DOMArrayBufferBase* dom_array_buffer,
+                         size_t byte_offset,
+                         size_t byte_length)
+    : DOMArrayBufferView(dom_array_buffer, byte_offset),
+      raw_byte_length_(byte_length) {
   base::CheckedNumeric<size_t> checked_max = byte_offset;
   checked_max += byte_length;
-  CHECK_LE(checked_max.ValueOrDie(), buffer->ByteLength());
-  return MakeGarbageCollected<DOMDataView>(buffer, byte_offset, byte_length);
+  CHECK_LE(checked_max.ValueOrDie(), dom_array_buffer->ByteLength());
 }
 
 v8::Local<v8::Value> DOMDataView::Wrap(ScriptState* script_state) {

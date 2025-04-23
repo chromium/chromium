@@ -4,6 +4,7 @@
 
 import("//build/config/chrome_build.gni")
 import("//chromeos/components/libsegmentation/buildflags.gni")
+import("//services/on_device_model/on_device_model.gni")
 
 declare_args() {
   # This enables building TFLite with XNNPACK. Currently only available for
@@ -17,4 +18,8 @@ declare_args() {
 
   # This enables building TFLite's NNAPI delegate, currently experimental.
   build_tflite_with_nnapi = false
+
+  # This enables building TFLite's GPU delegate with OpenCL, currently
+  # experimental.
+  build_tflite_with_opencl = !enable_ml_internal && (is_linux || is_chromeos)
 }

@@ -25,7 +25,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "remoting/protocol/p2p_datagram_socket.h"
 
-using cricket::PseudoTcp;
+using webrtc::PseudoTcp;
 
 namespace {
 const int kReadBufferSize = 65536;  // Maximum size of a packet.
@@ -34,7 +34,7 @@ const uint16_t kDefaultMtu = 1280;
 
 namespace remoting::protocol {
 
-class PseudoTcpAdapter::Core : public cricket::IPseudoTcpNotify,
+class PseudoTcpAdapter::Core : public webrtc::IPseudoTcpNotify,
                                public base::RefCounted<Core> {
  public:
   explicit Core(std::unique_ptr<P2PDatagramSocket> socket);
@@ -52,15 +52,15 @@ class PseudoTcpAdapter::Core : public cricket::IPseudoTcpNotify,
             const net::NetworkTrafficAnnotationTag& traffic_annotation);
   net::CompletionOnceCallback Connect(net::CompletionOnceCallback callback);
 
-  // cricket::IPseudoTcpNotify interface.
+  // webrtc::IPseudoTcpNotify interface.
   // These notifications are triggered from NotifyPacket.
-  void OnTcpOpen(cricket::PseudoTcp* tcp) override;
-  void OnTcpReadable(cricket::PseudoTcp* tcp) override;
-  void OnTcpWriteable(cricket::PseudoTcp* tcp) override;
+  void OnTcpOpen(webrtc::PseudoTcp* tcp) override;
+  void OnTcpReadable(webrtc::PseudoTcp* tcp) override;
+  void OnTcpWriteable(webrtc::PseudoTcp* tcp) override;
   // This is triggered by NotifyClock or NotifyPacket.
-  void OnTcpClosed(cricket::PseudoTcp* tcp, uint32_t error) override;
+  void OnTcpClosed(webrtc::PseudoTcp* tcp, uint32_t error) override;
   // This is triggered by NotifyClock, NotifyPacket, Recv and Send.
-  WriteResult TcpWritePacket(cricket::PseudoTcp* tcp,
+  WriteResult TcpWritePacket(webrtc::PseudoTcp* tcp,
                              const char* buffer,
                              size_t len) override;
 
@@ -98,7 +98,7 @@ class PseudoTcpAdapter::Core : public cricket::IPseudoTcpNotify,
   net::CompletionOnceCallback read_callback_;
   net::CompletionOnceCallback write_callback_;
 
-  cricket::PseudoTcp pseudo_tcp_;
+  webrtc::PseudoTcp pseudo_tcp_;
   std::unique_ptr<P2PDatagramSocket> socket_;
 
   scoped_refptr<net::IOBuffer> read_buffer_;
@@ -207,7 +207,7 @@ int PseudoTcpAdapter::Core::Write(
 
 net::CompletionOnceCallback PseudoTcpAdapter::Core::Connect(
     net::CompletionOnceCallback callback) {
-  DCHECK_EQ(pseudo_tcp_.State(), cricket::PseudoTcp::TCP_LISTEN);
+  DCHECK_EQ(pseudo_tcp_.State(), webrtc::PseudoTcp::TCP_LISTEN);
 
   // Reference the Core in case a callback deletes the adapter.
   scoped_refptr<Core> core(this);
@@ -308,19 +308,19 @@ void PseudoTcpAdapter::Core::OnTcpClosed(PseudoTcp* tcp, uint32_t error) {
 }
 
 void PseudoTcpAdapter::Core::SetAckDelay(int delay_ms) {
-  pseudo_tcp_.SetOption(cricket::PseudoTcp::OPT_ACKDELAY, delay_ms);
+  pseudo_tcp_.SetOption(webrtc::PseudoTcp::OPT_ACKDELAY, delay_ms);
 }
 
 void PseudoTcpAdapter::Core::SetNoDelay(bool no_delay) {
-  pseudo_tcp_.SetOption(cricket::PseudoTcp::OPT_NODELAY, no_delay ? 1 : 0);
+  pseudo_tcp_.SetOption(webrtc::PseudoTcp::OPT_NODELAY, no_delay ? 1 : 0);
 }
 
 void PseudoTcpAdapter::Core::SetReceiveBufferSize(int32_t size) {
-  pseudo_tcp_.SetOption(cricket::PseudoTcp::OPT_RCVBUF, size);
+  pseudo_tcp_.SetOption(webrtc::PseudoTcp::OPT_RCVBUF, size);
 }
 
 void PseudoTcpAdapter::Core::SetSendBufferSize(int32_t size) {
-  pseudo_tcp_.SetOption(cricket::PseudoTcp::OPT_SNDBUF, size);
+  pseudo_tcp_.SetOption(webrtc::PseudoTcp::OPT_SNDBUF, size);
 }
 
 void PseudoTcpAdapter::Core::SetWriteWaitsForSend(bool write_waits_for_send) {
@@ -338,7 +338,7 @@ void PseudoTcpAdapter::Core::DeleteSocket() {
   socket_.reset();
 }
 
-cricket::IPseudoTcpNotify::WriteResult PseudoTcpAdapter::Core::TcpWritePacket(
+webrtc::IPseudoTcpNotify::WriteResult PseudoTcpAdapter::Core::TcpWritePacket(
     PseudoTcp* tcp,
     const char* buffer,
     size_t len) {

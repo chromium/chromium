@@ -4,6 +4,7 @@
 
 source_set("public") {
   sources = [
+    "public/split_tab_id.h",
     "public/supports_handles.h",
     "public/tab_interface.h",
   ]

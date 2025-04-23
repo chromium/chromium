@@ -19,7 +19,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncDelegate.Deps;
-import org.chromium.chrome.browser.tabmodel.TabWindowManager;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 
 /** Unit tests for the {@link TabGroupSyncDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -31,8 +31,7 @@ public class TabGroupSyncDelegateUnitTest {
 
     @Before
     public void setUp() {
-        TabGroupSyncDelegate.Deps deps = new Deps();
-        deps.tabWindowManager = mTabWindowManager;
+        TabGroupSyncDelegate.Deps deps = new Deps(mTabWindowManager);
         mDelegate = TabGroupSyncDelegate.create(5, deps);
         verify(mTabWindowManager).addObserver(eq(mDelegate));
     }

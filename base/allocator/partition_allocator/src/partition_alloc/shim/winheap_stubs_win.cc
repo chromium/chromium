@@ -13,11 +13,11 @@
 #include <malloc.h>
 #include <new.h>
 
-#include <algorithm>
 #include <climits>
 #include <limits>
 
 #include "partition_alloc/partition_alloc_base/bits.h"
+#include "partition_alloc/partition_alloc_base/cxx_wrapper/algorithm.h"
 #include "partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
 #include "partition_alloc/partition_alloc_check.h"
 

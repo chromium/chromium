@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "components/persistent_cache/backend_params.h"
+#include "components/persistent_cache/entry_metadata.h"
 
 namespace persistent_cache {
 
@@ -79,7 +80,9 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) PersistentCache {
   // Used to add an entry containing `content` and associated with `key`.
   //
   // Thread-safe.
-  void Insert(std::string_view key, base::span<const uint8_t> content);
+  void Insert(std::string_view key,
+              base::span<const uint8_t> content,
+              EntryMetadata metadata = EntryMetadata{});
 
   Backend* GetBackendForTesting();
 

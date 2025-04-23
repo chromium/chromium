@@ -11,7 +11,10 @@
 #include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 namespace schema_constants {

@@ -90,6 +90,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Tab Group Promo Card"/>
   <int value="8" label="Tab Group Sync Promo Card"/>
   <int value="9" label="Quick Delete Promo Card"/>
+  <int value="10" label="History Sync Promo Card"/>
 </enum>
 
 </enums>

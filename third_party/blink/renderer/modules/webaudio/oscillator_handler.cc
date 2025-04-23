@@ -293,7 +293,7 @@ bool OscillatorHandler::CalculateSampleAccuratePhaseIncrements(
 
   bool has_sample_accurate_values = false;
   bool has_frequency_changes = false;
-  float* phase_increments = phase_increments_.Data();
+  base::span<float> phase_increments = phase_increments_.as_span();
 
   float final_scale = periodic_wave_->RateScale();
 
@@ -303,8 +303,8 @@ bool OscillatorHandler::CalculateSampleAccuratePhaseIncrements(
 
     // Get the sample-accurate frequency values and convert to phase increments.
     // They will be converted to phase increments below.
-    frequency_->CalculateSampleAccurateValues(phase_increments,
-                                              frames_to_process);
+    frequency_->CalculateSampleAccurateValues(
+        phase_increments_.as_span().first(frames_to_process));
   } else {
     // Handle ordinary parameter changes if there are no scheduled changes.
     float frequency = frequency_->FinalValue();
@@ -315,13 +315,15 @@ bool OscillatorHandler::CalculateSampleAccuratePhaseIncrements(
     has_sample_accurate_values = true;
 
     // Get the sample-accurate detune values.
-    float* detune_values =
-        has_frequency_changes ? detune_values_.Data() : phase_increments;
-    detune_->CalculateSampleAccurateValues(detune_values, frames_to_process);
+    base::span<float> detune_values =
+        has_frequency_changes
+            ? detune_values_.as_span().first(frames_to_process)
+            : phase_increments;
+    detune_->CalculateSampleAccurateValues(detune_values);
 
     // Convert from cents to rate scalar.
     float k = 1.0 / 1200;
-    vector_math::Vsmul(detune_values, 1, &k, detune_values, 1,
+    vector_math::Vsmul(detune_values.data(), 1, &k, detune_values.data(), 1,
                        frames_to_process);
     for (unsigned i = 0; i < frames_to_process; ++i) {
       detune_values[i] = std::exp2(detune_values[i]);
@@ -329,8 +331,8 @@ bool OscillatorHandler::CalculateSampleAccuratePhaseIncrements(
 
     if (has_frequency_changes) {
       // Multiply frequencies by detune scalings.
-      vector_math::Vmul(detune_values, 1, phase_increments, 1, phase_increments,
-                        1, frames_to_process);
+      vector_math::Vmul(detune_values.data(), 1, phase_increments.data(), 1,
+                        phase_increments.data(), 1, frames_to_process);
     }
   } else {
     // Handle ordinary parameter changes if there are no scheduled
@@ -341,11 +343,11 @@ bool OscillatorHandler::CalculateSampleAccuratePhaseIncrements(
   }
 
   if (has_sample_accurate_values) {
-    ClampFrequency(phase_increments, frames_to_process,
+    ClampFrequency(phase_increments.data(), frames_to_process,
                    Context()->sampleRate() / 2);
     // Convert from frequency to wavetable increment.
-    vector_math::Vsmul(phase_increments, 1, &final_scale, phase_increments, 1,
-                       frames_to_process);
+    vector_math::Vsmul(phase_increments.data(), 1, &final_scale,
+                       phase_increments.data(), 1, frames_to_process);
   }
 
   return has_sample_accurate_values;

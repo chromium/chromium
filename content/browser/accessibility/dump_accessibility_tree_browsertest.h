@@ -43,7 +43,7 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
 
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
-  std::vector<std::string> Dump(ui::AXMode mode) override;
+  std::vector<std::string> Dump() override;
 
 // Convenience macro to define test types without special treatment.
 #define TEST_TYPE(type)                                             \
@@ -67,12 +67,6 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
   void RunOnScreenTest(const base::FilePath::CharType* file_path) {
     RunTypedTest<kHtml>(file_path, ui::kAXModeOnScreen);
   }
-
-  void RunAriaTestMinusHtmlMode(const base::FilePath::CharType* file_path) {
-    RunTypedTest<kAria>(file_path,
-                        ui::kAXModeComplete);  // & ~ui::AXMode::kHTML);
-  }
-
 
   // TODO(accessibility): Replace all tests using RunPopoverHintTest to just
   // RunHtmlTest when Popover hints and interest targets are enabled by default.

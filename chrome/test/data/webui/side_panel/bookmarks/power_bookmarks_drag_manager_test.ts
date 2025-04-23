@@ -15,44 +15,50 @@ import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 
 suite('SidePanelPowerBookmarkDragManagerTest', () => {
   let delegate: PowerBookmarksListElement;
+  let bookmarksApi: TestBookmarksApiProxy;
+
   const allBookmarks: BookmarksTreeNode[] = [
     {
-      id: '2',
-      parentId: '0',
+      id: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
+      parentId: 'SIDE_PANEL_ROOT_BOOKMARK_ID',
       index: 0,
       title: 'Other Bookmarks',
       url: null,
       dateAdded: null,
       dateLastUsed: null,
+      unmodifiable: false,
       children: [
         {
           id: '3',
-          parentId: '2',
+          parentId: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
           index: 0,
           title: 'First child bookmark',
           url: 'http://child/bookmark/1/',
           dateAdded: 1,
           dateLastUsed: null,
+          unmodifiable: false,
           children: null,
         },
         {
           id: '4',
-          parentId: '2',
+          parentId: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
           index: 1,
           title: 'Second child bookmark',
           url: 'http://child/bookmark/2/',
           dateAdded: 3,
           dateLastUsed: null,
+          unmodifiable: false,
           children: null,
         },
         {
           id: '5',
-          parentId: '2',
+          parentId: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
           index: 2,
           title: 'Child folder',
           url: null,
           dateAdded: 2,
           dateLastUsed: null,
+          unmodifiable: false,
           children: [
             {
               id: '6',
@@ -62,6 +68,7 @@ suite('SidePanelPowerBookmarkDragManagerTest', () => {
               url: 'http://nested/bookmark/',
               dateAdded: 4,
               dateLastUsed: null,
+              unmodifiable: false,
               children: null,
             },
           ],
@@ -77,7 +84,7 @@ suite('SidePanelPowerBookmarkDragManagerTest', () => {
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-    const bookmarksApi = new TestBookmarksApiProxy();
+    bookmarksApi = new TestBookmarksApiProxy();
     bookmarksApi.setAllBookmarks(allBookmarks);
     BookmarksApiProxyImpl.setInstance(bookmarksApi);
 
@@ -146,14 +153,7 @@ suite('SidePanelPowerBookmarkDragManagerTest', () => {
   });
 
   test('DropsIntoFolder', () => {
-    let calledId;
-    let calledIndex;
     chrome.bookmarkManagerPrivate.startDrag = () => {};
-    chrome.bookmarkManagerPrivate.drop = (id, index) => {
-      calledId = id;
-      calledIndex = index;
-      return Promise.resolve();
-    };
 
     const draggableElements = getDraggableElements();
     const draggedBookmark = draggableElements[1]!;
@@ -171,7 +171,7 @@ suite('SidePanelPowerBookmarkDragManagerTest', () => {
     dropFolder.dispatchEvent(
         new DragEvent('drop', {bubbles: true, composed: true}));
 
-    assertEquals('5', calledId);
-    assertEquals(undefined, calledIndex);
+    assertEquals(1, bookmarksApi.getCallCount('dropBookmarks'));
+    assertEquals('5', bookmarksApi.getArgs('dropBookmarks')[0][0]);
   });
 });

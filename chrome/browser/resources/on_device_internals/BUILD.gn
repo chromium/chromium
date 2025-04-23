@@ -21,7 +21,7 @@ build_webui("build") {
 
   static_files = [ "on_device_internals.html" ]
 
-  non_web_component_files = [
+  ts_files = [
     "app.html.ts",
     "app.ts",
     "browser_proxy.ts",

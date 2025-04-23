@@ -43,6 +43,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
@@ -560,8 +561,8 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
             iconView.setVisibility(View.VISIBLE);
 
             final @ColorInt int color =
-                ColorPickerUtils.getTabGroupColorPickerItemColor(
-                    mActivity, colorId, /* isIncognito= */ false);
+                    TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
+                            mActivity, colorId, /* isIncognito= */ false);
 
             ((GradientDrawable) iconView.getBackground()).setColor(color);
         }

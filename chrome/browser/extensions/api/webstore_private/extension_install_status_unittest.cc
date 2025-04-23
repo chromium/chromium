@@ -15,10 +15,13 @@
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -27,12 +30,14 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/permission_set.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 using extensions::mojom::APIPermissionID;
 
 namespace extensions {
 namespace {
 constexpr char kExtensionId[] = "abcdefghijklmnopabcdefghijklmnop";
+
 constexpr char kExtensionSettingsWithUpdateUrlBlocking[] = R"({
   "update_url:https://clients2.google.com/service/update2/crx": {
     "installation_mode": "blocked"
@@ -53,16 +58,32 @@ constexpr char kExtensionSettingsWithIdBlocked[] = R"({
 
 }  // namespace
 
-class ExtensionInstallStatusTest : public BrowserWithTestWindowTest {
+class ExtensionInstallStatusTest : public testing::Test {
  public:
   ExtensionInstallStatusTest() = default;
 
   ExtensionInstallStatusTest(const ExtensionInstallStatusTest&) = delete;
   ExtensionInstallStatusTest& operator=(const ExtensionInstallStatusTest&) =
       delete;
+  ~ExtensionInstallStatusTest() override = default;
 
-  std::string GenerateArgs(const char* id) {
-    return base::StringPrintf(R"(["%s"])", id);
+  // testing::Test:
+  void SetUp() override {
+    // These tests rely on more elaborate Profile setup than a generic
+    // TestingProfile provides. Use TestingProfileManager to make the Profile.
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+    // `profile_manager_` owns the returned Profile.
+    profile_ = profile_manager_->CreateTestingProfile(
+        TestingProfile::kDefaultProfileUserName, /*prefs=*/nullptr,
+        /*user_name=*/std::u16string(),
+        /*avatar_id=*/0, /*testing_factories=*/{});
+  }
+
+  void TearDown() override {
+    profile_ = nullptr;
+    profile_manager_.reset();
   }
 
   scoped_refptr<const Extension> CreateExtension(const ExtensionId& id) {
@@ -94,6 +115,13 @@ class ExtensionInstallStatusTest : public BrowserWithTestWindowTest {
     profile()->GetTestingPrefService()->SetDict(
         prefs::kCloudExtensionRequestIds, std::move(id_values));
   }
+
+  TestingProfile* profile() { return profile_; }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
 };
 
 TEST_F(ExtensionInstallStatusTest, ExtensionEnabled) {
@@ -105,13 +133,6 @@ TEST_F(ExtensionInstallStatusTest, ExtensionEnabled) {
 TEST_F(ExtensionInstallStatusTest, ExtensionDisabled) {
   ExtensionRegistry::Get(profile())->AddDisabled(CreateExtension(kExtensionId));
   EXPECT_EQ(ExtensionInstallStatus::kDisabled,
-            GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
-}
-
-TEST_F(ExtensionInstallStatusTest, ExtensionInstalledButDisabledByPolicy) {
-  ExtensionRegistry::Get(profile())->AddDisabled(CreateExtension(kExtensionId));
-  SetExtensionSettings(kExtensionSettingsWithIdBlocked);
-  EXPECT_EQ(ExtensionInstallStatus::kBlockedByPolicy,
             GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
 }
 
@@ -131,6 +152,13 @@ TEST_F(ExtensionInstallStatusTest, ExtensionBlocklisted) {
 
 TEST_F(ExtensionInstallStatusTest, ExtensionAllowed) {
   EXPECT_EQ(ExtensionInstallStatus::kInstallable,
+            GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
+}
+
+TEST_F(ExtensionInstallStatusTest, ExtensionInstalledButDisabledByPolicy) {
+  ExtensionRegistry::Get(profile())->AddDisabled(CreateExtension(kExtensionId));
+  SetExtensionSettings(kExtensionSettingsWithIdBlocked);
+  EXPECT_EQ(ExtensionInstallStatus::kBlockedByPolicy,
             GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
 }
 
@@ -553,6 +581,9 @@ TEST_F(ExtensionInstallStatusTest, NonWebstoreUpdateUrlPolicy) {
                               URLPatternSet(), URLPatternSet())));
 }
 
+// These tests have dependencies on ManifestV2ExperimentManager which is not
+// supported on Android (which only supports manifest V3).
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 class ExtensionInstallStatusTestWithoutMv2Deprecation
     : public ExtensionInstallStatusTest {
  public:
@@ -620,6 +651,7 @@ TEST_F(ExtensionInstallStatusTestWithoutMv2Deprecation,
                 kExtensionId, profile(), Manifest::Type::TYPE_EXTENSION,
                 PermissionSet(), /*manifest_version=*/3));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // If an existing, installed extension is disabled due to corruption, then
 // GetWebstoreExtensionInstallStatus() should return kCorrupted.
@@ -636,11 +668,13 @@ class SupervisedUserExtensionInstallStatusTest
  public:
   SupervisedUserExtensionInstallStatusTest() {
     std::vector<base::test::FeatureRef> enabled_features;
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_DESKTOP_ANDROID)
     enabled_features.push_back(
         supervised_user::
             kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_DESKTOP_ANDROID)
     enabled_features.push_back(
         supervised_user::
             kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
@@ -704,6 +738,7 @@ TEST_F(
             GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // A test suite to toggle the behavior of the MV2 deprecation experiment.
 class ExtensionInstallStatusTestWithMV2Deprecation
     : public ExtensionInstallStatusTest,
@@ -799,5 +834,6 @@ TEST_P(ExtensionInstallStatusTestWithMV2DeprecationEnabled,
                 kExtensionId, profile(), Manifest::Type::TYPE_EXTENSION,
                 PermissionSet(), /*manifest_version=*/2));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace extensions

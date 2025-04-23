@@ -142,16 +142,6 @@ class ExternallyManagedAppManager {
   virtual void Install(ExternalInstallOptions install_options,
                        OnceInstallCallback callback);
 
-  // Adds a task to the queue of operations for each ExternalInstallOptions in
-  // |install_options_list|. Runs |callback| with the URL of the corresponding
-  // ExternalInstallOptions in |install_options_list| and with the id of the
-  // installed app or an empty string if the installation fails. Runs |callback|
-  // for every completed installation - whether or not the installation actually
-  // succeeded.
-  virtual void InstallApps(
-      std::vector<ExternalInstallOptions> install_options_list,
-      const RepeatingInstallCallback& callback);
-
   // Installs an app for each ExternalInstallOptions in
   // |desired_apps_install_options| and uninstalls any apps in
   // GetInstalledAppUrls(install_source) that are not in
@@ -219,6 +209,15 @@ class ExternallyManagedAppManager {
     std::map<GURL, InstallResult> install_results;
     std::map<GURL, webapps::UninstallResultCode> uninstall_results;
   };
+
+  // Adds a task to the queue of operations for each ExternalInstallOptions in
+  // |install_options_list|. Runs |callback| with the URL of the corresponding
+  // ExternalInstallOptions in |install_options_list| and with the id of the
+  // installed app or an empty string if the installation fails. Runs |callback|
+  // for every completed installation - whether or not the installation actually
+  // succeeded.
+  void InstallApps(std::vector<ExternalInstallOptions> install_options_list,
+                   const RepeatingInstallCallback& callback);
 
   // Adds a task to the queue of operations for each GURL in
   // |uninstall_urls|. Runs |callback| with the URL of the corresponding

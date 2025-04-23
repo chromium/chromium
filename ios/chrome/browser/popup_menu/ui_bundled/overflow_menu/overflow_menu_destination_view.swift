@@ -13,10 +13,17 @@ struct IsPressedStyle: ButtonStyle {
 
   @ViewBuilder
   func makeBody(configuration: Configuration) -> some View {
-    configuration.label
-      .onChange(of: configuration.isPressed) { newValue in
-        isPressed = newValue
-      }
+    if #available(iOS 17, *) {
+      configuration.label
+        .onChange(of: configuration.isPressed) { oldValue, newValue in
+          isPressed = newValue
+        }
+    } else {
+      configuration.label
+        .onChange(of: configuration.isPressed) { newValue in
+          isPressed = newValue
+        }
+    }
   }
 }
 

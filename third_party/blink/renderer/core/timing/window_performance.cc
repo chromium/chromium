@@ -1379,6 +1379,9 @@ void WindowPerformance::AddContainerTiming(
   if (HasObserverFor(PerformanceEntry::kContainer)) {
     NotifyObserversOfContainerEntry(*entry);
   }
+  if (!IsContainerTimingBufferFull()) {
+    AddToContainerTimingBuffer(*entry);
+  }
 }
 
 void WindowPerformance::DispatchFirstInputTiming(

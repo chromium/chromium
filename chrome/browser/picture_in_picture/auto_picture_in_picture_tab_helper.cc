@@ -25,6 +25,7 @@
 #include "content/public/browser/media_session_service.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/user_activation_state.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -126,6 +127,10 @@ void AutoPictureInPictureTabHelper::MaybeRecordPictureInPictureChanged(
         "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
         "VideoConferencing.TotalTime",
         total_pip_time, base::Milliseconds(1), base::Minutes(2), 50);
+    UMA_HISTOGRAM_CUSTOM_TIMES(
+        "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
+        "VideoConferencing.TotalTimeV2",
+        total_pip_time, base::Milliseconds(1), base::Hours(10), 100);
     AccumulateTotalPipTimeForSession(total_pip_time,
                                      /*is_video_conferencing=*/true);
   } else if (auto_pip_trigger_reason_ ==
@@ -134,6 +139,10 @@ void AutoPictureInPictureTabHelper::MaybeRecordPictureInPictureChanged(
         "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
         "MediaPlayback.TotalTime",
         total_pip_time, base::Milliseconds(1), base::Minutes(2), 50);
+    UMA_HISTOGRAM_CUSTOM_TIMES(
+        "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
+        "MediaPlayback.TotalTimeV2",
+        total_pip_time, base::Milliseconds(1), base::Hours(10), 100);
     AccumulateTotalPipTimeForSession(total_pip_time,
                                      /*is_video_conferencing=*/false);
   }
@@ -151,6 +160,11 @@ void AutoPictureInPictureTabHelper::MaybeRecordTotalPipTimeForSession() {
         "VideoConferencing.TotalTimeForSession",
         total_video_conferencing_pip_time_for_session_.value(),
         base::Milliseconds(1), base::Minutes(2), 50);
+    base::UmaHistogramCustomTimes(
+        "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
+        "VideoConferencing.TotalTimeForSessionV2",
+        total_video_conferencing_pip_time_for_session_.value(),
+        base::Milliseconds(1), base::Hours(10), 100);
   }
 
   if (total_media_playback_pip_time_for_session_) {
@@ -159,6 +173,11 @@ void AutoPictureInPictureTabHelper::MaybeRecordTotalPipTimeForSession() {
         "MediaPlayback.TotalTimeForSession",
         total_media_playback_pip_time_for_session_.value(),
         base::Milliseconds(1), base::Minutes(2), 50);
+    base::UmaHistogramCustomTimes(
+        "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
+        "MediaPlayback.TotalTimeForSessionV2",
+        total_media_playback_pip_time_for_session_.value(),
+        base::Milliseconds(1), base::Hours(10), 100);
   }
 
   total_video_conferencing_pip_time_for_session_ = std::nullopt;
@@ -278,6 +297,10 @@ void AutoPictureInPictureTabHelper::MediaSessionActionsChanged(
 void AutoPictureInPictureTabHelper::MaybeEnterAutoPictureInPicture() {
   if (!IsEligibleForAutoPictureInPicture(
           /*should_record_blocking_metrics=*/true)) {
+    if (content::MediaSession* media_session =
+            content::MediaSession::GetIfExists(web_contents())) {
+      media_session->ReportAutoPictureInPictureInfoChanged();
+    }
     return;
   }
   auto_picture_in_picture_activation_time_ =
@@ -530,6 +553,19 @@ AutoPictureInPictureTabHelper::GetPrimaryMainRoutedFrame() const {
   }
 
   auto* rfh = media_session->GetRoutedFrame();
+
+  // Default to using the WebContents primary main frame for browser initiated
+  // auto picture in picture, where the MediaSession routed frame may not exist
+  // (a MediaSession routed frame is guaranteed to exist if the user manually
+  // registered a MediaSession `enterpictureinpicture` action handler). This is
+  // in line with the current requirement of only allowing auto picture in
+  // picture from the top frame.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kBrowserInitiatedAutomaticPictureInPicture) &&
+      rfh == nullptr) {
+    rfh = web_contents()->GetPrimaryMainFrame();
+  }
+
   if (!rfh || !rfh->IsInPrimaryMainFrame()) {
     return std::nullopt;
   }
@@ -558,6 +594,19 @@ AutoPictureInPictureTabHelper::GetAutoPipReason() const {
   }
 
   return media::PictureInPictureEventsInfo::AutoPipReason::kUnknown;
+}
+
+media::PictureInPictureEventsInfo::AutoPipInfo
+AutoPictureInPictureTabHelper::GetAutoPipInfo() const {
+  return media::PictureInPictureEventsInfo::AutoPipInfo{
+      .auto_pip_reason = GetAutoPipTriggerReason(),
+      .has_audio_focus = has_audio_focus_,
+      .is_playing = is_playing_,
+      .was_recently_audible = WasRecentlyAudible(),
+      .has_safe_url = has_safe_url_,
+      .meets_media_engagement_conditions = MeetsMediaEngagementConditions(),
+      .blocked_due_to_content_setting = blocked_due_to_content_setting_,
+  };
 }
 
 media::PictureInPictureEventsInfo::AutoPipReason

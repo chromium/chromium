@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -98,6 +99,7 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager> {
 
   // In the coords of resize_scrollable_area_.
   gfx::Vector2d offset_from_resize_corner_;
+  gfx::Transform resize_position_to_size_transform_;
 };
 
 }  // namespace blink

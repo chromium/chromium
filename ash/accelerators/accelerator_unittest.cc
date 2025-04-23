@@ -5,6 +5,7 @@
 #include "ui/base/accelerators/accelerator.h"
 
 #include <memory>
+#include <string_view>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/app_list/test/app_list_test_helper.h"
@@ -38,6 +39,10 @@
 namespace ash {
 
 namespace {
+
+constexpr std::string_view kNoAssistantForNewEntryPoint =
+    "Assistant is not available if new entry point is enabled. "
+    "crbug.com/388361414";
 
 // A network observer to watch for the toggle wifi events.
 class TestNetworkObserver : public NetworkObserver {
@@ -188,7 +193,9 @@ TEST_F(AcceleratorTest, ToggleAppList) {
 }
 
 TEST_F(AcceleratorTest, SearchPlusAWithNewEntryPointDisabled) {
-  ASSERT_FALSE(ash::assistant::features::IsNewEntryPointEnabled());
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    GTEST_SKIP() << kNoAssistantForNewEntryPoint;
+  }
 
   base::UserActionTester user_action_tester;
 
@@ -208,7 +215,9 @@ TEST_F(AcceleratorTest, SearchPlusAWithNewEntryPointDisabled) {
 }
 
 TEST_F(AcceleratorTest, AssistantKeyWithNewEntryPointDisabled) {
-  ASSERT_FALSE(ash::assistant::features::IsNewEntryPointEnabled());
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    GTEST_SKIP() << kNoAssistantForNewEntryPoint;
+  }
 
   base::UserActionTester user_action_tester;
 

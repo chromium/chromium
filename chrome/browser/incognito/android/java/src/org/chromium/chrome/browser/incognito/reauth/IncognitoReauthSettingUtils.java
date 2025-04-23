@@ -14,13 +14,16 @@ import android.text.style.ForegroundColorSpan;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.incognito.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.text.SpanApplier;
 
 /** A utility class to provide helper methods for the Incognito re-authentication lock setting. */
+@NullMarked
 public class IncognitoReauthSettingUtils {
-    private static Boolean sIsDeviceScreenLockEnabledForTesting;
+    private static @Nullable Boolean sIsDeviceScreenLockEnabledForTesting;
 
     /**
      * @return A boolean indicating if the screen lock is enabled in device or not.

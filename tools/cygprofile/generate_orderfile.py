@@ -9,8 +9,8 @@ Build trichrome_chrome_64_32_bundle and install it on device.
 
 Run this script with:
 $ tools/cygprofile/generate_orderfile.py -C out/orderfile-arm64 \
-  --android-browser android-trichrome-chrome-64-32-bundle \
-  --target-arch arm64
+    --android-browser android-trichrome-chrome-64-32-bundle \
+    --target-arch arm64
 
 The orderfiles should be located in out/orderfile-arm64/orderfiles.
 """
@@ -78,9 +78,23 @@ def _GetUnpatchedOrderfileFilename(options):
 def GenerateAndProcessProfile(options):
   """Invokes a script to merge the per-thread traces into one file.
 
-    The produced list of offsets is saved in the orderfile.
-    """
+  The produced list of offsets is saved in the orderfile.
+  """
+  if options.verbosity >= 2:
+    level = logging.DEBUG
+  elif options.verbosity == 1:
+    level = logging.INFO
+  else:
+    level = logging.WARNING
+  logging.basicConfig(level=level,
+                      format='%(levelname).1s %(relativeCreated)6d %(message)s')
+
   logging.info('Generate Profile Data')
+
+  # Ensure that the output directory is an absolute path.
+  options.out_dir = options.out_dir.resolve(strict=True)
+  logging.info('Using options.out_dir=%s', options.out_dir)
+
   devices = device_utils.DeviceUtils.HealthyDevices()
   assert devices, 'Expected at least one connected device'
   device = devices[0]

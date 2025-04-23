@@ -1,0 +1,5 @@
+include_rules = [
+  # go/keep-sorted start
+  "+components/affiliations",
+  # go/keep-sorted end
+]

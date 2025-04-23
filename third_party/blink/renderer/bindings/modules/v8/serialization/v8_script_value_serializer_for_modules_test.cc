@@ -207,7 +207,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripRTCCertificate) {
   V8TestingScope scope;
 
   // Make a certificate with the existing key above.
-  rtc::scoped_refptr<rtc::RTCCertificate> web_certificate =
+  webrtc::scoped_refptr<webrtc::RTCCertificate> web_certificate =
       certificate_generator->FromPEM(WebString::FromUTF8(kEcdsaPrivateKey),
                                      WebString::FromUTF8(kEcdsaCertificate));
   ASSERT_TRUE(web_certificate);
@@ -221,7 +221,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripRTCCertificate) {
   RTCCertificate* new_certificate =
       V8RTCCertificate::ToWrappable(scope.GetIsolate(), result);
   ASSERT_NE(new_certificate, nullptr);
-  rtc::RTCCertificatePEM pem = new_certificate->Certificate()->ToPEM();
+  webrtc::RTCCertificatePEM pem = new_certificate->Certificate()->ToPEM();
   EXPECT_EQ(kEcdsaPrivateKey, pem.private_key());
   EXPECT_EQ(kEcdsaCertificate, pem.certificate());
 }
@@ -247,7 +247,7 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeRTCCertificate) {
   RTCCertificate* new_certificate =
       V8RTCCertificate::ToWrappable(scope.GetIsolate(), result);
   ASSERT_NE(new_certificate, nullptr);
-  rtc::RTCCertificatePEM pem = new_certificate->Certificate()->ToPEM();
+  webrtc::RTCCertificatePEM pem = new_certificate->Certificate()->ToPEM();
   EXPECT_EQ(kEcdsaPrivateKey, pem.private_key());
   EXPECT_EQ(kEcdsaCertificate, pem.certificate());
 }

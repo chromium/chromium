@@ -35,8 +35,9 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
       'contextMenuRemoveFromBookmarksBar',
       'contextMenuDelete',
       'createFolder',
-      'editBookmarks',
       'deleteBookmarks',
+      'dropBookmarks',
+      'editBookmarks',
       'renameBookmark',
       'setSortOrder',
       'setViewType',
@@ -123,15 +124,20 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
     this.methodCalled('cutBookmark', id);
   }
 
+  deleteBookmarks(ids: string[]) {
+    this.methodCalled('deleteBookmarks', ids);
+    return Promise.resolve();
+  }
+
+  dropBookmarks(parentId: string) {
+    this.methodCalled('dropBookmarks', parentId);
+    return Promise.resolve();
+  }
+
   editBookmarks(
       ids: string[], newTitle: string|undefined, newUrl: string|undefined,
       newParentId: string|undefined) {
     this.methodCalled('editBookmarks', ids, newTitle, newUrl, newParentId);
-  }
-
-  deleteBookmarks(ids: string[]) {
-    this.methodCalled('deleteBookmarks', ids);
-    return Promise.resolve();
   }
 
   pasteToBookmark(parentId: string, destinationId?: string): Promise<void> {

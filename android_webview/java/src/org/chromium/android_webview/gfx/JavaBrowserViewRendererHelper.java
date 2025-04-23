@@ -10,18 +10,22 @@ import android.graphics.Canvas;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Provides auxiliary methods related to Picture objects and native SkPictures. */
 @JNINamespace("android_webview")
+@NullMarked
 public class JavaBrowserViewRendererHelper {
     private static final String LOGTAG = "JavaBrowserViewRendererHelper";
 
     /**
      * Provides a Bitmap object with a given width and height used for auxiliary rasterization.
-     * |canvas| is optional and if supplied indicates the Canvas that this Bitmap will be
-     * drawn into. Note the Canvas will not be modified in any way.
+     * |canvas| is optional and if supplied indicates the Canvas that this Bitmap will be drawn
+     * into. Note the Canvas will not be modified in any way.
      */
     @CalledByNative
-    private static Bitmap createBitmap(int width, int height, Canvas canvas) {
+    private static @Nullable Bitmap createBitmap(int width, int height, Canvas canvas) {
         if (canvas != null) {
             // When drawing into a Canvas, there is a maximum size imposed
             // on Bitmaps that can be drawn. Respect that limit.

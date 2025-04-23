@@ -665,9 +665,9 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest,
       u"foo", u"bar");
 
   reauth_dialog_helper->WaitForPrimaryGaiaButtonToBeEnabled();
+  auto saml_waiter = reauth_dialog_helper->CreateSamlPageLoadWaiter();
   reauth_dialog_helper->ClickPrimaryGaiaButton();
-
-  reauth_dialog_helper->WaitForSamlIdpPageLoad();
+  saml_waiter->Wait();
 
   // Fill-in the SAML IdP form and submit.
   test::JSChecker signin_frame_js = reauth_dialog_helper->SigninFrameJS();
@@ -759,8 +759,9 @@ class AutoStartTest : public LockscreenWebUiTest {
     EXPECT_TRUE(reauth_dialog_helper);
 
     // Wait for the webview and SAML IdP page to load.
+    auto saml_waiter = reauth_dialog_helper->CreateSamlPageLoadWaiter();
     reauth_dialog_helper->WaitForSigninWebview();
-    reauth_dialog_helper->WaitForSamlIdpPageLoad();
+    saml_waiter->Wait();
   }
 
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider;
@@ -802,8 +803,9 @@ IN_PROC_BROWSER_TEST_F(AutoStartTest, ChangeIdPButtonPresence) {
   EXPECT_TRUE(reauth_dialog_helper);
 
   // Wait for the webview and SAML IdP page to load.
+  auto saml_waiter = reauth_dialog_helper->CreateSamlPageLoadWaiter();
   reauth_dialog_helper->WaitForSigninWebview();
-  reauth_dialog_helper->WaitForSamlIdpPageLoad();
+  saml_waiter->Wait();
 
   // EGAI button should be visible during the AutoStart flow,
   // but not during normal reauth.
@@ -813,9 +815,10 @@ IN_PROC_BROWSER_TEST_F(AutoStartTest, ChangeIdPButtonPresence) {
   // With reauth endpoint we start on a Gaia page where user needs to click
   // "Next" before being redirected to SAML IdP page.
   reauth_dialog_helper->WaitForPrimaryGaiaButtonToBeEnabled();
+  auto new_saml_waiter = reauth_dialog_helper->CreateSamlPageLoadWaiter();
   reauth_dialog_helper->ClickPrimaryGaiaButton();
 
-  reauth_dialog_helper->WaitForSamlIdpPageLoad();
+  new_saml_waiter->Wait();
   reauth_dialog_helper->ExpectChangeIdPButtonHidden();
 }
 

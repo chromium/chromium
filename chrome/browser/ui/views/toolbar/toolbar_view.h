@@ -212,7 +212,7 @@ class ToolbarView : public views::AccessiblePaneView,
   bool AcceleratorPressed(const ui::Accelerator& acc) override;
   void ChildPreferredSizeChanged(views::View* child) override;
 
-  friend class AvatarToolbarButtonBrowserTest;
+  friend class AvatarToolbarButtonBaseBrowserTest;
 
  protected:
   // This controls Toolbar, LocationBar and CustomTabBar visibility.

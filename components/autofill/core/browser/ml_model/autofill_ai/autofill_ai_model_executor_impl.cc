@@ -41,6 +41,7 @@ AutofillAiModelExecutorImpl::~AutofillAiModelExecutorImpl() = default;
 
 void AutofillAiModelExecutorImpl::GetPredictions(
     FormData form_data,
+    base::OnceCallback<void(const FormGlobalId&)> on_model_executed,
     std::optional<optimization_guide::proto::AnnotatedPageContent>
         annotated_page_content) {
   // If there is already an ongoing request for the same form signature, then
@@ -66,11 +67,13 @@ void AutofillAiModelExecutorImpl::GetPredictions(
         *std::move(annotated_page_content);
   }
 
+  FormGlobalId form_id = form_data.global_id();
   optimization_guide::ModelExecutionCallbackWithLogging<
       optimization_guide::proto::FormsClassificationsLoggingData>
       wrapper_callback =
           base::BindOnce(&AutofillAiModelExecutorImpl::OnModelExecuted,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(form_data));
+                         weak_ptr_factory_.GetWeakPtr(), std::move(form_data))
+              .Then(base::BindOnce(std::move(on_model_executed), form_id));
   optimization_guide::ExecuteModelWithLogging(
       &model_executor_.get(),
       optimization_guide::ModelBasedCapabilityKey::kFormsClassifications,

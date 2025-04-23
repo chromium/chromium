@@ -55,6 +55,20 @@ void AddElementIdentifierToLabel(views::Label& label, size_t index) {
   label.SetProperty(views::kElementIdentifierKey, id);
 }
 
+std::string GetPermissionActionString(
+    ExclusiveAccessPermissionPromptView::ButtonType button) {
+  switch (button) {
+    case ExclusiveAccessPermissionPromptView::ButtonType::kAlwaysAllow:
+      return "Accepted";
+    case ExclusiveAccessPermissionPromptView::ButtonType::kAllowThisTime:
+      return "AcceptedOnce";
+    case ExclusiveAccessPermissionPromptView::ButtonType::kNeverAllow:
+      return "Denied";
+    default:
+      NOTREACHED();
+  }
+}
+
 }  // namespace
 
 ExclusiveAccessPermissionPromptView::ExclusiveAccessPermissionPromptView(
@@ -99,6 +113,9 @@ void ExclusiveAccessPermissionPromptView::RunButtonCallback(int button_id) {
     return;
   }
   ButtonType button = GetButtonType(button_id);
+  permissions::PermissionUmaUtil::RecordActionBrowserAlwaysActive(
+      request_type(), GetPermissionActionString(button),
+      record_browser_always_active_value());
   if (button == ButtonType::kAllowThisTime) {
     delegate_->AcceptThisTime();
   } else if (button == ButtonType::kAlwaysAllow) {
@@ -283,6 +300,8 @@ void ExclusiveAccessPermissionPromptView::AddAllowThisTimeButton(
 
 void ExclusiveAccessPermissionPromptView::ClosingPermission() {
   if (delegate_) {
+    permissions::PermissionUmaUtil::RecordActionBrowserAlwaysActive(
+        request_type(), "Dismissed", record_browser_always_active_value());
     delegate_->Dismiss();
   }
 }

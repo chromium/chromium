@@ -36,6 +36,7 @@ source_set("tab_contents") {
     "//url",
   ]
   if (!is_android) {
+    deps = [ "//chrome/browser/ui/tabs:tab_strip" ]
     public_deps += [ "//chrome/browser/ui:browser_list" ]
   }
 }

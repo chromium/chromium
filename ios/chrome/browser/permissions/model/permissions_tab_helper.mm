@@ -180,5 +180,3 @@ void PermissionsTabHelper::UpdateIsInfoBarAccepted() {
   }
   static_cast<InfoBarIOS*>(infobar_)->set_accepted(accepted);
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(PermissionsTabHelper)

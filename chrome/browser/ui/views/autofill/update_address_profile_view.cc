@@ -37,17 +37,16 @@ constexpr int kIconSize = 16;
 constexpr int kValuesLabelWidth = 190;
 
 const gfx::VectorIcon& GetVectorIconForType(FieldType type) {
-  switch (type) {
-    case NAME_FULL:
-    case ALTERNATIVE_FULL_NAME:
+  switch (GetAddressUIComponentIconTypeForFieldType(type)) {
+    case AddressUIComponentIconType::kName:
       return kAccountCircleIcon;
-    case ADDRESS_HOME_ADDRESS:
+    case AddressUIComponentIconType::kAddress:
       return vector_icons::kLocationOnIcon;
-    case EMAIL_ADDRESS:
+    case AddressUIComponentIconType::kEmail:
       return vector_icons::kEmailIcon;
-    case PHONE_HOME_WHOLE_NUMBER:
+    case AddressUIComponentIconType::kPhone:
       return vector_icons::kCallIcon;
-    default:
+    case AddressUIComponentIconType::kNoIcon:
       NOTREACHED();
   }
 }

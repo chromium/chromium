@@ -6,6 +6,7 @@
 #define ASH_WEBUI_BOCA_UI_BOCA_APP_PAGE_HANDLER_H_
 
 #include <memory>
+#include <string>
 
 #include "ash/webui/boca_ui/mojom/boca.mojom-forward.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom-shared.h"
@@ -15,12 +16,15 @@
 #include "ash/webui/boca_ui/provider/network_info_provider.h"
 #include "ash/webui/boca_ui/provider/tab_info_collector.h"
 #include "ash/webui/boca_ui/webview_auth_handler.h"
+#include "base/containers/queue.h"
 #include "base/functional/callback_forward.h"
+#include "base/thread_annotations.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
+#include "chromeos/ash/components/boca/session_api/update_session_request.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_service.h"
 #include "components/account_id/account_id.h"
 #include "components/sessions/core/session_id.h"
@@ -71,7 +75,7 @@ class BocaAppHandler : public mojom::PageHandler,
                              ExtendSessionDurationCallback callback) override;
   void RemoveStudent(const std::string& id,
                      RemoveStudentCallback callback) override;
-  void AddStudents(const std::vector<std::string>& ids,
+  void AddStudents(const std::vector<mojom::IdentityPtr> students,
                    AddStudentsCallback callback) override;
   void UpdateOnTaskConfig(mojom::OnTaskConfigPtr config,
                           UpdateOnTaskConfigCallback callback) override;
@@ -102,6 +106,8 @@ class BocaAppHandler : public mojom::PageHandler,
                 CloseTabCallback callback) override;
   void OpenFeedbackDialog(OpenFeedbackDialogCallback callback) override;
   void RefreshWorkbook(RefreshWorkbookCallback callback) override;
+  void GetSpeechRecognitionInstallationStatus(
+      GetSpeechRecognitionInstallationStatusCallback callback) override;
 
   // mojom::Page:
   void OnStudentActivityUpdated(
@@ -141,13 +147,25 @@ class BocaAppHandler : public mojom::PageHandler,
   }
 
  private:
+  using UpdateSessionCallback =
+      base::OnceCallback<void(std::optional<mojom::UpdateSessionError>)>;
+
   void UpdateSessionConfig();
-  void OnUpdatedOnTaskConfig(UpdateOnTaskConfigCallback callback,
-                             base::expected<std::unique_ptr<::boca::Session>,
-                                            google_apis::ApiErrorCode> result);
-  void OnUpdatedCaptionConfig(UpdateCaptionConfigCallback callback,
+
+  void OnGetSession(GetSessionCallback callback,
+                    base::expected<std::unique_ptr<::boca::Session>,
+                                   google_apis::ApiErrorCode> result);
+
+  void OnUpdatedCaptionConfig(const std::string& session_id,
+                              UpdateCaptionConfigCallback callback,
+                              ::boca::CaptionsConfig captions_config,
                               base::expected<std::unique_ptr<::boca::Session>,
                                              google_apis::ApiErrorCode> result);
+  void OnUpdatedSession(const std::string& session_id,
+                        UpdateSessionCallback callback,
+                        base::expected<std::unique_ptr<::boca::Session>,
+                                       google_apis::ApiErrorCode> result);
+
   void OnStudentRemoved(RemoveStudentCallback callback,
                         ::boca::Session* current_session,
                         std::string id,
@@ -161,9 +179,34 @@ class BocaAppHandler : public mojom::PageHandler,
                              base::expected<std::unique_ptr<::boca::Session>,
                                             google_apis::ApiErrorCode> result);
 
-  void UpdateCaptionConfigInternal(mojom::CaptionConfigPtr config,
+  void UpdateCaptionConfigInternal(const std::string& session_id,
+                                   mojom::CaptionConfigPtr config,
                                    UpdateCaptionConfigCallback callback,
                                    bool can_proceed);
+
+  void ResetProducerSessionCaptionConfig();
+
+  void SendUpdateSessionRequestForExtendSession(
+      const std::string& session_id,
+      base::TimeDelta extended_duration,
+      ExtendSessionDurationCallback callback);
+
+  void SendUpdateSessionRequestForOnTaskConfig(
+      const std::string& session_id,
+      mojom::OnTaskConfigPtr config,
+      UpdateOnTaskConfigCallback callback);
+
+  void SendUpdateSessionRequestForCaptionConfig(
+      const std::string& session_id,
+      mojom::CaptionConfigPtr config,
+      UpdateCaptionConfigCallback callback);
+
+  void SendUpdateSessionRequestAndBlock(
+      std::unique_ptr<UpdateSessionRequest> request);
+
+  bool IsActiveSession(const std::string& session_id);
+
+  void OnUpdateSessionBlockingRequestCompleted();
 
   SEQUENCE_CHECKER(sequence_checker_);
   const bool is_producer_;
@@ -172,12 +215,11 @@ class BocaAppHandler : public mojom::PageHandler,
   std::unique_ptr<WebviewAuthHandler> auth_handler_;
   std::unique_ptr<ClassroomPageHandlerImpl> class_room_page_handler_;
   const std::unique_ptr<ContentSettingsHandler> content_settings_handler_;
-  // Latest config is not always the same as the instance maintained in
-  // boca_session_manager as it contains the async config that hasn't been
-  // committed yet. OnTask and caption config use the same server endpoint. We
-  // keep track of pending config to avoid override in race.
-  std::unique_ptr<::boca::OnTaskConfig> latest_ontask_config_;
-  std::unique_ptr<::boca::CaptionsConfig> latest_caption_config_;
+  // Update session requests should run in sequence to avoid race conditions
+  // between different updates.
+  base::queue<base::OnceClosure> pending_update_requests_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  bool has_blocking_request_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   std::unique_ptr<NetworkInfoProvider> network_info_provider_;
   // Track the identity of the current app user.
   ::boca::UserIdentity user_identity_;
@@ -188,6 +230,7 @@ class BocaAppHandler : public mojom::PageHandler,
   raw_ptr<SessionClientImpl> session_client_impl_;
   raw_ptr<content::WebUI> web_ui_;
   raw_ptr<PrefService> pref_service_;
+  mojom::CaptionConfigPtr producer_current_session_caption_config_;
   base::WeakPtrFactory<BocaAppHandler> weak_ptr_factory_{this};
 };
 

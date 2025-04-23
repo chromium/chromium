@@ -169,5 +169,3 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
                                            match_type);
   std::move(callback).Run(CreateLookalikeErrorDecision());
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(LookalikeUrlTabHelper)

@@ -51,6 +51,11 @@ public class QuickDeletePromoCoordinator implements EducationalTipCardProvider {
     }
 
     @Override
+    public String getCardButtonText() {
+        return mActionDelegate.getContext().getString(R.string.educational_tip_module_button);
+    }
+
+    @Override
     public @DrawableRes int getCardImage() {
         return R.drawable.quick_delete_promo_logo;
     }

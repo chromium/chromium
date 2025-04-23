@@ -4,10 +4,12 @@
 package org.chromium.ui.display;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 import android.content.res.Configuration;
 import android.graphics.Insets;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.WindowInsets;
@@ -18,6 +20,9 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
@@ -49,6 +54,10 @@ public class DisplayUtilTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private DisplayAndroid mDisplayAndroid;
+
     private static final int TEST_STATUS_BAR_HEIGHT = 100;
     private static final int TEST_NAVIGATION_BAR_HEIGHT = 100;
     private static final int TEST_LEFT_INSET = 100;
@@ -63,6 +72,8 @@ public class DisplayUtilTest {
             new WindowInsets.Builder()
                     .setInsets(WindowInsets.Type.systemBars(), TEST_SYSTEM_BAR_INSETS)
                     .build();
+    private static final float TEST_DENSITY = 2.0f;
+    private static final int TEST_DISPLAY_ID = 73;
 
     @Test
     @Config(sdk = Build.VERSION_CODES.R)
@@ -251,5 +262,64 @@ public class DisplayUtilTest {
                                     activity.getResources().getDisplayMetrics().heightPixels,
                                     configuration.screenHeightDp);
                         });
+    }
+
+    private void coordinateTranslationTestsSetup() {
+        coordinateTranslationTestsSetup(TEST_DENSITY);
+    }
+
+    private void coordinateTranslationTestsSetup(float density) {
+        when(mDisplayAndroid.getDipScale()).thenReturn(density);
+        when(mDisplayAndroid.getDisplayId()).thenReturn(TEST_DISPLAY_ID);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    public void testPassesContextDisplayId() {
+        coordinateTranslationTestsSetup();
+        RectF globalCoordinates = new RectF(0, 0, 0, 0);
+        assertEquals(
+                "The display ID returned should be equal to the display ID of the provided display",
+                Integer.valueOf(TEST_DISPLAY_ID),
+                DisplayUtil.getLocalCoordinatesPx(globalCoordinates, mDisplayAndroid).first);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    public void testBasicTranslation() {
+        coordinateTranslationTestsSetup(1.5f);
+        RectF globalCoordinates = new RectF(200, 300, 400, 500);
+        Rect expectedResult = new Rect(300, 450, 600, 750);
+
+        assertEquals(
+                "The coordinates were not translated properly",
+                expectedResult,
+                DisplayUtil.getLocalCoordinatesPx(globalCoordinates, mDisplayAndroid).second);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    public void testTranslationRoundingResult() {
+        coordinateTranslationTestsSetup(1.03125f);
+        RectF globalCoordinates = new RectF(200, 300, 400, 500);
+        Rect expectedResult = new Rect(206, 309, 413, 516);
+
+        assertEquals(
+                "The coordinates were not rounded properly",
+                expectedResult,
+                DisplayUtil.getLocalCoordinatesPx(globalCoordinates, mDisplayAndroid).second);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    public void testTranslationRoundingInput() {
+        coordinateTranslationTestsSetup(2.0f);
+        RectF globalCoordinates = new RectF(200.25f, 300.5f, 400.75f, 500);
+        Rect expectedResult = new Rect(401, 601, 802, 1000);
+
+        assertEquals(
+                "The coordinates were not rounded properly",
+                expectedResult,
+                DisplayUtil.getLocalCoordinatesPx(globalCoordinates, mDisplayAndroid).second);
     }
 }

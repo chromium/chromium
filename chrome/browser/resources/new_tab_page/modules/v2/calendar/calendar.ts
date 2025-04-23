@@ -45,12 +45,12 @@ export class CalendarElement extends CrLitElement {
     };
   }
 
-  calendarLink: string;
-  events: CalendarEvent[] = [];
-  moduleName: string;
+  accessor calendarLink: string;
+  accessor events: CalendarEvent[] = [];
+  accessor moduleName: string;
 
-  private doubleBookedIndices_: number[] = [];
-  private expandedEventIndex_: number;
+  private accessor doubleBookedIndices_: number[] = [];
+  private accessor expandedEventIndex_: number;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

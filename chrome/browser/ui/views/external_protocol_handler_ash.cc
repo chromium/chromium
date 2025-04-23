@@ -33,10 +33,6 @@
 
 using content::WebContents;
 
-namespace {
-
-const int kMessageWidth = 400;
-
 // The external protocol dialog for Chrome OS shown when we have a URL with a
 // Tel scheme but there are no handlers.
 class ExternalProtocolNoHandlersTelSchemeDialog : public views::DialogDelegate {
@@ -45,7 +41,7 @@ class ExternalProtocolNoHandlersTelSchemeDialog : public views::DialogDelegate {
       aura::Window* parent_window)
       : creation_time_(base::TimeTicks::Now()) {
     DCHECK(parent_window);
-    SetOwnedByWidget(true);
+    SetOwnedByWidget(OwnedByWidgetPassKey());
     views::DialogDelegate::SetButtons(
         static_cast<int>(ui::mojom::DialogButton::kOk));
     views::DialogDelegate::SetButtonLabel(
@@ -53,7 +49,7 @@ class ExternalProtocolNoHandlersTelSchemeDialog : public views::DialogDelegate {
         l10n_util::GetStringUTF16(IDS_EXTERNAL_PROTOCOL_CLOSE_BUTTON_TEXT));
 
     message_box_view_ = new views::MessageBoxView();
-    message_box_view_->SetMessageWidth(kMessageWidth);
+    message_box_view_->SetMessageWidth(400);
 
     views::DialogDelegate::CreateDialogWidget(this, nullptr, parent_window)
         ->Show();
@@ -120,8 +116,6 @@ void OnArcHandled(const GURL& url,
     new ExternalProtocolNoHandlersTelSchemeDialog(parent_window);
   }
 }
-
-}  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
 // ExternalProtocolHandler

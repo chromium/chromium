@@ -83,7 +83,8 @@ PepperPrintSettingsManagerImpl::ComputeDefaultPrintSettings() {
   PrintingContextDelegate delegate;
   std::unique_ptr<printing::PrintingContext> context(
       printing::PrintingContext::Create(
-          &delegate, printing::PrintingContext::ProcessBehavior::kOopDisabled));
+          &delegate,
+          printing::PrintingContext::OutOfProcessBehavior::kDisabled));
   if (!context.get() ||
       context->UseDefaultSettings() != printing::mojom::ResultCode::kSuccess) {
     return PepperPrintSettingsManager::Result(PP_PrintSettings_Dev(),

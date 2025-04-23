@@ -26,7 +26,7 @@ FFmpegH264ToAnnexBBitstreamConverter::~FFmpegH264ToAnnexBBitstreamConverter() =
 bool FFmpegH264ToAnnexBBitstreamConverter::ConvertPacket(AVPacket* packet) {
   std::unique_ptr<mp4::AVCDecoderConfigurationRecord> avc_config;
 
-  if (packet == NULL || !packet->data) {
+  if (packet == nullptr || !packet->data) {
     DVLOG(2) << __func__ << ": Null or empty packet";
     return false;
   }

@@ -22,6 +22,9 @@ public class TabImportanceManager {
 
     public static void tabShown(Tab shownTab) {
         ThreadUtils.assertOnUiThread();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PROCESS_RANK_POLICY_ANDROID)) {
+            return;
+        }
         boolean isImportant =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.CHANGE_UNFOCUSED_PRIORITY);
         setImportance(
@@ -45,10 +48,16 @@ public class TabImportanceManager {
 
     public static void tabDestroyed(Tab tab) {
         ThreadUtils.assertOnUiThread();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PROCESS_RANK_POLICY_ANDROID)) {
+            return;
+        }
         sImportantTabs.remove(tab);
     }
 
     public static void setImportance(Tab tab, @ChildProcessImportance int importance) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PROCESS_RANK_POLICY_ANDROID)) {
+            return;
+        }
         ((TabImpl) tab).setImportance(importance);
     }
 }

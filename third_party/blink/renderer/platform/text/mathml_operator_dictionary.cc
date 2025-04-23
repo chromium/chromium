@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/text/mathml_operator_dictionary.h"
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
@@ -121,12 +117,13 @@ MathMLOperatorDictionaryCategory FindCategory(
       key = content[0];
     } else {
       // Perform a binary search for 2-ASCII-chars operators.
-      const char** last =
-          operators_2_ascii_chars + std::size(operators_2_ascii_chars);
+      const char** last = UNSAFE_TODO(operators_2_ascii_chars +
+                                      std::size(operators_2_ascii_chars));
       const char** entry = std::lower_bound(
           operators_2_ascii_chars, last, content,
           [](const char* lhs, const String& rhs) -> bool {
-            return lhs[0] < rhs[0] || (lhs[0] == rhs[0] && lhs[1] < rhs[1]);
+            return lhs[0] < rhs[0] ||
+                   (lhs[0] == rhs[0] && UNSAFE_TODO(lhs[1] < rhs[1]));
           });
       if (entry != last && content == *entry)
         key = kCombiningMinusSignBelow + (entry - operators_2_ascii_chars);
@@ -170,14 +167,15 @@ MathMLOperatorDictionaryCategory FindCategory(
 
   // Perform a binary search on the compact dictionary.
   const EntryRange* entry_range = std::upper_bound(
-      compact_dictionary, compact_dictionary + std::size(compact_dictionary),
-      key, [](uint16_t lhs, EntryRange rhs) -> bool {
+      compact_dictionary,
+      UNSAFE_TODO(compact_dictionary + std::size(compact_dictionary)), key,
+      [](uint16_t lhs, EntryRange rhs) -> bool {
         return lhs < ExtractKey(rhs);
       });
 
   if (entry_range == compact_dictionary)
     return MathMLOperatorDictionaryCategory::kNone;
-  entry_range--;
+  UNSAFE_TODO(entry_range--);
 
   DCHECK_LE(ExtractKey(*entry_range), key);
   if (key > (ExtractKey(*entry_range) + entry_range->range_bounds_delta))

@@ -19,7 +19,7 @@ namespace persistent_cache {
 
 TEST(SqliteEntryTest, ConstructionTakesOwnershipOfValue) {
   std::string copy = kContent;
-  SqliteEntryImpl sql_entry(std::move(copy));
+  SqliteEntryImpl sql_entry(std::move(copy), EntryMetadata{});
   // Move took place.
   EXPECT_TRUE(copy.empty());
   EXPECT_EQ(sql_entry.GetContentSpan(), base::span_from_cstring(kContent));
@@ -27,7 +27,7 @@ TEST(SqliteEntryTest, ConstructionTakesOwnershipOfValue) {
 }
 
 TEST(SqliteEntryTest, ConstructionFromEmptyValueLeadsToEmptyEntry) {
-  SqliteEntryImpl sql_entry(std::string(""));
+  SqliteEntryImpl sql_entry(std::string(""), EntryMetadata{});
   EXPECT_TRUE(sql_entry.GetContentSpan().empty());
   EXPECT_EQ(sql_entry.GetContentSize(), 0ull);
 }

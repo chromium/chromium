@@ -28,6 +28,11 @@ class InvokerData final : public GarbageCollected<InvokerData>,
   InvokerData(const InvokerData&) = delete;
   InvokerData& operator=(const InvokerData&) = delete;
 
+  Element::InterestState GetInterestState() const { return interest_state_; }
+  void SetInterestState(Element::InterestState new_state) {
+    interest_state_ = new_state;
+  }
+
   HTMLElement* GetInvokedPopover() const { return invoked_popover_; }
   void SetInvokedPopover(HTMLElement* popover) {
     CHECK_NE(!popover, !invoked_popover_)
@@ -64,6 +69,7 @@ class InvokerData final : public GarbageCollected<InvokerData>,
  private:
   TaskHandle interest_gained_task_;
   TaskHandle interest_lost_task_;
+  Element::InterestState interest_state_{Element::InterestState::kNoInterest};
   Member<HTMLElement> invoked_popover_;
 };
 

@@ -7,7 +7,7 @@ import("//ui/webui/resources/tools/build_webui.gni")
 assert(is_chromeos)
 
 # When adding a new file to this app, add it to one of the lists below.
-# `non_web_component_files` are plain TS and JS files.
+# `ts_files` are plain TS and JS files.
 # `web_component_files` are Polymer based TS and JS files.
 # `css_files` are CSS files that are Polymer shared style modules.
 # `static_files` are static files that don't need to be processed, e.g. images
@@ -27,7 +27,7 @@ build_webui("build") {
     "printer_setup_info.ts",
   ]
 
-  non_web_component_files = [ "mojo_interface_provider.ts" ]
+  ts_files = [ "mojo_interface_provider.ts" ]
 
   icons_html_files = [ "icons.html" ]
 

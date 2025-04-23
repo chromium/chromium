@@ -35,7 +35,7 @@ namespace transceiver_state_surfacer_test {
 class MockSctpTransport : public webrtc::SctpTransportInterface {
  public:
   MOCK_CONST_METHOD0(dtls_transport,
-                     rtc::scoped_refptr<webrtc::DtlsTransportInterface>());
+                     webrtc::scoped_refptr<webrtc::DtlsTransportInterface>());
   MOCK_CONST_METHOD0(Information, webrtc::SctpTransportInformation());
   MOCK_METHOD1(RegisterObserver, void(webrtc::SctpTransportObserverInterface*));
   MOCK_METHOD0(UnregisterObserver, void());
@@ -79,14 +79,14 @@ class TransceiverStateSurfacerTest : public ::testing::Test {
         CreateLocalTrack(id));
   }
 
-  rtc::scoped_refptr<blink::FakeRtpTransceiver> CreateWebRtcTransceiver(
-      rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> local_track,
+  webrtc::scoped_refptr<blink::FakeRtpTransceiver> CreateWebRtcTransceiver(
+      webrtc::scoped_refptr<webrtc::MediaStreamTrackInterface> local_track,
       const std::string& local_stream_id,
       const std::string& remote_track_id,
       const std::string& remote_stream_id,
-      rtc::scoped_refptr<webrtc::DtlsTransportInterface> transport) {
-    rtc::scoped_refptr<blink::FakeRtpTransceiver> transceiver(
-        new rtc::RefCountedObject<blink::FakeRtpTransceiver>(
+      webrtc::scoped_refptr<webrtc::DtlsTransportInterface> transport) {
+    webrtc::scoped_refptr<blink::FakeRtpTransceiver> transceiver(
+        new webrtc::RefCountedObject<blink::FakeRtpTransceiver>(
             local_track->kind() == webrtc::MediaStreamTrackInterface::kAudioKind
                 ? webrtc::MediaType::AUDIO
                 : webrtc::MediaType::VIDEO,
@@ -100,25 +100,25 @@ class TransceiverStateSurfacerTest : public ::testing::Test {
     return transceiver;
   }
 
-  rtc::scoped_refptr<blink::FakeRtpSender> CreateWebRtcSender(
-      rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track,
+  webrtc::scoped_refptr<blink::FakeRtpSender> CreateWebRtcSender(
+      webrtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track,
       const std::string& stream_id) {
-    return rtc::scoped_refptr<blink::FakeRtpSender>(
-        new rtc::RefCountedObject<blink::FakeRtpSender>(
+    return webrtc::scoped_refptr<blink::FakeRtpSender>(
+        new webrtc::RefCountedObject<blink::FakeRtpSender>(
             std::move(track), std::vector<std::string>({stream_id})));
   }
 
-  rtc::scoped_refptr<blink::FakeRtpReceiver> CreateWebRtcReceiver(
+  webrtc::scoped_refptr<blink::FakeRtpReceiver> CreateWebRtcReceiver(
       const std::string& track_id,
       const std::string& stream_id) {
-    rtc::scoped_refptr<webrtc::AudioTrackInterface> remote_track(
+    webrtc::scoped_refptr<webrtc::AudioTrackInterface> remote_track(
         blink::MockWebRtcAudioTrack::Create(track_id).get());
-    rtc::scoped_refptr<webrtc::MediaStreamInterface> remote_stream(
-        new rtc::RefCountedObject<blink::MockMediaStream>(stream_id));
-    return rtc::scoped_refptr<blink::FakeRtpReceiver>(
-        new rtc::RefCountedObject<blink::FakeRtpReceiver>(
+    webrtc::scoped_refptr<webrtc::MediaStreamInterface> remote_stream(
+        new webrtc::RefCountedObject<blink::MockMediaStream>(stream_id));
+    return webrtc::scoped_refptr<blink::FakeRtpReceiver>(
+        new webrtc::RefCountedObject<blink::FakeRtpReceiver>(
             remote_track,
-            std::vector<rtc::scoped_refptr<webrtc::MediaStreamInterface>>(
+            std::vector<webrtc::scoped_refptr<webrtc::MediaStreamInterface>>(
                 {remote_stream})));
   }
 
@@ -126,7 +126,7 @@ class TransceiverStateSurfacerTest : public ::testing::Test {
   // event when done. The WaitableEvent's Wait() blocks the main thread until
   // initialization occurs.
   std::unique_ptr<base::WaitableEvent> AsyncInitializeSurfacerWithWaitableEvent(
-      std::vector<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
+      std::vector<webrtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
           transceivers) {
     std::unique_ptr<base::WaitableEvent> waitable_event(new base::WaitableEvent(
         base::WaitableEvent::ResetPolicy::MANUAL,
@@ -147,7 +147,7 @@ class TransceiverStateSurfacerTest : public ::testing::Test {
   // task (such as the callback) to be executed while waiting. The caller must
   // let the loop Run() before destroying it.
   std::unique_ptr<base::RunLoop> AsyncInitializeSurfacerWithCallback(
-      std::vector<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
+      std::vector<webrtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
           transceivers,
       base::OnceCallback<void()> callback) {
     std::unique_ptr<base::RunLoop> run_loop(new base::RunLoop());
@@ -161,7 +161,8 @@ class TransceiverStateSurfacerTest : public ::testing::Test {
   }
 
   void ObtainStatesAndExpectInitialized(
-      rtc::scoped_refptr<webrtc::RtpTransceiverInterface> webrtc_transceiver) {
+      webrtc::scoped_refptr<webrtc::RtpTransceiverInterface>
+          webrtc_transceiver) {
     // Inspect SCTP transport
     auto sctp_snapshot = surfacer_->SctpTransportSnapshot();
     EXPECT_EQ(peer_connection_->GetSctpTransport(), sctp_snapshot.transport);
@@ -242,7 +243,7 @@ class TransceiverStateSurfacerTest : public ::testing::Test {
   }
 
   void AsyncInitializeSurfacerWithWaitableEventOnSignalingThread(
-      std::vector<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
+      std::vector<webrtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
           transceivers,
       base::WaitableEvent* waitable_event) {
     DCHECK(signaling_task_runner()->BelongsToCurrentThread());
@@ -252,7 +253,7 @@ class TransceiverStateSurfacerTest : public ::testing::Test {
   }
 
   void AsyncInitializeSurfacerWithCallbackOnSignalingThread(
-      std::vector<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
+      std::vector<webrtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
           transceivers,
       base::OnceCallback<void()> callback,
       base::RunLoop* run_loop) {
@@ -277,7 +278,7 @@ class TransceiverStateSurfacerTest : public ::testing::Test {
 
  protected:
   test::TaskEnvironment task_environment_;
-  rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_connection_;
+  webrtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_connection_;
   CrossThreadPersistent<MockPeerConnectionDependencyFactory>
       dependency_factory_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
@@ -314,8 +315,8 @@ TEST_F(TransceiverStateSurfacerTest, SurfaceTransceiverWithTransport) {
   auto webrtc_transceiver = CreateWebRtcTransceiver(
       local_track_adapter->webrtc_track(), "local_stream", "remote_track",
       "remote_stream",
-      rtc::scoped_refptr<webrtc::DtlsTransportInterface>(
-          new rtc::RefCountedObject<blink::FakeDtlsTransport>()));
+      webrtc::scoped_refptr<webrtc::DtlsTransportInterface>(
+          new webrtc::RefCountedObject<blink::FakeDtlsTransport>()));
   auto run_loop = AsyncInitializeSurfacerWithCallback(
       {webrtc_transceiver},
       base::BindOnce(
@@ -329,8 +330,8 @@ TEST_F(TransceiverStateSurfacerTest, SurfaceTransceiverWithSctpTransport) {
   auto webrtc_transceiver = CreateWebRtcTransceiver(
       local_track_adapter->webrtc_track(), "local_stream", "remote_track",
       "remote_stream", nullptr);
-  rtc::scoped_refptr<MockSctpTransport> mock_sctp_transport(
-      new rtc::RefCountedObject<MockSctpTransport>());
+  webrtc::scoped_refptr<MockSctpTransport> mock_sctp_transport(
+      new webrtc::RefCountedObject<MockSctpTransport>());
   webrtc::SctpTransportInformation sctp_transport_info(
       webrtc::SctpTransportState::kNew);
   EXPECT_CALL(

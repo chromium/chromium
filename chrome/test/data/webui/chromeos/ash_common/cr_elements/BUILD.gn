@@ -52,7 +52,8 @@ build_webui_tests("build") {
 
   # Using custom config to turn off useDefineForClassFields TS compiler flag
   # which is necessary when defining Polymer elements.
-  ts_tsconfig_base = "tsconfig_base.json"
+  ts_tsconfig_base =
+      "//chrome/test/data/webui/chromeos/ash_common/tsconfig_base.json"
   ts_definitions = [
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/settings_private.d.ts",

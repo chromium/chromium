@@ -92,6 +92,8 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
@@ -138,6 +140,7 @@ public class TabDragSourceTest {
     @Mock private MultiWindowUtils mMultiWindowUtils;
     @Mock private ObservableSupplier<Integer> mTabStripHeightSupplier;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
+    @Mock private FaviconHelper.Natives mFaviconHelperJniMock;
 
     // Instances that differ for source and destination for invocations and verifications.
     @Mock private StripLayoutHelper mSourceStripLayoutHelper;
@@ -199,11 +202,19 @@ public class TabDragSourceTest {
         when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(true);
         MultiWindowUtils.setInstanceForTesting(mMultiWindowUtils);
         MultiWindowTestUtils.enableMultiInstance();
-        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
 
         when(mTabStripHeightSupplier.get()).thenReturn(mTabStripHeight);
+
+        when(mFaviconHelperJniMock.init()).thenReturn(1L);
+        FaviconHelperJni.setInstanceForTesting(mFaviconHelperJniMock);
+
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
+        when(mTabModelSelector.getModel(anyBoolean())).thenReturn(mTabModel);
         when(mTabModelSelector.getTabGroupModelFilterProvider())
                 .thenReturn(mTabGroupModelFilterProvider);
+        when(mTabGroupModelFilterProvider.getTabGroupModelFilter(anyBoolean()))
+                .thenReturn(mTabGroupModelFilter);
         when(mTabGroupModelFilterProvider.getCurrentTabGroupModelFilterSupplier())
                 .thenReturn(mTabGroupModelFilterSupplier);
         when(mTabGroupModelFilterSupplier.get()).thenReturn(mTabGroupModelFilter);
@@ -346,13 +357,27 @@ public class TabDragSourceTest {
 
     @Test
     public void test_startTabDragAction_withHasOneTabWithHomepage_ReturnsFalse() {
-        XrUtils.setXrDeviceForTesting(true);
         when(mMultiWindowUtils.hasAtMostOneTabWithHomepageEnabled(any())).thenReturn(true);
         assertFalse(
                 "Should not startTabDragAction since last tab with homepage enabled.",
                 mSourceInstance.startTabDragAction(
                         mTabsToolbarView,
                         mTabBeingDragged,
+                        DRAG_START_POINT,
+                        TAB_POSITION_X,
+                        VIEW_WIDTH));
+    }
+
+    @Test
+    public void test_startGroupDragAction_withHasOneTabGroupWithHomepage_ReturnsFalse() {
+        when(mMultiWindowUtils.hasAtMostOneTabGroupWithHomepageEnabled(any(), any()))
+                .thenReturn(true);
+        assertFalse(
+                "Should not startGroupDragAction since last tab group with homepage enabled.",
+                mSourceInstance.startGroupDragAction(
+                        mTabsToolbarView,
+                        TAB_GROUP_ID,
+                        /* isGroupShared= */ false,
                         DRAG_START_POINT,
                         TAB_POSITION_X,
                         VIEW_WIDTH));
@@ -1209,6 +1234,7 @@ public class TabDragSourceTest {
         // Destination tab model is incognito.
         when(mTabModel.isIncognitoBranded()).thenReturn(true);
         TabModel standardModelDestination = mock(TabModel.class);
+        when(standardModelDestination.getProfile()).thenReturn(mProfile);
         when(mTabModelSelector.getModel(false)).thenReturn(standardModelDestination);
         when(standardModelDestination.getCount()).thenReturn(5);
 
@@ -1299,7 +1325,7 @@ public class TabDragSourceTest {
 
             // Verify - Move to new window not invoked.
             verify(mDestMultiInstanceManager, times(0))
-                    .moveTabGroupToWindow(any(), any(), anyInt(), any());
+                    .moveTabGroupToWindow(any(), any(), anyInt());
         } else {
             event =
                     mockDragEvent(
@@ -1543,7 +1569,7 @@ public class TabDragSourceTest {
                             new ClipData(
                                     null,
                                     SUPPORTED_GROUP_MIME_TYPES,
-                                    new Item(dropData.buildTabClipDataText(), null)));
+                                    new Item(dropData.buildTabClipDataText(mContext), null)));
             when(event.getClipDescription())
                     .thenReturn(new ClipDescription("", SUPPORTED_GROUP_MIME_TYPES));
         } else {
@@ -1554,7 +1580,7 @@ public class TabDragSourceTest {
                             new ClipData(
                                     null,
                                     SUPPORTED_TAB_MIME_TYPES,
-                                    new Item(dropData.buildTabClipDataText(), null)));
+                                    new Item(dropData.buildTabClipDataText(mContext), null)));
             when(event.getClipDescription())
                     .thenReturn(new ClipDescription("", SUPPORTED_TAB_MIME_TYPES));
         }
@@ -1631,7 +1657,7 @@ public class TabDragSourceTest {
         if (isGroupDrag) {
             // Verify tab group is not moved.
             verify(mSourceMultiInstanceManager, times(0))
-                    .moveTabGroupToWindow(any(), eq(mTabGroupMetadata), anyInt(), any());
+                    .moveTabGroupToWindow(any(), eq(mTabGroupMetadata), anyInt());
         } else {
             // Verify tab is not moved.
             verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
@@ -1643,7 +1669,7 @@ public class TabDragSourceTest {
         if (isGroupDrag) {
             // Verify tab group is moved.
             verify(mDestMultiInstanceManager, times(1))
-                    .moveTabGroupToWindow(any(), eq(mTabGroupMetadata), eq(index), any());
+                    .moveTabGroupToWindow(any(), eq(mTabGroupMetadata), eq(index));
         } else {
             // Verify tab is moved.
             verify(mDestMultiInstanceManager, times(1)).moveTabToWindow(any(), any(), eq(index));

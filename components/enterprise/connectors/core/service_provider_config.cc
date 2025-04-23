@@ -77,8 +77,8 @@ constexpr AnalysisConfig kBrcmChrmCasAnalysisConfig = {
     .user_specific = false,
 };
 
-constexpr std::array<const char*, 1> kTrellixSubjectNames = {
-    {"MUSARUBRA US LLC"}};
+constexpr std::array<const char*, 2> kTrellixSubjectNames = {
+    {"MUSARUBRA US LLC", "Musarubra US LLC"}};
 
 constexpr AnalysisConfig kTrellixAnalysisConfig = {
     .local_path = "Trellix_DLP",

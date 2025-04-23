@@ -110,7 +110,7 @@ class BookmarkModel : public BookmarkUndoProvider,
   // Sync-the-feature is enabled. After Sync-to-Signin migration is finished -
   // local-or-syncable storage (and this folder) will become purely local.
   // This is null until loaded.
-  const BookmarkNode* bookmark_bar_node() const {
+  const BookmarkPermanentNode* bookmark_bar_node() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return bookmark_bar_node_;
   }
@@ -120,7 +120,7 @@ class BookmarkModel : public BookmarkUndoProvider,
   // Sync-the-feature is enabled. After Sync-to-Signin migration is finished -
   // local-or-syncable storage (and this folder) will become purely local.
   // This is null until loaded.
-  const BookmarkNode* other_node() const {
+  const BookmarkPermanentNode* other_node() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return other_node_;
   }
@@ -130,7 +130,7 @@ class BookmarkModel : public BookmarkUndoProvider,
   // Sync-the-feature is enabled. After Sync-to-Signin migration is finished -
   // local-or-syncable storage (and this folder) will become purely local.
   // This is null until loaded.
-  const BookmarkNode* mobile_node() const {
+  const BookmarkPermanentNode* mobile_node() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return mobile_node_;
   }
@@ -138,17 +138,17 @@ class BookmarkModel : public BookmarkUndoProvider,
   // Returns the 'bookmark bar' node for the account storage. This is null until
   // loaded or if the user is not signed in (or isn't opted into syncing
   // bookmarks in the account storage).
-  const BookmarkNode* account_bookmark_bar_node() const;
+  const BookmarkPermanentNode* account_bookmark_bar_node() const;
 
   // Returns the 'other' node for the account storage. This is null until loaded
   // or if the user is not signed in (or isn't opted into syncing bookmarks in
   // the account storage).
-  const BookmarkNode* account_other_node() const;
+  const BookmarkPermanentNode* account_other_node() const;
 
   // Returns the 'mobile' node for the account storage. This is null until
   // loaded or if the user is not signed in (or isn't opted into syncing
   // bookmarks in the account storage).
-  const BookmarkNode* account_mobile_node() const;
+  const BookmarkPermanentNode* account_mobile_node() const;
 
   bool is_root_node(const BookmarkNode* node) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

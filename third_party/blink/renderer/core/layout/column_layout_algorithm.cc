@@ -638,7 +638,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutFragmentationContext(
       row_gap =
           ResolveRowGapForMulticol(Style(), ChildAvailableSize().block_size);
     }
-  } while (next_column_token && Style().ColumnWrap() == EColumnWrap::kWrap &&
+  } while (next_column_token && ShouldWrapColumns() &&
            !result->GetColumnSpannerPath());
 
   return result;
@@ -673,7 +673,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
     // space further down.
     column_size.block_size = LayoutUnit(Style().ColumnHeight());
   } else if (column_size.block_size != kIndefiniteSize &&
-             Style().ColumnWrap() != EColumnWrap::kWrap) {
+             !ShouldWrapColumns()) {
     // Subtract the space already taken in the current fragment (spanners and
     // earlier column rows).
     column_size.block_size -= CurrentContentBlockOffset(row_offset);
@@ -877,8 +877,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
       // progress into a next outer fragmentainer if the (remaining part of the)
       // multicol container fits block-wise in the current outer fragmentainer.
       if (column_break_token && actual_column_count >= used_column_count_) {
-        if (Style().ColumnWrap() == EColumnWrap::kWrap ||
-            may_resume_in_next_outer_fragmentainer) {
+        if (ShouldWrapColumns() || may_resume_in_next_outer_fragmentainer) {
           break;
         }
       }
@@ -1567,7 +1566,7 @@ LayoutUnit ColumnLayoutAlgorithm::ConstrainColumnBlockSize(
   // Column wrapping means that the content-box size of the multicol container
   // should be used for each row, unless overridden by `column-height` (see
   // below).
-  if (max != LayoutUnit::Max() && Style().ColumnWrap() != EColumnWrap::kWrap) {
+  if (max != LayoutUnit::Max() && !ShouldWrapColumns()) {
     // If this multicol container is nested inside another fragmentation
     // context, we need to subtract the space consumed in previous fragments.
     if (GetBreakToken()) {

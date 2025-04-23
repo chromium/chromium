@@ -262,6 +262,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4328355335528187361">Google Chrome verzie pre vývojárov (mDNS-In)</translation>
 <translation id="4329315893554541805">Ak chcete mať k dispozícii prispôsobenie a ďalšie funkcie, zahrňte Chrome do aktivity na internete a v aplikáciách a prepojených služieb Googlu</translation>
 <translation id="4334294535648607276">Sťahovanie bolo dokončené.</translation>
+<translation id="4337324600316876133">Ak chcete dostávať budúce aktualizácie prehliadača Google Chrome, musíte používať systém macOS 12 alebo novší. V tomto počítači používate macOS 11.</translation>
 <translation id="4343195214584226067">Rozšírenie <ph name="EXTENSION_NAME" /> bolo pridané do Chromu</translation>
 <translation id="4348548358339558429">Ak chcete mať k dispozícii prispôsobenie, zahrňte Chrome do aktivity na internete a v aplikáciách</translation>
 <translation id="436060642166082913">Chrome toto sťahovanie zablokoval, pretože daný súbor môže poškodiť vaše osobné účty aj účty sociálnych sietí</translation>
@@ -297,7 +298,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4842397268809523050">Systému Chrome OS Flex sa nepodarilo synchronizovať vaše údaje, pretože možnosť synchronizácie nie je pre vašu doménu k dispozícii.</translation>
 <translation id="4851866215237571846">Používateľ <ph name="EXISTING_USER" /> je už prihlásený.  Ak chcete, aby bolo vaše prehliadanie naďalej samostatné, prihláste sa vo svojom profile do Chromu profile účtom <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Ak chcete zdieľať obrazovku, povoľte Chromu nahrávať obrazovku v nastaveniach systému</translation>
-<translation id="4873692836499071887">Ak chcete dostávať budúce aktualizácie prehliadača Google Chrome, musíte používať systém macOS 11 alebo novší. V tomto počítači používate macOS 10.15.</translation>
 <translation id="4873783916118289636">Pozrite si hlavné ovládacie prvky ochrany súkromia a zabezpečenia v Chrome</translation>
 <translation id="4885446229353981848">Vždy zobrazovať odkaz na Google Lens</translation>
 <translation id="4891791193823137474">Povoliť prehliadaču Google Chrome spustenie na pozadí</translation>

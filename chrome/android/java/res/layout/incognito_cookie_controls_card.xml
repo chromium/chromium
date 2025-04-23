@@ -49,12 +49,11 @@ found in the LICENSE file.
     <org.chromium.ui.widget.TextViewWithLeading
         android:id="@+id/cookie_controls_card_subtitle"
         android:text="@string/new_tab_otr_third_party_cookie_sublabel"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Baseline.Light"
         android:layout_toStartOf="@id/cookie_controls_card_toggle"
         android:layout_toEndOf="@id/cookie_controls_card_managed_icon"
         android:layout_below="@id/cookie_controls_card_title"
-        app:leading="@dimen/text_size_medium_leading"
         android:layout_height="wrap_content"
-        android:layout_width="match_parent" />
+        android:layout_width="match_parent"
+        style="@style/IncognitoNewTabTextView" />
 
 </RelativeLayout>

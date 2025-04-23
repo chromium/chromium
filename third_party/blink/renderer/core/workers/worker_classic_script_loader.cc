@@ -25,15 +25,11 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/core/workers/worker_classic_script_loader.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -148,7 +144,6 @@ void WorkerClassicScriptLoader::LoadTopLevelScriptAsynchronously(
     network::mojom::CredentialsMode credentials_mode,
     base::OnceClosure response_callback,
     base::OnceClosure finished_callback,
-    RejectCoepUnsafeNone reject_coep_unsafe_none,
     mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
         blob_url_loader_factory) {
   DCHECK(fetch_client_settings_object_fetcher);
@@ -190,7 +185,6 @@ void WorkerClassicScriptLoader::LoadTopLevelScriptAsynchronously(
   ResourceLoaderOptions resource_loader_options(
       execution_context.GetCurrentWorld());
   need_to_cancel_ = true;
-  resource_loader_options.reject_coep_unsafe_none = reject_coep_unsafe_none;
   if (blob_url_loader_factory) {
     resource_loader_options.url_loader_factory =
         base::MakeRefCounted<base::RefCountedData<
@@ -272,7 +266,7 @@ void WorkerClassicScriptLoader::DidReceiveData(base::span<const char> data) {
 void WorkerClassicScriptLoader::DidReceiveCachedMetadata(
     mojo_base::BigBuffer data) {
   cached_metadata_ = std::make_unique<Vector<uint8_t>>(data.size());
-  memcpy(cached_metadata_->data(), data.data(), data.size());
+  UNSAFE_TODO(memcpy(cached_metadata_->data(), data.data(), data.size()));
 }
 
 void WorkerClassicScriptLoader::DidFinishLoading(uint64_t identifier) {

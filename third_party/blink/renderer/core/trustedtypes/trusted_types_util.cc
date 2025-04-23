@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 
+#include "base/compiler_specific.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/reporting/reporting.mojom-blink.h"
@@ -126,12 +122,12 @@ String GetSamplePrefix(const char* interface_name,
   StringBuilder sample_prefix;
   if (!interface_name) {
     // No interface name? Then we have no prefix to use.
-  } else if (strcmp("eval", interface_name) == 0) {
+  } else if (UNSAFE_TODO(strcmp("eval", interface_name)) == 0) {
     // eval? Try to distinguish between eval and Function constructor.
     sample_prefix.Append(value.StartsWith(kAnonymousPrefix) ? "Function"
                                                             : "eval");
-  } else if ((strcmp("Worker", interface_name) == 0 ||
-              strcmp("SharedWorker", interface_name) == 0) &&
+  } else if ((UNSAFE_TODO(strcmp("Worker", interface_name)) == 0 ||
+              UNSAFE_TODO(strcmp("SharedWorker", interface_name)) == 0) &&
              property_name) {
     // Worker/SharedWorker constructor has nullptr as property_name.
     sample_prefix.Append(interface_name);

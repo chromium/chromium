@@ -1,6 +1,17 @@
 # Generated protobuf code.
 *_pb2.py
 
+# Ideally all third-party code should be ignored by default.
+# Unfortunately yapfignore doesn't support negative pattern (they use fnmatch)
+# and is searched from current working directory instead of where the file is
+# located. We won't be able to override the config to enable yapf for some
+# files under third_party/*.
+# Though this is done by git_cl.py anyway since yapfignore is ignored when file
+# list is provided explicitly.
+# https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:git_cl.py;l=747;drc=f5b53c0e98a814aa8d026b07288211a5e4421000
+# Thers is no consistent way to ignore python code here unless we make yapf
+# properly implement the yapfignore.
+
 # Third-party code.
 third_party/blink/tools/blinkpy/third_party/*
 third_party/blink/web_tests/external/wpt/*

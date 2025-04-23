@@ -6,8 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_COOKIE_CONTROLS_CONTENT_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/controls/text_with_controls_view.h"
-#include "components/content_settings/core/common/tracking_protection_feature.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -32,7 +30,7 @@ class CookieControlsContentView : public views::View {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToggleLabel);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kThirdPartyCookiesLabel);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFeedbackButton);
-  explicit CookieControlsContentView(bool has_act_features);
+  CookieControlsContentView();
 
   ~CookieControlsContentView() override;
 
@@ -56,12 +54,6 @@ class CookieControlsContentView : public views::View {
       base::RepeatingCallback<void(bool)> callback);
   base::CallbackListSubscription RegisterFeedbackButtonPressedCallback(
       base::RepeatingClosureList::CallbackType callback);
-
-  void AddFeatureRow(content_settings::TrackingProtectionFeature feature,
-                     bool protections_on);
-  void AddManagedSectionForEnforcement(CookieControlsEnforcement enforcement);
-  void SetManagedSeparatorVisible(bool visible);
-  void SetManagedSectionVisible(bool visible);
 
   void PreferredSizeChanged() override;
 
@@ -88,21 +80,9 @@ class CookieControlsContentView : public views::View {
   raw_ptr<views::Label> cookies_label_ = nullptr;
   raw_ptr<views::ImageView> enforced_icon_ = nullptr;
 
-  // Used for ACT features UI.
-  bool has_act_features_ = false;
-  void AddDescriptionRow();
-  const ui::ElementIdentifier GetFeatureIdentifier(
-      content_settings::TrackingProtectionFeatureType feature_type);
-
-  raw_ptr<TextWithControlsView> description_row_ = nullptr;
   raw_ptr<views::ToggleButton> toggle_button_ = nullptr;
-  raw_ptr<views::View> managed_separator_ = nullptr;
-  raw_ptr<views::View> managed_section_ = nullptr;
   base::RepeatingCallbackList<void(bool)> toggle_button_callback_list_;
   base::RepeatingClosureList feedback_button_callback_list_;
-
-  // Used for testing.
-  raw_ptr<views::Label> managed_title_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_COOKIE_CONTROLS_CONTENT_VIEW_H_

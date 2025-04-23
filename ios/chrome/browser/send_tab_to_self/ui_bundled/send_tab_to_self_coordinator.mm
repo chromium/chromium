@@ -24,6 +24,7 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_observer.h"
+#import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_send_tab.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/infobars/ui_bundled/presentation/infobar_modal_positioner.h"
@@ -329,13 +330,26 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
             BOOL succeeded = result == SigninCoordinatorResultSuccess;
             [weakSelf onSigninComplete:succeeded];
           };
+      ChangeProfileContinuationProvider provider = base::BindRepeating(
+          &CreateChangeProfileSendTabToOtherDevice, _url, self.title);
+      id<BrowserCoordinatorCommands> browserCoordinatorCommandsHandler =
+          HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                             BrowserCoordinatorCommands);
+      void (^prepareChangeProfile)() = ^() {
+        [browserCoordinatorCommandsHandler closeCurrentTab];
+      };
+
       ShowSigninCommand* command = [[ShowSigninCommand alloc]
-          initWithOperation:AuthenticationOperation::kSigninOnly
-                   identity:nil
-                accessPoint:signin_metrics::AccessPoint::kSendTabToSelfPromo
-                promoAction:signin_metrics::PromoAction::
-                                PROMO_ACTION_NO_SIGNIN_PROMO
-                 completion:completion];
+                          initWithOperation:AuthenticationOperation::kSigninOnly
+                                   identity:nil
+                                accessPoint:signin_metrics::AccessPoint::
+                                                kSendTabToSelfPromo
+                                promoAction:signin_metrics::PromoAction::
+                                                PROMO_ACTION_NO_SIGNIN_PROMO
+                                 completion:completion
+
+                       prepareChangeProfile:prepareChangeProfile
+          changeProfileContinuationProvider:provider];
       [self.signinPresenter showSignin:command];
       break;
     }

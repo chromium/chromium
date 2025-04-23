@@ -20,6 +20,7 @@ namespace signin_metrics {
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: SignoutReason
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange
 enum class ProfileSignout {
   // The value used within unit tests.
   kTest = 0,
@@ -126,9 +127,13 @@ enum class ProfileSignout {
   // User was forced signed out as there was a supervised user added to the
   // device.
   kSignoutBeforeSupervisedSignin = 38,
+  // Triggered when the user opens the app from a widget with no selected
+  // account. iOS only.
+  kSignoutFromWidgets = 39,
   // Keep this as the last enum.
-  kMaxValue = kSignoutBeforeSupervisedSignin
+  kMaxValue = kSignoutFromWidgets
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 
 // Enum values which enumerates all access points where sign in could be
 // initiated. Not all of them exist on all platforms.
@@ -262,12 +267,24 @@ enum class AccessPoint : int {
   // being signed in or synced.
   kCollaborationJoinTabGroup = 76,
   // Access point triggered when a user attempts to opt-in to history sync from
-  // the history sync opt-in expanded pill.
-  kHistorySyncOptinExpansionPill = 77,
+  // the history sync opt-in expanded pill (expanded on startup).
+  kHistorySyncOptinExpansionPillOnStartup = 77,
+  // Access point triggered when the account used in widget is different from
+  // the one used in the app. iOS only.
+  kWidget = 78,
+  // Access point triggered when a user attempts to leave or delete a tab group
+  // without being signed in or synced.
+  kCollaborationLeaveOrDeleteTabGroup = 79,
+  // Access point triggered when a user attempts to opt-in to history sync from
+  // the history sync opt-in expanded pill (expanded on inactivity).
+  kHistorySyncOptinExpansionPillOnInactivity = 80,
+  // History sync education tip is shown on the NTP to users who have history
+  // sync disabled. Android only.
+  kHistorySyncEducationalTip = 81,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kHistorySyncOptinExpansionPill,  // This must be last.
+  kMaxValue = kHistorySyncEducationalTip,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

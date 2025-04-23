@@ -545,12 +545,13 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
     STACK_ALLOCATED();
 
    public:
-    PostLayoutChildLinkList(wtf_size_t count,
-                            const PhysicalFragmentLink* buffer)
-        : count_(count), buffer_(buffer) {}
+    PostLayoutChildLinkList(base::span<const PhysicalFragmentLink> buffer)
+        : buffer_(buffer) {}
 
     class ConstIterator {
       STACK_ALLOCATED();
+      using BaseIterator =
+          base::span<const PhysicalFragmentLink>::const_iterator;
 
      public:
       using iterator_category = std::bidirectional_iterator_tag;
@@ -561,9 +562,8 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
 
       ConstIterator() = default;
 
-      ConstIterator(const PhysicalFragmentLink* current, wtf_size_t size)
-          // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-          : current_(current), end_(UNSAFE_TODO(current + size)) {
+      ConstIterator(BaseIterator current, BaseIterator end)
+          : current_(current), end_(end) {
         SkipInvalidAndSetPostLayout();
       }
 
@@ -571,8 +571,7 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
       const PhysicalFragmentLink* operator->() const { return &post_layout_; }
 
       ConstIterator& operator++() {
-        // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-        UNSAFE_TODO(++current_);
+        ++current_;
         SkipInvalidAndSetPostLayout();
         return *this;
       }
@@ -590,8 +589,7 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
 
      private:
       void SkipInvalidAndSetPostLayout() {
-        // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-        for (; current_ != end_; UNSAFE_TODO(++current_)) {
+        for (; current_ != end_; ++current_) {
           const PhysicalFragment* fragment = current_->fragment.Get();
           if (fragment->IsLayoutObjectDestroyedOrMoved()) [[unlikely]] {
             continue;
@@ -604,24 +602,24 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
         }
       }
 
-      const PhysicalFragmentLink* current_ = nullptr;
-      const PhysicalFragmentLink* end_ = nullptr;
+      BaseIterator current_;
+      BaseIterator end_;
       PhysicalFragmentLink post_layout_;
     };
     using const_iterator = ConstIterator;
 
-    const_iterator begin() const { return const_iterator(buffer_, count_); }
+    const_iterator begin() const {
+      return const_iterator(buffer_.begin(), buffer_.end());
+    }
     const_iterator end() const {
-      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-      return const_iterator(UNSAFE_TODO(buffer_ + count_), 0);
+      return const_iterator(buffer_.end(), buffer_.end());
     }
 
-    wtf_size_t size() const { return count_; }
-    bool empty() const { return count_ == 0; }
+    wtf_size_t size() const { return buffer_.size(); }
+    bool empty() const { return buffer_.empty(); }
 
    private:
-    wtf_size_t count_;
-    const PhysicalFragmentLink* buffer_;
+    base::span<const PhysicalFragmentLink> buffer_;
   };
 
   const BreakToken* GetBreakToken() const { return break_token_.Get(); }

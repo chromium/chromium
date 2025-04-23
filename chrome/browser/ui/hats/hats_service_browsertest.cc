@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/hats/hats_service_desktop.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -110,9 +111,11 @@ class HatsServiceBrowserTestBase : public policy::PolicyTest {
 
   Profile* profile() { return chrome_test_utils::GetProfile(this); }
 
-  HatsServiceDesktop* GetHatsService() {
+  HatsServiceDesktop* GetHatsService(Browser* browser = nullptr) {
+    Profile* profile =
+        browser ? browser->profile() : this->browser()->profile();
     HatsServiceDesktop* service = static_cast<HatsServiceDesktop*>(
-        HatsServiceFactory::GetForProfile(browser()->profile(), true));
+        HatsServiceFactory::GetForProfile(profile, true));
     return service;
   }
 
@@ -120,8 +123,23 @@ class HatsServiceBrowserTestBase : public policy::PolicyTest {
     scoped_metrics_consent_.emplace(consent);
   }
 
-  bool HatsNextDialogCreated() {
-    return GetHatsService()->hats_next_dialog_exists_for_testing();
+  bool HatsNextDialogCreated(Browser* browser = nullptr) {
+    return GetHatsService(browser)->hats_next_dialog_exists_for_testing();
+  }
+
+  // Mock a survey with a custom requested browser type. The `other_browser`
+  // param may be used to mock the survey in another browser too. Returns the
+  // trigger to use when launching the survey.
+  std::string MockSurveyWithRequestedBrowserType(
+      Browser* other_browser,
+      hats::SurveyConfig::RequestedBrowserType requested_browser_type) {
+    for (HatsServiceDesktop* service :
+         {GetHatsService(), GetHatsService(other_browser)}) {
+      service
+          ->GetSurveyConfigsByTriggersForTesting()[kHatsSurveyTriggerSettings]
+          .requested_browser_type = requested_browser_type;
+    }
+    return kHatsSurveyTriggerSettings;
   }
 
  private:
@@ -232,6 +250,10 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, NoShowConsentNotGiven) {
       g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven());
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
   EXPECT_FALSE(HatsNextDialogCreated());
+
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  GetHatsService(incognito_browser)->LaunchSurvey(kHatsSurveyTriggerSettings);
+  EXPECT_FALSE(HatsNextDialogCreated(incognito_browser));
 }
 
 IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, TriggerMismatchNoShow) {
@@ -261,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
 }
 
 IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
-                       NeverShowWhenFeedbackSurveyPolicyDisabled) {
+                       NoShowWhenFeedbackSurveyPolicyDisabled) {
   SetMetricsConsent(true);
   policy::PolicyMap policies;
   SetPolicy(&policies, policy::key::kFeedbackSurveysEnabled,
@@ -269,6 +291,12 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
   UpdateProviderPolicy(policies);
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
   EXPECT_FALSE(HatsNextDialogCreated());
+
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  auto trigger = MockSurveyWithRequestedBrowserType(
+      incognito_browser, hats::SurveyConfig::RequestedBrowserType::kIncognito);
+  GetHatsService(incognito_browser)->LaunchSurvey(trigger);
+  EXPECT_FALSE(HatsNextDialogCreated(incognito_browser));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -505,6 +533,41 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, ProfileOldEnoughToShow) {
                                                   base::Days(31));
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
   EXPECT_TRUE(HatsNextDialogCreated());
+}
+
+IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
+                       RegularSurveyInIncognitoNoShow) {
+  SetMetricsConsent(true);
+  base::HistogramTester histogram_tester;
+
+  // A regular survey should not be shown in incognito
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  GetHatsService(incognito_browser)->LaunchSurvey(kHatsSurveyTriggerSettings);
+  histogram_tester.ExpectUniqueSample(
+      kHatsShouldShowSurveyReasonHistogram,
+      HatsServiceDesktop::ShouldShowSurveyReasons::kNoWrongBrowserType, 1);
+  EXPECT_FALSE(HatsNextDialogCreated(incognito_browser));
+}
+
+IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
+                       IncognitoSurveyShownOnlyInIncognito) {
+  SetMetricsConsent(true);
+  base::HistogramTester histogram_tester;
+
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  auto trigger = MockSurveyWithRequestedBrowserType(
+      incognito_browser, hats::SurveyConfig::RequestedBrowserType::kIncognito);
+
+  // An incognito survey should not be shown in regular
+  GetHatsService()->LaunchSurvey(trigger);
+  histogram_tester.ExpectUniqueSample(
+      kHatsShouldShowSurveyReasonHistogram,
+      HatsServiceDesktop::ShouldShowSurveyReasons::kNoWrongBrowserType, 1);
+  EXPECT_FALSE(HatsNextDialogCreated());
+
+  // An incognito survey should be shown in incognito
+  GetHatsService(incognito_browser)->LaunchSurvey(trigger);
+  EXPECT_TRUE(HatsNextDialogCreated(incognito_browser));
 }
 
 IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, IncognitoModeDisabledNoShow) {
@@ -776,6 +839,26 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, SurveyCheckTimeRecorded) {
   GetHatsService()->SetSurveyMetadataForTesting({});
 
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
+
+  HatsServiceDesktop::SurveyMetadata metadata;
+  GetHatsService()->GetSurveyMetadataForTesting(&metadata);
+  EXPECT_TRUE(metadata.last_survey_check_time.has_value());
+}
+
+// Check that launching a HaTS Next survey records a survey check time even if
+// triggered in incognito
+IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
+                       SurveyCheckTimeRecordedIncognito) {
+  SetMetricsConsent(true);
+
+  // Clear any existing survey metadata.
+  GetHatsService()->SetSurveyMetadataForTesting({});
+
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  auto trigger = MockSurveyWithRequestedBrowserType(
+      incognito_browser, hats::SurveyConfig::RequestedBrowserType::kIncognito);
+
+  GetHatsService(incognito_browser)->LaunchSurvey(trigger);
 
   HatsServiceDesktop::SurveyMetadata metadata;
   GetHatsService()->GetSurveyMetadataForTesting(&metadata);

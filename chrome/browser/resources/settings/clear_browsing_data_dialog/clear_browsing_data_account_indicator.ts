@@ -52,9 +52,9 @@ export class SettingsClearBrowsingDataAccountIndicator extends
     };
   }
 
-  private shouldShowAccountIndicator_: boolean;
-  private shownAccount_: StoredAccount|null;
-  private syncStatus_: SyncStatus|undefined;
+  declare private shouldShowAccountIndicator_: boolean;
+  declare private shownAccount_: StoredAccount|null;
+  declare private syncStatus_: SyncStatus|undefined;
 
   private syncBrowserProxy_: SyncBrowserProxy =
       SyncBrowserProxyImpl.getInstance();

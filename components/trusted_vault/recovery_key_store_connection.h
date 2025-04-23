@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/types/expected.h"
 #include "components/trusted_vault/proto/recovery_key_store.pb.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 
@@ -15,7 +16,7 @@ struct CoreAccountInfo;
 
 namespace trusted_vault {
 
-enum class UpdateRecoveryKeyStoreStatus {
+enum class RecoveryKeyStoreStatus {
   kSuccess,
   kTransientAccessTokenFetchError,
   kPersistentAccessTokenFetchError,
@@ -24,13 +25,32 @@ enum class UpdateRecoveryKeyStoreStatus {
   kOtherError,
 };
 
+// This is the subset of information from the recovery key store that Chrome
+// uses.
+struct RecoveryKeyStoreEntry {
+  RecoveryKeyStoreEntry();
+  RecoveryKeyStoreEntry(RecoveryKeyStoreEntry&&);
+  RecoveryKeyStoreEntry& operator=(RecoveryKeyStoreEntry&&);
+  ~RecoveryKeyStoreEntry();
+  bool operator==(const RecoveryKeyStoreEntry&) const;
+
+  // The identifier for the vault.
+  std::vector<uint8_t> vault_handle;
+
+  // The backend cohort public key.
+  std::vector<uint8_t> backend_public_key;
+};
+
 // RecoveryKeyStoreConnection supports interaction with the recovery key store
 // service (internally named Vault).
 class RecoveryKeyStoreConnection {
  public:
   using Request = TrustedVaultConnection::Request;
   using UpdateRecoveryKeyStoreCallback =
-      base::OnceCallback<void(UpdateRecoveryKeyStoreStatus)>;
+      base::OnceCallback<void(RecoveryKeyStoreStatus)>;
+  using ListRecoveryKeyStoresCallback =
+      base::OnceCallback<void(base::expected<std::vector<RecoveryKeyStoreEntry>,
+                                             RecoveryKeyStoreStatus>)>;
 
   RecoveryKeyStoreConnection() = default;
   RecoveryKeyStoreConnection(const RecoveryKeyStoreConnection& other) = delete;
@@ -44,6 +64,11 @@ class RecoveryKeyStoreConnection {
       const CoreAccountInfo& account_info,
       const trusted_vault_pb::Vault& request,
       UpdateRecoveryKeyStoreCallback callback) = 0;
+
+  // Lists the recovery key stores for a user.
+  virtual std::unique_ptr<Request> ListRecoveryKeyStores(
+      const CoreAccountInfo& account_info,
+      ListRecoveryKeyStoresCallback callback) = 0;
 };
 
 }  // namespace trusted_vault

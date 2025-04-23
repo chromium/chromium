@@ -53,6 +53,8 @@ class GlicView : public views::View {
   // background color. Only call after the client is initialized.
   void UpdateBackgroundColor();
 
+  void UpdatePrimaryDraggableAreaOnResize();
+
   views::WebView* web_view() { return web_view_; }
 
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;

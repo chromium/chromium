@@ -12,6 +12,7 @@
 #import "components/safe_browsing/core/browser/realtime/chrome_enterprise_url_lookup_service.h"
 #import "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 #import "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
+#import "ios/chrome/browser/enterprise/connectors/features.h"
 #import "ios/chrome/browser/safe_browsing/model/chrome_enterprise_url_lookup_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/real_time_url_lookup_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -48,7 +49,7 @@ TEST_F(SafeBrowsingClientFactoryTest, DifferentClientInstances) {
 // service when Url filtering is enabled.
 TEST_F(SafeBrowsingClientFactoryTest, GetEnterpriseOrConsumerLookupService) {
   base::test::ScopedFeatureList feature(
-      kEnterpriseRealtimeUrlFilteringKillSwitch);
+      enterprise_connectors::kIOSEnterpriseRealtimeUrlFiltering);
 
   SafeBrowsingClient* recording_client =
       SafeBrowsingClientFactory::GetForProfile(profile_.get());

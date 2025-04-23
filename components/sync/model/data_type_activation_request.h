@@ -8,9 +8,10 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "components/sync/base/previously_syncing_gaia_id_info_for_metrics.h"
 #include "components/sync/base/sync_mode.h"
 #include "components/sync/model/model_error.h"
-#include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace syncer {
 
@@ -29,7 +30,9 @@ struct DataTypeActivationRequest {
   bool IsValid() const;
 
   ModelErrorHandler error_handler;
-  CoreAccountId authenticated_account_id;
+  GaiaId authenticated_gaia_id;
+  PreviouslySyncingGaiaIdInfoForMetrics previously_syncing_gaia_id_info =
+      PreviouslySyncingGaiaIdInfoForMetrics::kUnspecified;
   std::string cache_guid;
   SyncMode sync_mode = SyncMode::kFull;
 

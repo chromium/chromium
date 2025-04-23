@@ -4,7 +4,8 @@
 
 package org.chromium.base.test.transit;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * The return value of {@link ConditionWithResult#resolveWithSuppliers()}.
@@ -21,12 +22,13 @@ import androidx.annotation.Nullable;
  *
  * @param <ResultT> The type of the result.
  */
+@NullMarked
 public class ConditionStatusWithResult<ResultT> {
 
     private final ConditionStatus mStatus;
-    private final ResultT mResult;
+    private final @Nullable ResultT mResult;
 
-    ConditionStatusWithResult(ConditionStatus status, ResultT result) {
+    ConditionStatusWithResult(ConditionStatus status, @Nullable ResultT result) {
         mStatus = status;
         mResult = result;
     }

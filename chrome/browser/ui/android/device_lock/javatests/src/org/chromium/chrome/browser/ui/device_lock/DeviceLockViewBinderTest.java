@@ -214,7 +214,7 @@ public class DeviceLockViewBinderTest {
     @SmallTest
     public void
             testDeviceLockView_inSignInFlowWithPreExistingLock_dismissButtonHasDismissedSignInText() {
-        mViewModel.set(SOURCE, DeviceLockActivityLauncher.Source.SYNC_CONSENT);
+        mViewModel.set(SOURCE, DeviceLockActivityLauncher.Source.ACCOUNT_PICKER);
         mViewModel.set(PREEXISTING_DEVICE_LOCK, true);
 
         assertEquals(
@@ -228,7 +228,7 @@ public class DeviceLockViewBinderTest {
     @SmallTest
     public void
             testDeviceLockView_inSignInFlowWithNoPreExistingLock_dismissButtonHasNoThanksText() {
-        mViewModel.set(SOURCE, DeviceLockActivityLauncher.Source.SYNC_CONSENT);
+        mViewModel.set(SOURCE, DeviceLockActivityLauncher.Source.ACCOUNT_PICKER);
         mViewModel.set(PREEXISTING_DEVICE_LOCK, false);
 
         assertEquals(

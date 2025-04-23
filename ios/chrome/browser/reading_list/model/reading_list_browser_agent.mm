@@ -33,8 +33,6 @@
 #import "services/metrics/public/cpp/ukm_builders.h"
 #import "ui/base/l10n/l10n_util.h"
 
-BROWSER_USER_DATA_KEY_IMPL(ReadingListBrowserAgent)
-
 ReadingListBrowserAgent::ReadingListBrowserAgent(Browser* browser) {
   browser_ = browser;
 }

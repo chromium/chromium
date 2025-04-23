@@ -15,6 +15,7 @@ from grit import lazy_re
 from grit import pseudo
 from grit import pseudolocales
 from grit import tclib
+from grit import gender
 
 
 class UberClique:
@@ -219,7 +220,8 @@ class UberClique:
       original_msg = self.BestClique(id).GetMessage()
 
       translation = tclib.Translation(id=id)
-      for is_ph,text in structure:
+      # TODO(crbug.com/409770185): Support gendered translations.
+      for is_ph, text in structure[gender.DEFAULT_GENDER]:
         if not is_ph:
           translation.AppendText(text)
         else:

@@ -13,6 +13,7 @@ export {DeclutterPageElement} from './declutter/declutter_page.js';
 export {LazyListElement} from './lazy_list.js';
 export {search, SearchOptions} from './search.js';
 export {SelectableLazyListElement} from './selectable_lazy_list.js';
+export {SplitNewTabPageAppElement} from './split_view/app.js';
 export {getHostname, getTabGroupTitle, getTitle, ItemData, TabData, TabItemType} from './tab_data.js';
 export {Color as TabGroupColor} from './tab_group_types.mojom-webui.js';
 export {TabOrganizationSelectorElement} from './tab_organization_selector.js';

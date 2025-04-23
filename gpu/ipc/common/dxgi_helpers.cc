@@ -81,9 +81,6 @@ bool CopyDXGIBufferToShMem(
     Microsoft::WRL::ComPtr<ID3D11Texture2D>* staging_texture) {
   DCHECK(d3d11_device);
 
-  uint8_t* dest_buffer = shared_memory.data();
-  size_t dst_buffer_size = shared_memory.size_bytes();
-
   Microsoft::WRL::ComPtr<ID3D11Device1> device1;
   HRESULT hr = d3d11_device->QueryInterface(IID_PPV_ARGS(&device1));
   if (FAILED(hr)) {
@@ -100,19 +97,18 @@ bool CopyDXGIBufferToShMem(
     return false;
   }
 
-  return CopyD3D11TexToMem(texture.Get(), dest_buffer, dst_buffer_size,
-                           d3d11_device, staging_texture);
+  return CopyD3D11TexToMem(texture.Get(), shared_memory, d3d11_device,
+                           staging_texture);
 }
 
 bool CopyD3D11TexToMem(
     ID3D11Texture2D* src_texture,
-    uint8_t* dst_buffer,
-    size_t buffer_size,
+    base::span<uint8_t> dst_buffer,
     ID3D11Device* d3d11_device,
     Microsoft::WRL::ComPtr<ID3D11Texture2D>* staging_texture) {
   DCHECK(d3d11_device);
   DCHECK(staging_texture);
-  DCHECK(dst_buffer);
+  DCHECK(!dst_buffer.empty());
   DCHECK(src_texture);
 
   D3D11_TEXTURE2D_DESC texture_desc = {};
@@ -124,7 +120,7 @@ bool CopyD3D11TexToMem(
     return false;
   }
   size_t copy_size = texture_desc.Height * texture_desc.Width * 3 / 2;
-  if (buffer_size < copy_size) {
+  if (dst_buffer.size() < copy_size) {
     DLOG(ERROR) << "Invalid buffer size for copy.";
     return false;
   }
@@ -199,12 +195,12 @@ bool CopyD3D11TexToMem(
   const uint32_t source_stride = mapped_resource.RowPitch;
   const uint32_t dest_stride = texture_desc.Width;
 
-  return libyuv::NV12Copy(source_buffer, source_stride,
-                          source_buffer + texture_desc.Height * source_stride,
-                          source_stride, dst_buffer, dest_stride,
-                          dst_buffer + texture_desc.Height * dest_stride,
-                          dest_stride, texture_desc.Width,
-                          texture_desc.Height) == 0;
+  return libyuv::NV12Copy(
+             source_buffer, source_stride,
+             source_buffer + texture_desc.Height * source_stride, source_stride,
+             dst_buffer.data(), dest_stride,
+             dst_buffer.subspan(texture_desc.Height * dest_stride).data(),
+             dest_stride, texture_desc.Width, texture_desc.Height) == 0;
 }
 
 GPU_EXPORT bool CopyShMemToDXGIBuffer(base::span<uint8_t> shared_memory,

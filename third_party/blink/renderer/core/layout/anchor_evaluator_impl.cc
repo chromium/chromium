@@ -105,64 +105,6 @@ void PhysicalAnchorReference::InsertInReverseTreeOrderInto(
   }
 }
 
-namespace {
-
-bool IsScopedByElement(const ScopedCSSName* lookup_name,
-                       const Element& element) {
-  const ComputedStyle* style = element.GetComputedStyle();
-  if (!style) {
-    // TODO(crbug.com/384523570): We should not be here without a style,
-    // but apparently that can happen [1]. This is likely related to poking
-    // into a dirty layout tree during scroll snapshotting,
-    // since ValidateSnapshot() is on the stack [1].
-    //
-    // [1] crbug.com/393395576
-    return false;
-  }
-  const StyleAnchorScope& anchor_scope = style->AnchorScope();
-  if (anchor_scope.IsNone()) {
-    return false;
-  }
-  if (anchor_scope.IsAll()) {
-    return anchor_scope.AllTreeScope() == lookup_name->GetTreeScope();
-  }
-  const ScopedCSSNameList* scoped_names = anchor_scope.Names();
-  CHECK(scoped_names);
-  for (const Member<const ScopedCSSName>& scoped_name :
-       scoped_names->GetNames()) {
-    if (*scoped_name == *lookup_name) {
-      return true;
-    }
-  }
-  return false;
-}
-
-// https://drafts.csswg.org/css-anchor-position-1/#anchor-scope
-bool InSameAnchorScope(const AnchorKey& key,
-                       const LayoutBox& query_box,
-                       const LayoutObject& anchor_object) {
-  const ScopedCSSName* const* name = std::get_if<const ScopedCSSName*>(&key);
-  if (!name) {
-    // This is an implicit anchor reference, which is unaffected
-    // by anchor-scope.
-    return true;
-  }
-  auto anchor_scope_ancestor =
-      [name](const LayoutObject& layout_object) -> const Element* {
-    for (const Element* element = To<Element>(layout_object.GetNode()); element;
-         element = LayoutTreeBuilderTraversal::ParentElement(*element)) {
-      if (IsScopedByElement(*name, *element)) {
-        return element;
-      }
-    }
-    return nullptr;
-  };
-  return anchor_scope_ancestor(query_box) ==
-         anchor_scope_ancestor(anchor_object);
-}
-
-}  // namespace
-
 const PhysicalAnchorReference* PhysicalAnchorQuery::AnchorReference(
     const LayoutBox& query_box,
     const AnchorKey& key) const {
@@ -175,8 +117,7 @@ const PhysicalAnchorReference* PhysicalAnchorQuery::AnchorReference(
       // really shouldn't be here.
       if (layout_object && layout_object != &query_box &&
           (!result->is_out_of_flow ||
-           layout_object->IsBeforeInPreOrder(query_box)) &&
-          InSameAnchorScope(key, query_box, *layout_object)) {
+           layout_object->IsBeforeInPreOrder(query_box))) {
         return result;
       }
     }
@@ -442,11 +383,13 @@ const PhysicalAnchorReference* AnchorEvaluatorImpl::ResolveAnchorReference(
     return nullptr;
   }
   if (anchor_specifier.IsNamed()) {
-    return anchor_query->AnchorReference(*query_box_,
-                                         &anchor_specifier.GetName());
+    return anchor_query->AnchorReference(
+        *query_box_,
+        ToAnchorScopedName(anchor_specifier.GetName(), *query_box_));
   }
   if (anchor_specifier.IsDefault() && position_anchor) {
-    return anchor_query->AnchorReference(*query_box_, position_anchor);
+    return anchor_query->AnchorReference(
+        *query_box_, ToAnchorScopedName(*position_anchor, *query_box_));
   }
   return anchor_query->AnchorReference(
       *query_box_, To<Element>(implicit_anchor_->GetNode()));

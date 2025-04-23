@@ -75,20 +75,17 @@ struct BASE_EXPORT PostedTask {
 
 }  // namespace internal
 
-enum class WakeUpResolution { kLow, kHigh };
-
 // Represents a time at which a task wants to run.
 struct WakeUp {
   // is_null() for immediate wake up.
   TimeTicks time;
   // These are meaningless if is_immediate().
   TimeDelta leeway;
-  WakeUpResolution resolution = WakeUpResolution::kLow;
   subtle::DelayPolicy delay_policy = subtle::DelayPolicy::kFlexibleNoSooner;
 
   bool operator!=(const WakeUp& other) const {
     return time != other.time || leeway != other.leeway ||
-           resolution != other.resolution || delay_policy != other.delay_policy;
+           delay_policy != other.delay_policy;
   }
 
   bool operator==(const WakeUp& other) const { return !(*this != other); }
@@ -105,7 +102,6 @@ struct BASE_EXPORT Task : public PendingTask {
        EnqueueOrder sequence_order,
        EnqueueOrder enqueue_order = EnqueueOrder(),
        TimeTicks queue_time = TimeTicks(),
-       WakeUpResolution wake_up_resolution = WakeUpResolution::kLow,
        TimeDelta leeway = TimeDelta());
   Task(Task&& move_from);
   ~Task();
@@ -129,9 +125,6 @@ struct BASE_EXPORT Task : public PendingTask {
 
   // OK to dispatch from a nested loop.
   Nestable nestable = Nestable::kNonNestable;
-
-  // Needs high resolution timers.
-  bool is_high_res = false;
 
   TaskType task_type;
 

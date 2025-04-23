@@ -11,7 +11,7 @@ build_webui("build") {
   grd_prefix = "ash_focus_mode"
 
   static_files = [ "focus_mode.html" ]
-  non_web_component_files = [ "app.ts" ]
+  ts_files = [ "app.ts" ]
 
   ts_composite = true
   ts_deps = [

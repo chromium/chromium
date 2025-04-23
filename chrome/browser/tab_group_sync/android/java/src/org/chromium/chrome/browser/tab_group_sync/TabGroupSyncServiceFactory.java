@@ -26,11 +26,11 @@ public final class TabGroupSyncServiceFactory {
      * @return The {@link TabGroupSyncService} for the given profile.
      */
     public static @Nullable TabGroupSyncService getForProfile(Profile profile) {
+        // Assert this before returning test value so that incorrect usage can be caught in tests.
+        assert !profile.isOffTheRecord();
         if (sTabGroupSyncServiceForTesting != null) {
             return sTabGroupSyncServiceForTesting;
         }
-
-        assert !profile.isOffTheRecord();
 
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)) {
             return null;

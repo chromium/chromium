@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_tree.h"
 #include "base/i18n/string_search.h"
+#include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_event.h"

@@ -154,8 +154,6 @@ void ImmersiveModeControllerChromeos::OnWidgetActivationChanged(
     return;
   }
 
-  // TODO(sammiequon): Investigate if we can move immersive mode logic to the
-  // browser non client frame view.
   DCHECK_EQ(browser_view_->frame(), widget);
   if (widget->GetNativeWindow()->GetProperty(chromeos::kWindowStateTypeKey) ==
       chromeos::WindowStateType::kFloated) {

@@ -37,7 +37,10 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -452,6 +455,7 @@ public class TabModelSelectorImplTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.HEADLESS_TAB_MODEL)
     public void testMarkTabStateInitializedReentrancy() {
         mTabModelSelector.destroy();
 
@@ -476,12 +480,12 @@ public class TabModelSelectorImplTest {
                 new TabModelSelectorObserver() {
                     @Override
                     public void onTabStateInitialized() {
-                        verify(regularModel, never()).broadcastSessionRestoreComplete();
+                        verify(regularModel, never()).completeInitialization();
                         mTabModelSelector.markTabStateInitialized();
 
                         // Should not be called due to re-entrancy guard until this observer
                         // returns.
-                        verify(regularModel, never()).broadcastSessionRestoreComplete();
+                        verify(regularModel, never()).completeInitialization();
                     }
                 };
 
@@ -492,7 +496,34 @@ public class TabModelSelectorImplTest {
         mTabModelSelector.removeObserver(observer);
 
         // Should be called exactly once.
+        verify(regularModel).completeInitialization();
         verify(regularModel).broadcastSessionRestoreComplete();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.HEADLESS_TAB_MODEL)
+    public void testInitDoesNotBroadcastInHeadless() {
+        mTabModelSelector.destroy();
+
+        TabModelImpl regularModel = mock(TabModelImpl.class);
+        mTabModelSelector =
+                new TabModelSelectorImpl(
+                        mContext,
+                        mModalDialogManager,
+                        mProfileProviderSupplier,
+                        mTabCreatorManager,
+                        mNextTabPolicySupplier,
+                        mAsyncTabParamsManager,
+                        /* supportUndo= */ false,
+                        NO_RESTORE_TYPE,
+                        /* startIncognito= */ false);
+        when(regularModel.isActiveModel()).thenReturn(true);
+        TabUngrouperFactory factory =
+                (isIncognitoBranded, tabGroupModelFilterSupplier) ->
+                        new PassthroughTabUngrouper(tabGroupModelFilterSupplier);
+        mTabModelSelector.initializeForTesting(regularModel, mIncognitoTabModel, factory);
+        mTabModelSelector.markTabStateInitialized();
+        verify(regularModel, never()).broadcastSessionRestoreComplete();
     }
 
     @Test

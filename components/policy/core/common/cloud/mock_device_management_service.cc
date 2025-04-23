@@ -153,6 +153,15 @@ FakeDeviceManagementService::CaptureTimeout(base::TimeDelta* timeout) {
 }
 
 FakeDeviceManagementService::JobAction
+FakeDeviceManagementService::CaptureSendsCookies(bool* sends_cookies) {
+  return [sends_cookies](DeviceManagementService::JobForTesting job) mutable {
+    if (job.IsActive()) {
+      *sends_cookies = job.GetConfigurationForTesting()->AreCookiesUsed();
+    }
+  };
+}
+
+FakeDeviceManagementService::JobAction
 FakeDeviceManagementService::SendJobResponseAsync(int net_error,
                                                   int response_code,
                                                   const std::string& response,

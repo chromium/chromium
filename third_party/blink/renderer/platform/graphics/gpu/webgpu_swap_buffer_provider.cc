@@ -246,35 +246,6 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUSwapBufferProvider::GetNewTexture(
 
   return current_swap_buffer_->mailbox_texture;
 }
-scoped_refptr<WebGPUMailboxTexture>
-WebGPUSwapBufferProvider::GetLastWebGPUMailboxTexture() const {
-  // It's possible this is called after the canvas context current texture has
-  // been destroyed, but `current_swap_buffer_` is still available e.g. when the
-  // context is used offscreen only.
-  auto latest_swap_buffer =
-      current_swap_buffer_ ? current_swap_buffer_ : last_swap_buffer_;
-  auto context_provider = GetContextProviderWeakPtr();
-  if (!latest_swap_buffer || !context_provider) {
-    return nullptr;
-  }
-
-  wgpu::DawnTextureInternalUsageDescriptor internal_usage;
-  internal_usage.internalUsage = internal_usage_;
-  wgpu::TextureDescriptor desc = {
-      .nextInChain = &internal_usage,
-      .usage = usage_,
-      .size = {static_cast<uint32_t>(
-                   latest_swap_buffer->GetSharedImage()->size().width()),
-               static_cast<uint32_t>(
-                   latest_swap_buffer->GetSharedImage()->size().height())},
-      .format = format_,
-  };
-
-  return WebGPUMailboxTexture::FromExistingSharedImage(
-      dawn_control_client_, device_, desc, latest_swap_buffer->GetSharedImage(),
-      latest_swap_buffer->GetSyncToken(), gpu::webgpu::WEBGPU_MAILBOX_NONE);
-}
-
 base::WeakPtr<WebGraphicsContext3DProviderWrapper>
 WebGPUSwapBufferProvider::GetContextProviderWeakPtr() const {
   return dawn_control_client_->GetContextProviderWeakPtr();
@@ -390,11 +361,7 @@ void WebGPUSwapBufferProvider::MailboxReleased(
   if (lost_resource)
     return;
 
-  if (last_swap_buffer_) {
-    swap_buffer_pool_->ReleaseImage(std::move(last_swap_buffer_));
-  }
-
-  last_swap_buffer_ = std::move(swap_buffer);
+  swap_buffer_pool_->ReleaseImage(std::move(swap_buffer));
 }
 
 WebGPUSwapBufferProvider::SwapBuffer::SwapBuffer(

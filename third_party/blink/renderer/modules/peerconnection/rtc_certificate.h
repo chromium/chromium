@@ -48,9 +48,9 @@ class MODULES_EXPORT RTCCertificate final : public ScriptWrappable {
 
  public:
   // Takes ownership of the certificate.
-  RTCCertificate(rtc::scoped_refptr<rtc::RTCCertificate>);
+  RTCCertificate(webrtc::scoped_refptr<webrtc::RTCCertificate>);
 
-  const rtc::scoped_refptr<rtc::RTCCertificate>& Certificate() const {
+  const webrtc::scoped_refptr<webrtc::RTCCertificate>& Certificate() const {
     return certificate_;
   }
 
@@ -59,7 +59,7 @@ class MODULES_EXPORT RTCCertificate final : public ScriptWrappable {
   HeapVector<Member<RTCDtlsFingerprint>> getFingerprints();
 
  private:
-  rtc::scoped_refptr<rtc::RTCCertificate> certificate_;
+  webrtc::scoped_refptr<webrtc::RTCCertificate> certificate_;
 };
 
 }  // namespace blink

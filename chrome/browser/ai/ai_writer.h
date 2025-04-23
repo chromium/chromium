@@ -45,6 +45,9 @@ class AIWriter : public AIContextBoundObject, public blink::mojom::AIWriter {
                     const std::string& context,
                     MeasureUsageCallback callback) override;
 
+  // AIContextBoundObject:
+  void SetPriority(on_device_model::mojom::Priority priority) override;
+
  private:
   void DidGetExecutionInputSizeForWrite(
       mojo::RemoteSetElementId responder_id,

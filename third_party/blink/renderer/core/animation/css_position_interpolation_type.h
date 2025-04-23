@@ -21,7 +21,7 @@ class CSSPositionInterpolationType : public CSSLengthListInterpolationType {
 
  private:
   InterpolationValue MaybeConvertValue(const CSSValue& value,
-                                       const StyleResolverState*,
+                                       const StyleResolverState&,
                                        ConversionCheckers&) const final {
     const auto* pair = DynamicTo<CSSValuePair>(value);
     if (!pair) {

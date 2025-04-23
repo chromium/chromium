@@ -14,10 +14,6 @@
 @class FakeSystemIdentity;
 @protocol GREYMatcher;
 
-namespace signin {
-enum class ConsentLevel;
-}
-
 namespace syncer {
 enum class UserSelectableType;
 }
@@ -57,9 +53,9 @@ enum class UserSelectableType;
 // If there is no primary account returns an empty string.
 + (NSString*)primaryAccountGaiaID;
 
-// Returns the email of the primary account base on `consentLevel`.
+// Returns the email of the primary account.
 // If there is no signed-in account returns an empty string.
-+ (NSString*)primaryAccountEmailWithConsent:(signin::ConsentLevel)consentLevel;
++ (NSString*)primaryAccountEmail;
 
 // Returns the gaia IDs of all accounts in the current profile.
 + (NSSet<NSString*>*)accountsInProfileGaiaIDs;
@@ -70,24 +66,21 @@ enum class UserSelectableType;
 // Signs out the current user.
 + (void)signOut;
 
-// Signs in with the fake identity and access point Settings.
+// Signs in with the fake identity.
 // Adds the fake-identity to the identity manager if necessary.
 // Call `[SigninEarlGrey signinWithFakeIdentity:identity]` instead.
 // `fakeIdentity` is added if it was not added yet.
 + (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity;
 
-// Signs in with the fake managed identity and access point Settings.
+// Signs in with the fake managed identity.
 // Adds the fake-identity to the identity manager if necessary.
-// Converts the personal profile into a managed one.
+// If separate profiles for managed accounts are enabled, converts the personal
+// profile into a managed one.
 // Call `[SigninEarlGrey
 // signinWithFakeManagedIdentityInPersonalProfile:identity]` instead.
 // `fakeIdentity` is added if it was not added yet.
 + (void)signinWithFakeManagedIdentityInPersonalProfile:
     (FakeSystemIdentity*)identity;
-
-// Signs in with `identity` without history sync consent.
-// `fakeIdentity` is added if it was not added yet.
-+ (void)signInWithoutHistorySyncWithFakeIdentity:(FakeSystemIdentity*)identity;
 
 // Triggers the reauth dialog. This is done by sending ShowSigninCommand to
 // SceneController, without any UI interaction to open the dialog.
@@ -119,6 +112,12 @@ enum class UserSelectableType;
 // feature flag, plus some additional conditions which can't be directly checked
 // in the test app.
 + (BOOL)areSeparateProfilesForManagedAccountsEnabled;
+
+// Returns whether the account particle disc on the NTP should open the account
+// menu. This depends on the `kSeparateProfilesForManagedAccounts` and
+// `kIdentityDiscAccountMenu` feature flags, plus some additional conditions
+// which can't be directly checked in the test app.
++ (BOOL)isIdentityDiscAccountMenuEnabled;
 
 @end
 

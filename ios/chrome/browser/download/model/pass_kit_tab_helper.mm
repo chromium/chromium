@@ -149,5 +149,3 @@ void PassKitTabHelper::OnDownloadDataAllRead(std::string uma_histogram,
 
   base::UmaHistogramEnumeration(uma_histogram, uma_result);
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(PassKitTabHelper)

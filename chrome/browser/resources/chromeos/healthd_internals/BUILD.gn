@@ -35,7 +35,7 @@ build_webui("build") {
     "view/settings/settings_dialog.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "controller/canvas_drawer.ts",
     "controller/line_chart_controller.ts",
     "controller/system_trend_controller.ts",

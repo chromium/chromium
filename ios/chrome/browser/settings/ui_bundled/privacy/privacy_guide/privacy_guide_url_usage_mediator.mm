@@ -39,6 +39,7 @@
 }
 
 - (void)disconnect {
+  [_URLUsagePreference stop];
   _URLUsagePreference = nil;
 }
 

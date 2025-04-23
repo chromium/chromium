@@ -6,13 +6,13 @@
 GEN_INCLUDE(['panel_test_base.js']);
 
 /** Test fixture for MenuManager. */
-ChromeVoxMenuManagerTest = class extends ChromeVoxPanelTestBase {
+ChromeVoxMV2MenuManagerTest = class extends ChromeVoxMV2PanelTestBase {
   getMenuManager() {
     return this.getPanel().instance.getMenuManagerForTesting();
   }
 };
 
-AX_TEST_F('ChromeVoxMenuManagerTest', 'ActiveMenu', async function() {
+AX_TEST_F('ChromeVoxMV2MenuManagerTest', 'ActiveMenu', async function() {
   await this.runWithLoadedTree('');
   new PanelCommand(PanelCommandType.OPEN_MENUS).send();
   await this.waitForMenu('panel_search_menu');
@@ -33,7 +33,7 @@ AX_TEST_F('ChromeVoxMenuManagerTest', 'ActiveMenu', async function() {
   assertNullOrUndefined(this.getPanel().instance.pendingCallback_);
 });
 
-AX_TEST_F('ChromeVoxMenuManagerTest', 'AddMenu', async function() {
+AX_TEST_F('ChromeVoxMV2MenuManagerTest', 'AddMenu', async function() {
   await this.runWithLoadedTree('');
   new PanelCommand(PanelCommandType.OPEN_MENUS).send();
   await this.waitForMenu('panel_search_menu');
@@ -54,7 +54,7 @@ AX_TEST_F('ChromeVoxMenuManagerTest', 'AddMenu', async function() {
       this.getMenuManager().menus_.some(menu => menu.menuMsg === 'fake_menu'));
 });
 
-AX_TEST_F('ChromeVoxMenuManagerTest', 'AddNodeMenu', async function() {
+AX_TEST_F('ChromeVoxMV2MenuManagerTest', 'AddNodeMenu', async function() {
   await this.runWithLoadedTree('');
   new PanelCommand(PanelCommandType.OPEN_MENUS).send();
   await this.waitForMenu('panel_search_menu');
@@ -72,48 +72,49 @@ AX_TEST_F('ChromeVoxMenuManagerTest', 'AddNodeMenu', async function() {
   assertEquals(fakeMenu, this.getMenuManager().nodeMenuDictionary_[6]);
 });
 
-AX_TEST_F('ChromeVoxMenuManagerTest', 'AdvanceActiveMenuBy', async function() {
-  await this.runWithLoadedTree('');
-  new PanelCommand(PanelCommandType.OPEN_MENUS).send();
-  await this.waitForMenu('panel_search_menu');
+AX_TEST_F(
+    'ChromeVoxMV2MenuManagerTest', 'AdvanceActiveMenuBy', async function() {
+      await this.runWithLoadedTree('');
+      new PanelCommand(PanelCommandType.OPEN_MENUS).send();
+      await this.waitForMenu('panel_search_menu');
 
-  const menuManager = this.getMenuManager();
-  const activeIndex = () =>
-      menuManager.menus_.findIndex(menu => menu === menuManager.activeMenu_);
-  assertEquals(0, activeIndex());
+      const menuManager = this.getMenuManager();
+      const activeIndex = () => menuManager.menus_.findIndex(
+          menu => menu === menuManager.activeMenu_);
+      assertEquals(0, activeIndex());
 
-  // Forward with an active menu.
-  menuManager.advanceActiveMenuBy(2);
-  assertEquals(2, activeIndex());
+      // Forward with an active menu.
+      menuManager.advanceActiveMenuBy(2);
+      assertEquals(2, activeIndex());
 
-  // Backward with an active menu.
-  menuManager.advanceActiveMenuBy(-1);
-  assertEquals(1, activeIndex());
+      // Backward with an active menu.
+      menuManager.advanceActiveMenuBy(-1);
+      assertEquals(1, activeIndex());
 
-  // Wrap around backwards.
-  menuManager.advanceActiveMenuBy(-3);
-  assertEquals(menuManager.menus_.length - 2, activeIndex());
+      // Wrap around backwards.
+      menuManager.advanceActiveMenuBy(-3);
+      assertEquals(menuManager.menus_.length - 2, activeIndex());
 
-  // Wrap around forwards.
-  menuManager.advanceActiveMenuBy(4);
-  assertEquals(2, activeIndex());
+      // Wrap around forwards.
+      menuManager.advanceActiveMenuBy(4);
+      assertEquals(2, activeIndex());
 
-  // Forward with no active menu.
-  menuManager.activeMenu_ = null;
-  assertEquals(-1, activeIndex());
+      // Forward with no active menu.
+      menuManager.activeMenu_ = null;
+      assertEquals(-1, activeIndex());
 
-  menuManager.advanceActiveMenuBy(1);
-  assertEquals(0, activeIndex());
+      menuManager.advanceActiveMenuBy(1);
+      assertEquals(0, activeIndex());
 
-  // Backward with no active menu.
-  menuManager.activeMenu_ = null;
-  assertEquals(-1, activeIndex());
+      // Backward with no active menu.
+      menuManager.activeMenu_ = null;
+      assertEquals(-1, activeIndex());
 
-  menuManager.advanceActiveMenuBy(-1);
-  assertEquals(menuManager.menus_.length - 1, activeIndex());
-});
+      menuManager.advanceActiveMenuBy(-1);
+      assertEquals(menuManager.menus_.length - 1, activeIndex());
+    });
 
-AX_TEST_F('ChromeVoxMenuManagerTest', 'ClearMenus', async function() {
+AX_TEST_F('ChromeVoxMV2MenuManagerTest', 'ClearMenus', async function() {
   await this.runWithLoadedTree('');
   new PanelCommand(PanelCommandType.OPEN_MENUS).send();
   await this.waitForMenu('panel_search_menu');
@@ -131,7 +132,7 @@ AX_TEST_F('ChromeVoxMenuManagerTest', 'ClearMenus', async function() {
   assertEquals(null, this.getMenuManager().activeMenu_);
 });
 
-AX_TEST_F('ChromeVoxMenuManagerTest', 'DenySignedOut', async function() {
+AX_TEST_F('ChromeVoxMV2MenuManagerTest', 'DenySignedOut', async function() {
   await this.runWithLoadedTree('');
   new PanelCommand(PanelCommandType.OPEN_MENUS).send();
   await this.waitForMenu('panel_search_menu');
@@ -145,66 +146,70 @@ AX_TEST_F('ChromeVoxMenuManagerTest', 'DenySignedOut', async function() {
   assertTrue(someItemsAreDisabled());
 });
 
-AX_TEST_F('ChromeVoxMenuManagerTest', 'FindEnabledMenuIndex', async function() {
-  await this.runWithLoadedTree('');
-  new PanelCommand(PanelCommandType.OPEN_MENUS).send();
-  await this.waitForMenu('panel_search_menu');
+AX_TEST_F(
+    'ChromeVoxMV2MenuManagerTest', 'FindEnabledMenuIndex', async function() {
+      await this.runWithLoadedTree('');
+      new PanelCommand(PanelCommandType.OPEN_MENUS).send();
+      await this.waitForMenu('panel_search_menu');
 
-  const menuManager = this.getMenuManager();
+      const menuManager = this.getMenuManager();
 
-  // Try forward and backward when all menus are enabled.
-  let index = menuManager.findEnabledMenuIndex(0, 1);
-  assertEquals(0, index);
+      // Try forward and backward when all menus are enabled.
+      let index = menuManager.findEnabledMenuIndex(0, 1);
+      assertEquals(0, index);
 
-  index = menuManager.findEnabledMenuIndex(1, -1);
-  assertEquals(1, index);
+      index = menuManager.findEnabledMenuIndex(1, -1);
+      assertEquals(1, index);
 
-  // Try forward and backward when no menus are enabled.
-  menuManager.menus_.forEach(menu => menu.enabled_ = false);
+      // Try forward and backward when no menus are enabled.
+      menuManager.menus_.forEach(menu => menu.enabled_ = false);
 
-  index = menuManager.findEnabledMenuIndex(2, 1);
-  assertEquals(-1, index);
+      index = menuManager.findEnabledMenuIndex(2, 1);
+      assertEquals(-1, index);
 
-  index = menuManager.findEnabledMenuIndex(2, -1);
-  assertEquals(-1, index);
+      index = menuManager.findEnabledMenuIndex(2, -1);
+      assertEquals(-1, index);
 
-  // Try forward and backward when one menu is enabled in that direction.
-  menuManager.menus_[2].enabled_ = true;
+      // Try forward and backward when one menu is enabled in that direction.
+      menuManager.menus_[2].enabled_ = true;
 
-  index = menuManager.findEnabledMenuIndex(0, 1);
-  assertEquals(2, index);
+      index = menuManager.findEnabledMenuIndex(0, 1);
+      assertEquals(2, index);
 
-  index = menuManager.findEnabledMenuIndex(menuManager.menus_.length - 1, -1);
-  assertEquals(2, index);
+      index =
+          menuManager.findEnabledMenuIndex(menuManager.menus_.length - 1, -1);
+      assertEquals(2, index);
 
-  // Try forward and backward when there is one enabled menu, but in the
-  // opposite direction.
-  index = menuManager.findEnabledMenuIndex(3, 1);
-  assertEquals(-1, index);
+      // Try forward and backward when there is one enabled menu, but in the
+      // opposite direction.
+      index = menuManager.findEnabledMenuIndex(3, 1);
+      assertEquals(-1, index);
 
-  index = menuManager.findEnabledMenuIndex(1, -1);
-  assertEquals(-1, index);
-});
+      index = menuManager.findEnabledMenuIndex(1, -1);
+      assertEquals(-1, index);
+    });
 
-AX_TEST_F('ChromeVoxMenuManagerTest', 'GetSortedKeyBindings', async function() {
-  await this.runWithLoadedTree('');
-  new PanelCommand(PanelCommandType.OPEN_MENUS).send();
-  await this.waitForMenu('panel_search_menu');
+AX_TEST_F(
+    'ChromeVoxMV2MenuManagerTest', 'GetSortedKeyBindings', async function() {
+      await this.runWithLoadedTree('');
+      new PanelCommand(PanelCommandType.OPEN_MENUS).send();
+      await this.waitForMenu('panel_search_menu');
 
-  const keymapBindings = KeyMap.get().bindings();
-  const sortedKeyBindings = await this.getMenuManager().getSortedKeyBindings();
-  assertEquals(keymapBindings.length, sortedKeyBindings.length);
+      const keymapBindings = KeyMap.get().bindings();
+      const sortedKeyBindings =
+          await this.getMenuManager().getSortedKeyBindings();
+      assertEquals(keymapBindings.length, sortedKeyBindings.length);
 
-  for (const binding of sortedKeyBindings) {
-    assertNotEquals('', binding.command);
-    assertEquals('string', typeof binding.keySeq);
-    assertEquals('string', typeof binding.title);
-    assertTrue(keymapBindings.some(
-        keyBinding => binding.sequence.equals(keyBinding.sequence)));
-  }
-});
+      for (const binding of sortedKeyBindings) {
+        assertNotEquals('', binding.command);
+        assertEquals('string', typeof binding.keySeq);
+        assertEquals('string', typeof binding.title);
+        assertTrue(keymapBindings.some(
+            keyBinding => binding.sequence.equals(keyBinding.sequence)));
+      }
+    });
 
-AX_TEST_F('ChromeVoxMenuManagerTest', 'OnSearchBarQuery', async function() {
+AX_TEST_F('ChromeVoxMV2MenuManagerTest', 'OnSearchBarQuery', async function() {
   await this.runWithLoadedTree('');
   new PanelCommand(PanelCommandType.OPEN_MENUS).send();
   await this.waitForMenu('panel_search_menu');

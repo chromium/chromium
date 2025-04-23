@@ -72,6 +72,7 @@ public class SafetyHubMetricUtils {
         DashboardModuleType.UPDATE_CHECK,
         DashboardModuleType.ACCOUNT_PASSWORDS,
         DashboardModuleType.LOCAL_PASSWORDS,
+        DashboardModuleType.UNIFIED_PASSWORDS,
         DashboardModuleType.SAFE_BROWSING,
         DashboardModuleType.REVOKED_PERMISSIONS,
         DashboardModuleType.NOTIFICATION_REVIEW,
@@ -82,6 +83,7 @@ public class SafetyHubMetricUtils {
         String UPDATE_CHECK = "UpdateCheck";
         String ACCOUNT_PASSWORDS = "AccountPasswords";
         String LOCAL_PASSWORDS = "LocalPasswords";
+        String UNIFIED_PASSWORDS = "UnifiedPasswords";
         String SAFE_BROWSING = "SafeBrowsing";
         String REVOKED_PERMISSIONS = "RevokedPermissions";
         String NOTIFICATION_REVIEW = "NotificationReview";
@@ -220,6 +222,8 @@ public class SafetyHubMetricUtils {
                 return DashboardModuleType.ACCOUNT_PASSWORDS;
             case ModuleOption.LOCAL_PASSWORDS:
                 return DashboardModuleType.LOCAL_PASSWORDS;
+            case ModuleOption.UNIFIED_PASSWORDS:
+                return DashboardModuleType.UNIFIED_PASSWORDS;
             case ModuleOption.SAFE_BROWSING:
                 return DashboardModuleType.SAFE_BROWSING;
             case ModuleOption.UNUSED_PERMISSIONS:

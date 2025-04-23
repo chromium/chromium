@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.recent_tabs;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.hub.Pane;
 
 /** An interface for a CrossDevicePane instance. */
+@NullMarked
 public interface CrossDevicePane extends Pane {}

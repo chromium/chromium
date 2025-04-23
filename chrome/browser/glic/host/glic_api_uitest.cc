@@ -18,13 +18,21 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
+#include "chrome/browser/contextual_cueing/mock_contextual_cueing_service.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic_page_handler.h"
+#include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/permissions/system/mock_platform_handle.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -32,6 +40,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/metrics/metrics_service.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "content/public/browser/render_frame_host.h"
@@ -44,21 +53,27 @@
 // This file runs the respective JS tests from
 // chrome/test/data/webui/glic/api_test.ts.
 
-#if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)
+#if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) || \
+    defined(MEMORY_SANITIZER)
 #define SLOW_BINARY
 #endif
 
 namespace glic {
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSettingsTab);
 std::vector<std::string> GetTestSuiteNames() {
   return {
       "GlicApiTest",
       "GlicApiTestWithOneTab",
       "GlicApiTestWithFastTimeout",
+      "GlicApiTestSystemSettingsTest",
+      "GlicApiTestWithOneTabAndContextualCueing",
   };
 }
+
+using testing::_;
 
 // Observes the state of the WebUI hosted in the glic window.
 class WebUIStateListener : public GlicWindowController::WebUiStateObserver {
@@ -120,6 +135,9 @@ struct ExecuteTestOptions {
 class GlicApiTest : public test::InteractiveGlicTest {
  public:
   GlicApiTest() {
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        &GlicApiTest::SorryPageRequestHandler, base::Unretained(this)));
+
     add_mock_glic_query_param(
         "test",
         ::testing::UnitTest::GetInstance()->current_test_info()->name());
@@ -187,35 +205,26 @@ class GlicApiTest : public test::InteractiveGlicTest {
   }
 
   void WaitForGuest() {
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return FindGlicGuestMainFrame() != nullptr;
-    })) << "Timed out waiting for the frame";
-    auto end_time = base::TimeTicks::Now() + base::Seconds(5);
+    auto end_time = base::TimeTicks::Now() + base::Seconds(10);
+    content::RenderFrameHost* frame = nullptr;
     while (base::TimeTicks::Now() < end_time) {
-      content::RenderFrameHost* frame = FindGlicGuestMainFrame();
-      ASSERT_TRUE(frame) << "Guest frame deleted";
-      auto result =
-          content::EvalJs(frame, {"typeof runApiTest !== 'undefined'"});
-      if (result.error.empty() && result.ExtractBool()) {
-        return;
+      // Note: Sometimes the previous guest frame is still around, but it won't
+      // have the runApiTest function. Loop until both conditions are met.
+      frame = FindGlicGuestMainFrame();
+      if (frame) {
+        auto result =
+            content::EvalJs(frame, {"typeof runApiTest !== 'undefined'"});
+        if (result.error.empty() && result.ExtractBool()) {
+          return;
+        }
       }
       base::RunLoop run_loop;
       base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(200));
       run_loop.Run();
     }
-    FAIL() << "Timed out waiting for guest frame";
-  }
-
-  content::RenderFrameHost* FindGlicGuestMainFrame() {
-    GlicKeyedService* glic =
-        GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
-    for (GlicPageHandler* handler : glic->GetPageHandlersForTesting()) {
-      if (handler->GetGuestMainFrame()) {
-        return handler->GetGuestMainFrame();
-      }
-    }
-    return nullptr;
+    FAIL() << "Timed out waiting for guest frame. Guest frame: "
+           << (frame ? frame->GetLastCommittedURL().spec() : "not found");
   }
 
   void WaitForWebUiState(mojom::WebUiState state) {
@@ -226,6 +235,20 @@ class GlicApiTest : public test::InteractiveGlicTest {
   const std::optional<base::Value>& step_data() const { return step_data_; }
 
  private:
+  // Just an error page at a specific /sorry/... URL.
+  std::unique_ptr<net::test_server::HttpResponse> SorryPageRequestHandler(
+      const net::test_server::HttpRequest& request) {
+    if (request.method != net::test_server::METHOD_GET ||
+        !base::StartsWith(request.relative_url, "/sorry/index.html")) {
+      return nullptr;
+    }
+    auto result = std::make_unique<net::test_server::BasicHttpResponse>();
+    result->set_code(net::HttpStatusCode::HTTP_OK);
+    result->set_content_type("text/html");
+    result->set_content("Sorry!");
+    return result;
+  }
+
   void ProcessTestResult(const ExecuteTestOptions& options,
                          const content::EvalJsResult& result) {
     if (options.expect_guest_frame_destroyed) {
@@ -265,6 +288,56 @@ class GlicApiTestWithOneTab : public GlicApiTest {
   }
 };
 
+class GlicApiTestWithOneTabAndContextualCueing : public GlicApiTestWithOneTab {
+ public:
+  GlicApiTestWithOneTabAndContextualCueing() {
+    contextual_cueing_features_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{features::kGlic,
+          {
+              {"glic-default-hotkey", "Ctrl+G"},
+              // Shorten load timeouts.
+              {features::kGlicPreLoadingTimeMs.name, "20"},
+              {features::kGlicMinLoadingTimeMs.name, "40"},
+          }},
+         {contextual_cueing::kGlicZeroStateSuggestions, {}}},
+        /*disabled_features=*/
+        {
+            features::kGlicWarming,
+        });
+  }
+  // Create the mock service.
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* browser_context) override {
+    mock_cueing_service_ = static_cast<
+        testing::NiceMock<contextual_cueing::MockContextualCueingService>*>(
+        contextual_cueing::ContextualCueingServiceFactory::GetInstance()
+            ->SetTestingFactoryAndUse(
+                browser_context,
+                base::BindRepeating([](content::BrowserContext* context)
+                                        -> std::unique_ptr<KeyedService> {
+                  return std::make_unique<testing::NiceMock<
+                      contextual_cueing::MockContextualCueingService>>();
+                })));
+
+    GlicApiTestWithOneTab::SetUpBrowserContextKeyedServices(browser_context);
+  }
+
+  void TearDownOnMainThread() override {
+    mock_cueing_service_ = nullptr;
+    GlicApiTestWithOneTab::TearDownOnMainThread();
+  }
+
+  contextual_cueing::MockContextualCueingService* mock_cueing_service() {
+    return mock_cueing_service_.get();
+  }
+
+ private:
+  raw_ptr<testing::NiceMock<contextual_cueing::MockContextualCueingService>>
+      mock_cueing_service_;
+  base::test::ScopedFeatureList contextual_cueing_features_;
+};
+
 class GlicApiTestWithFastTimeout : public GlicApiTest {
  public:
   GlicApiTestWithFastTimeout() {
@@ -301,7 +374,12 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testDoNothing) {
 
 // Checks that all tests in api_test.ts have a corresponding test case in this
 // file.
-IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testAllTestsAreRegistered) {
+#if defined(SLOW_BINARY)
+#define MAYBE_testAllTestsAreRegistered DISABLED_testAllTestsAreRegistered
+#else
+#define MAYBE_testAllTestsAreRegistered testAllTestsAreRegistered
+#endif
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, MAYBE_testAllTestsAreRegistered) {
   ExecuteJsTest();
   ASSERT_TRUE(step_data()->is_list());
   ::testing::UnitTest* unit_test = ::testing::UnitTest::GetInstance();
@@ -340,8 +418,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testLoadWhileWindowClosed) {
   WaitForWebUiState(mojom::WebUiState::kReady);
 }
 
-// TODO(harringtond): This is a flaky.
-IN_PROC_BROWSER_TEST_F(GlicApiTest, DISABLED_testInitializeFailsWindowClosed) {
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testInitializeFailsWindowClosed) {
   // Immediately close the window to check behavior while window is closed.
   // Fail client initialization, should see error page.
   RunTestSequence(
@@ -371,7 +448,13 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testInitializeFailsWindowOpen) {
   WaitForWebUiState(mojom::WebUiState::kReady);
 }
 
-IN_PROC_BROWSER_TEST_F(GlicApiTest, testReload) {
+// TODO(crbug.com/409042450): This is a flaky on MSAN.
+#if defined(SLOW_BINARY)
+#define MAYBE_testReload DISABLED_testReload
+#else
+#define MAYBE_testReload testReload
+#endif
+IN_PROC_BROWSER_TEST_F(GlicApiTest, MAYBE_testReload) {
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
   WebUIStateListener listener(&window_controller());
@@ -386,8 +469,55 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testReload) {
   });
 }
 
-// TODO(harringtond): This is a flaky.
-IN_PROC_BROWSER_TEST_F(GlicApiTest, DISABLED_testInitializeFailsAfterReload) {
+// The client navigates to the 'sorry' page before it finishes initialize().
+// Chrome should show this page.
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testSorryPageBeforeInitialize) {
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
+  WebUIStateListener listener(&window_controller());
+  ExecuteJsTest({
+      .params = base::Value(base::Value::Dict().Set(
+          "failWith", "navigateToSorryPageBeforeInitialize")),
+  });
+  listener.WaitForWebUiState(mojom::WebUiState::kGuestError);
+  RunTestSequence(CheckControllerShowing(true));
+
+  // Simulate completing a captcha, navigating back.
+  ASSERT_EQ(true,
+            content::EvalJs(FindGlicGuestMainFrame(),
+                            std::string("(()=>{window.location = '") +
+                                GetGuestURL().spec() + "'; return true;})()"));
+
+  listener.WaitForWebUiState(mojom::WebUiState::kBeginLoad);
+  ExecuteJsTest({
+      .params = base::Value(base::Value::Dict().Set("failWith", "none")),
+  });
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testSorryPageAfterInitialize) {
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
+  WebUIStateListener listener(&window_controller());
+  ExecuteJsTest({
+      .params = base::Value(base::Value::Dict().Set(
+          "failWith", "navigateToSorryPageAfterInitialize")),
+  });
+  listener.WaitForWebUiState(mojom::WebUiState::kGuestError);
+  RunTestSequence(CheckControllerShowing(true));
+
+  // Simulate completing a captcha, navigating back.
+  ASSERT_EQ(true,
+            content::EvalJs(FindGlicGuestMainFrame(),
+                            std::string("(()=>{window.location = '") +
+                                GetGuestURL().spec() + "'; return true;})()"));
+
+  listener.WaitForWebUiState(mojom::WebUiState::kBeginLoad);
+  ExecuteJsTest({
+      .params = base::Value(base::Value::Dict().Set("failWith", "none")),
+  });
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testInitializeFailsAfterReload) {
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
   WebUIStateListener listener(&window_controller());
@@ -403,9 +533,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, DISABLED_testInitializeFailsAfterReload) {
   listener.WaitForWebUiState(mojom::WebUiState::kError);
 }
 
-// TODO(harringtond): This is a flaky.
-IN_PROC_BROWSER_TEST_F(GlicApiTestWithFastTimeout,
-                       DISABLED_testInitializeTimesOut) {
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithFastTimeout, testInitializeTimesOut) {
 #if defined(SLOW_BINARY)
   GTEST_SKIP() << "skip timeout test for slow binary";
 #else
@@ -425,6 +553,38 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testCreateTab) {
                   CheckTabCount(1));
   ExecuteJsTest();
   RunTestSequence(CheckTabCount(2));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testCreateTabFailsWithUnsupportedScheme) {
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents),
+                  CheckTabCount(1));
+  ExecuteJsTest();
+  RunTestSequence(CheckTabCount(1));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testCreateTabInBackground) {
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents),
+                  CheckTabCount(1));
+
+  // Creating a new tab via the glic API in the foreground should change the
+  // active tab.
+  ExecuteJsTest();
+  RunTestSequence(CheckTabCount(2));
+  tabs::TabInterface* active_tab =
+      InProcessBrowserTest::browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_THAT(active_tab->GetContents()->GetURL().spec(),
+              testing::EndsWith("#foreground"));
+
+  // Creating a new tab via the glic API in the background should not change the
+  // active tab.
+  ContinueJsTest();
+  RunTestSequence(CheckTabCount(3));
+  active_tab =
+      InProcessBrowserTest::browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_THAT(active_tab->GetContents()->GetURL().spec(),
+              testing::EndsWith("#foreground"));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testOpenGlicSettingsPage) {
@@ -538,8 +698,42 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetFocusedTabState) {
   ExecuteJsTest();
 }
 
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndContextualCueing,
+                       testGetZeroStateSuggestions) {
+  EXPECT_CALL(*mock_cueing_service(),
+              GetContextualGlicZeroStateSuggestions(_, _, _))
+      .Times(1);
+
+  ExecuteJsTest();
+}
+
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetFocusedTabStateV2) {
   ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
+                       testGetFocusedTabStateV2WithNavigation) {
+  // Confirm that the observer is notified through getFocusedTabState of the
+  // initial state, i.e. the first page navigation.
+  ExecuteJsTest();
+
+  // Navigate to another page in the existing tab.
+  RunTestSequence(NavigateWebContents(
+      kFirstTab, InProcessBrowserTest::embedded_test_server()->GetURL(
+                     "/scrollable_page_with_content.html")));
+
+  // Confirm that the observer is notified through getFocusedTabState of the
+  // second page navigation.
+  ContinueJsTest();
+
+  // Open a new tab and navigate to a another page.
+  RunTestSequence(AddInstrumentedTab(
+      kSecondTab,
+      InProcessBrowserTest::embedded_test_server()->GetURL("/glic/test.html")));
+
+  // Confirm that the observer is notified through getFocusedTabState that due
+  // to a page navigation in a new tab, a new tab has gained focus.
+  ContinueJsTest();
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTest, testGetFocusedTabStateV2BrowserClosed) {
@@ -588,11 +782,28 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testRefreshSignInCookies) {
   ExecuteJsTest();
 }
 
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testSignInPauseState) {
+  // Check that Glic web client is open and can retrieve the user's info.
+  ExecuteJsTest({.expect_guest_frame_destroyed = false});
+
+  // Pause the sign-in.
+  auto* const identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
+  signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
+
+  // Check that Glic web client is no longer alive.
+  ContinueJsTest({.expect_guest_frame_destroyed = true});
+}
+
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testSetContextAccessIndicator) {
   ExecuteJsTest();
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testSetAudioDucking) {
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetDisplayMedia) {
   ExecuteJsTest();
 }
 
@@ -727,5 +938,161 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testSetMinimumWidgetSize) {
   RunTestSequence(CheckWidgetMinimumSize(gfx::Size(width, height)));
   ContinueJsTest();
 }
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testManualResizeChanged) {
+  window_controller().OnWidgetUserResizeStarted();
+
+  // Check that the web client is notified of the beginning of the user
+  // initiated resizing event.
+  ExecuteJsTest();
+
+  window_controller().OnWidgetUserResizeEnded();
+
+  // Check that the web client is notified of the ending of the user
+  // initiated resizing event.
+  ContinueJsTest();
+}
+
+class GlicApiTestSystemSettingsTest : public GlicApiTestWithOneTab {
+ public:
+  GlicApiTestSystemSettingsTest() {
+    system_permission_settings::SetInstanceForTesting(&mock_platform_handle);
+  }
+
+  ~GlicApiTestSystemSettingsTest() override {
+    system_permission_settings::SetInstanceForTesting(nullptr);
+  }
+
+  testing::NiceMock<system_permission_settings::MockPlatformHandle>
+      mock_platform_handle;
+};
+
+// Opening system settings is only available for MacOS. These tests are not
+// fully gated behind the mac buildflag, because
+// GlicApiTestWithOneTab#testAllTestsAreRegistered checks if all the tests in JS
+// are registered in a CC test.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_testOpenOsMediaPermissionSettings \
+  testOpenOsMediaPermissionSettings
+#else
+#define MAYBE_testOpenOsMediaPermissionSettings \
+  DISABLED_testOpenOsMediaPermissionSettings
+#endif
+IN_PROC_BROWSER_TEST_F(GlicApiTestSystemSettingsTest,
+                       MAYBE_testOpenOsMediaPermissionSettings) {
+  base::test::TestFuture<void> signal;
+  EXPECT_CALL(
+      mock_platform_handle,
+      OpenSystemSettings(testing::_, ContentSettingsType::MEDIASTREAM_MIC))
+      .WillOnce(base::test::InvokeFuture(signal));
+
+  // Trigger the openOsPermissionSettingsMenu API with 'media'.
+  ExecuteJsTest();
+  // Wait for OpenSystemSettings to be called.
+  EXPECT_TRUE(signal.Wait());
+}
+
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_testOpenOsGeoPermissionSettings testOpenOsGeoPermissionSettings
+#else
+#define MAYBE_testOpenOsGeoPermissionSettings \
+  DISABLED_testOpenOsGeoPermissionSettings
+#endif
+IN_PROC_BROWSER_TEST_F(GlicApiTestSystemSettingsTest,
+                       MAYBE_testOpenOsGeoPermissionSettings) {
+  base::test::TestFuture<void> signal;
+  EXPECT_CALL(mock_platform_handle,
+              OpenSystemSettings(testing::_, ContentSettingsType::GEOLOCATION))
+      .WillOnce(base::test::InvokeFuture(signal));
+
+  // Trigger the openOsPermissionSettingsMenu API with 'geolocation'.
+  ExecuteJsTest();
+  // Wait for OpenSystemSettings to be called.
+  EXPECT_TRUE(signal.Wait());
+}
+
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_testIncompatiblePermissionWithOsPermissionSettings \
+  testIncompatiblePermissionWithOsPermissionSettings
+#else
+#define MAYBE_testIncompatiblePermissionWithOsPermissionSettings \
+  DISABLED_testIncompatiblePermissionWithOsPermissionSettings
+#endif
+IN_PROC_BROWSER_TEST_F(
+    GlicApiTestSystemSettingsTest,
+    MAYBE_testIncompatiblePermissionWithOsPermissionSettings) {
+  EXPECT_CALL(mock_platform_handle, OpenSystemSettings(testing::_, testing::_))
+      .Times(0);
+
+  // Trigger the openOsPermissionSettingsMenu API with 'notifications', which is
+  // not supported by Glic.
+  ExecuteJsTest();
+
+  // Wait for eventual calls of OpenSystemSettings, which is async.
+  base::RunLoop().RunUntilIdle();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestSystemSettingsTest,
+                       testGetOsMicrophonePermissionStatusAllowed) {
+  EXPECT_CALL(mock_platform_handle,
+              IsAllowed(ContentSettingsType::MEDIASTREAM_MIC))
+      .WillOnce(testing::Return(true));
+
+  // Trigger the GetOsMicrophonePermissionStatus API and check if it returns
+  // true as mocked by this test.
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestSystemSettingsTest,
+                       testGetOsMicrophonePermissionStatusNotAllowed) {
+  EXPECT_CALL(mock_platform_handle,
+              IsAllowed(ContentSettingsType::MEDIASTREAM_MIC))
+      .WillOnce(testing::Return(false));
+
+  // Trigger the GetOsMicrophonePermissionStatus API and check if it returns
+  // false as mocked by this test.
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testNavigateToDifferentClientPage) {
+  WebUIStateListener listener(&window_controller());
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+  listener.WaitForWebUiState(mojom::WebUiState::kReady);
+  ExecuteJsTest({.params = base::Value(0)});  // test run count: 0.
+  listener.WaitForWebUiState(mojom::WebUiState::kBeginLoad);
+  listener.WaitForWebUiState(mojom::WebUiState::kReady);
+  ExecuteJsTest({.params = base::Value(1)});  // test run count: 1.
+}
+
+// TODO(crbug.com/410881522): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_testNavigateToBadPage DISABLED_testNavigateToBadPage
+#else
+#define MAYBE_testNavigateToBadPage testNavigateToBadPage
+#endif
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithFastTimeout,
+                       MAYBE_testNavigateToBadPage) {
+#if defined(SLOW_BINARY)
+  GTEST_SKIP() << "skip timeout test for slow binary";
+#else
+  // Client loads, and navigates to a new URL. We try to load the client again,
+  // but it fails.
+  WebUIStateListener listener(&window_controller());
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+  listener.WaitForWebUiState(mojom::WebUiState::kReady);
+  ExecuteJsTest({.params = base::Value(0)});
+  listener.WaitForWebUiState(mojom::WebUiState::kBeginLoad);
+  listener.WaitForWebUiState(mojom::WebUiState::kError);
+
+  // Open the glic window to trigger reloading the client.
+  // This time the client should load, falling back to the original URL.
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+  ExecuteJsTest({.params = base::Value(1)});
+#endif
+}
+
 }  // namespace
 }  // namespace glic

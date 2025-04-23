@@ -27,6 +27,7 @@ class NET_EXPORT_PRIVATE TcpStreamAttempt final : public StreamAttempt {
 
   TcpStreamAttempt(const StreamAttemptParams* params,
                    IPEndPoint ip_endpoint,
+                   perfetto::Track track,
                    const NetLogWithSource* = nullptr);
 
   TcpStreamAttempt(const TcpStreamAttempt&) = delete;
@@ -50,11 +51,13 @@ class NET_EXPORT_PRIVATE TcpStreamAttempt final : public StreamAttempt {
   int StartInternal() override;
   base::Value::Dict GetNetLogStartParams() override;
 
-  void HandleCompletion();
+  void HandleCompletion(int rv);
 
   void OnIOComplete(int rv);
 
   void OnTimeout();
+
+  void MaybeRecordConnectEnd(int rv);
 
   State next_state_ = State::kNone;
   base::OneShotTimer timeout_timer_;

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/media_router/common/media_source.h"
 
 #include <algorithm>
@@ -16,6 +11,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -173,7 +169,7 @@ bool MediaSource::IsRemotePlaybackSource() const {
 
 std::optional<int> MediaSource::TabId() const {
   int tab_id;
-  if (sscanf(id_.c_str(), kTabMediaUrnFormat, &tab_id) != 1) {
+  if (UNSAFE_TODO(sscanf(id_.c_str(), kTabMediaUrnFormat, &tab_id)) != 1) {
     return std::nullopt;
   }
   return tab_id;

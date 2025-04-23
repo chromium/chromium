@@ -36,14 +36,17 @@ struct UpdateResponseData;
 // upon a local change until commit confirmation is received.
 class ProcessorEntity {
  public:
-  // Construct an instance representing a new locally-created item.
+  // Construct an instance representing either a new locally-created item, or a
+  // newly-received remote item.
   static std::unique_ptr<ProcessorEntity> CreateNew(
       const std::string& storage_key,
       const ClientTagHash& client_tag_hash,
-      const std::string& id,
+      const std::string& server_id,
       base::Time creation_time);
 
-  // Construct an instance representing an item loaded from storage on init.
+  // Construct an instance representing an item loaded from storage on init. The
+  // passed-in `storage_key` must not be empty. May return nullptr if the
+  // passed-in `metadata` is invalid.
   static std::unique_ptr<ProcessorEntity> CreateFromMetadata(
       const std::string& storage_key,
       sync_pb::EntityMetadata metadata);
@@ -52,7 +55,6 @@ class ProcessorEntity {
 
   const std::string& storage_key() const { return storage_key_; }
   const sync_pb::EntityMetadata& metadata() const { return metadata_; }
-  const EntityData& commit_data() { return *commit_data_; }
 
   // Returns true if this data is out of sync with the server.
   // A commit may or may not be in progress at this time.
@@ -75,7 +77,7 @@ class ProcessorEntity {
   bool CanClearMetadata() const;
 
   // Returns true if the specified `update_version` is already known, i.e. is
-  // small or equal to the last known server version.
+  // smaller or equal to the last known server version.
   // This is the case for reflections, but can also be true in some other edge
   // cases (e.g. updates were received out of order).
   bool IsVersionAlreadyKnown(int64_t update_version) const;
@@ -106,8 +108,9 @@ class ProcessorEntity {
   // previously committed to server and tombstone should be sent.
   bool RecordLocalDeletion(const DeletionOrigin& origin);
 
-  // Initializes a message representing this item's uncommitted state
-  // and assumes that it is forwarded to the sync engine for commiting.
+  // Initializes a message representing this item's uncommitted state. Assumes
+  // that the message is forwarded to the sync engine for committing, i.e.
+  // clears local commit data.
   void InitializeCommitRequestData(CommitRequestData* request);
 
   // Receives a successful commit response.
@@ -123,9 +126,10 @@ class ProcessorEntity {
   // Clears any in-memory sync state associated with outstanding commits.
   void ClearTransientSyncState();
 
-  // Update storage_key_. Allows setting storage key for datatypes that don't
-  // generate storage key from syncer::EntityData. Should only be called for
-  // an entity initialized with empty storage key.
+  // Updates `storage_key_`. Allows setting storage key for datatypes that don't
+  // generate storage keys from syncer::EntityData. Should only be called for
+  // an entity initialized with empty storage key, or for which the storage key
+  // was explicitly cleared.
   void SetStorageKey(const std::string& storage_key);
 
   // Undoes SetStorageKey(), which is needed in certain conflict resolution
@@ -133,20 +137,21 @@ class ProcessorEntity {
   void ClearStorageKey();
 
   // Takes the passed commit data updates its fields with values from metadata
-  // and caches it in the instance.
+  // and caches it in the instance. `data` must not be null.
   void SetCommitData(std::unique_ptr<EntityData> data);
 
-  // Check if the instance has cached commit data.
+  // Checks if the instance has cached commit data.
   bool HasCommitData() const;
 
-  // Check whether `data` matches the stored specifics hash.
+  // Checks whether `data` matches the stored specifics hash.
   bool MatchesData(const EntityData& data) const;
 
-  // Check whether the current metadata of an unsynced entity matches the stored
-  // base specifics hash.
+  // Checks whether the current metadata matches the stored base specifics hash.
+  // Must only be called if `IsUnsynced()` is true.
   bool MatchesOwnBaseData() const;
 
-  // Check whether `data` matches the stored base specifics hash.
+  // Check whether `data` matches the stored base specifics hash. Must only be
+  // called if `IsUnsynced()` is true.
   bool MatchesBaseData(const EntityData& data) const;
 
   // Increment sequence number in the metadata. This will also update the
@@ -156,20 +161,16 @@ class ProcessorEntity {
   // Returns the estimate of dynamically allocated memory in bytes.
   size_t EstimateMemoryUsage() const;
 
- private:
-  friend class ProcessorEntityTest;
+  const EntityData& GetCommitDataForTesting() { return *commit_data_; }
 
-  // The constructor swaps the data from the passed metadata.
+ private:
   ProcessorEntity(const std::string& storage_key,
                   sync_pb::EntityMetadata metadata);
 
-  // Check whether `specifics` matches the stored specifics_hash.
-  bool MatchesSpecificsHash(const sync_pb::EntitySpecifics& specifics) const;
-
-  // Update hash string for EntitySpecifics in the metadata.
+  // Updates hash string for EntitySpecifics in the metadata.
   void UpdateSpecificsHash(const sync_pb::EntitySpecifics& specifics);
 
-  // Storage key. Should always be available.
+  // Storage key.
   std::string storage_key_;
 
   // Serializable Sync metadata.
@@ -181,10 +182,6 @@ class ProcessorEntity {
 
   // The sequence number of the last item sent to the sync thread.
   int64_t commit_requested_sequence_number_;
-
-  // The time when this entity transition from being synced to being unsynced
-  // (i.e. a local change happened).
-  base::Time unsynced_time_;
 };
 
 }  // namespace syncer

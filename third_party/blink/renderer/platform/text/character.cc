@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/text/character.h"
 
 #include <unicode/uchar.h>
@@ -65,7 +60,7 @@ UCPTrie* CreateTrie() {
 
 unsigned GetProperty(UChar32 c, CharacterProperty property) {
   static const UCPTrie* trie = CreateTrie();
-  return UCPTRIE_FAST_GET(trie, UCPTRIE_16, c) &
+  return UNSAFE_TODO(UCPTRIE_FAST_GET(trie, UCPTRIE_16, c)) &
          static_cast<CharacterPropertyType>(property);
 }
 
@@ -337,10 +332,11 @@ static const UChar stretchy_operator_with_inline_axis[]{
 bool Character::IsVerticalMathCharacter(UChar32 text_content) {
   return text_content != kArabicMathematicalOperatorMeemWithHahWithTatweel &&
          text_content != kArabicMathematicalOperatorHahWithDal &&
-         !std::binary_search(stretchy_operator_with_inline_axis,
-                             stretchy_operator_with_inline_axis +
-                                 std::size(stretchy_operator_with_inline_axis),
-                             text_content);
+         !std::binary_search(
+             stretchy_operator_with_inline_axis,
+             UNSAFE_TODO(stretchy_operator_with_inline_axis +
+                         std::size(stretchy_operator_with_inline_axis)),
+             text_content);
 }
 
 }  // namespace blink

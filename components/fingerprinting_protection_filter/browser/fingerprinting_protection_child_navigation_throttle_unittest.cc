@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -14,6 +15,7 @@
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/subresource_filter/content/shared/browser/child_frame_navigation_test_utils.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -160,6 +162,44 @@ TEST_P(FingerprintingProtectionChildNavigationThrottleTest, DelayMetrics) {
   histogram_tester.ExpectTotalCount(kFilterDelayAliasChecked, 0);
   histogram_tester.ExpectTotalCount(kFilterDelayAliasWouldDisallow, 0);
   histogram_tester.ExpectTotalCount(kFilterDelayAliasDisallowed, 0);
+}
+
+// There should be no activation on localhosts, except for when
+// --enable-benchmarking switch is active.
+TEST_P(FingerprintingProtectionChildNavigationThrottleTest,
+       Localhost_SkipThrottleWithoutBenchmarking) {
+  ChildFrameNavigationFilteringThrottleTestHarness::
+      InitializeDocumentSubresourceFilter(
+          GURL("https://127.0.0.1/example.test"));
+  ChildFrameNavigationFilteringThrottleTestHarness::
+      CreateTestSubframeAndInitNavigation(
+          GURL("https://127.0.0.1/example.test/allowed.html"), main_rfh());
+  navigation_simulator()->SetTransition(ui::PAGE_TRANSITION_AUTO_SUBFRAME);
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateStartAndGetResult(navigation_simulator()));
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateRedirectAndGetResult(
+                navigation_simulator(),
+                GURL("https://127.0.0.1/example.test/disallowed.html")));
+}
+
+TEST_P(FingerprintingProtectionChildNavigationThrottleTest,
+       Localhost_SkipThrottleWithBenchmarking) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      variations::switches::kEnableBenchmarking);
+  ChildFrameNavigationFilteringThrottleTestHarness::
+      InitializeDocumentSubresourceFilter(
+          GURL("https://127.0.0.1/example.test"));
+  ChildFrameNavigationFilteringThrottleTestHarness::
+      CreateTestSubframeAndInitNavigation(
+          GURL("https://127.0.0.1/example.test/allowed.html"), main_rfh());
+  navigation_simulator()->SetTransition(ui::PAGE_TRANSITION_AUTO_SUBFRAME);
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateStartAndGetResult(navigation_simulator()));
+  EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE,
+            SimulateRedirectAndGetResult(
+                navigation_simulator(),
+                GURL("https://127.0.0.1/example.test/disallowed.html")));
 }
 
 TEST_P(FingerprintingProtectionChildNavigationThrottleTest,

@@ -641,14 +641,7 @@ ScriptPromise<IDLSequence<MediaStream>> MediaDevices::getAllScreensMedia(
     return promise;
   }
 
-  // This API is available either in isolated contexts or, temporarily, on web
-  // pages with strict CSP and trusted types. In isolated contexts, an explicit
-  // check for strict CSP is not required as it enforces a restriction
-  // equivalent to strict CSP (i.e. `script-src self` in combination with
-  // packaging). Since we limit the exposure of the feature through the
-  // [InjectionMitigated] IDL attribute, we can get away with a DCHECK here to
-  // validate that restriction.
-  DCHECK(context->IsIsolatedContext() || context->IsInjectionMitigatedContext());
+  CHECK(context->IsIsolatedContext());
 
   MediaStreamConstraints* constraints = MediaStreamConstraints::Create();
   constraints->setVideo(

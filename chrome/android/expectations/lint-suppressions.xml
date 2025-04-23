@@ -343,11 +343,6 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.feed_setting_option` appears to be unused"/>
     <ignore regexp="The resource `R.string.feed_section_on` appears to be unused"/>
 
-    <!-- TODO(crbug.com/397422235): 3 strings: Remove once these are used. -->
-    <ignore regexp="The resource `R.layout.custom_tile_edit_layout` appears to be unused"/>
-    <ignore regexp="The resource `R.string.edit_shortcut_hint_name` appears to be unused"/>
-    <ignore regexp="The resource `R.string.edit_shortcut_hint_url` appears to be unused"/>
-
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
   <issue id="VectorPath" severity="ignore"/>

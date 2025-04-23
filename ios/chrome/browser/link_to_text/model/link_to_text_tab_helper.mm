@@ -170,5 +170,3 @@ void LinkToTextTabHelper::WebStateDestroyed(web::WebState* web_state) {
   // so nothing should be done after that point (this is like "delete this;").
   web_state->RemoveUserData(UserDataKey());
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(LinkToTextTabHelper)

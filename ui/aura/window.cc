@@ -29,6 +29,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "components/viz/common/features.h"
@@ -1529,6 +1530,14 @@ void Window::NotifyResizeLoopStarted() {
 void Window::NotifyResizeLoopEnded() {
   for (auto& observer : observers_)
     observer.OnResizeLoopEnded(this);
+}
+
+void Window::NotifyMoveLoopStarted() {
+  observers_.Notify(&WindowObserver::OnMoveLoopStarted, this);
+}
+
+void Window::NotifyMoveLoopEnded() {
+  observers_.Notify(&WindowObserver::OnMoveLoopEnded, this);
 }
 
 void Window::OnPaintLayer(const ui::PaintContext& context) {

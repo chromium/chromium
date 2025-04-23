@@ -828,6 +828,32 @@ absl_cc_test(
     GTest::gmock_main
 )
 
+# Internal-only target, do not depend on directly.
+absl_cc_library(
+  NAME
+    raw_hash_set_resize_impl
+  HDRS
+    "internal/raw_hash_set_resize_impl.h"
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+  DEPS
+    absl::config
+  PUBLIC
+)
+
+absl_cc_test(
+  NAME
+    raw_hash_set_resize_impl_test
+  SRCS
+    "internal/raw_hash_set_resize_impl_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::config
+    absl::raw_hash_set_resize_impl
+    GTest::gmock_main
+)
+
 absl_cc_test(
   NAME
     raw_hash_set_allocator_test

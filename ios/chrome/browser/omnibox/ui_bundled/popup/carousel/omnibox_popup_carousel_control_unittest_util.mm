@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/carousel/omnibox_popup_carousel_control_unittest_util.h"
 
 #import "base/apple/foundation_util.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/carousel/omnibox_popup_carousel_control.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_accessibility_identifier_constants.h"
 
 UIView* GetViewOfClassWithIdentifier(Class uiClass,
                                      NSString* accessibilityIdentifier,

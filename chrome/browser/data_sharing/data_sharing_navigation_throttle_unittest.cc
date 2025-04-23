@@ -6,11 +6,11 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "chrome/browser/collaboration/collaboration_service_factory.h"
 #include "chrome/browser/data_sharing/data_sharing_navigation_utils.h"
-#include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/collaboration/test_support/mock_collaboration_service.h"
 #include "components/data_sharing/public/features.h"
-#include "components/data_sharing/test_support/mock_data_sharing_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
 
@@ -33,7 +33,7 @@ class DataSharingNavigationThrottleUnitTest
         web_contents()->GetPrimaryMainFrame());
     throttle_ =
         std::make_unique<DataSharingNavigationThrottle>(test_handle_.get());
-    throttle_->SetServiceForTesting(&mock_data_sharing_service_);
+    throttle_->SetServiceForTesting(&mock_collaboration_service_);
     DataSharingNavigationUtils::GetInstance()->set_clock_for_testing(&clock_);
   }
 
@@ -44,7 +44,7 @@ class DataSharingNavigationThrottleUnitTest
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  MockDataSharingService mock_data_sharing_service_;
+  collaboration::MockCollaborationService mock_collaboration_service_;
   std::unique_ptr<content::MockNavigationHandle> test_handle_;
   std::unique_ptr<DataSharingNavigationThrottle> throttle_;
   base::SimpleTestClock clock_;
@@ -52,17 +52,17 @@ class DataSharingNavigationThrottleUnitTest
 
 // Tests if a web page should be intercepted.
 TEST_F(DataSharingNavigationThrottleUnitTest, TestCheckIfShouldIntercept) {
-  EXPECT_CALL(mock_data_sharing_service_,
+  EXPECT_CALL(mock_collaboration_service_,
               ShouldInterceptNavigationForShareURL(_))
       .WillOnce(Return(true));
   EXPECT_CALL(*test_handle_, HasUserGesture()).WillRepeatedly(Return(false));
-  EXPECT_CALL(mock_data_sharing_service_,
-              HandleShareURLNavigationIntercepted(_, _))
+  EXPECT_CALL(mock_collaboration_service_,
+              HandleShareURLNavigationIntercepted(_, _, _))
       .Times(0);
   EXPECT_EQ(DataSharingNavigationThrottle::CANCEL,
             throttle_->WillStartRequest());
 
-  EXPECT_CALL(mock_data_sharing_service_,
+  EXPECT_CALL(mock_collaboration_service_,
               ShouldInterceptNavigationForShareURL(_))
       .WillOnce(Return(false));
   EXPECT_EQ(DataSharingNavigationThrottle::PROCEED,
@@ -73,11 +73,11 @@ TEST_F(DataSharingNavigationThrottleUnitTest,
        TestRendererInitiatedNavigationWithUserGesture) {
   EXPECT_CALL(*test_handle_, HasUserGesture()).WillOnce(Return(true));
 
-  EXPECT_CALL(mock_data_sharing_service_,
+  EXPECT_CALL(mock_collaboration_service_,
               ShouldInterceptNavigationForShareURL(_))
       .WillOnce(Return(true));
-  EXPECT_CALL(mock_data_sharing_service_,
-              HandleShareURLNavigationIntercepted(_, _))
+  EXPECT_CALL(mock_collaboration_service_,
+              HandleShareURLNavigationIntercepted(_, _, _))
       .Times(1);
   EXPECT_EQ(DataSharingNavigationThrottle::CANCEL,
             throttle_->WillStartRequest());
@@ -86,11 +86,11 @@ TEST_F(DataSharingNavigationThrottleUnitTest,
 TEST_F(DataSharingNavigationThrottleUnitTest, TestBrowserInitiatedNavigation) {
   test_handle_->set_is_renderer_initiated(false);
 
-  EXPECT_CALL(mock_data_sharing_service_,
+  EXPECT_CALL(mock_collaboration_service_,
               ShouldInterceptNavigationForShareURL(_))
       .WillOnce(Return(true));
-  EXPECT_CALL(mock_data_sharing_service_,
-              HandleShareURLNavigationIntercepted(_, _))
+  EXPECT_CALL(mock_collaboration_service_,
+              HandleShareURLNavigationIntercepted(_, _, _))
       .Times(1);
   EXPECT_EQ(DataSharingNavigationThrottle::CANCEL,
             throttle_->WillStartRequest());
@@ -101,11 +101,11 @@ TEST_F(DataSharingNavigationThrottleUnitTest,
   // Create the first throttle with user gesture, but don't intercept it.
   EXPECT_CALL(*test_handle_, HasUserGesture()).WillRepeatedly(Return(true));
 
-  EXPECT_CALL(mock_data_sharing_service_,
+  EXPECT_CALL(mock_collaboration_service_,
               ShouldInterceptNavigationForShareURL(_))
       .WillOnce(Return(false));
-  EXPECT_CALL(mock_data_sharing_service_,
-              HandleShareURLNavigationIntercepted(_, _))
+  EXPECT_CALL(mock_collaboration_service_,
+              HandleShareURLNavigationIntercepted(_, _, _))
       .Times(0);
   EXPECT_EQ(DataSharingNavigationThrottle::PROCEED,
             throttle_->WillStartRequest());
@@ -114,12 +114,12 @@ TEST_F(DataSharingNavigationThrottleUnitTest,
   EXPECT_CALL(*test_handle_, HasUserGesture()).WillRepeatedly(Return(false));
   throttle_ =
       std::make_unique<DataSharingNavigationThrottle>(test_handle_.get());
-  throttle_->SetServiceForTesting(&mock_data_sharing_service_);
-  EXPECT_CALL(mock_data_sharing_service_,
+  throttle_->SetServiceForTesting(&mock_collaboration_service_);
+  EXPECT_CALL(mock_collaboration_service_,
               ShouldInterceptNavigationForShareURL(_))
       .WillOnce(Return(true));
-  EXPECT_CALL(mock_data_sharing_service_,
-              HandleShareURLNavigationIntercepted(_, _))
+  EXPECT_CALL(mock_collaboration_service_,
+              HandleShareURLNavigationIntercepted(_, _, _))
       .Times(0);
   EXPECT_EQ(DataSharingNavigationThrottle::CANCEL,
             throttle_->WillStartRequest());
@@ -130,11 +130,11 @@ TEST_F(DataSharingNavigationThrottleUnitTest,
   // Create the first throttle with user gesture, but don't intercept it.
   EXPECT_CALL(*test_handle_, HasUserGesture()).WillRepeatedly(Return(true));
 
-  EXPECT_CALL(mock_data_sharing_service_,
+  EXPECT_CALL(mock_collaboration_service_,
               ShouldInterceptNavigationForShareURL(_))
       .WillOnce(Return(false));
-  EXPECT_CALL(mock_data_sharing_service_,
-              HandleShareURLNavigationIntercepted(_, _))
+  EXPECT_CALL(mock_collaboration_service_,
+              HandleShareURLNavigationIntercepted(_, _, _))
       .Times(0);
   EXPECT_EQ(DataSharingNavigationThrottle::PROCEED,
             throttle_->WillStartRequest());
@@ -146,12 +146,12 @@ TEST_F(DataSharingNavigationThrottleUnitTest,
   EXPECT_CALL(*test_handle_, HasUserGesture()).WillRepeatedly(Return(false));
   throttle_ =
       std::make_unique<DataSharingNavigationThrottle>(test_handle_.get());
-  throttle_->SetServiceForTesting(&mock_data_sharing_service_);
-  EXPECT_CALL(mock_data_sharing_service_,
+  throttle_->SetServiceForTesting(&mock_collaboration_service_);
+  EXPECT_CALL(mock_collaboration_service_,
               ShouldInterceptNavigationForShareURL(_))
       .WillOnce(Return(true));
-  EXPECT_CALL(mock_data_sharing_service_,
-              HandleShareURLNavigationIntercepted(_, _))
+  EXPECT_CALL(mock_collaboration_service_,
+              HandleShareURLNavigationIntercepted(_, _, _))
       .Times(1);
   EXPECT_EQ(DataSharingNavigationThrottle::CANCEL,
             throttle_->WillStartRequest());
@@ -162,11 +162,11 @@ TEST_F(DataSharingNavigationThrottleUnitTest,
   // Create the first throttle with user gesture, but don't intercept it.
   EXPECT_CALL(*test_handle_, HasUserGesture()).WillRepeatedly(Return(true));
 
-  EXPECT_CALL(mock_data_sharing_service_,
+  EXPECT_CALL(mock_collaboration_service_,
               ShouldInterceptNavigationForShareURL(_))
       .WillOnce(Return(false));
-  EXPECT_CALL(mock_data_sharing_service_,
-              HandleShareURLNavigationIntercepted(_, _))
+  EXPECT_CALL(mock_collaboration_service_,
+              HandleShareURLNavigationIntercepted(_, _, _))
       .Times(0);
   EXPECT_EQ(DataSharingNavigationThrottle::PROCEED,
             throttle_->WillStartRequest());
@@ -178,12 +178,12 @@ TEST_F(DataSharingNavigationThrottleUnitTest,
   EXPECT_CALL(*test_handle_, HasUserGesture()).WillRepeatedly(Return(false));
   throttle_ =
       std::make_unique<DataSharingNavigationThrottle>(test_handle_.get());
-  throttle_->SetServiceForTesting(&mock_data_sharing_service_);
-  EXPECT_CALL(mock_data_sharing_service_,
+  throttle_->SetServiceForTesting(&mock_collaboration_service_);
+  EXPECT_CALL(mock_collaboration_service_,
               ShouldInterceptNavigationForShareURL(_))
       .WillOnce(Return(true));
-  EXPECT_CALL(mock_data_sharing_service_,
-              HandleShareURLNavigationIntercepted(_, _))
+  EXPECT_CALL(mock_collaboration_service_,
+              HandleShareURLNavigationIntercepted(_, _, _))
       .Times(0);
   EXPECT_EQ(DataSharingNavigationThrottle::CANCEL,
             throttle_->WillStartRequest());

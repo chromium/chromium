@@ -24,6 +24,7 @@ class UploadTokenRequest;
 class JoinSessionRequest;
 class StudentHeartbeatRequest;
 class AddStudentsRequest;
+class UpdateSessionConfigRequest;
 
 class SessionClientImpl {
  public:
@@ -39,6 +40,8 @@ class SessionClientImpl {
   virtual void GetSession(std::unique_ptr<GetSessionRequest> request);
   virtual void UploadToken(std::unique_ptr<UploadTokenRequest> request);
   virtual void UpdateSession(std::unique_ptr<UpdateSessionRequest> request);
+  virtual void UpdateSessionConfig(
+      std::unique_ptr<UpdateSessionConfigRequest> request);
   virtual void UpdateStudentActivity(
       std::unique_ptr<UpdateStudentActivitiesRequest> request);
   virtual void RemoveStudent(std::unique_ptr<RemoveStudentRequest> request);

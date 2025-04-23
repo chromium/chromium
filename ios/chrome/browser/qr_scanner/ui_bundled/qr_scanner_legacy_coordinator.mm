@@ -41,6 +41,7 @@
 }
 
 - (void)stop {
+  self.viewController.presentationProvider = nil;
   [super stop];
   if (self.baseViewController.presentedViewController == self.viewController) {
     [self.baseViewController dismissViewControllerAnimated:NO completion:nil];
@@ -81,6 +82,7 @@
             self.baseViewController.presentedViewController);
   SceneState* sceneState = self.browser->GetSceneState();
   DCHECK(sceneState);
+  self.viewController.presentationProvider = nil;
   [self.baseViewController dismissViewControllerAnimated:YES
                                               completion:^{
                                                 sceneState.QRScannerVisible =

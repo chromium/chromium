@@ -10,6 +10,7 @@
 
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
@@ -40,11 +41,16 @@ struct PasswordAndMetadata {
 // Minimal struct that describes and identifies a form field which triggered a
 // `PasswordSuggestionRequest`. Should be a password or username field.
 struct TriggeringField {
+  TriggeringField(const FormFieldData& field,
+                  AutofillSuggestionTriggerSource trigger_source,
+                  const std::u16string& typed_username,
+                  const gfx::RectF& bounds);
   TriggeringField(FieldRendererId element_id,
                   AutofillSuggestionTriggerSource trigger_source,
                   base::i18n::TextDirection text_direction,
                   const std::u16string& typed_username,
                   bool show_webauthn_credentials,
+                  bool show_identity_credentials,
                   const gfx::RectF& bounds);
   TriggeringField();
   TriggeringField(const TriggeringField&);
@@ -64,6 +70,9 @@ struct TriggeringField {
   std::u16string typed_username;
   // Specifies whether the field is suitable to show webauthn credentials.
   bool show_webauthn_credentials;
+  // Specifies whether the field is suitable to show federated identity
+  // credentials.
+  bool show_identity_credentials;
   // Location at which to display the popup.
   gfx::RectF bounds;
 };
@@ -124,10 +133,6 @@ struct PasswordFormFillData {
   // Identifiers of the username and password fields.
   FieldRendererId username_element_renderer_id;
   FieldRendererId password_element_renderer_id;
-
-  // True if the server-side classification believes that the field may be
-  // pre-filled with a placeholder in the value attribute.
-  bool username_may_use_prefilled_placeholder = false;
 
   // The preferred credential. See |IsBetterMatch| for how it is selected.
   PasswordAndMetadata preferred_login;

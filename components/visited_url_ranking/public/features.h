@@ -134,6 +134,12 @@ extern const base::FeatureParam<bool> kGroupSuggestionEnableSwitchBetween;
 // Parameter determining whether to enable the similar source heuristics.
 extern const base::FeatureParam<bool> kGroupSuggestionEnableSimilarSource;
 
+// Parameter determining whether to enable the same origin heuristics.
+extern const base::FeatureParam<bool> kGroupSuggestionEnableSameOrigin;
+
+// Parameter determining whether to show group suggestions only in tab switcher.
+extern const base::FeatureParam<bool> kGroupSuggestionEnableTabSwitcherOnly;
+
 }  // namespace visited_url_ranking::features
 
 #endif  // COMPONENTS_VISITED_URL_RANKING_PUBLIC_FEATURES_H_

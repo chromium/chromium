@@ -12,9 +12,11 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** Provides access to the search provider's logo via the C++ LogoService. */
+@NullMarked
 public class LogoBridge {
     /** A logo for a search provider (e.g. the Yahoo! logo or Google doodle). */
     public static class Logo {

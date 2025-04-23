@@ -100,5 +100,3 @@ void WebSelectionTabHelper::SendResponse(WebSelectionResponse* response) {
   WebSelectionJavaScriptFeature::GetInstance()->RemoveObserver(this);
   time_out_callback_.Stop();
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(WebSelectionTabHelper)

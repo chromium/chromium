@@ -86,8 +86,6 @@ class TypedNavigationUpgradeTabHelper
 
   raw_ptr<PrerenderService> prerender_service_;
   raw_ptr<HttpsUpgradeService> service_;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_HTTPS_UPGRADES_MODEL_TYPED_NAVIGATION_UPGRADE_TAB_HELPER_H_

@@ -54,8 +54,6 @@
 -DataDecoderBrowserTest.DecodeImage
 -DataDecoderBrowserTest.DecodeImageIsolated
 -Default/MediaTest.VideoBear12DepthVP9/0
--Default/MediaTest.VideoBearHighBitDepthVP9/0
--Default/MediaTest.VideoBearHighBitDepthVP9/1
 -DevToolsProtocolDeviceEmulationPrerenderTest.DeviceSize
 -DevToolsProtocolDeviceEmulationTest.DeviceSize
 -DohHttpsProtocolUpgradeBrowserTest.HttpsProtocolUpgrade
@@ -119,7 +117,6 @@
 -WebRtcGetUserMediaBrowserTest.TestGetUserMediaAspectRatio4To3
 
 # TODO(crbug.com/40276544): cannot create shared image.
--Default/MediaTest.LoadManyVideos/0
 -Default/MediaTest.VideoBearMp4/1
 -Default/MediaTest.VideoBearMp4Hevc10bit/1
 -Default/MediaTest.VideoBearMp4Hevc10bit422/1

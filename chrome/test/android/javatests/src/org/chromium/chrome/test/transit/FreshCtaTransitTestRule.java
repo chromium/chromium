@@ -71,9 +71,9 @@ public class FreshCtaTransitTestRule extends BaseCtaTransitTestRule implements T
     }
 
     /**
-     * Start the test in a web page served by the test server.
+     * Start the test from the launcher expecting to show the NTP (given there is no tab state).
      *
-     * @return the active entry {@link PageStation}
+     * @return the active entry {@link RegularNewTabPageStation}
      */
     public RegularNewTabPageStation startFromLauncher() {
         return ChromeTabbedActivityEntryPoints.startFromLauncher(mActivityTestRule);

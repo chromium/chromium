@@ -101,8 +101,6 @@ class OptimizationGuideTabHelper
   // feature is not enabled.
   raw_ptr<OptimizationGuideService> optimization_guide_service_ = nullptr;
 
-  WEB_STATE_USER_DATA_KEY_DECL();
-
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<OptimizationGuideTabHelper> weak_factory_{this};

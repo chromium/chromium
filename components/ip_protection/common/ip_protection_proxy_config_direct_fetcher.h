@@ -86,7 +86,7 @@ class IpProtectionProxyConfigDirectFetcher
     void OnGetProxyConfigCompleted(
         std::unique_ptr<network::SimpleURLLoader> url_loader,
         RetrieveCallback callback,
-        std::unique_ptr<std::string> response);
+        std::optional<std::string> response);
 
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
     const GURL ip_protection_server_url_;

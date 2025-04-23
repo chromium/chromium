@@ -121,7 +121,7 @@ class AlertRequest : public OverlayRequestConfig<AlertRequest> {
   }
 
  private:
-  OVERLAY_USER_DATA_SETUP(AlertRequest);
+  friend class OverlayUserData<AlertRequest>;
 
   // Constructor called by CreateForUserData(). All arguments are copied to the
   // ivars below.  `title`, `message`, or both must be non-empty strings.
@@ -157,7 +157,7 @@ class AlertResponse : public OverlayResponseInfo<AlertResponse> {
   NSArray<NSString*>* text_field_values() const { return text_field_values_; }
 
  private:
-  OVERLAY_USER_DATA_SETUP(AlertResponse);
+  friend class OverlayUserData<AlertResponse>;
   AlertResponse(size_t tapped_button_row_index,
                 size_t tapped_button_column_index,
                 NSArray<NSString*>* text_field_values);

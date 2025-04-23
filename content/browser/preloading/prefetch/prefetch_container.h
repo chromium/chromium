@@ -123,6 +123,7 @@ class CONTENT_EXPORT PrefetchContainer {
       WebContents& referring_web_contents,
       const GURL& url,
       const PrefetchType& prefetch_type,
+      const std::string& embedder_histogram_suffix,
       const blink::mojom::Referrer& referrer,
       const std::optional<url::Origin>& referring_origin,
       std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
@@ -138,6 +139,7 @@ class CONTENT_EXPORT PrefetchContainer {
       BrowserContext* browser_context,
       const GURL& url,
       const PrefetchType& prefetch_type,
+      const std::string& embedder_histogram_suffix,
       const blink::mojom::Referrer& referrer,
       bool javascript_enabled,
       const std::optional<url::Origin>& referring_origin,
@@ -810,6 +812,7 @@ class CONTENT_EXPORT PrefetchContainer {
       const std::optional<size_t>& referring_url_hash,
       const PrefetchContainer::Key& key,
       const PrefetchType& prefetch_type,
+      const std::optional<std::string>& embedder_histogram_suffix,
       const blink::mojom::Referrer& referrer,
       std::optional<SpeculationRulesTags> speculation_rules_tags,
       std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
@@ -901,6 +904,11 @@ class CONTENT_EXPORT PrefetchContainer {
   // not the preftch proxy is used, and whether or not subresources are
   // prefetched.
   PrefetchType prefetch_type_;
+
+  // The suffix string of embedder triggers used for generating histogram
+  // recorded per trigger. This should be nullopt unless `prefetch_type_`'s
+  // `PreloadingTriggerType` is `PreloadingTriggerType::kEmbedder`.
+  const std::optional<std::string> embedder_histogram_suffix_;
 
   // The referrer to use for the request.
   blink::mojom::Referrer referrer_;

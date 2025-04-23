@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "extensions/browser/extension_icon_placeholder.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/image_loader.h"
 #include "extensions/browser/pref_types.h"
@@ -240,9 +241,6 @@ void Mv2DisabledDialogController::MaybeShowDisabledDialog() {
 void Mv2DisabledDialogController::OnRemoveSelected() {
   CHECK(!affected_extensions_info_.empty());
   UserAcknowledgedDialog();
-
-  auto* extension_service =
-      ExtensionSystem::Get(browser_->profile())->extension_service();
   auto* extension_registry = ExtensionRegistry::Get(browser_->profile());
 
   for (const auto& extension_info : affected_extensions_info_) {
@@ -256,8 +254,9 @@ void Mv2DisabledDialogController::OnRemoveSelected() {
 
     // If an extension fails to be uninstalled, it will not pause the
     // uninstall of the other extensions on the list.
-    extension_service->UninstallExtension(
-        extension_info.id, UNINSTALL_REASON_USER_INITIATED, nullptr);
+    ExtensionRegistrar::Get(browser_->profile())
+        ->UninstallExtension(extension_info.id, UNINSTALL_REASON_USER_INITIATED,
+                             nullptr);
   }
 
   if (experiment_stage_ == MV2ExperimentStage::kDisableWithReEnable) {

@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/types/optional_ref.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -26,6 +27,8 @@ using ShowPasswordSuggestions =
     base::StrongAlias<class ShowPasswordSuggestionsTag, bool>;
 using ShowWebAuthnCredentials =
     base::StrongAlias<class ShowWebAuthnCredentialsTag, bool>;
+using ShowIdentityCredentials =
+    base::StrongAlias<class ShowWebIdentityCredentialsTag, bool>;
 using IsTriggeredOnPasswordForm =
     base::StrongAlias<class IsTriggeredOnPasswordFormTag, bool>;
 using IsCrossDomain = base::StrongAlias<class IsCrossDomainTag, bool>;
@@ -47,7 +50,8 @@ enum class FillingReauthPromoShown {
 class PasswordSuggestionGenerator {
  public:
   PasswordSuggestionGenerator(PasswordManagerDriver* password_manager_driver,
-                              PasswordManagerClient* password_client);
+                              PasswordManagerClient* password_client,
+                              autofill::AutofillClient* autofill_client);
 
   // Generates password form suggestions. If `fill_data` is empty, no
   // credential suggestions will be generated. `page_favicon` represents the
@@ -58,13 +62,16 @@ class PasswordSuggestionGenerator {
   // `show_password_suggestions` specifies whether suggestions should be
   // specified from the `fill_data`. `show_webauthn_credentials` specifies
   // whether web auth credential suggestion should be added.
+  // `show_identity_credentials` specifies whether federated identity credential
+  // suggestion should be added.
   std::vector<autofill::Suggestion> GetSuggestionsForDomain(
       base::optional_ref<const autofill::PasswordFormFillData> fill_data,
       const gfx::Image& page_favicon,
       const std::u16string& username_filter,
       OffersGeneration offers_generation,
       ShowPasswordSuggestions show_password_suggestions,
-      ShowWebAuthnCredentials show_webauthn_credentials) const;
+      ShowWebAuthnCredentials show_webauthn_credentials,
+      ShowIdentityCredentials show_identity_credentials) const;
 
   // Generates suggestions shown when user triggers password Autofill from the
   // Chrome context menu. Every suggestion will have several sub suggestions to
@@ -95,6 +102,7 @@ class PasswordSuggestionGenerator {
  private:
   const raw_ptr<PasswordManagerDriver> password_manager_driver_;
   const raw_ptr<PasswordManagerClient> password_client_;
+  const raw_ptr<autofill::AutofillClient> autofill_client_;
 };
 
 }  // namespace password_manager

@@ -84,6 +84,16 @@ gfx::Insets GetContentsBorderInsets(BrowserView& browser_view) {
 }
 }  // namespace
 
+GlicBorderView::Factory* GlicBorderView::Factory::factory_ = nullptr;
+
+std::unique_ptr<GlicBorderView> GlicBorderView::Factory::Create(
+    Browser* browser) {
+  if (factory_) [[unlikely]] {
+    return factory_->CreateBorderView(browser);
+  }
+  return base::WrapUnique(new GlicBorderView(browser, /*tester=*/nullptr));
+}
+
 class GlicBorderView::BorderViewUpdater {
  public:
   explicit BorderViewUpdater(Browser* browser, GlicBorderView* border_view)
@@ -167,6 +177,13 @@ class GlicBorderView::BorderViewUpdater {
     auto reasons_string = UpdateReasonsToString();
     SCOPED_CRASH_KEY_STRING1024("crbug-398319435", "update_reasons",
                                 reasons_string);
+    SCOPED_CRASH_KEY_BOOL("crbug-398319435", "access_indicator",
+                          context_access_indicator_enabled_);
+    SCOPED_CRASH_KEY_BOOL("crbug-398319435", "glic_focused_contents",
+                          !!glic_focused_contents_in_current_window_);
+    SCOPED_CRASH_KEY_BOOL("crbug-398319435", "is_glic_window_showing",
+                          IsGlicWindowShowing());
+
     switch (reason) {
       case UpdateBorderReason::kContextAccessIndicatorOn: {
         // Off to On. Throw away everything we have and start the animation from
@@ -276,9 +293,10 @@ class GlicBorderView::BorderViewUpdater {
   std::list<std::string> border_update_reasons_;
 };
 
-GlicBorderView::GlicBorderView(Browser* browser)
+GlicBorderView::GlicBorderView(Browser* browser, std::unique_ptr<Tester> tester)
     : updater_(std::make_unique<BorderViewUpdater>(browser, this)),
       creation_time_(base::TimeTicks::Now()),
+      tester_(std::move(tester)),
       theme_service_(ThemeServiceFactory::GetForProfile(browser->GetProfile())),
       browser_(browser) {
   auto* gpu_data_manager = content::GpuDataManager::GetInstance();
@@ -550,6 +568,7 @@ void GlicBorderView::StopShowing() {
   first_emphasis_frame_ = base::TimeTicks{};
   last_emphasis_frame_ = base::TimeTicks{};
   first_ramp_down_frame_ = base::TimeTicks{};
+  record_first_ramp_down_frame_ = false;
   total_steady_time_ = base::Milliseconds(0);
   opacity_ = 0.f;
   emphasis_ = 0.f;

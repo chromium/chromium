@@ -17,6 +17,7 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -38,6 +39,7 @@
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/grit/extensions_browser_resources.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -213,6 +215,17 @@ const extensions::ExtensionZoomRequestClient* GetExtensionZoomRequestClient(
   return static_cast<const extensions::ExtensionZoomRequestClient*>(client);
 }
 
+void UpdateBubbleVisibilityState(Browser* browser, bool is_bubble_visible) {
+  if (!browser) {
+    return;
+  }
+
+  auto* action_item = actions::ActionManager::Get().FindAction(
+      kActionZoomNormal, browser->browser_actions()->root_action_item());
+  CHECK(action_item);
+  action_item->SetIsShowingBubble(is_bubble_visible);
+}
+
 }  // namespace
 
 // static
@@ -262,6 +275,7 @@ void ZoomBubbleView::ShowBubble(content::WebContents* web_contents,
   // disappears after a short timeout.
   zoom_bubble_->ShowForReason(reason, /* allow_refocus_alert */ false);
   zoom_bubble_->UpdateZoomIconVisibility();
+  UpdateBubbleVisibilityState(browser, /*is_bubble_visible=*/true);
 }
 
 // static
@@ -515,6 +529,8 @@ void ZoomBubbleView::WindowClosing() {
   }
 
   UpdateZoomIconVisibility();
+  UpdateBubbleVisibilityState(GetBrowser(),
+                              /*is_bubble_visible=*/zoom_bubble_ != nullptr);
 }
 
 void ZoomBubbleView::CloseBubble() {
@@ -607,16 +623,18 @@ void ZoomBubbleView::UpdateZoomIconVisibility() {
   // may also be destroyed: the call to WindowClosing() may be triggered by
   // parent window destruction tearing down its child windows.
   Browser* browser = chrome::FindBrowserWithID(session_id_);
-  if (browser && browser->window() && browser->GetActiveTabInterface()) {
-    if (IsPageActionMigrated(PageActionIconType::kZoom)) {
-      if (auto* tab_feature =
-              browser->GetActiveTabInterface()->GetTabFeatures()) {
-        tab_feature->zoom_view_controller()->UpdatePageActionIcon();
-      }
-    } else {
-      browser->window()->UpdatePageActionIcon(PageActionIconType::kZoom);
-    }
+  if (!browser || !browser->window() || !browser->GetActiveTabInterface()) {
+    return;
   }
+
+  if (!IsPageActionMigrated(PageActionIconType::kZoom)) {
+    browser->window()->UpdatePageActionIcon(PageActionIconType::kZoom);
+    return;
+  }
+
+  auto* tab_feature = browser->GetActiveTabInterface()->GetTabFeatures();
+  CHECK(tab_feature);
+  tab_feature->zoom_view_controller()->UpdatePageActionIcon();
 }
 
 void ZoomBubbleView::StartTimerIfNecessary() {

@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/boca_ui/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -95,7 +97,8 @@ class OnTaskLockedSessionWindowTrackerBrowserTestBase
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{ash::features::kBoca,
                               ash::features::kBocaConsumer,
-                              ash::features::kBocaOnTaskPod},
+                              ash::features::kBocaOnTaskPod,
+                              ash::features::kOnDeviceSpeechRecognition},
         /*disabled_features=*/{});
   }
 
@@ -983,6 +986,43 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
   window_tracker->RemoveObserver(&window_observer);
 }
 
+IN_PROC_BROWSER_TEST_F(
+    OnTaskLockedSessionWindowTrackerBrowserTest,
+    NotifyObserverForActiveTabChangeWhenSwitchInAndOutOnTask) {
+  // Launch OnTask SWA.
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+
+  // Set up window tracker to track the app window.
+  const SessionID window_id = boca_app_browser->session_id();
+  ASSERT_TRUE(window_id.is_valid());
+  NiceMock<MockBocaWindowObserver> window_observer;
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*observers=*/{&window_observer});
+
+  // Switch out of boca SWA
+  EXPECT_CALL(window_observer,
+              OnActiveTabChanged(::testing::Eq(kOutsideOfWorkbookTitle)))
+      .Times(1);
+
+  BrowserList::GetInstance()->NotifyBrowserNoLongerActive(boca_app_browser);
+  testing::Mock::VerifyAndClearExpectations(&window_observer);
+
+  // Switch back to Boca SWA
+  EXPECT_CALL(window_observer, OnActiveTabChanged(_)).Times(1);
+  BrowserList::GetInstance()->SetLastActive(boca_app_browser);
+
+  testing::Mock::VerifyAndClearExpectations(&window_observer);
+  auto* const window_tracker =
+      LockedSessionWindowTrackerFactory::GetInstance()->GetForBrowserContext(
+          profile());
+  window_tracker->RemoveObserver(&window_observer);
+}
+
 IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
                        NotifyObserverOnActiveTabUpdates) {
   // Launch OnTask SWA.
@@ -1297,6 +1337,106 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
   EXPECT_EQ(base_url, boca_app_browser->tab_strip_model()
                           ->GetActiveWebContents()
                           ->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
+                       ImmersiveModeRemainsDisabledWhenPaused) {
+  // Launch OnTask SWA.
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+
+  // Set up window tracker to track the app window.
+  const SessionID window_id =
+      system_web_app_manager()->GetActiveSystemWebAppWindowID();
+  ASSERT_TRUE(window_id.is_valid());
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*observers=*/{});
+
+  // Spawn a tab for testing purposes (outside the homepage tab).
+  const GURL base_url = embedded_test_server()->GetURL(kTabUrl1Host, "/");
+  CreateBackgroundTabAndWait(window_id, base_url,
+                             LockedNavigationOptions::BLOCK_NAVIGATION);
+  ASSERT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
+  boca_app_browser->tab_strip_model()->ActivateTabAt(1);
+
+  // Pause the app.
+  system_web_app_manager()->SetPinStateForSystemWebAppWindow(/*pinned=*/true,
+                                                             window_id);
+  system_web_app_manager()->SetPauseStateForSystemWebAppWindow(/*paused=*/true,
+                                                               window_id);
+  ASSERT_EQ(boca_app_browser->tab_strip_model()->active_index(), 0);
+
+  // Enter tablet mode and verify immersive mode remains disabled even when we
+  // attempt a toolbar reveal.
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+  auto* const immersive_mode_controller =
+      boca_app_browser->GetImmersiveModeController();
+  const std::unique_ptr<ImmersiveRevealedLock> reveal_lock =
+      immersive_mode_controller->GetRevealedLock(
+          ImmersiveModeController::ANIMATE_REVEAL_NO);
+  EXPECT_FALSE(immersive_mode_controller->IsEnabled());
+
+  // Exit tablet mode and verify immersive mode remains disabled.
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
+  EXPECT_FALSE(immersive_mode_controller->IsEnabled());
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
+                       MultiplePauseUnpauseRequests) {
+  // Launch OnTask SWA.
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+
+  // Set up window tracker to track the app window.
+  const SessionID window_id =
+      system_web_app_manager()->GetActiveSystemWebAppWindowID();
+  ASSERT_TRUE(window_id.is_valid());
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*observers=*/{});
+
+  // Spawn a tab for testing purposes (outside the homepage tab).
+  const GURL base_url = embedded_test_server()->GetURL(kTabUrl1Host, "/");
+  CreateBackgroundTabAndWait(window_id, base_url,
+                             LockedNavigationOptions::BLOCK_NAVIGATION);
+  ASSERT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
+  boca_app_browser->tab_strip_model()->ActivateTabAt(1);
+
+  // Pause the app once.
+  system_web_app_manager()->SetPinStateForSystemWebAppWindow(/*pinned=*/true,
+                                                             window_id);
+  system_web_app_manager()->SetPauseStateForSystemWebAppWindow(/*paused=*/true,
+                                                               window_id);
+  ASSERT_EQ(boca_app_browser->tab_strip_model()->active_index(), 0);
+  auto* const immersive_mode_controller =
+      boca_app_browser->GetImmersiveModeController();
+  EXPECT_FALSE(immersive_mode_controller->IsEnabled());
+
+  // Pause the app again and verify immersive mode remains disabled.
+  system_web_app_manager()->SetPauseStateForSystemWebAppWindow(/*paused=*/true,
+                                                               window_id);
+  EXPECT_FALSE(immersive_mode_controller->IsEnabled());
+
+  // Unpause the app and verify immersive mode is enabled.
+  system_web_app_manager()->SetPauseStateForSystemWebAppWindow(/*paused=*/false,
+                                                               window_id);
+  EXPECT_TRUE(immersive_mode_controller->IsEnabled());
+
+  // Unpin as well as unpause the app and verify immersive mode is disabled.
+  system_web_app_manager()->SetPinStateForSystemWebAppWindow(/*pinned=*/false,
+                                                             window_id);
+  system_web_app_manager()->SetPauseStateForSystemWebAppWindow(/*paused=*/false,
+                                                               window_id);
+  EXPECT_FALSE(immersive_mode_controller->IsEnabled());
 }
 
 class OnTaskLockedSessionWindowTrackerDownloadURLBrowserTest

@@ -1172,18 +1172,19 @@ void LogPriceDropMetrics(web::WebState* web_state) {
                  sourceView:(UIView*)sourceView {
   DCHECK(IsTabGroupSyncEnabled());
   [self.tabGroupsHandler
-      showTabGroupConfirmationForAction:TabGroupActionType::kLeaveSharedTabGroup
-                                  group:group
-                             sourceView:sourceView];
+      startLeaveOrDeleteSharedGroup:group
+                          forAction:TabGroupActionType::kLeaveSharedTabGroup
+                         sourceView:sourceView];
 }
 
 - (void)deleteSharedTabGroup:(base::WeakPtr<const TabGroup>)group
                   sourceView:(UIView*)sourceView {
   DCHECK(IsTabGroupSyncEnabled());
-  [self.tabGroupsHandler showTabGroupConfirmationForAction:
-                             TabGroupActionType::kDeleteSharedTabGroup
-                                                     group:group
-                                                sourceView:sourceView];
+
+  [self.tabGroupsHandler
+      startLeaveOrDeleteSharedGroup:group
+                          forAction:TabGroupActionType::kDeleteSharedTabGroup
+                         sourceView:sourceView];
 }
 
 - (void)closeTabGroup:(base::WeakPtr<const TabGroup>)group {
@@ -1988,7 +1989,7 @@ void LogPriceDropMetrics(web::WebState* web_state) {
   }
 }
 
-- (UIViewController*)facePileViewControllerForItem:(GridItemIdentifier*)itemID {
+- (UIView*)facePileViewForItem:(GridItemIdentifier*)itemID {
   // Only implemented by the "RegularGridMediator".
   return nil;
 }

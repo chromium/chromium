@@ -11,6 +11,8 @@
 
 # crbug.com/401321001
 -org.chromium.chrome.browser.safety_hub.SafetyHubTest.testSafeBrowsingLearnMoreLink_OpensInCct
+-org.chromium.chrome.browser.safety_hub.SafetyHubTest.testHelpCenterArticle
+-org.chromium.chrome.browser.safety_hub.SafetyHubTest.testSafetyToolsLearnMoreLink_OpensInCct
 
 # crbug.com/383144566
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testContextualDictionaryDefinitions
@@ -30,8 +32,29 @@
 -org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogV3Test.testEeaConsentOnlyPrivacyPolicyShownWhenClicked
 -org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogV3Test.testEeaNoticeActionButtonIsStickyAfterVisitingPrivacyPolicy
 
-# crbug.com/394606261
--org.chromium.chrome.browser.compositor.overlays.strip.TabStripGroupContextMenuTest.*
-
 # crbug.com/393388366
 -org.chromium.chrome.browser.desktop_windowing.AppHeaderCoordinatorBrowserTest.testKeyboardInDesktopWindow_RootViewPadded
+
+# crbug.com/408282366
+-org.chromium.chrome.browser.download.DownloadTest.testUrlEscaping
+-org.chromium.chrome.browser.download.DownloadTest.testHttpPostDownload
+-org.chromium.chrome.browser.download.DownloadTest.testHttpGetDownload
+
+# crbug.com/401292006
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testCopyImage
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testCopyImageLinkCopiesLinkURL
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSaveDataUrl
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testCopyTelNumber
+
+# crbug.com/401272905
+-org.chromium.chrome.browser.keyboard_accessory.PasswordGenerationIntegrationTest.testManualGenerationCancel
+
+# crbug.com/401287512
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchInstrumentationTest.testNonResolveGesture
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchInstrumentationTest.testResolveGesture
+
+# crbug.com/409145689
+-org.chromium.chrome.browser.settings.MainSettingsFragmentTest.testPlusAddressesEnabled
+
+# crbug.com/409581327
+-org.chromium.chrome.browser.webid.DigitalCredentialProviderTest.testRequestMDoc

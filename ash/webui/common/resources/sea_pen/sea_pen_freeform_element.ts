@@ -16,12 +16,11 @@ import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-annou
 import type {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 
 import type {SeaPenSamplePrompt} from './constants.js';
-import {FreeformTab} from './constants.js';
+import {FreeformTab, SEA_PEN_SAMPLES} from './constants.js';
 import type {MantaStatusCode, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import {getTemplate} from './sea_pen_freeform_element.html.js';
 import {logSamplePromptShuffleClicked, logSeaPenFreeformTabClicked} from './sea_pen_metrics_logger.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
-import {SEA_PEN_SAMPLES} from './sea_pen_untranslated_constants.js';
 import {IronAnnounceEvent, isArrayEqual, isNonEmptyArray, shuffle} from './sea_pen_utils.js';
 
 export interface SeaPenFreeformElement {

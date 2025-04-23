@@ -18,6 +18,11 @@
  * Affilitions must be sorted from most recent to least recent.
  */
 {
+  "almaher@chromium.org": {
+    affiliations: [
+      { start: "2025-04-11", domain: "microsoft.com" },
+    ]
+  },
   "benjamin.beaudry@chromium.org": {
     affiliations: [
       { start: "2019-04-02", domain: "microsoft.com" },
@@ -33,6 +38,11 @@
       { start: "2022-05-03", domain: "intel.com" },
       { start: "2016-08-15", domain: "arm.com" },
       { start: "2014-10-08", domain: "adenilson.org" },
+    ]
+  },
+  "daniec@chromium.org": {
+    affiliations: [
+      { start: "2025-04-11", domain: "microsoft.com" },
     ]
   },
   "dgozman@chromium.org": {
@@ -71,6 +81,21 @@
       { start: "2021-11-29", domain: "kzar.co.uk" },
     ]
   },
+  "lpardosixtos@chromium.org": {
+    affiliations: [
+      { start: "2025-04-11", domain: "microsoft.com" },
+    ]
+  },
+  "luhua@chromium.org": {
+    affiliations: [
+      { start: "2025-04-11", domain: "microsoft.com" },
+    ]
+  },
+  "lzhao@chromium.org": {
+    affiliations: [
+      { start: "2025-04-11", domain: "microsoft.com" },
+    ]
+  },
   "marshall@chromium.org": {
     affiliations: [
       { start: "2010-03-09", domain: "gmail.com" },
@@ -91,6 +116,11 @@
       { start: "2019-04-02", domain: "microsoft.com" },
     ]
   },
+  "rob.paveza@chromium.org": {
+    affiliations: [
+      { start: "2025-04-11", domain: "microsoft.com" },
+    ]
+  },
   "samfort@chromium.org": {
     affiliations: [
       { start: "2020-01-14", domain: "microsoft.com" },
@@ -105,6 +135,11 @@
     affiliations: [
       { start: "2016-09-10", domain: "huawei.com" },
       { start: "2014-01-10", domain: "samsung.com" },
+    ]
+  },
+  "stahon@chromium.org": {
+    affiliations: [
+      { start: "2025-04-11", domain: "microsoft.com" },
     ]
   },
   "ting.shao@chromium.org": {

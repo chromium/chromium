@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ai/ai_data_keyed_service.h"
 
+#include <memory>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -11,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/ai/ai_data_keyed_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,6 +24,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/common/buildflags.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -35,6 +39,7 @@
 #include "components/history_embeddings/mock_answerer.h"
 #include "components/history_embeddings/mock_intent_classifier.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/passage_embeddings/passage_embeddings_test_util.h"
 #include "content/public/browser/web_contents.h"
@@ -131,14 +136,35 @@ class AiDataKeyedServiceBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest,
-                       AllowlistedExtensionList) {
+                       AllowlistedExtensionListData) {
   std::vector<std::string> expected_allowlisted_extensions = {
       "hpkopmikdojpadgmioifjjodbmnjjjca", "bgbpcgpcobgjpnpiginpidndjpggappi",
       "eefninhhiifgcimjkmkongegpoaikmhm", "fjhpgileahdpnmfmaggobehbipojhlce",
       "abdciamfdmknaeggbnmafmbdfdmhfgfa"};
 
-  EXPECT_EQ(AiDataKeyedService::GetAllowlistedExtensions(),
-            expected_allowlisted_extensions);
+  for (const auto& extension_id : expected_allowlisted_extensions) {
+    EXPECT_TRUE(
+        AiDataKeyedService::IsExtensionAllowlistedForData(extension_id));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest,
+                       AllowlistedExtensionListActions) {
+  std::vector<std::string> expected_allowlisted_extensions = {};
+
+  for (const auto& extension_id : expected_allowlisted_extensions) {
+    EXPECT_TRUE(
+        AiDataKeyedService::IsExtensionAllowlistedForActions(extension_id));
+  }
+
+  std::vector<std::string> expected_not_allowlisted_extensions = {
+      "hpkopmikdojpadgmioifjjodbmnjjjca", "bgbpcgpcobgjpnpiginpidndjpggappi",
+      "eefninhhiifgcimjkmkongegpoaikmhm", "fjhpgileahdpnmfmaggobehbipojhlce",
+      "abdciamfdmknaeggbnmafmbdfdmhfgfa"};
+  for (const auto& extension_id : expected_not_allowlisted_extensions) {
+    EXPECT_FALSE(
+        AiDataKeyedService::IsExtensionAllowlistedForActions(extension_id));
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, GetsData) {
@@ -405,8 +431,11 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTestWithBlocklistedExtensions,
       "bgbpcgpcobgjpnpiginpidndjpggappi", "eefninhhiifgcimjkmkongegpoaikmhm",
       "fjhpgileahdpnmfmaggobehbipojhlce", "abdciamfdmknaeggbnmafmbdfdmhfgfa"};
 
-  EXPECT_EQ(AiDataKeyedService::GetAllowlistedExtensions(),
-            expected_allowlisted_extensions);
+  EXPECT_FALSE(AiDataKeyedService::IsExtensionAllowlistedForData(
+      "hpkopmikdojpadgmioifjjodbmnjjjca"));
+  for (const auto& extension : expected_allowlisted_extensions) {
+    EXPECT_TRUE(AiDataKeyedService::IsExtensionAllowlistedForData(extension));
+  }
 }
 
 class AiDataKeyedServiceBrowserTestWithRemotelyAllowlistedExtensions
@@ -435,8 +464,9 @@ IN_PROC_BROWSER_TEST_F(
       "fjhpgileahdpnmfmaggobehbipojhlce",
       "abdciamfdmknaeggbnmafmbdfdmhfgfa"};
 
-  EXPECT_EQ(AiDataKeyedService::GetAllowlistedExtensions(),
-            expected_allowlisted_extensions);
+  for (const auto& extension : expected_allowlisted_extensions) {
+    EXPECT_TRUE(AiDataKeyedService::IsExtensionAllowlistedForData(extension));
+  }
 }
 
 class AiDataKeyedServiceBrowserTestWithAllowAndBlock
@@ -456,13 +486,115 @@ class AiDataKeyedServiceBrowserTestWithAllowAndBlock
 
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTestWithAllowAndBlock,
                        AllowAndBlock) {
-  std::vector<std::string> expected_allowlisted_extensions = {
-      "hpkopmikdojpadgmioifjjodbmnjjjca", "bgbpcgpcobgjpnpiginpidndjpggappi",
-      "eefninhhiifgcimjkmkongegpoaikmhm", "fjhpgileahdpnmfmaggobehbipojhlce",
-      "abdciamfdmknaeggbnmafmbdfdmhfgfa"};
-
-  EXPECT_EQ(AiDataKeyedService::GetAllowlistedExtensions(),
-            expected_allowlisted_extensions);
+  EXPECT_FALSE(AiDataKeyedService::IsExtensionAllowlistedForData("1234"));
 }
+
+#if BUILDFLAG(ENABLE_GLIC)
+class AiDataKeyedServiceActorBrowserTest
+    : public AiDataKeyedServiceBrowserTest {
+ public:
+  ~AiDataKeyedServiceActorBrowserTest() override = default;
+  AiDataKeyedServiceActorBrowserTest() {
+    scoped_feature_list_.InitWithFeatures({features::kGlicActor}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest, StartStopTask) {
+  optimization_guide::proto::BrowserStartTask task_request;
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  int id = 1;
+  auto start_task_callback =
+      [&run_loop, &id](optimization_guide::proto::BrowserStartTaskResult task) {
+        EXPECT_EQ(task.task_id(), id);
+        EXPECT_EQ(task.tab_id(), id);
+        run_loop->Quit();
+      };
+  ai_data_service().StartTask(std::move(task_request),
+                              base::BindLambdaForTesting(start_task_callback));
+  run_loop->Run();
+  run_loop = std::make_unique<base::RunLoop>();
+  auto stop_task_callback = [&run_loop](bool success) {
+    EXPECT_TRUE(success);
+    run_loop->Quit();
+  };
+  ai_data_service().StopTask(
+      id, base::BindLambdaForTesting(std::move(stop_task_callback)));
+  run_loop->Run();
+
+  id++;
+  run_loop = std::make_unique<base::RunLoop>();
+  auto start_task_callback_2 =
+      [&run_loop, &id](optimization_guide::proto::BrowserStartTaskResult task) {
+        EXPECT_EQ(task.task_id(), id);
+        EXPECT_EQ(task.tab_id(), id);
+        run_loop->Quit();
+      };
+  ai_data_service().StartTask(
+      std::move(task_request),
+      base::BindLambdaForTesting(start_task_callback_2));
+  run_loop->Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest,
+                       StartNavigateStopTask) {
+  optimization_guide::proto::BrowserStartTask task_request;
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  int id = 1;
+  auto start_task_callback =
+      [&run_loop, &id](optimization_guide::proto::BrowserStartTaskResult task) {
+        EXPECT_EQ(task.task_id(), id);
+        EXPECT_EQ(task.tab_id(), id);
+        run_loop->Quit();
+      };
+  ai_data_service().StartTask(std::move(task_request),
+                              base::BindLambdaForTesting(start_task_callback));
+  run_loop->Run();
+
+  run_loop = std::make_unique<base::RunLoop>();
+  auto navigate_callback =
+      [&run_loop,
+       &id](optimization_guide::proto::BrowserActionResult response) {
+        EXPECT_EQ(response.task_id(), id);
+        EXPECT_EQ(response.tab_id(), id);
+        EXPECT_TRUE(response.has_annotated_page_content());
+        run_loop->Quit();
+      };
+  optimization_guide::proto::BrowserAction action_request;
+  action_request.set_task_id(id);
+  action_request.set_tab_id(id);
+  action_request.add_action_information()->mutable_navigate()->set_url(
+      "https://www.google.com");
+  ai_data_service().ExecuteAction(
+      std::move(action_request),
+      base::BindLambdaForTesting(std::move(navigate_callback)));
+  run_loop->Run();
+  EXPECT_EQ(web_contents()->GetURL(), GURL("https://www.google.com"));
+
+  run_loop = std::make_unique<base::RunLoop>();
+  auto stop_task_callback = [&run_loop](bool success) {
+    EXPECT_TRUE(success);
+    run_loop->Quit();
+  };
+  ai_data_service().StopTask(
+      id, base::BindLambdaForTesting(std::move(stop_task_callback)));
+  run_loop->Run();
+
+  id++;
+  run_loop = std::make_unique<base::RunLoop>();
+  auto start_task_callback_2 =
+      [&run_loop, &id](optimization_guide::proto::BrowserStartTaskResult task) {
+        EXPECT_EQ(task.task_id(), id);
+        EXPECT_EQ(task.tab_id(), id);
+        run_loop->Quit();
+      };
+  ai_data_service().StartTask(
+      std::move(task_request),
+      base::BindLambdaForTesting(start_task_callback_2));
+  run_loop->Run();
+}
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
 }  // namespace

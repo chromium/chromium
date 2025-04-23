@@ -30,7 +30,6 @@
 #include "storage/browser/file_system/file_observers.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_context.h"
-#include "storage/browser/file_system/file_system_util.h"
 #include "storage/browser/file_system/obfuscated_file_util_disk_delegate.h"
 #include "storage/browser/file_system/obfuscated_file_util_memory_delegate.h"
 #include "storage/browser/file_system/quota/quota_limit_type.h"
@@ -1049,19 +1048,11 @@ void ObfuscatedFileUtil::DestroyDirectoryDatabaseForBucket(
     const std::optional<FileSystemType>& type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DatabaseKey key_prefix;
   const std::string type_string =
       type ? SandboxFileSystemBackendDelegate::GetTypeString(type.value())
            : std::string();
-  // `key.bucket()` is std::nullopt for all non-kTemporary types.
-  if (type && (FileSystemTypeToQuotaStorageType(type.value()) ==
-               ::blink::mojom::StorageType::kTemporary)) {
-    key_prefix =
-        DatabaseKey(bucket_locator.storage_key, bucket_locator, type_string);
-  } else {  // All other storage types.
-    key_prefix =
-        DatabaseKey(bucket_locator.storage_key, std::nullopt, type_string);
-  }
+  DatabaseKey key_prefix =
+      DatabaseKey(bucket_locator.storage_key, bucket_locator, type_string);
 
   // If `type` is empty, delete all filesystem types under `storage_key`.
   for (auto iter = directories_.lower_bound(key_prefix);
@@ -1305,22 +1296,16 @@ SandboxDirectoryDatabase* ObfuscatedFileUtil::GetDirectoryDatabase(
   DatabaseKey key;
   const std::string type_string =
       SandboxFileSystemBackendDelegate::GetTypeString(url.type());
-  // `key.bucket()` is std::nullopt for all non-kTemporary types.
-  if (FileSystemTypeToQuotaStorageType(url.type()) ==
-      ::blink::mojom::StorageType::kTemporary) {
-    if (url.bucket().has_value()) {
-      key = DatabaseKey(url.storage_key(), url.bucket().value(), type_string);
-    } else {
-      // If we are not provided a custom bucket value we must find the default
-      // bucket corresponding to the url's StorageKey.
-      ASSIGN_OR_RETURN(BucketLocator default_bucket,
-                       GetOrCreateDefaultBucket(url.storage_key()),
-                       [](auto) { return nullptr; });
-      key = DatabaseKey(url.storage_key(), std::move(default_bucket),
-                        type_string);
-    }
-  } else {  // All other storage types.
-    key = DatabaseKey(url.storage_key(), std::nullopt, type_string);
+  if (url.bucket().has_value()) {
+    key = DatabaseKey(url.storage_key(), url.bucket().value(), type_string);
+  } else {
+    // If we are not provided a custom bucket value we must find the default
+    // bucket corresponding to the url's StorageKey.
+    ASSIGN_OR_RETURN(BucketLocator default_bucket,
+                     GetOrCreateDefaultBucket(url.storage_key()),
+                     [](auto) { return nullptr; });
+    key =
+        DatabaseKey(url.storage_key(), std::move(default_bucket), type_string);
   }
 
   auto iter = directories_.find(key);

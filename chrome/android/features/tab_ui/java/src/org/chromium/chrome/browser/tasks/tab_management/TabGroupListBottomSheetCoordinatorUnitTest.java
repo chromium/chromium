@@ -5,6 +5,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -60,6 +61,7 @@ public class TabGroupListBottomSheetCoordinatorUnitTest {
     @Mock private Tab mTab;
     private final SavedTabGroup mSavedTabGroup = new SavedTabGroup();
     private final SavedTabGroupTab mSavedTabGroupTab = new SavedTabGroupTab();
+    private Context mContext;
     private TabGroupListBottomSheetCoordinator mCoordinator;
 
     @Before
@@ -72,13 +74,13 @@ public class TabGroupListBottomSheetCoordinatorUnitTest {
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {TAB_GROUP_ID_STRING});
         when(mTabGroupSyncService.getGroup(TAB_GROUP_ID_STRING)).thenReturn(mSavedTabGroup);
 
-        Context context =
+        mContext =
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
         mCoordinator =
                 new TabGroupListBottomSheetCoordinator(
-                        context,
+                        mContext,
                         mProfile,
                         ignored -> {},
                         mFilter,
@@ -105,6 +107,7 @@ public class TabGroupListBottomSheetCoordinatorUnitTest {
 
     @Test
     public void testHide() {
+        mCoordinator = spy(mCoordinator);
         TabGroupListBottomSheetCoordinatorDelegate delegate = mCoordinator.createDelegate(false);
         delegate.hide(StateChangeReason.INTERACTION_COMPLETE);
         verify(mBottomSheetController)
@@ -112,6 +115,7 @@ public class TabGroupListBottomSheetCoordinatorUnitTest {
                         any(TabGroupListBottomSheetView.class),
                         eq(true),
                         eq(StateChangeReason.INTERACTION_COMPLETE));
+        verify(mCoordinator, never()).destroy();
     }
 
     @Test
@@ -125,5 +129,13 @@ public class TabGroupListBottomSheetCoordinatorUnitTest {
                         eq(true),
                         eq(StateChangeReason.INTERACTION_COMPLETE));
         verify(mCoordinator).destroy();
+    }
+
+    @Test
+    public void testIncognito_dontFetchTabGroupSyncService() {
+        when(mProfile.isOffTheRecord()).thenReturn(true);
+        // Test that the Coordinator can be constructed without crashing.
+        new TabGroupListBottomSheetCoordinator(
+                mContext, mProfile, ignored -> {}, mFilter, mBottomSheetController, true, false);
     }
 }

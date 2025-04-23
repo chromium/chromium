@@ -14,29 +14,29 @@
 namespace blink {
 
 IceSwitchReason ConvertFromWebrtcIceSwitchReason(
-    cricket::IceSwitchReason reason) {
+    webrtc::IceSwitchReason reason) {
   switch (reason) {
-    case cricket::IceSwitchReason::REMOTE_CANDIDATE_GENERATION_CHANGE:
+    case webrtc::IceSwitchReason::REMOTE_CANDIDATE_GENERATION_CHANGE:
       return IceSwitchReason::kRemoteCandidateGenerationChange;
-    case cricket::IceSwitchReason::NETWORK_PREFERENCE_CHANGE:
+    case webrtc::IceSwitchReason::NETWORK_PREFERENCE_CHANGE:
       return IceSwitchReason::kNetworkPreferenceChange;
-    case cricket::IceSwitchReason::NEW_CONNECTION_FROM_LOCAL_CANDIDATE:
+    case webrtc::IceSwitchReason::NEW_CONNECTION_FROM_LOCAL_CANDIDATE:
       return IceSwitchReason::kNewConnectionFromLocalCandidate;
-    case cricket::IceSwitchReason::NEW_CONNECTION_FROM_REMOTE_CANDIDATE:
+    case webrtc::IceSwitchReason::NEW_CONNECTION_FROM_REMOTE_CANDIDATE:
       return IceSwitchReason::kNewConnectionFromRemoteCandidate;
-    case cricket::IceSwitchReason::NEW_CONNECTION_FROM_UNKNOWN_REMOTE_ADDRESS:
+    case webrtc::IceSwitchReason::NEW_CONNECTION_FROM_UNKNOWN_REMOTE_ADDRESS:
       return IceSwitchReason::kNewConnectionFromUnknownRemoteAddress;
-    case cricket::IceSwitchReason::NOMINATION_ON_CONTROLLED_SIDE:
+    case webrtc::IceSwitchReason::NOMINATION_ON_CONTROLLED_SIDE:
       return IceSwitchReason::kNominationOnControlledSide;
-    case cricket::IceSwitchReason::DATA_RECEIVED:
+    case webrtc::IceSwitchReason::DATA_RECEIVED:
       return IceSwitchReason::kDataReceived;
-    case cricket::IceSwitchReason::CONNECT_STATE_CHANGE:
+    case webrtc::IceSwitchReason::CONNECT_STATE_CHANGE:
       return IceSwitchReason::kConnectStateChange;
-    case cricket::IceSwitchReason::SELECTED_CONNECTION_DESTROYED:
+    case webrtc::IceSwitchReason::SELECTED_CONNECTION_DESTROYED:
       return IceSwitchReason::kSelectedConnectionDestroyed;
-    case cricket::IceSwitchReason::ICE_CONTROLLER_RECHECK:
+    case webrtc::IceSwitchReason::ICE_CONTROLLER_RECHECK:
       return IceSwitchReason::kIceControllerRecheck;
-    case cricket::IceSwitchReason::APPLICATION_REQUESTED:
+    case webrtc::IceSwitchReason::APPLICATION_REQUESTED:
       return IceSwitchReason::kApplicationRequested;
     default:
       NOTREACHED();
@@ -74,45 +74,44 @@ std::string IceSwitchReasonToString(IceSwitchReason reason) {
   }
 }
 
-cricket::IceSwitchReason ConvertToWebrtcIceSwitchReason(
-    IceSwitchReason reason) {
+webrtc::IceSwitchReason ConvertToWebrtcIceSwitchReason(IceSwitchReason reason) {
   switch (reason) {
     case IceSwitchReason::kRemoteCandidateGenerationChange:
-      return cricket::IceSwitchReason::REMOTE_CANDIDATE_GENERATION_CHANGE;
+      return webrtc::IceSwitchReason::REMOTE_CANDIDATE_GENERATION_CHANGE;
     case IceSwitchReason::kNetworkPreferenceChange:
-      return cricket::IceSwitchReason::NETWORK_PREFERENCE_CHANGE;
+      return webrtc::IceSwitchReason::NETWORK_PREFERENCE_CHANGE;
     case IceSwitchReason::kNewConnectionFromLocalCandidate:
-      return cricket::IceSwitchReason::NEW_CONNECTION_FROM_LOCAL_CANDIDATE;
+      return webrtc::IceSwitchReason::NEW_CONNECTION_FROM_LOCAL_CANDIDATE;
     case IceSwitchReason::kNewConnectionFromRemoteCandidate:
-      return cricket::IceSwitchReason::NEW_CONNECTION_FROM_REMOTE_CANDIDATE;
+      return webrtc::IceSwitchReason::NEW_CONNECTION_FROM_REMOTE_CANDIDATE;
     case IceSwitchReason::kNewConnectionFromUnknownRemoteAddress:
-      return cricket::IceSwitchReason::
+      return webrtc::IceSwitchReason::
           NEW_CONNECTION_FROM_UNKNOWN_REMOTE_ADDRESS;
     case IceSwitchReason::kNominationOnControlledSide:
-      return cricket::IceSwitchReason::NOMINATION_ON_CONTROLLED_SIDE;
+      return webrtc::IceSwitchReason::NOMINATION_ON_CONTROLLED_SIDE;
     case IceSwitchReason::kDataReceived:
-      return cricket::IceSwitchReason::DATA_RECEIVED;
+      return webrtc::IceSwitchReason::DATA_RECEIVED;
     case IceSwitchReason::kConnectStateChange:
-      return cricket::IceSwitchReason::CONNECT_STATE_CHANGE;
+      return webrtc::IceSwitchReason::CONNECT_STATE_CHANGE;
     case IceSwitchReason::kSelectedConnectionDestroyed:
-      return cricket::IceSwitchReason::SELECTED_CONNECTION_DESTROYED;
+      return webrtc::IceSwitchReason::SELECTED_CONNECTION_DESTROYED;
     case IceSwitchReason::kIceControllerRecheck:
-      return cricket::IceSwitchReason::ICE_CONTROLLER_RECHECK;
+      return webrtc::IceSwitchReason::ICE_CONTROLLER_RECHECK;
     case IceSwitchReason::kApplicationRequested:
-      return cricket::IceSwitchReason::APPLICATION_REQUESTED;
+      return webrtc::IceSwitchReason::APPLICATION_REQUESTED;
     case IceSwitchReason::kUnknown:
     default:
       NOTREACHED();
   }
 }
 
-IceRecheckEvent::IceRecheckEvent(const cricket::IceRecheckEvent& event)
+IceRecheckEvent::IceRecheckEvent(const webrtc::IceRecheckEvent& event)
     : reason(ConvertFromWebrtcIceSwitchReason(event.reason)),
       recheck_delay_ms(event.recheck_delay_ms) {}
 
 IceSwitchProposal::IceSwitchProposal(
-    cricket::IceSwitchReason reason,
-    const cricket::IceControllerInterface::SwitchResult& switch_result,
+    webrtc::IceSwitchReason reason,
+    const webrtc::IceControllerInterface::SwitchResult& switch_result,
     bool reply_expected)
     : IceProposal(reply_expected),
       reason_(ConvertFromWebrtcIceSwitchReason(reason)),
@@ -122,7 +121,7 @@ IceSwitchProposal::IceSwitchProposal(
   } else {
     connection_ = std::nullopt;
   }
-  for (const cricket::Connection* conn :
+  for (const webrtc::Connection* conn :
        switch_result.connections_to_forget_state_on) {
     if (conn) {
       connections_to_forget_state_on_.emplace_back(conn);
@@ -131,7 +130,7 @@ IceSwitchProposal::IceSwitchProposal(
 }
 
 std::string IceSwitchProposal::ToString() const {
-  rtc::StringBuilder ss;
+  webrtc::StringBuilder ss;
   ss << "SwitchProposal[" << IceSwitchReasonToString(reason_) << ":"
      << (connection_.has_value() ? connection_->ToString() : "<no connection>")
      << ":";

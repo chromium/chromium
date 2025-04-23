@@ -6577,24 +6577,13 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
       }
       case Operation::Tag::kInstanceNormalization: {
         // The axes along which to calculate the Mean and Variance.
-        std::array<uint32_t, 2> mean_variance_axes;
-        std::array<uint32_t, 1> scale_bias_broadcast_axes;
-        const auto& instance_normalization =
-            operation->get_instance_normalization();
-        switch (instance_normalization->layout) {
-          case mojom::InputOperandLayout::kChannelsFirst: {
-            mean_variance_axes = {2, 3};
-            scale_bias_broadcast_axes = {1};
-            break;
-          }
-          case mojom::InputOperandLayout::kChannelsLast:
-            mean_variance_axes = {1, 2};
-            scale_bias_broadcast_axes = {3};
-            break;
-        }
+        CHECK_EQ(context_properties.input_operand_layout,
+                 InputOperandLayout::kNchw);
+        std::array<uint32_t, 2> mean_variance_axes = {2, 3};
+        std::array<uint32_t, 1> scale_bias_broadcast_axes = {1};
         create_operator_result = CreateOperatorNodeForMeanVarianceNormalization(
-            adapter.get(), context_properties, instance_normalization,
-            operation.get(),
+            adapter.get(), context_properties,
+            operation->get_instance_normalization(), operation.get(),
             graph_fusion_info.operation_to_fusible_standalone_activation_map,
             graph_info, constant_operands, graph_builder, id_to_node_output_map,
             constant_id_to_input_index_map, next_operand_id, mean_variance_axes,

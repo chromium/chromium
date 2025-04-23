@@ -438,6 +438,9 @@ ResourceId ClientResourceProvider::ImportResource(
     ReleaseCallback main_thread_release_callback,
     ResourceEvictedCallback evicted_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  // Clients are not allowed to import any empty resource.
+  CHECK(!resource.is_empty());
   ResourceId id;
   if (use_imported_resource_id_) {
     CHECK_NE(resource.id, kInvalidResourceId);
@@ -515,11 +518,22 @@ void ClientResourceProvider::ShutdownAndReleaseAllResources() {
     // If this is false, then the resource has not been removed via
     // RemoveImportedResource(), and all resources should be removed before
     // we resort to marking resources as lost during shutdown.
-    DCHECK(imported.marked_for_deletion)
-        << "id: " << pair.first << " from:\n"
-        << imported.stack_trace.ToString() << "===";
-    DCHECK(imported.exported_count) << "id: " << pair.first << " from:\n"
-                                    << imported.stack_trace.ToString() << "===";
+    // Note that |use_imported_resource_id_| is true for TreesInViz. In that
+    // case, Viz side ClientResourceProvider's imported resources are only
+    // marked for deletion when signaled by the Renderer.
+    // ::ShutdownAndReleaseAllResources() can be called when LayerTreeHostImpl
+    // owning the ClientResourceProvider is being destroyed and Viz
+    // might not have yet received the marked_for_deletion signal from the
+    // Renderer, Hence this check is invalid for those scenarios and hence for
+    // Viz side ClientResourceProvider.
+    if (!use_imported_resource_id_) {
+      DCHECK(imported.marked_for_deletion)
+          << "id: " << pair.first << " from:\n"
+          << imported.stack_trace.ToString() << "===";
+      DCHECK(imported.exported_count)
+          << "id: " << pair.first << " from:\n"
+          << imported.stack_trace.ToString() << "===";
+    }
 #endif
 
     imported.returned_lost = true;

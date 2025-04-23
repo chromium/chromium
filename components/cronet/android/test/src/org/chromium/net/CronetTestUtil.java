@@ -86,9 +86,21 @@ public class CronetTestUtil {
         return CronetTestUtilJni.get().canGetTaggedBytes();
     }
 
+    public static String[] nativeGetClientConnectionOptions(CronetEngine engine) {
+        CronetUrlRequestContext context = (CronetUrlRequestContext) engine;
+        return CronetTestUtilJni.get()
+                .getClientConnectionOptions(context.getUrlRequestContextAdapter());
+    }
+
+    public static String[] nativeGetConnectionOptions(CronetEngine engine) {
+        CronetUrlRequestContext context = (CronetUrlRequestContext) engine;
+        return CronetTestUtilJni.get().getConnectionOptions(context.getUrlRequestContextAdapter());
+    }
+
     /**
-     * Query the system to find out how many bytes were received with tag
-     * {@code expectedTag} for our UID.
+     * Query the system to find out how many bytes were received with tag {@code expectedTag} for
+     * our UID.
+     *
      * @param expectedTag the tag to query for.
      * @return the count of received bytes.
      */
@@ -109,5 +121,9 @@ public class CronetTestUtil {
         void cleanupNetworkThread(long contextAdapter);
 
         boolean uRLRequestContextExistsForTesting(long contextAdapter, long networkHandle);
+
+        String[] getClientConnectionOptions(long contextAdapter);
+
+        String[] getConnectionOptions(long contextAdapter);
     }
 }

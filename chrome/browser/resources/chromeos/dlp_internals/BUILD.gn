@@ -11,7 +11,7 @@ build_webui("build") {
 
   static_files = [ "index.html" ]
   web_component_files = [ "dlp_internals_ui.ts" ]
-  non_web_component_files = [ "dlp_utils.ts" ]
+  ts_files = [ "dlp_utils.ts" ]
   mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/ash/dlp_internals/dlp_internals.mojom-webui.ts" ]
   mojo_files_deps = [
     "//chrome/browser/ui/webui/ash/dlp_internals:mojo_bindings_ts__generator",

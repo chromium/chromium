@@ -20,7 +20,6 @@
 #include "content/browser/renderer_host/input/synthetic_gesture_target_ios.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
-#include "content/browser/renderer_host/render_widget_host_view_ios_uiview.h"
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/common/content_switches_internal.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -33,6 +32,12 @@
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/native_widget_types.h"
+
+#if BUILDFLAG(IS_IOS_TVOS)
+#include "content/browser/renderer_host/render_widget_host_view_tvos_uiview.h"
+#else
+#include "content/browser/renderer_host/render_widget_host_view_ios_uiview.h"
+#endif
 
 @interface UIApplication (Testing)
 - (BOOL)isRunningTests;
@@ -753,6 +758,7 @@ void RenderWidgetHostViewIOS::OnUpdateTextInputStateCalled(
     TextInputManager* text_input_manager,
     RenderWidgetHostViewBase* updated_view,
     bool did_update_state) {
+#if !BUILDFLAG(IS_IOS_TVOS)
   if (text_input_manager->GetActiveWidget()) {
     [ui_view_->view_
         onUpdateTextInputState:*text_input_manager->GetTextInputState()
@@ -763,11 +769,13 @@ void RenderWidgetHostViewIOS::OnUpdateTextInputStateCalled(
     [ui_view_->view_ onUpdateTextInputState:ui::mojom::TextInputState()
                                  withBounds:[ui_view_->view_ bounds]];
   }
+#endif
 }
 
 void RenderWidgetHostViewIOS::OnTextSelectionChanged(
     TextInputManager* text_input_manager,
     RenderWidgetHostViewBase* updated_view) {
+#if !BUILDFLAG(IS_IOS_TVOS)
   DCHECK_EQ(GetTextInputManager(), text_input_manager);
   const TextInputManager::TextSelection* selection =
       text_input_manager->GetTextSelection(updated_view);
@@ -798,12 +806,16 @@ void RenderWidgetHostViewIOS::OnTextSelectionChanged(
     [[ui_view_->view_ textInteraction] textSelectionDisplayInteraction]
         .activated = NO;
   }
+#endif
 }
+
 void RenderWidgetHostViewIOS::OnSelectionBoundsChanged(
     TextInputManager* text_input_manager,
     RenderWidgetHostViewBase* updated_view) {
+#if !BUILDFLAG(IS_IOS_TVOS)
   [[ui_view_->view_ textInteraction]
           .textSelectionDisplayInteraction setNeedsSelectionUpdate];
+#endif
 }
 
 ui::Compositor* RenderWidgetHostViewIOS::GetCompositor() {

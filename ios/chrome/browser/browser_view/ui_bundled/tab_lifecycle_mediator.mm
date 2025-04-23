@@ -21,6 +21,8 @@
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/print/coordinator/print_coordinator.h"
+#import "ios/chrome/browser/reader_mode/model/features.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -148,6 +150,14 @@
   autofillTabHelper->SetSnackbarHandler(
       static_cast<id<SnackbarCommands>>(_commandDispatcher));
 
+  if (IsReaderModeSnackbarEnabled() &&
+      [_commandDispatcher dispatchingForProtocol:@protocol(SnackbarCommands)]) {
+    ReaderModeTabHelper* readerModeTabHelper =
+        ReaderModeTabHelper::FromWebState(webState);
+    readerModeTabHelper->SetSnackbarHandler(
+        HandlerForProtocol(_commandDispatcher, SnackbarCommands));
+  }
+
   DCHECK(_printCoordinator);
   PrintTabHelper::GetOrCreateForWebState(webState)->set_printer(
       _printCoordinator);
@@ -242,6 +252,12 @@
   autofillTabHelper->SetBaseViewController(nil);
   autofillTabHelper->SetAutofillHandler(nil);
   autofillTabHelper->SetSnackbarHandler(nil);
+
+  if (IsReaderModeSnackbarEnabled()) {
+    ReaderModeTabHelper* readerModeTabHelper =
+        ReaderModeTabHelper::FromWebState(webState);
+    readerModeTabHelper->SetSnackbarHandler(nil);
+  }
 
   PrintTabHelper::GetOrCreateForWebState(webState)->set_printer(nil);
 

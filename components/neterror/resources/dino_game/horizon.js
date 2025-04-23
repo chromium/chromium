@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BackgroundEl} from './background_el.js';
+import {BackgroundEl, getGlobalConfig as getBackgroundElGlobalConfig, setGlobalConfig as setBackgroundElGlobalConfig} from './background_el.js';
 import {Cloud} from './cloud.js';
 import {HorizonLine} from './horizon_line.js';
 import {NightMode} from './night_mode.js';
@@ -59,6 +59,7 @@ export class Horizon {
   init() {
     Obstacle.types = spriteDefinitionByType.original.OBSTACLES;
     this.addCloud();
+
     // Multiple Horizon lines
     for (let i = 0; i < Runner.spriteDefinition.LINES.length; i++) {
       this.horizonLines.push(
@@ -106,7 +107,7 @@ export class Horizon {
     Obstacle.MAX_GAP_COEFFICIENT = Runner.spriteDefinition.MAX_GAP_COEFFICIENT;
     Obstacle.MAX_OBSTACLE_LENGTH = Runner.spriteDefinition.MAX_OBSTACLE_LENGTH;
 
-    BackgroundEl.config = Runner.spriteDefinition.BACKGROUND_EL_CONFIG;
+    setBackgroundElGlobalConfig(Runner.spriteDefinition.BACKGROUND_EL_CONFIG);
 
     this.horizonLines = [];
     for (let i = 0; i < Runner.spriteDefinition.LINES.length; i++) {
@@ -196,7 +197,7 @@ export class Horizon {
    */
   updateBackgroundEls(deltaTime, speed) {
     this.updateBackgroundEl(
-        deltaTime, this.backgroundEls, BackgroundEl.config.MAX_BG_ELS,
+        deltaTime, this.backgroundEls, getBackgroundElGlobalConfig().maxBgEls,
         this.addBackgroundEl.bind(this), this.cloudFrequency);
 
     // Remove expired elements.

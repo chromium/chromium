@@ -9,6 +9,7 @@
 
 #include "net/websockets/websocket_deflate_parameters.h"
 
+#include <array>
 #include <iterator>
 #include <ostream>
 #include <string>
@@ -186,7 +187,7 @@ std::vector<InitializeTestParameter> InitializeTestParameters() {
   const InitializeTestParameter::Expectation kUnknownParameter = {
       false, "Received an unexpected permessage-deflate extension parameter"};
 
-  const InitializeTestParameter parameters[] = {
+  const auto parameters = std::to_array<InitializeTestParameter>({
       {"", kInitialized},
       {"; server_no_context_takeover", kInitialized},
       {"; server_no_context_takeover=0", Invalid("server_no_context_takeover")},
@@ -222,9 +223,11 @@ std::vector<InitializeTestParameter> InitializeTestParameters() {
        "; server_max_window_bits=12; client_max_window_bits=13",
        kInitialized},
       {"; hogefuga", kUnknownParameter},
-  };
+  });
   return std::vector<InitializeTestParameter>(
-      parameters, parameters + std::size(parameters));
+      parameters.data(), base::span<const InitializeTestParameter>(parameters)
+                             .subspan(std::size(parameters))
+                             .data());
 }
 
 constexpr CompatibilityTestParameter kCompatibilityTestParameters[] = {

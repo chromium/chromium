@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -71,7 +72,8 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
     BiddingPartition(int partition_id,
                      const std::set<std::string>* interest_group_names,
                      const std::set<std::string>* keys,
-                     const base::Value::Dict* additional_params);
+                     const base::Value::Dict* additional_params,
+                     const std::string* buyer_tkv_signals);
     BiddingPartition(BiddingPartition&&);
 
     ~BiddingPartition();
@@ -87,6 +89,8 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
     // "allSlotsRequestedSizes". We could take them separately, but seems better
     // to take one field rather than several?
     base::raw_ref<const base::Value::Dict> additional_params;
+
+    raw_ptr<const std::string> buyer_tkv_signals;
   };
 
   // All the data needed to request a particular scoring signals partition.
@@ -96,7 +100,8 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
     ScoringPartition(int partition_id,
                      const GURL* render_url,
                      const std::set<GURL>* component_render_urls,
-                     const base::Value::Dict* additional_params);
+                     const base::Value::Dict* additional_params,
+                     const std::string* seller_tkv_signals);
     ScoringPartition(ScoringPartition&&);
 
     ~ScoringPartition();
@@ -115,6 +120,8 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
     // "allSlotsRequestedSizes". We could take them separately, but seems better
     // to take one field rather than several?
     base::raw_ref<const base::Value::Dict> additional_params;
+
+    raw_ptr<const std::string> seller_tkv_signals;
   };
 
   // While buying and scoring signals partitions need different structs when

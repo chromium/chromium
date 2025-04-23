@@ -249,7 +249,6 @@ void AXTreeFormatterWin::RecursiveBuildTree(
   bool skipChildren = false;
   if (platform_node) {
     AXPlatformNodeDelegate* delegate = platform_node->GetDelegate();
-    DCHECK(delegate);
 
     if (!ShouldDumpNode(*delegate))
       return;

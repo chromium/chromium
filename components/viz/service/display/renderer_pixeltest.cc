@@ -11,6 +11,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <tuple>
@@ -3319,6 +3320,67 @@ TEST_P(RendererPixelTest, FastPassColorFilterAlphaTranslation) {
       cc::FuzzyPixelOffByOneComparator()));
 }
 
+// Test that an RPDQ that has a filter that samples outside the output rect of
+// the render pass can draw the filter contents even if the embedding RPDQ has
+// an empty size.
+TEST_P(RendererPixelTest, NonEmptyFilterClipRectOnEmptyRenderPassQuad) {
+  const gfx::Rect viewport_rect(this->device_viewport_size_);
+
+  // Add a non-zero offset to the RPDQ to avoid depending on a zero offset in
+  // the implementation.
+  const gfx::Vector2d rpdq_offset(20, 10);
+  const gfx::Rect empty_rpdq_rect;
+
+  AggregatedRenderPassList pass_list;
+
+  // Zero-sized render pass with a reference filter that fills an area green.
+  AggregatedRenderPassId child_pass_id{2};
+  {
+    cc::FilterOperations filters;
+    const SkRect filter_clip_rect = gfx::RectToSkRect(
+        gfx::Rect(gfx::Point() - rpdq_offset, this->device_viewport_size_));
+    filters.Append(cc::FilterOperation::CreateReferenceFilter(
+        sk_make_sp<cc::ColorFilterPaintFilter>(
+            cc::ColorFilter::MakeBlend(SkColors::kGreen, SkBlendMode::kSrc),
+            nullptr, &filter_clip_rect)));
+
+    auto child_pass =
+        CreateTestRenderPass(child_pass_id, empty_rpdq_rect,
+                             /*transform_to_root_target=*/
+                             gfx::Transform::MakeTranslation(rpdq_offset));
+    child_pass->filters = filters;
+
+    pass_list.push_back(std::move(child_pass));
+  }
+
+  // Root pass that embeds the child pass as a zero-sized RPDQ.
+  {
+    AggregatedRenderPassId root_pass_id{1};
+    auto root_pass = CreateTestRootRenderPass(root_pass_id, viewport_rect);
+
+    CreateTestRenderPassDrawQuad(
+        CreateTestSharedQuadState(
+            /*quad_to_target_transform=*/gfx::Transform::MakeTranslation(
+                rpdq_offset),
+            gfx::Rect(gfx::Point() - rpdq_offset, this->device_viewport_size_),
+            root_pass.get(), gfx::MaskFilterInfo()),
+        empty_rpdq_rect, child_pass_id, root_pass.get());
+
+    // Add a red background to make it clear when the test is failing.
+    auto* color_quad = root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+    color_quad->SetNew(
+        CreateTestSharedQuadState(gfx::Transform(), viewport_rect,
+                                  root_pass.get(), gfx::MaskFilterInfo()),
+        viewport_rect, viewport_rect, SkColors::kRed, false);
+
+    pass_list.push_back(std::move(root_pass));
+  }
+
+  EXPECT_TRUE(this->RunPixelTest(&pass_list,
+                                 base::FilePath(FILE_PATH_LITERAL("green.png")),
+                                 cc::AlphaDiscardingExactPixelComparator()));
+}
+
 TEST_P(RendererPixelTest, EnlargedRenderPassTexture) {
   gfx::Rect viewport_rect(this->device_viewport_size_);
 
@@ -3817,7 +3879,8 @@ class RendererPixelTestWithBackdropFilter : public VizPixelTestWithParam {
     VizPixelTestWithParam::SetUp();
     filter_pass_layer_rect_ = gfx::Rect(device_viewport_size_);
     filter_pass_layer_rect_.Inset(gfx::Insets::TLBR(14, 12, 18, 16));
-    backdrop_filter_bounds_ = gfx::RRectF(gfx::RectF(filter_pass_layer_rect_));
+    backdrop_filter_bounds_ =
+        SkPath::Rect(gfx::RectToSkRect(filter_pass_layer_rect_));
   }
 
   void SetUpRenderPassList() {
@@ -3973,7 +4036,7 @@ class RendererPixelTestWithBackdropFilter : public VizPixelTestWithParam {
 
   AggregatedRenderPassList pass_list_;
   cc::FilterOperations backdrop_filters_;
-  std::optional<gfx::RRectF> backdrop_filter_bounds_;
+  std::optional<SkPath> backdrop_filter_bounds_;
   bool include_backdrop_mask_ = false;
   gfx::Transform filter_pass_to_target_transform_;
   gfx::Rect filter_pass_layer_rect_;
@@ -4295,7 +4358,6 @@ TEST_P(GPURendererPixelTest, TileDrawQuadForceAntiAliasingOff) {
   auto pass = CreateTestRenderPass(id, rect, transform_to_root);
   pass->has_transparent_background = false;
 
-  bool contents_premultiplied = true;
   bool needs_blending = false;
   bool nearest_neighbor = true;
   bool force_anti_aliasing_off = true;
@@ -4308,8 +4370,7 @@ TEST_P(GPURendererPixelTest, TileDrawQuadForceAntiAliasingOff) {
                                 gfx::MaskFilterInfo());
   TileDrawQuad* hole = pass->CreateAndAppendDrawQuad<TileDrawQuad>();
   hole->SetNew(hole_shared_state, rect, rect, needs_blending, mapped_resource,
-               gfx::RectF(gfx::Rect(tile_size)), tile_size,
-               contents_premultiplied, nearest_neighbor,
+               gfx::RectF(gfx::Rect(tile_size)), tile_size, nearest_neighbor,
                force_anti_aliasing_off);
 
   gfx::Transform green_quad_to_target_transform;
@@ -4380,7 +4441,7 @@ TEST_P(GPURendererPixelTest, TrilinearFiltering) {
   auto child_pass = std::make_unique<AggregatedRenderPass>();
   child_pass->SetAll(
       child_pass_id, child_pass_rect, child_pass_rect, transform_to_root,
-      cc::FilterOperations(), cc::FilterOperations(), gfx::RRectF(),
+      cc::FilterOperations(), cc::FilterOperations(), SkPath(),
       gfx::ContentColorUsage::kSRGB, false, false, false, generate_mipmap);
 
   gfx::Rect red_rect(child_pass_rect);
@@ -4791,7 +4852,6 @@ TEST_P(RendererPixelTest, PictureDrawQuadRasterInducingScroll) {
 // This disables filtering by setting |nearest_neighbor| on the
 // TileDrawQuad.
 TEST_P(RendererPixelTest, TileDrawQuadNearestNeighbor) {
-  constexpr bool contents_premultiplied = true;
   constexpr bool needs_blending = true;
   constexpr bool nearest_neighbor = true;
   constexpr bool force_anti_aliasing_off = false;
@@ -4840,8 +4900,7 @@ TEST_P(RendererPixelTest, TileDrawQuadNearestNeighbor) {
   auto* quad = pass->CreateAndAppendDrawQuad<TileDrawQuad>();
   quad->SetNew(shared_state, viewport, viewport, needs_blending,
                mapped_resource, gfx::RectF(gfx::Rect(tile_size)), tile_size,
-               contents_premultiplied, nearest_neighbor,
-               force_anti_aliasing_off);
+               nearest_neighbor, force_anti_aliasing_off);
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(pass));
@@ -5296,12 +5355,18 @@ TEST_P(GPURendererPixelTest, TextureQuadBatching) {
   ResourceId mapped_resource = resource_map[resource];
 
   // Arbitrary dividing lengths to divide up the resource into 16 quads.
-  int widths[] = {
-      0, 60, 50, 40,
-  };
-  int heights[] = {
-      0, 10, 80, 50,
-  };
+  auto widths = std::to_array<int>({
+      0,
+      60,
+      50,
+      40,
+  });
+  auto heights = std::to_array<int>({
+      0,
+      10,
+      80,
+      50,
+  });
   size_t num_quads = 4;
   for (size_t i = 0; i < num_quads; ++i) {
     int x_start = widths[i];
@@ -5334,7 +5399,6 @@ TEST_P(GPURendererPixelTest, TextureQuadBatching) {
 
 TEST_P(GPURendererPixelTest, TileQuadClamping) {
   gfx::Rect viewport(this->device_viewport_size_);
-  bool contents_premultiplied = true;
   bool needs_blending = true;
   bool nearest_neighbor = false;
   bool use_aa = false;
@@ -5389,7 +5453,7 @@ TEST_P(GPURendererPixelTest, TileQuadClamping) {
   auto* quad = pass->CreateAndAppendDrawQuad<TileDrawQuad>();
   quad->SetNew(quad_shared, gfx::Rect(layer_size), gfx::Rect(layer_size),
                needs_blending, mapped_resource, tex_coord_rect, tile_size,
-               contents_premultiplied, nearest_neighbor, use_aa);
+               nearest_neighbor, use_aa);
 
   // Green background.
   SharedQuadState* background_shared =
@@ -6213,7 +6277,7 @@ class ColorTransformPixelTest
         pass_list.back()->damage_rect, gfx::Transform(),
         /*filters=*/cc::FilterOperations(),
         /*backdrop_filters=*/cc::FilterOperations(),
-        /*backdrop_filter_bounds=*/gfx::RRectF(),
+        /*backdrop_filter_bounds=*/SkPath(),
         dst_color_space_.GetContentColorUsage(),
         pass_list.back()->has_transparent_background,
         /*cache_render_pass=*/false,
@@ -6249,10 +6313,12 @@ class ColorTransformPixelTest
   }
 
   void Basic() {
+#if BUILDFLAG(IS_IOS)
     if (this->src_color_space_.IsToneMappedByDefault() &&
         !this->dst_color_space_.IsHDR()) {
       GTEST_SKIP() << "Skipping tonemapped src for non-hdr dst";
     }
+#endif
 
     gfx::Rect rect(this->device_viewport_size_);
     std::vector<uint8_t> input_colors(4 * rect.width() * rect.height(), 0);
@@ -6498,7 +6564,6 @@ class DelegatedInkTest : public VizPixelTestWithParam,
     // delegated ink trail damage rect is wrong, because the whole frame is
     // always redrawn otherwise.
     renderer_settings_.partial_swap_enabled = true;
-    feature_list_.InitAndEnableFeature(features::kRenderPassDrawnRect);
     VizPixelTestWithParam::SetUp();
     EXPECT_TRUE(VizPixelTestWithParam::renderer_->use_partial_swap());
 

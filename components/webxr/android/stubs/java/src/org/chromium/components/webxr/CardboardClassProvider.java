@@ -6,8 +6,8 @@ package org.chromium.components.webxr;
 
 import android.app.Activity;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * This "stub" version of CardboardClassProvider is only built if |enable_cardboard| is false. As
@@ -15,9 +15,10 @@ import androidx.annotation.Nullable;
  * returns null for all of the types. Any method signatures updated in the "real" version need to
  * also be updated here as well.
  */
+@NullMarked
 /*package*/ class CardboardClassProvider {
-    /*package*/ static @Nullable XrImmersiveOverlay.Delegate getOverlayDelegate(
-            VrCompositorDelegate compositorDelegate, @NonNull Activity activity) {
+    /*package*/ static XrImmersiveOverlay.@Nullable Delegate getOverlayDelegate(
+            VrCompositorDelegate compositorDelegate, Activity activity) {
         return null;
     }
 }

@@ -33,7 +33,7 @@ ThemeTrackingAnimatedImageView::~ThemeTrackingAnimatedImageView() = default;
 void ThemeTrackingAnimatedImageView::OnThemeChanged() {
   AnimatedImageView::OnThemeChanged();
   const bool is_dark =
-      color_utils::IsDark(get_background_color_callback_.Run().ConvertToSkColor(
+      color_utils::IsDark(get_background_color_callback_.Run().ResolveToSkColor(
           GetColorProvider()));
   UpdateAnimatedImage(is_dark ? dark_animation_lottie_id_
                               : light_animation_lottie_id_);

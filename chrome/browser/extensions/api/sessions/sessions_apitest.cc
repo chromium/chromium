@@ -121,8 +121,9 @@ testing::AssertionResult CheckSessionModels(const base::Value::List& devices,
     EXPECT_EQ(num_sessions, sessions.size());
     // Because this test is hurried, really there are only ever 0 or 1
     // sessions, and if 1, that will be a Window. Grab it.
-    if (num_sessions == 0)
+    if (num_sessions == 0) {
       continue;
+    }
     const base::Value::Dict session = utils::ToDict(sessions[0]);
     const base::Value::Dict window = api_test_utils::GetDict(session, "window");
     // Only the tabs are interesting.
@@ -198,8 +199,7 @@ void ExtensionSessionsTest::CreateSessionModels() {
   syncer::DataTypeActivationRequest request;
   request.error_handler = base::DoNothing();
   request.cache_guid = kTestCacheGuid;
-  request.authenticated_account_id =
-      CoreAccountId::FromGaiaId(GaiaId("SomeAccountId"));
+  request.authenticated_gaia_id = GaiaId("SomeGaiaId");
 
   sync_sessions::SessionSyncService* service =
       SessionSyncServiceFactory::GetForProfile(browser()->profile());
@@ -307,8 +307,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreForeignSessionWindow) {
   int restored_id = api_test_utils::GetInteger(restored_window, "id");
   for (base::Value& window_value : windows) {
     window = utils::ToDict(std::move(window_value));
-    if (api_test_utils::GetInteger(window, "id") == restored_id)
+    if (api_test_utils::GetInteger(window, "id") == restored_id) {
       break;
+    }
   }
   EXPECT_EQ(restored_id, api_test_utils::GetInteger(window, "id"));
 }

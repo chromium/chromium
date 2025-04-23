@@ -84,12 +84,11 @@ RegistrarInfo::RegistrarInfo(RegistrarInfo&&) = default;
 RegistrarInfo& RegistrarInfo::operator=(RegistrarInfo&&) = default;
 
 // static
-RegistrarInfo RegistrarInfo::Get(
-    bool has_web_header,
-    bool has_os_header,
-    bool is_source,
-    std::optional<Registrar> preferred_platform,
-    network::mojom::AttributionSupport support) {
+RegistrarInfo RegistrarInfo::Get(bool has_web_header,
+                                 bool has_os_header,
+                                 bool is_source,
+                                 std::optional<Registrar> preferred_platform,
+                                 network::mojom::AttributionSupport support) {
   if (!has_web_header && !has_os_header) {
     return RegistrarInfo();
   }

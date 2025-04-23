@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_results_page_presenter_delegate.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 namespace {
 
@@ -48,6 +49,7 @@ const CGFloat kOpacityAnimationDuration = 0.4;
 @interface LensOverlayResultsPagePresenter () <
     LensOverlayPanTrackerDelegate,
     LensOverlayDetentsManagerDelegate,
+    LensResultPageViewControllerDelegate,
     UINavigationControllerDelegate>
 @end
 
@@ -168,10 +170,10 @@ const CGFloat kOpacityAnimationDuration = 0.4;
     return;
   }
 
+  _resultViewController.delegate = self;
   UISheetPresentationController* sheet =
       _presentationNavigationController.sheetPresentationController;
   sheet.prefersEdgeAttachedInCompactHeight = YES;
-  sheet.prefersGrabberVisible = YES;
   sheet.preferredCornerRadius = kPreferredCornerRadius;
 
   _windowPanTracker =
@@ -217,6 +219,9 @@ const CGFloat kOpacityAnimationDuration = 0.4;
 
   _presentingAnimationInProgress = YES;
   [self monitorResultsBottomSheetPosition];
+
+  _presentationNavigationController.view.backgroundColor =
+      [UIColor colorNamed:kPrimaryBackgroundColor];
 
   __weak __typeof(self) weakSelf = self;
   [_baseViewController
@@ -513,6 +518,19 @@ const CGFloat kOpacityAnimationDuration = 0.4;
                  fromViewController:(UIViewController*)fromVC
                    toViewController:(UIViewController*)toVC {
   return [[InfoMessageAnimator alloc] initWithOperation:operation];
+}
+
+- (void)lensResultPageViewControllerDidTapBottomSheetGrabber:
+    (LensResultPageViewController*)lensResultPageViewController {
+  if (_detentsManager.sheetDimension == SheetDimensionState::kMedium) {
+    [self requestMaximizeBottomSheet];
+    return;
+  }
+
+  if (_detentsManager.sheetDimension == SheetDimensionState::kLarge) {
+    [self requestMinimizeBottomSheet];
+    return;
+  }
 }
 
 @end

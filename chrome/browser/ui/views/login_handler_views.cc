@@ -170,7 +170,7 @@ LoginHandlerViewsDialog::LoginHandlerViewsDialog(
       },
       base::Unretained(this)));
   SetModalType(ui::mojom::ModalType::kChild);
-  SetOwnedByWidget(true);
+  SetOwnedByWidget(OwnedByWidgetPassKey());
 
   // Create a new LoginView and set the model for it.  The model (password
   // manager) is owned by the WebContents, but the view is parented to the

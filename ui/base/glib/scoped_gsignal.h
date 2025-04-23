@@ -11,7 +11,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -21,7 +20,7 @@
 // ScopedGSignal manages the lifecycle of a GLib signal connection.
 // It disconnects the signal when this object is destroyed or goes out of scope.
 // This class should be used on a single sequence.
-class COMPONENT_EXPORT(UI_BASE) ScopedGSignal {
+class ScopedGSignal {
  public:
   // Constructs and connects a GLib signal with specified attributes.
   // Parameters:

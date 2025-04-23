@@ -216,7 +216,8 @@ public class UrlOverridingTest {
 
     private static final String EXTERNAL_APP_SCHEME = "externalappscheme";
 
-    private static final String TAB_OPENED_FOR_REDIRECT_HISTOGRAM = "Android.TabOpenedForRedirect";
+    private static final String INTENT_LAUNCH_FROM_TAB_CREATION =
+            "Android.Intent.IntentLaunchFromTabCreation";
 
     @IntDef({NavigationType.SELF, NavigationType.BLANK, NavigationType.TOP})
     @Retention(RetentionPolicy.SOURCE)
@@ -1037,7 +1038,7 @@ public class UrlOverridingTest {
     @SmallTest
     public void testRedirectionFromIntentWarm() throws Exception {
         HistogramWatcher redirectWatcher =
-                HistogramWatcher.newSingleRecordWatcher(TAB_OPENED_FOR_REDIRECT_HISTOGRAM, true);
+                HistogramWatcher.newSingleRecordWatcher(INTENT_LAUNCH_FROM_TAB_CREATION, true);
         Context context = ContextUtils.getApplicationContext();
         mActivityTestRule.startMainActivityOnBlankPage();
 

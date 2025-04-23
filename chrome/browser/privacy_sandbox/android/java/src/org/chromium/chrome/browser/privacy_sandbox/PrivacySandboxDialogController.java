@@ -4,13 +4,18 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.view.ViewGroup;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
@@ -28,12 +33,13 @@ import java.lang.ref.WeakReference;
 import java.util.Locale;
 
 /** Controller for the dialog shown for the Privacy Sandbox. */
+@NullMarked
 public class PrivacySandboxDialogController {
-    private static WeakReference<Dialog> sDialog;
+    private static @Nullable WeakReference<Dialog> sDialog;
     private static boolean sDisableAnimations;
     private static boolean sDisableEEANoticeForTesting;
     private static boolean sShowMoreButtonForTesting;
-    private static Runnable sOnDialogDismissedRunnable;
+    private static @Nullable Runnable sOnDialogDismissedRunnable;
 
     public static boolean shouldShowPrivacySandboxDialog(Profile profile, int surfaceType) {
         assert profile != null;
@@ -53,9 +59,9 @@ public class PrivacySandboxDialogController {
 
     public static ThinWebView createPrivacyPolicyThinWebView(
             WebContents webContents, Profile profile, ActivityWindowAndroid activityWindowAndroid) {
-        ContentView contentView =
-                ContentView.createContentView(
-                        activityWindowAndroid.getContext().get(), webContents);
+        Context context = activityWindowAndroid.getContext().get();
+        assumeNonNull(context);
+        ContentView contentView = ContentView.createContentView(context, webContents);
         webContents.setDelegates(
                 VersionInfo.getProductVersion(),
                 ViewAndroidDelegate.createBasicDelegate(contentView),
@@ -68,14 +74,16 @@ public class PrivacySandboxDialogController {
                         privacySandboxBridge.shouldUsePrivacyPolicyChinaDomain()
                                 ? PrivacyPolicyDomainType.CHINA
                                 : PrivacyPolicyDomainType.NON_CHINA,
-                        ColorUtils.inNightMode(activityWindowAndroid.getContext().get())
+                        ColorUtils.inNightMode(context)
                                 ? PrivacyPolicyColorScheme.DARK_MODE
                                 : PrivacyPolicyColorScheme.LIGHT_MODE,
                         Locale.getDefault().toLanguageTag());
+        assumeNonNull(webContents.getNavigationController());
+        assumeNonNull(activityWindowAndroid.getIntentRequestTracker());
         webContents.getNavigationController().loadUrl(new LoadUrlParams(privacyPolicyUrl));
         ThinWebView thinWebView =
                 ThinWebViewFactory.create(
-                        activityWindowAndroid.getContext().get(),
+                        context,
                         new ThinWebViewConstraints(),
                         activityWindowAndroid.getIntentRequestTracker());
         thinWebView.attachWebContents(webContents, contentView, new WebContentsDelegateAndroid());
@@ -132,9 +140,12 @@ public class PrivacySandboxDialogController {
                                 surfaceType,
                                 profile,
                                 activityWindowAndroid);
-                if (sOnDialogDismissedRunnable != null) {
-                    dialog.setOnDismissListener(d -> sOnDialogDismissedRunnable.run());
-                }
+                dialog.setOnDismissListener(
+                        d -> {
+                            if (sOnDialogDismissedRunnable != null) {
+                                sOnDialogDismissedRunnable.run();
+                            }
+                        });
                 dialog.show();
                 sDialog = new WeakReference<>(dialog);
                 return true;
@@ -178,9 +189,12 @@ public class PrivacySandboxDialogController {
                         new PrivacySandboxDialogNoticeEEA(
                                 activity, privacySandboxBridge, surfaceType);
             }
-            if (sOnDialogDismissedRunnable != null) {
-                dialog.setOnDismissListener(d -> sOnDialogDismissedRunnable.run());
-            }
+            dialog.setOnDismissListener(
+                    d -> {
+                        if (sOnDialogDismissedRunnable != null) {
+                            sOnDialogDismissedRunnable.run();
+                        }
+                    });
             dialog.show();
             sDialog = new WeakReference<>(dialog);
         }
@@ -191,7 +205,7 @@ public class PrivacySandboxDialogController {
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    static Dialog getDialog() {
+    static @Nullable Dialog getDialog() {
         return sDialog != null ? sDialog.get() : null;
     }
 

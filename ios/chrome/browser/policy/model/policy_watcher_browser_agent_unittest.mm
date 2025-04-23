@@ -10,6 +10,7 @@
 #import "base/path_service.h"
 #import "base/test/ios/wait_util.h"
 #import "build/build_config.h"
+#import "components/policy/core/common/policy_pref_names.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "components/sync/base/pref_names.h"
@@ -387,10 +388,10 @@ TEST_F(PolicyWatcherBrowserAgentTest, CommandSentWhenUIIsDismissed) {
 // Tests that the handler is called and the alert shown as expected.
 TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChanges) {
   // Make sure shown if off.
-  NSUserDefaults* standard_defaults = [NSUserDefaults standardUserDefaults];
-  [standard_defaults setBool:NO forKey:kSyncDisabledAlertShownKey];
-  browser_->GetProfile()->GetPrefs()->SetBoolean(
-      syncer::prefs::internal::kSyncManaged, false);
+  auto* profile_prefs = browser_->GetProfile()->GetPrefs();
+  profile_prefs->SetBoolean(policy::policy_prefs::kSyncDisabledAlertShown,
+                            false);
+  profile_prefs->SetBoolean(syncer::prefs::internal::kSyncManaged, false);
 
   // Browser Agent under test.
   // Set up the test browser and attach the browser agents.
@@ -416,7 +417,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChanges) {
         syncer::prefs::internal::kSyncManaged, true);
 
     EXPECT_OCMOCK_VERIFY(mockHandler);
-    EXPECT_TRUE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
+    EXPECT_TRUE(profile_prefs->GetBoolean(
+        policy::policy_prefs::kSyncDisabledAlertShown));
 
     [[mockHandler reject] showSyncDisabledPrompt];
 
@@ -425,17 +427,18 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChanges) {
         syncer::prefs::internal::kSyncManaged, false);
 
     EXPECT_OCMOCK_VERIFY(mockHandler);
-    EXPECT_FALSE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
+    EXPECT_FALSE(profile_prefs->GetBoolean(
+        policy::policy_prefs::kSyncDisabledAlertShown));
   }
 }
 
 // Tests that the handler is called and the alert shown at startup as expected.
 TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChangedAtColdStart) {
   // Make sure shown if off.
-  NSUserDefaults* standard_defaults = [NSUserDefaults standardUserDefaults];
-  [standard_defaults setBool:NO forKey:kSyncDisabledAlertShownKey];
-  browser_->GetProfile()->GetPrefs()->SetBoolean(
-      syncer::prefs::internal::kSyncManaged, true);
+  auto* profile_prefs = browser_->GetProfile()->GetPrefs();
+  profile_prefs->SetBoolean(policy::policy_prefs::kSyncDisabledAlertShown,
+                            false);
+  profile_prefs->SetBoolean(syncer::prefs::internal::kSyncManaged, true);
 
   // Browser Agent under test.
   // Set up the test browser and attach the browser agents.
@@ -462,7 +465,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChangedAtColdStart) {
     base::RunLoop().RunUntilIdle();
 
     EXPECT_OCMOCK_VERIFY(mockHandler);
-    EXPECT_TRUE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
+    EXPECT_TRUE(profile_prefs->GetBoolean(
+        policy::policy_prefs::kSyncDisabledAlertShown));
 
     [[mockHandler reject] showSyncDisabledPrompt];
 
@@ -471,7 +475,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChangedAtColdStart) {
         syncer::prefs::internal::kSyncManaged, false);
 
     EXPECT_OCMOCK_VERIFY(mockHandler);
-    EXPECT_FALSE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
+    EXPECT_FALSE(profile_prefs->GetBoolean(
+        policy::policy_prefs::kSyncDisabledAlertShown));
   }
 }
 

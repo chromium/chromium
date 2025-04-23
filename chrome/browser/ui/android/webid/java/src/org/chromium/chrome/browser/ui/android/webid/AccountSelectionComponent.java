@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.android.webid;
 
 import org.chromium.blink.mojom.RpContext;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
@@ -20,6 +21,7 @@ import java.util.List;
  * This component supports accounts selection for WebID. It shows a list of
  * accounts to the user which can select one of them or dismiss it.
  */
+@NullMarked
 public interface AccountSelectionComponent {
     /**
      * This delegate is called when the AccountSelection component is interacted with (e.g.

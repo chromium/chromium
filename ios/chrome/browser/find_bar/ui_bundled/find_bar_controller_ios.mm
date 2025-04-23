@@ -53,17 +53,17 @@ const NSTimeInterval kSearchShortDelay = 0.100;
 // Typing delay timer.
 @property(nonatomic, strong) NSTimer* delayTimer;
 // Yes if incognito.
-@property(nonatomic, assign) BOOL isIncognito;
+@property(nonatomic, assign) BOOL incognito;
 @end
 
 @implementation FindBarControllerIOS
 
 #pragma mark - Lifecycle
 
-- (instancetype)initWithIncognito:(BOOL)isIncognito {
+- (instancetype)initWithIncognito:(BOOL)incognito {
   self = [super init];
   if (self) {
-    _isIncognito = isIncognito;
+    _incognito = incognito;
   }
   return self;
 }
@@ -75,7 +75,7 @@ const NSTimeInterval kSearchShortDelay = 0.100;
     return _findBarViewController;
   }
   _findBarViewController =
-      [[FindBarViewController alloc] initWithDarkAppearance:self.isIncognito];
+      [[FindBarViewController alloc] initWithDarkAppearance:self.incognito];
   _findBarViewController.delegate = self;
 
   _findBarViewController.findBarView.inputField.delegate = self;

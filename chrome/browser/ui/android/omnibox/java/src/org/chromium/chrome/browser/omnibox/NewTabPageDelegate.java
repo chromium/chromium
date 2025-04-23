@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omnibox;
 
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.view.MotionEvent;
 
 import androidx.annotation.Nullable;
@@ -85,13 +84,6 @@ public interface NewTabPageDelegate {
      * @param alpha opacity (alpha) value to use.
      */
     default void setSearchProviderLogoAlpha(float alpha) {}
-
-    /**
-     * Set the search box background drawable.
-     *
-     * @param drawable The search box background.
-     */
-    default void setSearchBoxBackground(Drawable drawable) {}
 
     /**
      * Specifies the percentage the URL is focused during an animation. 1.0 specifies that the URL

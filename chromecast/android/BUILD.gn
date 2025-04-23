@@ -6,19 +6,20 @@ import("//build/config/android/abi.gni")
 import("//build/config/sysroot.gni")
 import("//chromecast/chromecast.gni")
 import("//media/media_options.gni")
-import("//third_party/jni_zero/jni_zero.gni")
 
 # These targets shall only be referenced on Android builds.
 assert(is_android)
 
-shared_library_with_jni("libcast_browser_android") {
+shared_library("libcast_browser_android") {
   # TODO: Remove the ldflags after migrating away from protobuf_lite to
   # protobuf_full.
   ldflags = [ "-Wl,-z,muldefs" ]
 
   sources = [ "//chromecast/app/android/cast_jni_loader.cc" ]
+
   configs += [ "//chromecast:cast_config" ]
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
+  configs += [ "//build/config/android:hide_all_but_jni" ]
 
   deps = [
     "//base",
@@ -39,8 +40,6 @@ shared_library_with_jni("libcast_browser_android") {
     "//content/public/browser",
     "//skia",
   ]
-
-  java_targets = [ "//chromecast:cast_browser_apk" ]
 }
 
 # Util to copy libc++_shared.so to APK.

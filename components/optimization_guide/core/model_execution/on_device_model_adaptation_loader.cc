@@ -100,6 +100,11 @@ OnDeviceModelAdaptationMetadata::OnDeviceModelAdaptationMetadata(
     const OnDeviceModelAdaptationMetadata&) = default;
 OnDeviceModelAdaptationMetadata::~OnDeviceModelAdaptationMetadata() = default;
 
+bool OnDeviceModelAdaptationMetadata::operator==(
+    const OnDeviceModelAdaptationMetadata& other) const {
+  return version_ == other.version_ && asset_paths_ == other.asset_paths_;
+}
+
 OnDeviceModelAdaptationLoader::OnDeviceModelAdaptationLoader(
     ModelBasedCapabilityKey feature,
     OptimizationGuideModelProvider* model_provider,
@@ -110,10 +115,10 @@ OnDeviceModelAdaptationLoader::OnDeviceModelAdaptationLoader(
     : feature_(feature),
       target_(
           *features::internal::GetOptimizationTargetForCapability(feature_)),
-      on_load_fn_(on_load_fn),
+      model_provider_(model_provider),
       on_device_component_state_manager_(on_device_component_state_manager),
       local_state_(local_state),
-      model_provider_(model_provider),
+      on_load_fn_(on_load_fn),
       background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {
   if (!on_device_component_state_manager) {
@@ -128,8 +133,13 @@ OnDeviceModelAdaptationLoader::OnDeviceModelAdaptationLoader(
 }
 
 OnDeviceModelAdaptationLoader::~OnDeviceModelAdaptationLoader() {
-  if (registered_with_model_provider_) {
+  Unregister();
+}
+
+void OnDeviceModelAdaptationLoader::Unregister() {
+  if (registered_spec_) {
     model_provider_->RemoveObserverForOptimizationTargetModel(target_, this);
+    registered_spec_.reset();
   }
 }
 
@@ -143,24 +153,20 @@ void OnDeviceModelAdaptationLoader::MaybeRegisterModelDownload(
     const OnDeviceModelComponentState* state,
     bool was_feature_recently_used) {
   CHECK(model_provider_);
-  if (registered_with_model_provider_) {
-    model_provider_->RemoveObserverForOptimizationTargetModel(target_, this);
-    registered_with_model_provider_ = false;
-  }
-  base_model_spec_ = std::nullopt;
-  on_load_fn_.Run(nullptr);
   if (!state) {
+    Unregister();
+    on_load_fn_.Run(nullptr);
     RecordAdaptationModelAvailability(
         feature_, OnDeviceModelAdaptationAvailability::kBaseModelUnavailable);
     return;
   }
-  base_model_spec_ = state->GetBaseModelSpec();
+  auto spec = state->GetBaseModelSpec();
+  if (registered_spec_ == spec) {
+    return;
+  }
+  Unregister();
+  on_load_fn_.Run(nullptr);
   if (!switches::GetOnDeviceModelExecutionOverride()) {
-    if (!base_model_spec_) {
-      RecordAdaptationModelAvailability(
-          feature_, OnDeviceModelAdaptationAvailability::kBaseModelSpecInvalid);
-      return;
-    }
     if (!was_feature_recently_used) {
       RecordAdaptationModelAvailability(
           feature_,
@@ -169,23 +175,23 @@ void OnDeviceModelAdaptationLoader::MaybeRegisterModelDownload(
     }
   }
 
+  registered_spec_ = state->GetBaseModelSpec();
   proto::Any any_metadata;
   any_metadata.set_type_url(
       "type.googleapis.com/"
       "google.internal.chrome.optimizationguide.v1.OnDeviceBaseModelMetadata");
-  proto::OnDeviceBaseModelMetadata model_metadata;
-  if (base_model_spec_) {
-    model_metadata.set_base_model_version(base_model_spec_->model_version);
-    model_metadata.set_base_model_name(base_model_spec_->model_name);
+  {
+    proto::OnDeviceBaseModelMetadata model_metadata;
+    model_metadata.set_base_model_version(registered_spec_->model_version);
+    model_metadata.set_base_model_name(registered_spec_->model_name);
     *model_metadata.mutable_supported_performance_hints() = {
-        base_model_spec_->supported_performance_hints.begin(),
-        base_model_spec_->supported_performance_hints.end()};
+        registered_spec_->supported_performance_hints.begin(),
+        registered_spec_->supported_performance_hints.end()};
+    model_metadata.SerializeToString(any_metadata.mutable_value());
   }
-  model_metadata.SerializeToString(any_metadata.mutable_value());
 
   model_provider_->AddObserverForOptimizationTargetModel(target_, any_metadata,
                                                          this);
-  registered_with_model_provider_ = true;
 }
 
 void OnDeviceModelAdaptationLoader::OnDeviceEligibleFeatureFirstUsed(
@@ -252,14 +258,14 @@ OnDeviceModelAdaptationLoader::ProcessModelUpdate(
   }
   // Check for incompatibility when base model override is not specified
   if (!switches::GetOnDeviceModelExecutionOverride()) {
-    if (!base_model_spec_) {
+    if (!registered_spec_) {
       return base::unexpected(
           OnDeviceModelAdaptationAvailability::kBaseModelUnavailable);
     }
     if (supported_model_spec->base_model_name() !=
-            base_model_spec_->model_name ||
+            registered_spec_->model_name ||
         supported_model_spec->base_model_version() !=
-            base_model_spec_->model_version) {
+            registered_spec_->model_version) {
       return base::unexpected(
           OnDeviceModelAdaptationAvailability::kAdaptationModelIncompatible);
     }

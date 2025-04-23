@@ -389,19 +389,23 @@ bool BuildEnvironmentWithApk(bool use_64_bit,
 
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   static constexpr char kClasspathVar[] = "CLASSPATH";
-  std::string current_classpath;
-  env->GetVar(kClasspathVar, &current_classpath);
-  classpath += ":" + current_classpath;
+  std::optional<std::string> current_classpath = env->GetVar(kClasspathVar);
+  if (current_classpath.has_value()) {
+    classpath += ":" + current_classpath.value();
+  }
 
   static constexpr char kLdLibraryPathVar[] = "LD_LIBRARY_PATH";
-  std::string current_library_path;
-  env->GetVar(kLdLibraryPathVar, &current_library_path);
-  library_path += ":" + current_library_path;
+  std::optional<std::string> current_library_path =
+      env->GetVar(kLdLibraryPathVar);
+  if (current_library_path.has_value()) {
+    library_path += ":" + current_library_path.value();
+  }
 
   static constexpr char kRuntimeRootVar[] = "ANDROID_RUNTIME_ROOT";
-  std::string runtime_root;
-  if (env->GetVar(kRuntimeRootVar, &runtime_root)) {
-    library_path += ":" + runtime_root + (use_64_bit ? "/lib64" : "/lib");
+  std::optional<std::string> runtime_root = env->GetVar(kRuntimeRootVar);
+  if (runtime_root.has_value()) {
+    library_path +=
+        ":" + runtime_root.value() + (use_64_bit ? "/lib64" : "/lib");
   }
 
   result->push_back("CLASSPATH=" + classpath);
@@ -482,10 +486,9 @@ bool SetLdLibraryPath(const base::FilePath& lib_path) {
 
   static constexpr char kLibraryPathVar[] = "LD_LIBRARY_PATH";
   std::unique_ptr<base::Environment> env(base::Environment::Create());
-  std::string old_path;
-  if (env->GetVar(kLibraryPathVar, &old_path)) {
-    library_path.push_back(':');
-    library_path.append(old_path);
+  std::optional<std::string> old_path = env->GetVar(kLibraryPathVar);
+  if (old_path.has_value()) {
+    library_path += ":" + old_path.value();
   }
 
   if (!env->SetVar(kLibraryPathVar, library_path)) {

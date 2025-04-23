@@ -40,6 +40,10 @@ BASE_FEATURE(kTabSearchPositionSetting,
              "TabSearchPositionSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTabGroupShortcuts,
+             "TabGroupShortcuts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool CanShowTabSearchPositionSetting() {
   // Alternate tab search locations cannot be repositioned.
   if (features::IsTabSearchMoving()) {
@@ -52,6 +56,10 @@ bool CanShowTabSearchPositionSetting() {
 #else
   return false;
 #endif
+}
+
+bool AreTabGroupShortcutsEnabled() {
+  return base::FeatureList::IsEnabled(kTabGroupShortcuts);
 }
 
 }  // namespace tabs

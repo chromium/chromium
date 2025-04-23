@@ -12,7 +12,7 @@ build_webui("build") {
     "attribution_internals.html",
   ]
 
-  non_web_component_files = [ "attribution_internals.ts" ]
+  ts_files = [ "attribution_internals.ts" ]
 
   web_component_files = [
     "attribution_detail_table.ts",

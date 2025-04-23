@@ -15,7 +15,7 @@ build_webui("build") {
     "key_value_pair_viewer.ts",
   ]
 
-  non_web_component_files = [ "key_value_pair_parser.ts" ]
+  ts_files = [ "key_value_pair_parser.ts" ]
 
   css_files = [
     "key_value_pair_entry.css",

@@ -25,12 +25,34 @@ TEST(PerformanceScenarioTracker, UpdateSetsNewScenario) {
   EXPECT_EQ(tracker.GetMetricSuffix(), "NoPageLoading_NoInput");
 }
 
-TEST(PerformanceScenarioTracker, InputTypingTakesPrecedence) {
+TEST(PerformanceScenarioTracker, InputTypingTakesPrecedenceOverNoInput) {
   AndroidBatteryMetrics::PerformanceScenarioTracker tracker;
   tracker.UpdateInputScenario(InputScenario::kNoInput);
   tracker.UpdateInputScenario(InputScenario::kTyping);
   tracker.UpdateInputScenario(InputScenario::kNoInput);
   EXPECT_EQ(tracker.GetMetricSuffix(), "UnknownLoadingScenario_Typing");
+}
+
+TEST(PerformanceScenarioTracker, InputTapTakesPrecedenceOverTyping) {
+  AndroidBatteryMetrics::PerformanceScenarioTracker tracker;
+  tracker.UpdateInputScenario(InputScenario::kNoInput);
+  tracker.UpdateInputScenario(InputScenario::kTyping);
+  tracker.UpdateInputScenario(InputScenario::kTap);
+  tracker.UpdateInputScenario(InputScenario::kTyping);
+  tracker.UpdateInputScenario(InputScenario::kNoInput);
+  EXPECT_EQ(tracker.GetMetricSuffix(), "UnknownLoadingScenario_Tap");
+}
+
+TEST(PerformanceScenarioTracker, InputScrollTakesPrecedence) {
+  AndroidBatteryMetrics::PerformanceScenarioTracker tracker;
+  tracker.UpdateInputScenario(InputScenario::kNoInput);
+  tracker.UpdateInputScenario(InputScenario::kTyping);
+  tracker.UpdateInputScenario(InputScenario::kTap);
+  tracker.UpdateInputScenario(InputScenario::kScroll);
+  tracker.UpdateInputScenario(InputScenario::kTap);
+  tracker.UpdateInputScenario(InputScenario::kTyping);
+  tracker.UpdateInputScenario(InputScenario::kNoInput);
+  EXPECT_EQ(tracker.GetMetricSuffix(), "UnknownLoadingScenario_Scroll");
 }
 
 TEST(PerformanceScenarioTracker, FocusedLoadingTakesPrecedence) {

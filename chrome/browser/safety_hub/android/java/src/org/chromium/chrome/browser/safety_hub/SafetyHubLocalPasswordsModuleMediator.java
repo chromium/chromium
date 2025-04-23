@@ -94,7 +94,7 @@ public class SafetyHubLocalPasswordsModuleMediator
         PropertyModelChangeProcessor.create(
                 mModel, mPreference, SafetyHubModuleViewBinder::bindProperties);
 
-        mLocalPasswordsDataSource.setObserver(this);
+        mLocalPasswordsDataSource.addObserver(this);
         mLocalPasswordsDataSource.setUp();
 
         if (mLocalPasswordsDataSource.maybeTriggerPasswordCheckup()) {
@@ -165,7 +165,7 @@ public class SafetyHubLocalPasswordsModuleMediator
 
         // As the max loading time has elapsed, then show the user that no checkup is possible to be
         // performed at this time.
-        stateChanged(ModuleType.UNAVAILABLE_PASSWORDS);
+        localPasswordsStateChanged(ModuleType.UNAVAILABLE_PASSWORDS);
     }
 
     private SafetyHubModuleHelper getModuleHelper(@ModuleType int moduleType) {
@@ -178,10 +178,12 @@ public class SafetyHubLocalPasswordsModuleMediator
             case ModuleType.NO_SAVED_PASSWORDS:
                 return new SafetyHubLocalPasswordsNoPasswordsModuleHelper(context, mModuleDelegate);
             case ModuleType.HAS_COMPROMISED_PASSWORDS:
-                return new SafetyHubLocalPasswordsHasCompromisedPasswordsModuleHelper(
+                return new SafetyHubCompromisedPasswordsModuleHelper(
                         context,
                         mModuleDelegate,
-                        mLocalPasswordsDataSource.getCompromisedPasswordCount());
+                        /* accountCompromisedPasswordsCount= */ 0,
+                        mLocalPasswordsDataSource.getCompromisedPasswordCount(),
+                        /* unifiedModule= */ false);
             case ModuleType.NO_COMPROMISED_PASSWORDS:
                 return new SafetyHubLocalPasswordsNoCompromisedPasswordsModuleHelper(
                         context, mModuleDelegate);
@@ -262,7 +264,7 @@ public class SafetyHubLocalPasswordsModuleMediator
     }
 
     @Override
-    public void stateChanged(@ModuleType int moduleType) {
+    public void localPasswordsStateChanged(@ModuleType int moduleType) {
         mStateChangedCalled = true;
 
         // As a result is available, cancel the callback for when the maximum time showing the

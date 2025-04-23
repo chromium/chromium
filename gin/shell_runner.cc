@@ -58,7 +58,9 @@ ShellRunner::~ShellRunner() {
   // Deleting the ContextRunner deletes the contained PerContextData, which
   // writes to the V8 heap in its destructor. Hence enter the isolate before
   // doing that.
-  v8::Isolate::Scope isolate_scope(GetContextHolder()->isolate());
+  v8::Isolate* isolate = GetContextHolder()->isolate();
+  v8::Isolate::Scope isolate_scope(isolate);
+  v8::HandleScope handle_scope(isolate);
   context_holder_.reset();
 }
 

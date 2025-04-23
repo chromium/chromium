@@ -54,7 +54,7 @@ BucketLocator CreateNonDefaultBucket() {
   return BucketLocator(
       BucketId::FromUnsafeValue(kBucketId),
       blink::StorageKey::CreateFromStringForTesting("http://www.example.com/"),
-      blink::mojom::StorageType::kTemporary, /*is_default=*/false);
+      /*is_default=*/false);
 }
 
 }  // namespace

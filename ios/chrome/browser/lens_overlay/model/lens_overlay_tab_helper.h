@@ -158,7 +158,6 @@ class LensOverlayTabHelper : public LensOverlaySnapshotControllerDelegate,
   base::WeakPtrFactory<LensOverlayTabHelper> weak_ptr_factory_{this};
 
   friend class web::WebStateUserData<LensOverlayTabHelper>;
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_MODEL_LENS_OVERLAY_TAB_HELPER_H_

@@ -131,11 +131,15 @@ class ClassLookupIndex:
     if self._should_build:
       list_java_targets_command += ['--build']
 
-    list_java_targets_run = subprocess.run(list_java_targets_command,
-                                           cwd=_SRC_PATH,
-                                           capture_output=True,
-                                           text=True,
-                                           check=True)
+    try:
+      list_java_targets_run = subprocess.run(list_java_targets_command,
+                                             cwd=_SRC_PATH,
+                                             capture_output=True,
+                                             text=True,
+                                             check=True)
+    except subprocess.CalledProcessError as e:
+      sys.stderr.write('Command output:\n' + e.stdout + e.stderr)
+      raise
     logging.debug('... done.')
 
     # Parse output of list_java_targets.py into BuildConfig objects.

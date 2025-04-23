@@ -7,9 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/ios/block_types.h"
+
 enum class ShareKitFlowOutcome;
 
-using ShareGroupCompletionBlock = void (^)(NSString* collabID);
+using ShareGroupCompletionBlock = void (^)(NSString* collabID,
+                                           ProceduralBlock continuationBlock);
 using CompletionBlock = void (^)(ShareKitFlowOutcome result);
 
 // Different types of fake share kit flows.
@@ -28,11 +31,10 @@ enum class FakeShareKitFlowType {
 
 // Executed when the group is actually shared or joined, after tapping the Save
 // button. The collab ID that is returned is a new UUID.
-@property(nonatomic, copy) ShareGroupCompletionBlock sharedGroupCompletionBlock;
+@property(nonatomic, copy) ShareGroupCompletionBlock actionAcceptedBlock;
 
-// Executed when Cancel or Save are tapped. The `result` is then respectively
-// NO or YES.
-@property(nonatomic, copy) CompletionBlock completionBlock;
+// Executed when the flow terminates (after accepting or cancelling).
+@property(nonatomic, copy) CompletionBlock flowCompleteBlock;
 
 // Init the fake flow with a `type`.
 - (instancetype)initWithType:(FakeShareKitFlowType)type

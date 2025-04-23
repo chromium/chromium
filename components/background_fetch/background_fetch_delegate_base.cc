@@ -114,6 +114,7 @@ void BackgroundFetchDelegateBase::DownloadUrl(
     job_details->MarkJobAsStarted();
   }
 
+  params.request_params.initiator = job_details->fetch_description->origin;
   params.request_params.isolation_info =
       job_details->fetch_description->isolation_info;
 

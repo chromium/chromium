@@ -7,8 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/elements/custom_highlight_button.h"
-
 @protocol BadgeViewVisibilityDelegate;
 @protocol ContextualPanelEntrypointVisibilityDelegate;
 @class LocationBarBadgesContainerView;
@@ -82,7 +80,7 @@
 // The label displaying the current location URL.
 @property(nonatomic, strong) UILabel* locationLabel;
 // The button displayed in the trailing corner of the view, i.e. share button.
-@property(nonatomic, strong) CustomHighlightableButton* trailingButton;
+@property(nonatomic, strong) UIButton* trailingButton;
 // The string that describes the current security level. Used for a11y.
 @property(nonatomic, copy) NSString* securityLevelAccessibilityString;
 // Current in-use color scheme.

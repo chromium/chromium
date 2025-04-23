@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.privacy_guide;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Utilities to determine whether a privacy guide step will be displayed or not. */
+@NullMarked
 public interface StepDisplayHandler {
     /**
      * @return Whether the Privacy Guide History Sync page should be displayed.

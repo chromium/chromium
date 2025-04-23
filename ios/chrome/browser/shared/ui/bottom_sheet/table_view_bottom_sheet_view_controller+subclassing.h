@@ -10,6 +10,10 @@
 // Interface for concrete subclasses of TableViewBottomSheetViewController.
 @interface TableViewBottomSheetViewController (Subclassing)
 
+// Creates the view to be displayed under the title and subtitle. Default
+// implementation sets this as an UITableView returned by `createTableView`.
+- (UIView*)createUnderTitleView;
+
 // Creates the table view which will display suggestions on the bottom sheet.
 - (UITableView*)createTableView;
 

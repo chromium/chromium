@@ -59,6 +59,7 @@ source_set("impl") {
     "//chrome/browser/media/webrtc",
     "//chrome/browser/permissions",
     "//chrome/browser/preloading:prefs",
+    "//chrome/browser/privacy_sandbox",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/search",
@@ -102,11 +103,11 @@ source_set("impl") {
     "//components/permissions",
     "//components/plus_addresses:prefs",
     "//components/pref_registry",
-    "//components/privacy_sandbox:privacy_sandbox_notice_storage",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
     "//components/privacy_sandbox:tpcd",
     "//components/proxy_config",
     "//components/reading_list/core",
+    "//components/regional_capabilities",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/saved_tab_groups/public:prefs",
@@ -123,12 +124,17 @@ source_set("impl") {
     "//components/ukm",
     "//components/update_client",
     "//components/variations/service",
+    "//components/visited_url_ranking/internal:internal_url_grouping",
     "//components/webui/chrome_urls",
     "//components/webui/flags",
     "//services/preferences/public/cpp/tracked",
     "//services/preferences/public/mojom",
     "//services/preferences/tracked",
   ]
+
+  if (enable_extensions_core) {
+    deps += [ "//extensions/common" ]
+  }
 
   if (enable_background_mode) {
     deps += [ "//chrome/browser/background/extensions:extensions" ]

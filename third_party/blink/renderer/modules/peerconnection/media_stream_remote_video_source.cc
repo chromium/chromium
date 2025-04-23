@@ -49,6 +49,9 @@ class WebRtcEncodedVideoFrame : public EncodedVideoFrame {
     if (frame.color_space()) {
       color_space_ = WebRtcToGfxColorSpace(*frame.color_space());
     }
+    if (frame.video_rotation()) {
+      transformation_ = WebRtcToMediaVideoRotation(*frame.video_rotation());
+    }
   }
 
   base::span<const uint8_t> Data() const override { return *buffer_; }
@@ -61,13 +64,18 @@ class WebRtcEncodedVideoFrame : public EncodedVideoFrame {
     return color_space_;
   }
 
+  std::optional<media::VideoTransformation> Transformation() const override {
+    return transformation_;
+  }
+
   gfx::Size Resolution() const override { return resolution_; }
 
  private:
-  rtc::scoped_refptr<const webrtc::EncodedImageBufferInterface> buffer_;
+  webrtc::scoped_refptr<const webrtc::EncodedImageBufferInterface> buffer_;
   media::VideoCodec codec_;
   bool is_key_frame_;
   std::optional<gfx::ColorSpace> color_space_;
+  std::optional<media::VideoTransformation> transformation_;
   gfx::Size resolution_;
 };
 
@@ -77,8 +85,8 @@ class WebRtcEncodedVideoFrame : public EncodedVideoFrame {
 // libjingle thread and forward it to the IO-thread.
 class MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate
     : public WTF::ThreadSafeRefCounted<RemoteVideoSourceDelegate>,
-      public rtc::VideoSinkInterface<webrtc::VideoFrame>,
-      public rtc::VideoSinkInterface<webrtc::RecordableEncodedFrame> {
+      public webrtc::VideoSinkInterface<webrtc::VideoFrame>,
+      public webrtc::VideoSinkInterface<webrtc::RecordableEncodedFrame> {
  public:
   RemoteVideoSourceDelegate(
       scoped_refptr<base::SequencedTaskRunner> video_task_runner,
@@ -91,7 +99,7 @@ class MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate
   friend class WTF::ThreadSafeRefCounted<RemoteVideoSourceDelegate>;
   ~RemoteVideoSourceDelegate() override;
 
-  // Implements rtc::VideoSinkInterface used for receiving video frames
+  // Implements webrtc::VideoSinkInterface used for receiving video frames
   // from the PeerConnection video track. May be called on a libjingle internal
   // thread.
   void OnFrame(const webrtc::VideoFrame& frame) override;
@@ -172,7 +180,7 @@ void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::OnFrame(
                "Ideal Render Instant", render_time.ToInternalValue(),
                "Timestamp", elapsed_timestamp.InMicroseconds());
 
-  rtc::scoped_refptr<webrtc::VideoFrameBuffer> buffer =
+  webrtc::scoped_refptr<webrtc::VideoFrameBuffer> buffer =
       incoming_frame.video_frame_buffer();
   scoped_refptr<media::VideoFrame> video_frame;
   if (buffer->type() == webrtc::VideoFrameBuffer::Type::kNative) {
@@ -340,7 +348,7 @@ void MediaStreamRemoteVideoSource::StartSourceImpl(
       std::move(sub_capture_target_version_callback));
   scoped_refptr<webrtc::VideoTrackInterface> video_track(
       static_cast<webrtc::VideoTrackInterface*>(observer_->track().get()));
-  video_track->AddOrUpdateSink(delegate_.get(), rtc::VideoSinkWants());
+  video_track->AddOrUpdateSink(delegate_.get(), webrtc::VideoSinkWants());
   OnStartDone(mojom::MediaStreamRequestResult::OK);
 }
 
@@ -360,12 +368,12 @@ void MediaStreamRemoteVideoSource::StopSourceImpl() {
   observer_.reset();
 }
 
-rtc::VideoSinkInterface<webrtc::VideoFrame>*
+webrtc::VideoSinkInterface<webrtc::VideoFrame>*
 MediaStreamRemoteVideoSource::SinkInterfaceForTesting() {
   return delegate_.get();
 }
 
-rtc::VideoSinkInterface<webrtc::RecordableEncodedFrame>*
+webrtc::VideoSinkInterface<webrtc::RecordableEncodedFrame>*
 MediaStreamRemoteVideoSource::EncodedSinkInterfaceForTesting() {
   return delegate_.get();
 }

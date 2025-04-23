@@ -172,7 +172,7 @@ ParseDebugData(base::Value::Dict& dict,
   std::optional<AggregatableDebugReportingContribution>
       unspecified_contribution;
 
-  for (std::set<std::string> unknown_types; base::Value & v : *l) {
+  for (std::set<std::string> unknown_types; base::Value& v : *l) {
     RETURN_IF_ERROR(ParseDebugDataElement(v, data, unspecified_contribution,
                                           unknown_types, max_value,
                                           parse_debug_data_type));

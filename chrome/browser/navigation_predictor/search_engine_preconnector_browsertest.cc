@@ -95,7 +95,13 @@ class SearchEnginePreconnectorBrowserTest
   void OnPreresolveFinished(
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key,
+      mojo::PendingRemote<network::mojom::ReconnectEventObserver>& observer,
       bool success) override {
+    // Take the observer so that we can manually send mojo message.
+    if (observer.is_valid() && !remote_.is_bound()) {
+      remote_.Bind(std::move(observer));
+    }
+
     const GURL origin = url.DeprecatedGetOriginAsURL();
     if (!base::Contains(preresolve_counts_, origin)) {
       return;
@@ -132,6 +138,8 @@ class SearchEnginePreconnectorBrowserTest
   std::map<GURL, int> preresolve_counts_;
   base::test::ScopedFeatureList feature_list_;
 
+  mojo::Remote<network::mojom::ReconnectEventObserver> remote_;
+
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   std::map<GURL, std::unique_ptr<base::RunLoop>> run_loops_;
@@ -157,13 +165,6 @@ class SearchEnginePreconnectorNoDelaysBrowserTest
          {{"preconnect_interval", "0"}}}};
 
     std::vector<base::test::FeatureRef> disabled_features;
-    if (PreconnectWithPrivacyModeEnabled()) {
-      enabled_features.push_back(
-          {features::kPreconnectToSearchWithPrivacyModeEnabled, {}});
-    } else {
-      disabled_features.emplace_back(
-          features::kPreconnectToSearchWithPrivacyModeEnabled);
-    }
 
     if (PreconnectFromKeyedServiceEnabled()) {
       enabled_features.push_back(
@@ -172,14 +173,20 @@ class SearchEnginePreconnectorNoDelaysBrowserTest
       disabled_features.emplace_back(features::kPreconnectFromKeyedService);
     }
 
+    if (SearchEnginePreconnect2Enabled()) {
+      enabled_features.push_back({net::features::kSearchEnginePreconnect2, {}});
+    } else {
+      disabled_features.emplace_back(net::features::kSearchEnginePreconnect2);
+    }
+
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
   }
 
-  bool PreconnectWithPrivacyModeEnabled() const {
+  bool PreconnectFromKeyedServiceEnabled() const override {
     return std::get<0>(GetParam());
   }
-  bool PreconnectFromKeyedServiceEnabled() const override {
+  bool SearchEnginePreconnect2Enabled() const {
     return std::get<1>(GetParam());
   }
 
@@ -228,27 +235,13 @@ IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorNoDelaysBrowserTest,
 
   // After switching search providers, the test URL should now start being
   // preconnected.
-  if (PreconnectWithPrivacyModeEnabled()) {
-    WaitForPreresolveCountForURL(GetTestURL("/"), 2);
-    // Preconnect should occur for DSE.
-    EXPECT_EQ(2,
-              preresolve_counts_[GetTestURL("/").DeprecatedGetOriginAsURL()]);
+  WaitForPreresolveCountForURL(GetTestURL("/"), 1);
+  // Preconnect should occur for DSE.
+  EXPECT_EQ(1, preresolve_counts_[GetTestURL("/").DeprecatedGetOriginAsURL()]);
 
-    WaitForPreresolveCountForURL(GetTestURL("/"), 4);
-    // Preconnect should occur again for DSE.
-    EXPECT_EQ(4,
-              preresolve_counts_[GetTestURL("/").DeprecatedGetOriginAsURL()]);
-  } else {
-    WaitForPreresolveCountForURL(GetTestURL("/"), 1);
-    // Preconnect should occur for DSE.
-    EXPECT_EQ(1,
-              preresolve_counts_[GetTestURL("/").DeprecatedGetOriginAsURL()]);
-
-    WaitForPreresolveCountForURL(GetTestURL("/"), 2);
-    // Preconnect should occur again for DSE.
-    EXPECT_EQ(2,
-              preresolve_counts_[GetTestURL("/").DeprecatedGetOriginAsURL()]);
-  }
+  WaitForPreresolveCountForURL(GetTestURL("/"), 2);
+  // Preconnect should occur again for DSE.
+  EXPECT_EQ(2, preresolve_counts_[GetTestURL("/").DeprecatedGetOriginAsURL()]);
 }
 
 IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorNoDelaysBrowserTest,
@@ -285,21 +278,21 @@ IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorNoDelaysBrowserTest,
   ASSERT_TRUE(template_url);
   model->SetUserSelectedDefaultSearchProvider(template_url);
 
+  // Reset the count if SearchEnginePreconnect2 is enabled, since the
+  // KeyedService may already spawn the preconnector, and will re-attempt
+  // preconnect automatically, resulting in flaky counts
+  if (SearchEnginePreconnect2Enabled()) {
+    preresolve_counts_[GetTestURL("/").DeprecatedGetOriginAsURL()] = 0;
+  }
+
   // Put the fake search URL to be preconnected in foreground.
   GetSearchEnginePreconnector()->StartPreconnecting(
       /*with_startup_delay=*/false);
   const GURL search_url = template_url->GenerateSearchURL({});
-  if (PreconnectWithPrivacyModeEnabled()) {
-    WaitForPreresolveCountForURL(search_url, 2);
+  WaitForPreresolveCountForURL(search_url, 1);
 
-    // Preconnect should occur for fake search (2 since there are 2 NAKs).
-    EXPECT_EQ(2, preresolve_counts_[search_url]);
-  } else {
-    WaitForPreresolveCountForURL(search_url, 1);
-
-    // Preconnect should occur for fake search.
-    EXPECT_EQ(1, preresolve_counts_[search_url]);
-  }
+  // Preconnect should occur for fake search.
+  EXPECT_EQ(1, preresolve_counts_[search_url]);
 
   // No preconnects should have been issued for the test URL.
   EXPECT_EQ(0, preresolve_counts_[GetTestURL("/").DeprecatedGetOriginAsURL()]);
@@ -322,19 +315,19 @@ class SearchEnginePreconnectorForegroundBrowserTest
                                     {{"startup_delay_ms", "1000000"},
                                      {"skip_in_background", "false"}}});
       }
-      if (preconnect_to_search_with_privacy_mode_enabled()) {
-        enabled_features.push_back(
-            {features::kPreconnectToSearchWithPrivacyModeEnabled, {}});
-      } else {
-        disabled_features.emplace_back(
-            features::kPreconnectToSearchWithPrivacyModeEnabled);
-      }
 
       if (PreconnectFromKeyedServiceEnabled()) {
         enabled_features.push_back(
             {features::kPreconnectFromKeyedService, {{"run_on_otr", "false"}}});
       } else {
         disabled_features.emplace_back(features::kPreconnectFromKeyedService);
+      }
+
+      if (SearchEnginePreconnect2Enabled()) {
+        enabled_features.push_back(
+            {net::features::kSearchEnginePreconnect2, {}});
+      } else {
+        disabled_features.emplace_back(net::features::kSearchEnginePreconnect2);
       }
       feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                   disabled_features);
@@ -345,11 +338,11 @@ class SearchEnginePreconnectorForegroundBrowserTest
 
   bool load_page() const { return std::get<1>(GetParam()); }
 
-  bool preconnect_to_search_with_privacy_mode_enabled() const {
+  bool PreconnectFromKeyedServiceEnabled() const override {
     return std::get<2>(GetParam());
   }
 
-  bool PreconnectFromKeyedServiceEnabled() const override {
+  bool SearchEnginePreconnect2Enabled() const {
     return std::get<3>(GetParam());
   }
 
@@ -369,7 +362,6 @@ INSTANTIATE_TEST_SUITE_P(All,
 // likely in foreground.
 IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorForegroundBrowserTest,
                        PreconnectOnlyInForeground) {
-  base::HistogramTester histogram_tester;
   static const char16_t kShortName[] = u"test";
   static const char kSearchURL[] =
       "/anchors_different_area.html?q={searchTerms}";
@@ -412,39 +404,37 @@ IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorForegroundBrowserTest,
 
   GetSearchEnginePreconnector()->SetTickClockForTesting(&tick_clock_);
 
+  // Reset the count if SearchEnginePreconnect2 is enabled, since the
+  // KeyedService may already spawn the preconnector, and will re-attempt
+  // preconnect automatically, resulting in flaky counts
+  if (SearchEnginePreconnect2Enabled()) {
+    preresolve_counts_[GetTestURL("/").DeprecatedGetOriginAsURL()] = 0;
+  }
   if (load_page()) {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                              GetTestURL(kSearchURLWithQuery)));
   }
 
-  // Put the fake search URL to be preconnected in foreground.
+  // We start recording the histogram here since the KeyedService may already
+  // spawn the preconnector and the histogram may already have some entries
+  // prior to this `StartPreconnect`. By placing the HistogramTester here, we
+  // will can ensure we only record the histogram for this test.
+  base::HistogramTester histogram_tester;
   GetSearchEnginePreconnector()->StartPreconnecting(
       /*with_startup_delay=*/false);
 
-  if (preconnect_to_search_with_privacy_mode_enabled()) {
-    if (!skip_in_background() || load_page()) {
-      WaitForPreresolveCountForURL(fake_search_url, 2);
-    }
-
-    // If preconnects are skipped in background and no web contents is in
-    // foreground, then no preconnect should happen.
-    EXPECT_EQ(skip_in_background() && !load_page() ? 0 : 2,
-              preresolve_counts_[fake_search_url]);
-  } else {
-    if (!skip_in_background() || load_page()) {
-      WaitForPreresolveCountForURL(fake_search_url, 1);
-    }
-
-    // If preconnects are skipped in background and no web contents is in
-    // foreground, then no preconnect should happen.
-    EXPECT_EQ(skip_in_background() && !load_page() ? 0 : 1,
-              preresolve_counts_[fake_search_url]);
+  if (!skip_in_background() || load_page()) {
+    WaitForPreresolveCountForURL(fake_search_url, 1);
   }
+
+  // If preconnects are skipped in background and no web contents is in
+  // foreground, then no preconnect should happen.
+  EXPECT_EQ(skip_in_background() && !load_page() ? 0 : 1,
+            preresolve_counts_[fake_search_url]);
   histogram_tester.ExpectUniqueSample(
       "NavigationPredictor.SearchEnginePreconnector."
       "IsBrowserAppLikelyInForeground",
       !!load_page(), 1);
-
   EXPECT_EQ(load_page() ? 1 : 0,
             preresolve_counts_[GetTestURL("/").DeprecatedGetOriginAsURL()]);
 }
@@ -546,14 +536,6 @@ class SearchEnginePreconnectorEnabledOnlyBrowserTest
            {{"preconnect_interval", "60"}}}};
 
       std::vector<base::test::FeatureRef> disabled_features;
-      if (PreconnectWithPrivacyModeEnabled()) {
-        enabled_features.push_back(
-            {features::kPreconnectToSearchWithPrivacyModeEnabled, {}});
-      } else {
-        disabled_features.emplace_back(
-            features::kPreconnectToSearchWithPrivacyModeEnabled);
-      }
-
       if (PreconnectFromKeyedServiceEnabled()) {
         enabled_features.push_back(
             {features::kPreconnectFromKeyedService, {{"run_on_otr", "false"}}});
@@ -561,15 +543,22 @@ class SearchEnginePreconnectorEnabledOnlyBrowserTest
         disabled_features.emplace_back(features::kPreconnectFromKeyedService);
       }
 
+      if (SearchEnginePreconnect2Enabled()) {
+        enabled_features.push_back(
+            {net::features::kSearchEnginePreconnect2, {}});
+      } else {
+        disabled_features.emplace_back(net::features::kSearchEnginePreconnect2);
+      }
+
       feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                   disabled_features);
     }
   }
 
-  bool PreconnectWithPrivacyModeEnabled() const {
+  bool PreconnectFromKeyedServiceEnabled() const override {
     return std::get<0>(GetParam());
   }
-  bool PreconnectFromKeyedServiceEnabled() const override {
+  bool SearchEnginePreconnect2Enabled() const {
     return std::get<1>(GetParam());
   }
 
@@ -619,20 +608,445 @@ IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorEnabledOnlyBrowserTest,
       /*with_startup_delay=*/false);
 
   const GURL search_url = template_url->GenerateSearchURL({});
-  if (PreconnectWithPrivacyModeEnabled()) {
-    WaitForPreresolveCountForURL(search_url, 2);
+  WaitForPreresolveCountForURL(search_url, 1);
 
-    // Preconnect should occur for Google search (2 since there are 2 NAKs).
-    EXPECT_EQ(2, preresolve_counts_[search_url]);
-  } else {
-    WaitForPreresolveCountForURL(search_url, 1);
-
-    // Preconnect should occur for Google search.
-    EXPECT_EQ(1, preresolve_counts_[search_url]);
-  }
+  // Preconnect should occur for Google search.
+  EXPECT_EQ(1, preresolve_counts_[search_url]);
 
   // No preconnects should have been issued for the test URL.
   EXPECT_EQ(0, preresolve_counts_[GetTestURL("/").DeprecatedGetOriginAsURL()]);
+}
+
+class SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest
+    : public SearchEnginePreconnectorBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features{
+        {features::kPreconnectToSearch, {{"startup_delay_ms", "1000000"}}},
+        {net::features::kSearchEnginePreconnectInterval,
+         {{"preconnect_interval", "0"}}},
+        {net::features::kSearchEnginePreconnect2, {}}};
+
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (PreconnectFromKeyedServiceEnabled()) {
+      enabled_features.push_back(
+          {features::kPreconnectFromKeyedService, {{"run_on_otr", "false"}}});
+    } else {
+      disabled_features.emplace_back(features::kPreconnectFromKeyedService);
+    }
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+  }
+
+  bool PreconnectFromKeyedServiceEnabled() const override { return GetParam(); }
+
+  void OnPreresolveFinished(
+      const GURL& url,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      mojo::PendingRemote<network::mojom::ReconnectEventObserver>& observer,
+      bool success) override {
+    // Take the observer so that we can manually send mojo message.
+    if (observer.is_valid() && !remote_.is_bound()) {
+      remote_.Bind(std::move(observer));
+    }
+
+    SearchEnginePreconnectorBrowserTest::OnPreresolveFinished(
+        url, network_anonymization_key, observer, success);
+  }
+
+ protected:
+  /* mojo::Remote<network::mojom::ReconnectEventObserver> remote_; */
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest,
+    ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(
+    SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest,
+    PreconnectSearch) {
+  constexpr char16_t kShortName[] = u"test";
+  constexpr char kSearchURL[] = "/anchors_different_area.html?q={searchTerms}";
+  TemplateURLService* model =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(model);
+  search_test_utils::WaitForTemplateURLServiceToLoad(model);
+  ASSERT_TRUE(model->loaded());
+
+  TemplateURLData data;
+  data.SetShortName(kShortName);
+  data.SetKeyword(data.short_name());
+  data.SetURL(GetTestURL(kSearchURL).spec());
+  data.preconnect_to_search_url = false;
+
+  // Set the DSE to the test URL.
+  TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
+  ASSERT_TRUE(template_url);
+  model->SetUserSelectedDefaultSearchProvider(template_url);
+
+  GetSearchEnginePreconnector()->StartPreconnecting(
+      /*with_startup_delay=*/false);
+
+  TemplateURLData data_allowed_search;
+  data_allowed_search.SetShortName(kShortName);
+  data_allowed_search.SetKeyword(data.short_name());
+  data_allowed_search.SetURL(kGoogleSearch);
+  data_allowed_search.preconnect_to_search_url = true;
+
+  template_url = model->Add(std::make_unique<TemplateURL>(data_allowed_search));
+  ASSERT_TRUE(template_url);
+  model->SetUserSelectedDefaultSearchProvider(template_url);
+
+  GetSearchEnginePreconnector()->StartPreconnecting(
+      /*with_startup_delay=*/false);
+
+  const GURL search_url = template_url->GenerateSearchURL({});
+  WaitForPreresolveCountForURL(search_url, 1);
+
+  // Preconnect should occur for Google search.
+  EXPECT_LE(1, preresolve_counts_[search_url]);
+
+  // No preconnects should have been issued for the test URL.
+  EXPECT_EQ(0, preresolve_counts_[GetTestURL("/").DeprecatedGetOriginAsURL()]);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest,
+    PreconnectSearchAfterOnClose) {
+  constexpr char16_t kShortName[] = u"test";
+  TemplateURLService* model =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(model);
+  search_test_utils::WaitForTemplateURLServiceToLoad(model);
+  ASSERT_TRUE(model->loaded());
+
+  TemplateURLData data_allowed_search;
+  data_allowed_search.SetShortName(kShortName);
+  data_allowed_search.SetKeyword(data_allowed_search.short_name());
+  data_allowed_search.SetURL(kGoogleSearch);
+  data_allowed_search.preconnect_to_search_url = true;
+
+  auto* template_url =
+      model->Add(std::make_unique<TemplateURL>(data_allowed_search));
+  ASSERT_TRUE(template_url);
+  model->SetUserSelectedDefaultSearchProvider(template_url);
+
+  GetSearchEnginePreconnector()->SetIsShortSessionForTesting(
+      /*is_short_session=*/false);
+
+  GetSearchEnginePreconnector()->StartPreconnecting(
+      /*with_startup_delay=*/false);
+
+  const GURL search_url = template_url->GenerateSearchURL({});
+  WaitForPreresolveCountForURL(search_url, 1);
+
+  // Manually trigger a Session Close. This should trigger a reattempt.
+  GetSearchEnginePreconnector()->OnSessionClosed();
+  WaitForPreresolveCountForURL(search_url, 2);
+
+  // Preconnect should occur for Google search.
+  EXPECT_EQ(2, preresolve_counts_[search_url]);
+
+  // Since this is not a short session, we should be resetting the value.
+  EXPECT_EQ(0, GetSearchEnginePreconnector()
+                   ->GetConsecutiveConnectionFailureForTesting());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest,
+    PreconnectSearchAfterOnCloseWithShortSession) {
+  constexpr char16_t kShortName[] = u"test";
+  TemplateURLService* model =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(model);
+  search_test_utils::WaitForTemplateURLServiceToLoad(model);
+  ASSERT_TRUE(model->loaded());
+
+  TemplateURLData data_allowed_search;
+  data_allowed_search.SetShortName(kShortName);
+  data_allowed_search.SetKeyword(data_allowed_search.short_name());
+  data_allowed_search.SetURL(kGoogleSearch);
+  data_allowed_search.preconnect_to_search_url = true;
+
+  auto* template_url =
+      model->Add(std::make_unique<TemplateURL>(data_allowed_search));
+  ASSERT_TRUE(template_url);
+  model->SetUserSelectedDefaultSearchProvider(template_url);
+
+  GetSearchEnginePreconnector()->SetIsShortSessionForTesting(
+      /*is_short_session=*/true);
+
+  int failure_before_testing =
+      GetSearchEnginePreconnector()
+          ->GetConsecutiveConnectionFailureForTesting();
+
+  GetSearchEnginePreconnector()->StartPreconnecting(
+      /*with_startup_delay=*/false);
+
+  const GURL search_url = template_url->GenerateSearchURL({});
+  WaitForPreresolveCountForURL(search_url, 1);
+
+  // Manually trigger a Session Close. This should trigger a reattempt.
+  GetSearchEnginePreconnector()->OnSessionClosed();
+  WaitForPreresolveCountForURL(search_url, 2);
+
+  // Preconnect should occur for Google search.
+  EXPECT_EQ(2, preresolve_counts_[search_url]);
+
+  // Since this is a short session, we should be resetting the value.
+  EXPECT_EQ(1, GetSearchEnginePreconnector()
+                       ->GetConsecutiveConnectionFailureForTesting() -
+                   failure_before_testing);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest,
+    PreconnectSearchAfterOnFailure) {
+  constexpr char16_t kShortName[] = u"test";
+  TemplateURLService* model =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(model);
+  search_test_utils::WaitForTemplateURLServiceToLoad(model);
+  ASSERT_TRUE(model->loaded());
+
+  TemplateURLData data_allowed_search;
+  data_allowed_search.SetShortName(kShortName);
+  data_allowed_search.SetKeyword(data_allowed_search.short_name());
+  data_allowed_search.SetURL(kGoogleSearch);
+  data_allowed_search.preconnect_to_search_url = true;
+
+  auto* template_url =
+      model->Add(std::make_unique<TemplateURL>(data_allowed_search));
+  ASSERT_TRUE(template_url);
+  model->SetUserSelectedDefaultSearchProvider(template_url);
+
+  int failure_before_testing =
+      GetSearchEnginePreconnector()
+          ->GetConsecutiveConnectionFailureForTesting();
+
+  GetSearchEnginePreconnector()->StartPreconnecting(
+      /*with_startup_delay=*/false);
+
+  const GURL search_url = template_url->GenerateSearchURL({});
+  WaitForPreresolveCountForURL(search_url, 1);
+
+  // Manually trigger a connection failure. This should trigger a reattempt.
+  GetSearchEnginePreconnector()->OnConnectionFailed();
+  WaitForPreresolveCountForURL(search_url, 2);
+
+  // Preconnect should occur for Google search.
+  EXPECT_EQ(2, preresolve_counts_[search_url]);
+
+  // Since this is a short session, we should be resetting the value.
+  EXPECT_EQ(1, GetSearchEnginePreconnector()
+                       ->GetConsecutiveConnectionFailureForTesting() -
+                   failure_before_testing);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest,
+    PreconnectSearchAfterOnConnect) {
+  constexpr char16_t kShortName[] = u"test";
+  TemplateURLService* model =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(model);
+  search_test_utils::WaitForTemplateURLServiceToLoad(model);
+  ASSERT_TRUE(model->loaded());
+
+  TemplateURLData data_allowed_search;
+  data_allowed_search.SetShortName(kShortName);
+  data_allowed_search.SetKeyword(data_allowed_search.short_name());
+  data_allowed_search.SetURL(kGoogleSearch);
+  data_allowed_search.preconnect_to_search_url = true;
+
+  auto* template_url =
+      model->Add(std::make_unique<TemplateURL>(data_allowed_search));
+  ASSERT_TRUE(template_url);
+  model->SetUserSelectedDefaultSearchProvider(template_url);
+
+  GetSearchEnginePreconnector()->StartPreconnecting(
+      /*with_startup_delay=*/false);
+
+  const GURL search_url = template_url->GenerateSearchURL({});
+  WaitForPreresolveCountForURL(search_url, 1);
+
+  // Manually trigger a new connection. This should trigger a reattempt.
+  GetSearchEnginePreconnector()->OnNetworkEvent(
+      net::NetworkChangeEvent::kConnected);
+  WaitForPreresolveCountForURL(search_url, 2);
+
+  // Preconnect should occur for Google search.
+  EXPECT_EQ(2, preresolve_counts_[search_url]);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest,
+    CalculateBackoffMultiplier) {
+  GetSearchEnginePreconnector()->StopPreconnecting();
+
+  int failures = 0;
+  for (; failures < std::numeric_limits<int32_t>::digits; failures++) {
+    GetSearchEnginePreconnector()->SetConsecutiveFailureForTesting(failures);
+    ASSERT_EQ(failures, GetSearchEnginePreconnector()
+                            ->GetConsecutiveConnectionFailureForTesting());
+    ASSERT_EQ(1 << failures,
+              GetSearchEnginePreconnector()->CalculateBackoffMultiplier());
+  }
+
+  GetSearchEnginePreconnector()->SetConsecutiveFailureForTesting(failures);
+  ASSERT_EQ(failures, GetSearchEnginePreconnector()
+                          ->GetConsecutiveConnectionFailureForTesting());
+  ASSERT_EQ(1 << (std::numeric_limits<int32_t>::digits - 1),
+            GetSearchEnginePreconnector()->CalculateBackoffMultiplier());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest,
+    PreconnectSearchAfterOnClosedViaMojoPipe) {
+  constexpr char16_t kShortName[] = u"test";
+  TemplateURLService* model =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(model);
+  search_test_utils::WaitForTemplateURLServiceToLoad(model);
+  ASSERT_TRUE(model->loaded());
+
+  TemplateURLData data_allowed_search;
+  data_allowed_search.SetShortName(kShortName);
+  data_allowed_search.SetKeyword(data_allowed_search.short_name());
+  data_allowed_search.SetURL(kGoogleSearch);
+  data_allowed_search.preconnect_to_search_url = true;
+
+  auto* template_url =
+      model->Add(std::make_unique<TemplateURL>(data_allowed_search));
+  ASSERT_TRUE(template_url);
+  model->SetUserSelectedDefaultSearchProvider(template_url);
+
+  GetSearchEnginePreconnector()->StartPreconnecting(
+      /*with_startup_delay=*/false);
+
+  const GURL search_url = template_url->GenerateSearchURL({});
+  WaitForPreresolveCountForURL(search_url, 1);
+
+  // Manually trigger a new connection. This should trigger a reattempt.
+  remote_->OnSessionClosed();
+
+  WaitForPreresolveCountForURL(search_url, 2);
+
+  // Preconnect should occur for Google search.
+  EXPECT_EQ(2, preresolve_counts_[search_url]);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest,
+    PreconnectSearchAfterOnFailureViaMojoPipe) {
+  constexpr char16_t kShortName[] = u"test";
+  TemplateURLService* model =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(model);
+  search_test_utils::WaitForTemplateURLServiceToLoad(model);
+  ASSERT_TRUE(model->loaded());
+
+  TemplateURLData data_allowed_search;
+  data_allowed_search.SetShortName(kShortName);
+  data_allowed_search.SetKeyword(data_allowed_search.short_name());
+  data_allowed_search.SetURL(kGoogleSearch);
+  data_allowed_search.preconnect_to_search_url = true;
+
+  auto* template_url =
+      model->Add(std::make_unique<TemplateURL>(data_allowed_search));
+  ASSERT_TRUE(template_url);
+  model->SetUserSelectedDefaultSearchProvider(template_url);
+
+  GetSearchEnginePreconnector()->StartPreconnecting(
+      /*with_startup_delay=*/false);
+
+  const GURL search_url = template_url->GenerateSearchURL({});
+  WaitForPreresolveCountForURL(search_url, 1);
+
+  // Manually trigger a new connection. This should trigger a reattempt.
+  remote_->OnConnectionFailed();
+
+  WaitForPreresolveCountForURL(search_url, 2);
+
+  // Preconnect should occur for Google search.
+  EXPECT_EQ(2, preresolve_counts_[search_url]);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest,
+    PreconnectSearchAfterOnNetworkEventViaMojoPipoe) {
+  constexpr char16_t kShortName[] = u"test";
+  TemplateURLService* model =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(model);
+  search_test_utils::WaitForTemplateURLServiceToLoad(model);
+  ASSERT_TRUE(model->loaded());
+
+  TemplateURLData data_allowed_search;
+  data_allowed_search.SetShortName(kShortName);
+  data_allowed_search.SetKeyword(data_allowed_search.short_name());
+  data_allowed_search.SetURL(kGoogleSearch);
+  data_allowed_search.preconnect_to_search_url = true;
+
+  auto* template_url =
+      model->Add(std::make_unique<TemplateURL>(data_allowed_search));
+  ASSERT_TRUE(template_url);
+  model->SetUserSelectedDefaultSearchProvider(template_url);
+
+  GetSearchEnginePreconnector()->StartPreconnecting(
+      /*with_startup_delay=*/false);
+
+  const GURL search_url = template_url->GenerateSearchURL({});
+  WaitForPreresolveCountForURL(search_url, 1);
+
+  // Manually trigger a new connection. This should trigger a reattempt.
+  remote_->OnNetworkEvent(net::NetworkChangeEvent::kConnected);
+
+  WaitForPreresolveCountForURL(search_url, 2);
+
+  // Preconnect should occur for Google search.
+  EXPECT_EQ(2, preresolve_counts_[search_url]);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest,
+    PreconnectSearchOnMojoPipeDisconnect) {
+  constexpr char16_t kShortName[] = u"test";
+  TemplateURLService* model =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(model);
+  search_test_utils::WaitForTemplateURLServiceToLoad(model);
+  ASSERT_TRUE(model->loaded());
+
+  TemplateURLData data_allowed_search;
+  data_allowed_search.SetShortName(kShortName);
+  data_allowed_search.SetKeyword(data_allowed_search.short_name());
+  data_allowed_search.SetURL(kGoogleSearch);
+  data_allowed_search.preconnect_to_search_url = true;
+
+  auto* template_url =
+      model->Add(std::make_unique<TemplateURL>(data_allowed_search));
+  ASSERT_TRUE(template_url);
+  model->SetUserSelectedDefaultSearchProvider(template_url);
+
+  GetSearchEnginePreconnector()->StartPreconnecting(
+      /*with_startup_delay=*/false);
+
+  const GURL search_url = template_url->GenerateSearchURL({});
+  WaitForPreresolveCountForURL(search_url, 1);
+
+  // Manually unbind to trigger a new preconnect
+  ASSERT_TRUE(remote_.is_bound());
+  remote_.Unbind().reset();
+
+  WaitForPreresolveCountForURL(search_url, 2);
+
+  // Preconnect should occur for Google search.
+  EXPECT_EQ(2, preresolve_counts_[search_url]);
 }
 
 }  // namespace

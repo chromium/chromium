@@ -25,7 +25,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 import type {PageVisibility} from '../page_visibility.js';
-import type {Route, SettingsRoutes} from '../router.js';
+import type {Route} from '../router.js';
 import {RouteObserverMixin, Router} from '../router.js';
 
 import {getTemplate} from './settings_menu.html.js';
@@ -78,19 +78,13 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     };
   }
 
-  pageVisibility?: PageVisibility;
-  private enableAiSettingsPageRefresh_: boolean;
-  private showAdvancedFeaturesMainControl_: boolean;
-  private routes_: SettingsRoutes;
-  private aiPageIcon_: string;
-  private aiPageTitle_: string;
+  declare pageVisibility?: PageVisibility;
+  declare private enableAiSettingsPageRefresh_: boolean;
+  declare private showAdvancedFeaturesMainControl_: boolean;
+  declare private aiPageIcon_: string;
+  declare private aiPageTitle_: string;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
-
-  override ready() {
-    super.ready();
-    this.routes_ = Router.getInstance().getRoutes();
-  }
 
   private showExperimentalMenuItem_(): boolean {
     return this.showAdvancedFeaturesMainControl_ &&

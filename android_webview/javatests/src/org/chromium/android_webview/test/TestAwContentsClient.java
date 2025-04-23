@@ -20,19 +20,24 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageCommitVisibleHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageStartedHelper;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.annotation.concurrent.GuardedBy;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.function.Supplier;
 
 /** AwContentsClient subclass used for testing. */
 public class TestAwContentsClient extends NullContentsClient {
@@ -651,20 +656,18 @@ public class TestAwContentsClient extends NullContentsClient {
     /** Callback helper for shouldInterceptRequest. */
     public static class ShouldInterceptRequestHelper extends CallbackHelper {
         private final List<String> mShouldInterceptRequestUrls = new ArrayList<>();
-        private final Map<String, WebResourceResponseInfo> mReturnValuesByUrls =
+        private final Map<String, BlockingQueue<WebResourceResponseInfo>> mInterceptResponsesByUrl =
                 Collections.synchronizedMap(new HashMap<>());
         private final Map<String, AwWebResourceRequest> mRequestsByUrls =
                 Collections.synchronizedMap(new HashMap<>());
 
-        @GuardedBy("mRequestCountLock") // Needs explicit locking for get-and-increment
-        private final Map<String, Integer> mRequestCountByUrl = new HashMap<>();
-
-        private final Object mRequestCountLock = new Object();
+        private final Map<String, Integer> mRequestCountByUrl =
+                Collections.synchronizedMap(new HashMap<>());
 
         private Runnable mRunnableForFirstTimeCallback;
         private boolean mRaiseExceptionWhenCalled;
-        // This is read on another thread, so needs to be marked volatile.
-        private volatile WebResourceResponseInfo mShouldInterceptRequestReturnValue;
+        private final BlockingQueue<WebResourceResponseInfo> mDefaultInterceptResponses =
+                new LinkedBlockingQueue<>();
 
         void setRaiseExceptionWhenCalled(boolean value) {
             mRaiseExceptionWhenCalled = value;
@@ -674,12 +677,152 @@ public class TestAwContentsClient extends NullContentsClient {
             return mRaiseExceptionWhenCalled;
         }
 
-        void setReturnValue(WebResourceResponseInfo value) {
-            mShouldInterceptRequestReturnValue = value;
+        /**
+         * Enqueue a response to be returned if no url-mapped response is available.
+         *
+         * <p>The response will be sent as a text/html utf-8 encoded success response.
+         *
+         * @see #enqueueResponse(String, String, String, int, String, Map)
+         */
+        public void enqueueHtmlResponse(
+                @Nullable String data, @Nullable Map<String, String> responseHeaders) {
+            enqueueResponse("text/html", "utf-8", data, 200, "OK", responseHeaders);
         }
 
-        void setReturnValueForUrl(String url, WebResourceResponseInfo value) {
-            mReturnValuesByUrls.put(url, value);
+        /**
+         * Enqueue a response to be returned if no url-mapped response is available.
+         *
+         * @see #enqueueHtmlResponseForUrl(String, String, Map)
+         */
+        public void enqueueResponse(
+                @Nullable String mimeType,
+                @Nullable String encoding,
+                @Nullable String data,
+                int statusCode,
+                @Nullable String reasonPhrase,
+                @Nullable Map<String, String> responseHeaders) {
+            enqueueResponse(
+                    new WebResourceResponseInfo(
+                            mimeType,
+                            encoding,
+                            asStreamOrNull(data),
+                            statusCode,
+                            reasonPhrase,
+                            responseHeaders));
+        }
+
+        /**
+         * Enqueue a response to be returned if no url-mapped response is available.
+         *
+         * <p>Streams must never be reused, which is why this method takes a Supplier for streams.
+         *
+         * @see #enqueueResponseForUrlWithStream(String, String, String, Supplier)
+         */
+        public void enqueueResponseWithStream(
+                @Nullable String mimeType,
+                @Nullable String encoding,
+                @Nullable Supplier<InputStream> data) {
+            enqueueResponse(
+                    new WebResourceResponseInfo(
+                            mimeType, encoding, data == null ? null : data.get()));
+        }
+
+        /**
+         * Enqueue a response to be returned if no url-mapped response is available.
+         *
+         * <p>Streams must never be reused, which is why this method takes a Supplier for streams.
+         *
+         * @see #enqueueResponseForUrlWithStream(String, String, String, Supplier)
+         */
+        public void enqueueResponseWithStream(
+                @Nullable String mimeType,
+                @Nullable String encoding,
+                @Nullable Supplier<InputStream> data,
+                int statusCode,
+                @Nullable String reasonPhrase,
+                @Nullable Map<String, String> responseHeaders) {
+            enqueueResponse(
+                    new WebResourceResponseInfo(
+                            mimeType,
+                            encoding,
+                            null != data ? data.get() : null,
+                            statusCode,
+                            reasonPhrase,
+                            responseHeaders));
+        }
+
+        /**
+         * Enqueue a default response to be used if no url-mapped response is available.
+         *
+         * <p>Prefer to use one of the other methods, which construct the response for you.
+         *
+         * @see #enqueueResponseForUrl(String, WebResourceResponseInfo)
+         */
+        public void enqueueResponse(WebResourceResponseInfo responseInfo) {
+            mDefaultInterceptResponses.add(responseInfo);
+        }
+
+        /**
+         * Enqueue a response for the specified URL.
+         *
+         * <p>The response will be sent as a text/html utf-8 encoded success response.
+         */
+        public void enqueueHtmlResponseForUrl(
+                String url, @Nullable String data, @Nullable Map<String, String> responseHeaders) {
+            enqueueResponseForUrl(url, "text/html", "utf-8", data, 200, "OK", responseHeaders);
+        }
+
+        /**
+         * Enqueue a response for the specified URL.
+         *
+         * <p>Streams must never be reused, which is why this method takes a Supplier for streams.
+         */
+        public void enqueueResponseForUrlWithStream(
+                String url,
+                @Nullable String mimeType,
+                @Nullable String encoding,
+                @Nullable Supplier<InputStream> data) {
+            enqueueResponseForUrl(
+                    url,
+                    new WebResourceResponseInfo(
+                            mimeType, encoding, data == null ? null : data.get()));
+        }
+
+        /** Enqueue a response for the specified URL. */
+        public void enqueueResponseForUrl(
+                String url,
+                @Nullable String mimeType,
+                @Nullable String encoding,
+                @Nullable String data,
+                int statusCode,
+                @Nullable String reasonPhrase,
+                @Nullable Map<String, String> responseHeaders) {
+            enqueueResponseForUrl(
+                    url,
+                    new WebResourceResponseInfo(
+                            mimeType,
+                            encoding,
+                            asStreamOrNull(data),
+                            statusCode,
+                            reasonPhrase,
+                            responseHeaders));
+        }
+
+        /**
+         * Enqueue a response for the specified URL.
+         *
+         * <p>Prefer to use one of the other methods, which construct the response for you.
+         */
+        public void enqueueResponseForUrl(String url, WebResourceResponseInfo responseInfo) {
+            mInterceptResponsesByUrl
+                    .computeIfAbsent(url, s -> new LinkedBlockingQueue<>())
+                    .add(responseInfo);
+        }
+
+        private static @Nullable InputStream asStreamOrNull(@Nullable String data) {
+            return data == null
+                    ? null
+                    : new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
         }
 
         public List<String> getUrls() {
@@ -692,9 +835,15 @@ public class TestAwContentsClient extends NullContentsClient {
         }
 
         public WebResourceResponseInfo getReturnValue(String url) {
-            WebResourceResponseInfo value = mReturnValuesByUrls.get(url);
-            if (value != null) return value;
-            return mShouldInterceptRequestReturnValue;
+            BlockingQueue<WebResourceResponseInfo> value = mInterceptResponsesByUrl.get(url);
+            if (value != null) {
+                WebResourceResponseInfo urlResponse = value.poll();
+                if (urlResponse != null) {
+                    return urlResponse;
+                }
+            }
+            // May return null if no more responses are enqueued, and that is fine.
+            return mDefaultInterceptResponses.poll();
         }
 
         public AwWebResourceRequest getRequestsForUrl(String url) {
@@ -705,19 +854,14 @@ public class TestAwContentsClient extends NullContentsClient {
 
         public int getRequestCountForUrl(String url) {
             assert getCallCount() > 0;
-            synchronized (mRequestCountLock) {
-                Integer count = mRequestCountByUrl.get(url);
-                return count != null ? count : 0;
-            }
+            return mRequestCountByUrl.getOrDefault(url, 0);
         }
 
         public void notifyCalled(AwWebResourceRequest request) {
             mShouldInterceptRequestUrls.add(request.getUrl());
             mRequestsByUrls.put(request.getUrl(), request);
-            synchronized (mRequestCountLock) {
-                Integer count = mRequestCountByUrl.get(request.getUrl());
-                mRequestCountByUrl.put(request.getUrl(), count == null ? 1 : count + 1);
-            }
+            // Increment by 1
+            mRequestCountByUrl.merge(request.getUrl(), 1, Integer::sum);
             if (mRunnableForFirstTimeCallback != null) {
                 mRunnableForFirstTimeCallback.run();
                 mRunnableForFirstTimeCallback = null;

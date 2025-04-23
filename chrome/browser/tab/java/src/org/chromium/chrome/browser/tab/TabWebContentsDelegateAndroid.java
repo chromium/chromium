@@ -12,6 +12,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 /** A basic {@link WebContentsDelegateAndroid} that proxies methods into Tab. */
 @NullMarked
@@ -139,6 +140,10 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
 
     /** Return if dynamically change safe area insets as browser controls scroll. */
     protected boolean isDynamicSafeAreaInsetsEnabled() {
+        return false;
+    }
+
+    protected boolean openInAppOrChromeFromCct(GURL gurl) {
         return false;
     }
 }

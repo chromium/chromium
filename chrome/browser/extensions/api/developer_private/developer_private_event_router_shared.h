@@ -8,8 +8,12 @@
 #include <set>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
+#include "chrome/browser/extensions/extension_allowlist.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -34,7 +38,9 @@ class DeveloperPrivateEventRouterShared : public ExtensionRegistryObserver,
                                           public ProcessManagerObserver,
                                           public ExtensionPrefsObserver,
                                           public WarningService::Observer,
-                                          public PermissionsManager::Observer {
+                                          public PermissionsManager::Observer,
+                                          public ExtensionManagement::Observer,
+                                          public ExtensionAllowlist::Observer {
  public:
   static api::developer_private::UserSiteSettings ConvertToUserSiteSettings(
       const PermissionsManager::UserPermissionsSettings& settings);
@@ -56,12 +62,18 @@ class DeveloperPrivateEventRouterShared : public ExtensionRegistryObserver,
   // has changed in a way that may affect the chrome://extensions UI.
   void OnExtensionConfigurationChanged(const ExtensionId& extension_id);
 
+  // TODO(crbug.com/392777363): Make them all private after moving all the
+  // usages to shared.cc.
  protected:
   raw_ptr<Profile> profile_;
 
   raw_ptr<EventRouter> event_router_;
 
   PrefChangeRegistrar pref_change_registrar_;
+
+  // Broadcasts an event to all listeners.
+  void BroadcastItemStateChanged(api::developer_private::EventType event_type,
+                                 const ExtensionId& id);
 
  private:
   // ExtensionRegistryObserver:
@@ -112,10 +124,21 @@ class DeveloperPrivateEventRouterShared : public ExtensionRegistryObserver,
       const PermissionSet& permissions,
       PermissionsManager::UpdateReason reason) override;
 
-  // Broadcasts an event to all listeners.
-  virtual void BroadcastItemStateChanged(
+  // ExtensionManagement::Observer:
+  void OnExtensionManagementSettingsChanged() override;
+
+  // ExtensionAllowlist::Observer:
+  void OnExtensionAllowlistWarningStateChanged(const ExtensionId& extension_id,
+                                               bool show_warning) override;
+
+  // Handles a profile preference change.
+  void OnProfilePrefChanged();
+
+  void BroadcastItemStateChangedHelper(
       api::developer_private::EventType event_type,
-      const ExtensionId& id);
+      const ExtensionId& extension_id,
+      std::unique_ptr<ExtensionInfoGenerator> info_generator,
+      std::vector<api::developer_private::ExtensionInfo> infos);
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
@@ -129,6 +152,10 @@ class DeveloperPrivateEventRouterShared : public ExtensionRegistryObserver,
       warning_service_observation_{this};
   base::ScopedObservation<PermissionsManager, PermissionsManager::Observer>
       permissions_manager_observation_{this};
+  base::ScopedObservation<ExtensionManagement, ExtensionManagement::Observer>
+      extension_management_observation_{this};
+  base::ScopedObservation<ExtensionAllowlist, ExtensionAllowlist::Observer>
+      extension_allowlist_observer_{this};
 
   // The set of IDs of the Extensions that have subscribed to DeveloperPrivate
   // events. Since the only consumer of the DeveloperPrivate API is currently
@@ -137,6 +164,8 @@ class DeveloperPrivateEventRouterShared : public ExtensionRegistryObserver,
   // update. In particular, we want to avoid entering a loop, which could happen
   // when, e.g., the Apps Developer Tool throws an error.
   std::set<ExtensionId> extension_ids_;
+
+  base::WeakPtrFactory<DeveloperPrivateEventRouterShared> weak_factory_{this};
 };
 
 }  // namespace extensions

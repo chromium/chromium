@@ -110,6 +110,9 @@ class GURL;
 - (void)showEnhancedSafeBrowsingPromo;
 - (void)dismissEnhancedSafeBrowsingPromo;
 
+// Shows the page action menu.
+- (void)showPageActionMenu;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_BROWSER_COORDINATOR_COMMANDS_H_

@@ -30,14 +30,14 @@ void WebrtcAudioStream::Start(
   DCHECK(webrtc_transport);
 
   source_adapter_ =
-      new rtc::RefCountedObject<WebrtcAudioSourceAdapter>(audio_task_runner);
+      new webrtc::RefCountedObject<WebrtcAudioSourceAdapter>(audio_task_runner);
   source_adapter_->Start(std::move(audio_source));
 
   scoped_refptr<webrtc::PeerConnectionFactoryInterface> peer_connection_factory(
       webrtc_transport->peer_connection_factory());
   peer_connection_ = webrtc_transport->peer_connection();
 
-  rtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track =
+  webrtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track =
       peer_connection_factory->CreateAudioTrack(kAudioTrackLabel,
                                                 source_adapter_.get());
 

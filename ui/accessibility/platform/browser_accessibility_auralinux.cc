@@ -26,7 +26,7 @@ BrowserAccessibilityAuraLinux::BrowserAccessibilityAuraLinux(
     BrowserAccessibilityManager* manager,
     AXNode* node)
     : BrowserAccessibility(manager, node),
-      platform_node_(AXPlatformNode::Create(this)) {}
+      platform_node_(AXPlatformNode::Create(*this)) {}
 
 BrowserAccessibilityAuraLinux::~BrowserAccessibilityAuraLinux() = default;
 

@@ -132,10 +132,10 @@ std::unique_ptr<FormStructure> BuildFormStructure(
                                                    fields[i].heuristic_type);
     }
   }
-  // Calls RationalizeFieldTypePredictions.
   ParseServerPredictionsQueryResponse(
       response_string, {form_structure.get()},
       test::GetEncodedSignatures({form_structure.get()}), nullptr);
+  form_structure->RationalizeAndAssignSections(nullptr, /*legacy_order=*/true);
   return form_structure;
 }
 
@@ -1295,6 +1295,21 @@ TEST_F(RationalizeDateFormatTest, Label_SplitAcrossThreeFields) {
                          /*run_heuristics=*/false);
   EXPECT_THAT(GetFormatStrings(*form_structure),
               ElementsAre("YYYY", "MM", "DD", "D/M/YY"));
+}
+
+// Tests that a date format with three components in the label is assigned to
+// three consecutive fields.
+TEST_F(RationalizeDateFormatTest, Label_SplitAcrossThreeFieldsWithEmptyLabels) {
+  std::unique_ptr<FormStructure> form_structure =
+      BuildFormStructure({{.label = "When did you pick it up? DD/MM/YYYY",
+                           .field_type = PASSPORT_ISSUE_DATE},
+                          {.label = "", .field_type = PASSPORT_ISSUE_DATE},
+                          {.label = "", .field_type = PASSPORT_ISSUE_DATE},
+                          {.label = "Until which D/M/YY is the thing valid?",
+                           .field_type = PASSPORT_ISSUE_DATE}},
+                         /*run_heuristics=*/false);
+  EXPECT_THAT(GetFormatStrings(*form_structure),
+              ElementsAre("DD", "MM", "YYYY", "D/M/YY"));
 }
 
 // Tests that a date format with three components in the label is assigned to

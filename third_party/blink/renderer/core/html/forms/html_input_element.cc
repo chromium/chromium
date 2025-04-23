@@ -304,6 +304,12 @@ bool HTMLInputElement::HasCustomFocusLogic() const {
 
 bool HTMLInputElement::IsKeyboardFocusableSlow(
     UpdateBehavior update_behavior) const {
+  // Interest invoker targets with partial interest aren't keyboard focusable.
+  if (IsInPartialInterestPopover()) {
+    CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+        GetDocument().GetExecutionContext()));
+    return false;
+  }
   return input_type_->IsKeyboardFocusableSlow(update_behavior);
 }
 
@@ -394,7 +400,8 @@ void HTMLInputElement::InitializeTypeInParsing() {
   String default_value = FastGetAttribute(html_names::kValueAttr);
   if (input_type_->GetValueMode() == ValueMode::kValue)
     non_attribute_value_ = SanitizeValue(default_value);
-  has_been_password_field_ |= new_type_name == input_type_names::kPassword;
+
+  UpdateHasBeenPasswordField(new_type_name);
 
   UpdateWillValidateCache();
 
@@ -464,8 +471,6 @@ void HTMLInputElement::UpdateType(const AtomicString& type_attribute_value) {
 
   bool placeholder_changed =
       input_type_->SupportsPlaceholder() != new_type->SupportsPlaceholder();
-
-  has_been_password_field_ |= new_type_name == input_type_names::kPassword;
 
   // 7. Let previouslySelectable be true if setRangeText() previously applied
   // to the element, and false otherwise.
@@ -606,6 +611,8 @@ void HTMLInputElement::UpdateType(const AtomicString& type_attribute_value) {
   // and set its selection direction to "none".
   if (!previously_selectable && now_selectable)
     SetSelectionRange(0, 0, kSelectionHasNoDirection);
+
+  UpdateHasBeenPasswordField(new_type_name);
 
   SetNeedsValidityCheck();
   if ((could_be_successful_submit_button || CanBeSuccessfulSubmitButton()) &&
@@ -1054,6 +1061,17 @@ bool HTMLInputElement::IsTelephone() const {
 
 bool HTMLInputElement::IsAutoDirectionalityFormAssociated() const {
   return input_type_->IsAutoDirectionalityFormAssociated();
+}
+
+void HTMLInputElement::UpdateHasBeenPasswordField(
+    const AtomicString& new_type_name) {
+  has_been_password_field_ =
+      IsTextField() && (has_been_password_field_ ||
+                        new_type_name == input_type_names::kPassword);
+}
+
+void HTMLInputElement::MaybeSetHasBeenPasswordField() {
+  UpdateHasBeenPasswordField(input_type_names::kPassword);
 }
 
 bool HTMLInputElement::HasBeenPasswordField() const {

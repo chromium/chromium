@@ -65,13 +65,13 @@ JNI_OfflineItemBridge_createOfflineItemAndMaybeAddToList(
       url::GURLAndroid::FromNativeGURL(env, original_url),
       item.is_off_the_record, ConvertUTF8ToJavaString(env, item.otr_profile_id),
       url::GURLAndroid::FromNativeGURL(env, item.referrer_url),
-      item.has_user_gesture,
-      static_cast<jint>(item.state), static_cast<jint>(item.fail_state),
-      static_cast<jint>(item.pending_state), item.is_resumable,
-      item.allow_metered, item.received_bytes, item.progress.value,
-      item.progress.max.value_or(-1), static_cast<jint>(item.progress.unit),
-      item.time_remaining_ms, item.is_dangerous, item.can_rename,
-      item.ignore_visuals, item.content_quality_score);
+      item.has_user_gesture, static_cast<jint>(item.state),
+      static_cast<jint>(item.fail_state), static_cast<jint>(item.pending_state),
+      item.is_resumable, item.allow_metered, item.received_bytes,
+      item.progress.value, item.progress.max.value_or(-1),
+      static_cast<jint>(item.progress.unit), item.time_remaining_ms,
+      item.danger_type, item.is_dangerous, item.can_rename, item.ignore_visuals,
+      item.content_quality_score);
 }
 
 }  // namespace

@@ -25,7 +25,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 
-static_assert(BUILDFLAG(ENABLE_EXTENSIONS));
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class GURL;
 class PrefService;

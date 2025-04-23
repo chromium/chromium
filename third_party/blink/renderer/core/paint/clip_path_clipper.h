@@ -88,7 +88,8 @@ class CORE_EXPORT ClipPathClipper {
   // same as the layout object getting clipped, but in the case of nested
   // clip-path, it could be one of the SVG clip path in the chain.
   // Returns the path if the clip-path can use path-based clip.
-  static std::optional<Path> PathBasedClip(const LayoutObject& clip_path_owner);
+  static std::optional<Path> PathBasedClip(const LayoutObject& clip_path_owner,
+                                           const gfx::Vector2dF& clip_offset);
 
   // Returns true if `location` intersects the `clip_path_owner`'s clip-path.
   // `reference_box`, which should be calculated from `reference_box_object`, is
@@ -106,7 +107,8 @@ class CORE_EXPORT ClipPathClipper {
   static std::optional<Path> PathBasedClipInternal(
       const LayoutObject& clip_path_owner,
       const gfx::RectF& reference_box,
-      const LayoutObject& reference_box_object);
+      const LayoutObject& reference_box_object,
+      const gfx::Vector2dF& clip_offset);
 };
 
 }  // namespace blink

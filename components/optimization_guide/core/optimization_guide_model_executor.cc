@@ -49,6 +49,38 @@ std::ostream& operator<<(std::ostream& out,
   return out;
 }
 
+std::optional<mojom::ModelUnavailableReason> AvailabilityFromEligibilityReason(
+    OnDeviceModelEligibilityReason reason) {
+  switch (reason) {
+    case OnDeviceModelEligibilityReason::kUnknown:
+      return mojom::ModelUnavailableReason::kUnknown;
+    case OnDeviceModelEligibilityReason::kSuccess:
+      return std::nullopt;
+    // Permanent errors.
+    case OnDeviceModelEligibilityReason::kDeprecatedModelNotAvailable:
+    case OnDeviceModelEligibilityReason::kFeatureNotEnabled:
+    case OnDeviceModelEligibilityReason::kGpuBlocked:
+    case OnDeviceModelEligibilityReason::kTooManyRecentCrashes:
+    case OnDeviceModelEligibilityReason::kSafetyConfigNotAvailableForFeature:
+    case OnDeviceModelEligibilityReason::kFeatureExecutionNotEnabled:
+    case OnDeviceModelEligibilityReason::kValidationFailed:
+    case OnDeviceModelEligibilityReason::kModelNotEligible:
+    case OnDeviceModelEligibilityReason::kInsufficientDiskSpace:
+      return mojom::ModelUnavailableReason::kNotSupported;
+    // Errors solved by request.
+    case OnDeviceModelEligibilityReason::kNoOnDeviceFeatureUsed:
+      return mojom::ModelUnavailableReason::kPendingUsage;
+    // Errors solved by waiting.
+    case OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature:
+    case OnDeviceModelEligibilityReason::kSafetyModelNotAvailable:
+    case OnDeviceModelEligibilityReason::kLanguageDetectionModelNotAvailable:
+    case OnDeviceModelEligibilityReason::kModelAdaptationNotAvailable:
+    case OnDeviceModelEligibilityReason::kValidationPending:
+    case OnDeviceModelEligibilityReason::kModelToBeInstalled:
+      return mojom::ModelUnavailableReason::kPendingAssets;
+  }
+}
+
 OptimizationGuideModelExecutionResult::OptimizationGuideModelExecutionResult() =
     default;
 

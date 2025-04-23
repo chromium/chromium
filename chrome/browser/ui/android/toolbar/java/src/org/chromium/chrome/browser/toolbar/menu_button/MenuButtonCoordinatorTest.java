@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.view.KeyEvent;
 import android.widget.ImageButton;
 
 import org.junit.Before;
@@ -99,6 +100,10 @@ public class MenuButtonCoordinatorTest {
         mAppMenuSupplier.set(mAppMenuCoordinator);
 
         mMenuButtonCoordinator.onEnterKeyPress();
+        verify(mAppMenuButtonHelper).onEnterKeyPress(mImageButton);
+
+        mMenuButton.onKeyDown(
+                KeyEvent.KEYCODE_ENTER, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ENTER));
         verify(mAppMenuButtonHelper).onEnterKeyPress(mImageButton);
 
         mMenuButtonCoordinator.destroy();

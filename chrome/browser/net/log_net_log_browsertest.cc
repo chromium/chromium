@@ -9,6 +9,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -141,6 +142,164 @@ IN_PROC_BROWSER_TEST_P(LogNetLogExplicitFileTest, Basic) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 }
 
+// Test fixture for NetLog with invalid duration values.
+//
+// Tests handling of invalid values for the --net-log-duration flag.
+// This ensures that when invalid duration values are provided,browser continues
+// to function properly by:
+// 1. Successfully creating a NetLog file
+// 2. Continuing to log network activity throughout the browser session
+// 3. Generating a properly formatted JSON log file
+//
+// The test operates by setting various invalid duration values, performing
+// network operations, and verifying the NetLog continues to function rather
+// than failing or stopping prematurely.
+class LogNetLogInvalidDurationTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<const char*> {
+ public:
+  LogNetLogInvalidDurationTest() = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    net_log_path_ =
+        temp_dir_.GetPath().Append(FILE_PATH_LITERAL("netlog.json"));
+
+    // Add the NetLog path
+    command_line->AppendSwitchPath(network::switches::kLogNetLog,
+                                   net_log_path_);
+    command_line->AppendSwitchASCII(network::switches::kLogNetLogDuration,
+                                    GetParam());
+    command_line->AppendSwitchASCII(network::switches::kNetLogCaptureMode,
+                                    "Default");
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    // Verify the log file exists and is valid
+    std::string file_contents;
+    ASSERT_TRUE(base::ReadFileToString(net_log_path_, &file_contents))
+        << "Could not read: " << net_log_path_;
+
+    // Parse it as JSON
+    std::optional<base::Value> log_value =
+        base::JSONReader::Read(file_contents);
+    ASSERT_TRUE(log_value.has_value());
+    EXPECT_TRUE(log_value->is_dict());
+  }
+
+ private:
+  base::ScopedTempDir temp_dir_;
+  base::FilePath net_log_path_;
+};
+
+// Test cases: empty string, non-integer value, zero value, negative value
+INSTANTIATE_TEST_SUITE_P(InvalidDurations,
+                         LogNetLogInvalidDurationTest,
+                         ::testing::Values("", "abc", "0", "-5"));
+
+IN_PROC_BROWSER_TEST_P(LogNetLogInvalidDurationTest, InvalidDurationHandling) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Generate some network activity
+  GURL url(embedded_test_server()->GetURL("/simple.html"));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Generate more traffic to verify NetLog is still active
+  url = embedded_test_server()->GetURL("/title1.html");
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // NetLog should continue until browser shutdown
+  // Verification of log file happens in TearDownInProcessBrowserTestFixture
+}
+
+// Test fixture for NetLog with a valid duration value.
+//
+// Tests the --net-log-duration flag with a valid positive integer value.
+// This ensures that when a valid duration is provided, the NetLog system:
+// 1. Properly starts capturing network events
+// 2. Automatically stops capturing after the specified duration (1 second)
+// 3. Generates a valid JSON file containing the captured events
+//
+// The test operates by:
+// - Setting up a 1-second NetLog duration
+// - Performing network operations to generate capturable events
+// - Waiting for the duration to complete
+// - Polling to verify a valid JSON file appears
+class LogNetLogValidDurationTest : public InProcessBrowserTest {
+ public:
+  LogNetLogValidDurationTest() = default;
+  // Polling interval when waiting for the NetLog file to be written
+  static constexpr base::TimeDelta kPollInterval = base::Milliseconds(10);
+  // Maximum number of polling attempts (total wait time = kPollInterval *
+  // kMaxPollAttempts)
+  static constexpr int kMaxPollAttempts = 200;  // 2 seconds total
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Create a temp directory for storing our netlog file.
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    net_log_path_ =
+        temp_dir_.GetPath().Append(FILE_PATH_LITERAL("netlog_valid.json"));
+
+    // Specify a 1-second NetLog duration.
+    command_line->AppendSwitchPath(network::switches::kLogNetLog,
+                                   net_log_path_);
+    command_line->AppendSwitchASCII(network::switches::kLogNetLogDuration, "1");
+    command_line->AppendSwitchASCII(network::switches::kNetLogCaptureMode,
+                                    "Default");
+  }
+
+  bool LogFileExistsAndIsValidJson() {
+    // Allow blocking file I/O in this test method:
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
+    if (!base::PathExists(net_log_path_)) {
+      return false;
+    }
+
+    std::string file_contents;
+    if (!base::ReadFileToString(net_log_path_, &file_contents)) {
+      return false;
+    }
+
+    std::optional<base::Value> parsed_json =
+        base::JSONReader::Read(file_contents);
+    if (!parsed_json.has_value() || !parsed_json->is_dict()) {
+      return false;
+    }
+    return true;
+  }
+  void RunLoopFor(base::TimeDelta duration) {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), duration);
+    run_loop.Run();
+  }
+
+ private:
+  base::ScopedTempDir temp_dir_;
+  base::FilePath net_log_path_;
+};
+
+// This test confirms that the NetLog stops after 1 second and a valid JSON file
+// eventually appears on disk.
+IN_PROC_BROWSER_TEST_F(LogNetLogValidDurationTest, SucceedsWithOneSecond) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Wait ~1 second (the NetLog's duration).
+  RunLoopFor(base::Seconds(1));
+
+  // Now poll until the file is written and valid JSON, or we time out.
+  bool success = false;
+  for (int i = 0; i < kMaxPollAttempts; ++i) {
+    if (LogFileExistsAndIsValidJson()) {
+      success = true;
+      break;
+    }
+    RunLoopFor(kPollInterval);
+  }
+
+  EXPECT_TRUE(success);
+}
 }  // namespace
 
 }  // namespace chrome_browser_net

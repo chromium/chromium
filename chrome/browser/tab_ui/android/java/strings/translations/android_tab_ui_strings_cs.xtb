@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="cs">
+<translation id="1293272072740285747">Skupinu můžete zachovat, abyste do ní mohli přidat karty později, nebo ji můžete smazat, jestli ji už nepotřebujete.
+
+Když skupinu karet <ph name="TITLE_OF_GROUP" /> smažete, všichni k ní okamžitě ztratí přístup a smaže se ze všech zařízení.</translation>
+<translation id="1340839264183302272">Opustit skupinu</translation>
+<translation id="1419023007528516122">Tímto skupinu trvale smažete ze svého zařízení</translation>
+<translation id="1501480321619201731">Smazat skupinu</translation>
+<translation id="2677748264148917807">Odejít</translation>
+<translation id="3547352561153509682">Tímto skupinu smažete ze všech zařízení přihlášených k účtu <ph name="USER_EMAIL" /></translation>
+<translation id="381219490185664296">Odebrat karty ze skupiny?</translation>
+<translation id="4139634748112164403">Karty zůstanou na tomto zařízení otevřené, ale skupina se trvale vymaže</translation>
+<translation id="4431937619879060901">Ke skupině karet „<ph name="GROUP_NAME" />“ okamžitě ztratíte přístup a bude smazána ze všech vašich zařízení</translation>
+<translation id="4460014764210899310">Zrušit seskupení</translation>
+<translation id="4777866634702576038">Smazat skupinu karet?</translation>
+<translation id="5094423602314093681">Odstranit karty a smazat skupinu?</translation>
+<translation id="5647702255748985085">Opustit skupinu?</translation>
+<translation id="742664698522525515">Zachovat skupinu?</translation>
+<translation id="750886945254958667">Skupinu můžete zachovat, abyste do ní mohli přidat karty později, nebo ji můžete opustit, pokud k ní už nechcete mít přístup.</translation>
+<translation id="8261506727792406068">Smazat</translation>
+<translation id="870736955561925754">Zavřít kartu a smazat skupinu?</translation>
+<translation id="8804742093141782941">Zachovat skupinu</translation>
+<translation id="9169141410816678175">Ke skupině karet <ph name="GROUP_NAME" /> všichni okamžitě ztratí přístup a bude smazána ze všech zařízení</translation>
+<translation id="9216898458513705996">Karty zůstanou na tomto zařízení otevřené, ale skupina bude smazána ze všech zařízení přihlášených k účtu <ph name="USER_EMAIL" /></translation>
+<translation id="94870150074703282">Smazat skupinu?</translation>
+</translationbundle>

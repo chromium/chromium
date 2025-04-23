@@ -61,10 +61,6 @@ ASH_EXPORT bool BelongsToActiveDesk(aura::Window* window);
 
 ASH_EXPORT bool BelongsToDesk(aura::Window* window, const Desk* desk);
 
-// Returns active desk's associated lacros profile ID when Desk Profiles feature
-// is enabled; returns null otherwise.
-ASH_EXPORT std::optional<uint64_t> GetActiveDeskLacrosProfileId();
-
 // If `context` is a descendent window of a desk container, return that desk
 // container, otherwise return nullptr. Note that this will return nullptr if
 // `context` is a descendent of the float container, even if it is associated

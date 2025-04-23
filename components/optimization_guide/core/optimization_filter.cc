@@ -10,7 +10,7 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "url/gurl.h"
 
 namespace optimization_guide {
@@ -46,13 +46,6 @@ bool MatchesRegexp(const GURL& url, const RegexpList& regexps) {
   return false;
 }
 
-// Returns a SHA256 hex string for the given input.
-std::string SHA256(std::string_view input) {
-  uint8_t result[crypto::kSHA256Length];
-  crypto::SHA256HashString(input, result, std::size(result));
-  return base::HexEncode(result);
-}
-
 }  // namespace
 
 OptimizationFilter::OptimizationFilter(
@@ -85,14 +78,8 @@ bool OptimizationFilter::ContainsHostSuffix(const GURL& url) const {
     return false;
 
   // First check full host name.
-  if (bloom_filter_format_ == proto::BLOOM_FILTER_FORMAT_SHA256) {
-    if (bloom_filter_->Contains(SHA256(url.host()))) {
-      return true;
-    }
-  } else {
-    if (bloom_filter_->Contains(url.host())) {
-      return true;
-    }
+  if (BloomFilterContains(url.host())) {
+    return true;
   }
 
   // Do not check host suffixes if we are told to skip host suffix checking.
@@ -112,18 +99,20 @@ bool OptimizationFilter::ContainsHostSuffix(const GURL& url) const {
       std::string suffix = full_host.substr(left_pos + 1);
       suffix_count++;
 
-      if (bloom_filter_format_ == proto::BLOOM_FILTER_FORMAT_SHA256) {
-        if (bloom_filter_->Contains(SHA256(suffix))) {
-          return true;
-        }
-      } else {
-        if (bloom_filter_->Contains(suffix)) {
-          return true;
-        }
+      if (BloomFilterContains(suffix)) {
+        return true;
       }
     }
   }
   return false;
+}
+
+bool OptimizationFilter::BloomFilterContains(std::string_view str) const {
+  if (bloom_filter_format_ == proto::BLOOM_FILTER_FORMAT_SHA256) {
+    return bloom_filter_->Contains(base::HexEncode(crypto::hash::Sha256(str)));
+  } else {
+    return bloom_filter_->Contains(str);
+  }
 }
 
 }  // namespace optimization_guide

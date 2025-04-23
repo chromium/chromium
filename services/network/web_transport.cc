@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/network/web_transport.h"
+
+#include <stdint.h>
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -736,8 +733,7 @@ void WebTransport::OnDatagramReceived(std::string_view datagram) {
     return;
   }
 
-  client_->OnDatagramReceived(base::span(
-      reinterpret_cast<const uint8_t*>(datagram.data()), datagram.size()));
+  client_->OnDatagramReceived(base::as_byte_span(datagram));
 }
 
 void WebTransport::OnCanCreateNewOutgoingBidirectionalStream() {

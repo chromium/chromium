@@ -47,7 +47,7 @@ suite('CrContainerShadowMixinLit', function() {
       };
     }
 
-    showBottomShadow: boolean = false;
+    accessor showBottomShadow: boolean = false;
   }
 
   customElements.define(TestElement.is, TestElement);

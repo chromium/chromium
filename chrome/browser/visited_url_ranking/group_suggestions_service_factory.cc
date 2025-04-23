@@ -65,7 +65,8 @@ GroupSuggestionsServiceFactory::BuildServiceInstanceForBrowserContext(
       std::move(tab_events_visit_transformer));
 
   return std::make_unique<GroupSuggestionsServiceImpl>(
-      visited_url_ranking_service, tab_events_visit_transformer_ptr);
+      visited_url_ranking_service, tab_events_visit_transformer_ptr,
+      profile->GetPrefs());
 }
 
 }  // namespace visited_url_ranking

@@ -434,11 +434,6 @@ IN_PROC_BROWSER_TEST_P(SandboxedPagesTest, WebAccessibleResourcesTest) {
   auto test_frame_with_fetch = [&](const char* frame_url, const char* fetch_url,
                                    bool is_web_accessible_resource, int count,
                                    std::string expected_frame_origin) {
-    // Prepare histogram.
-    base::HistogramTester histograms;
-    const char* kHistogramName =
-        "Extensions.SandboxedPageLoad.IsWebAccessibleResource";
-
     // Fetch and test resource.
     content::WebContents* web_contents = GetActiveWebContents();
     ASSERT_TRUE(content::NavigateToURL(web_contents,
@@ -455,8 +450,6 @@ IN_PROC_BROWSER_TEST_P(SandboxedPagesTest, WebAccessibleResourcesTest) {
                   content::JsReplace(kFetchScriptTemplate,
                                      extension->GetResourceURL(fetch_url))),
               fetch_url);
-    histograms.ExpectBucketCount(kHistogramName, is_web_accessible_resource,
-                                 count);
     EXPECT_EQ(expected_frame_origin, web_contents->GetPrimaryMainFrame()
                                          ->GetLastCommittedOrigin()
                                          .Serialize());

@@ -111,16 +111,9 @@ interface Crosapi {
       pending_receiver<ChapsService> receiver);
 
   // BindChromeAppPublisher@43 was removed.
-
   // BindChromeAppWindowTracker@49 was removed.
-
   // BindClipboard@15 was removed.
-
-  // Bind the ClipboardHistory interface to allow lacros-chrome to show
-  // ClipboardHistory.
-  [MinVersion=23] BindClipboardHistory@28(
-      pending_receiver<ClipboardHistory> receiver);
-
+  // BindClipboardHistory@28 was removed.
   // BindContentProtection@31 was removed.
 
   // Binds the CrosDisplayConfigController interface for querying display info.
@@ -130,12 +123,7 @@ interface Crosapi {
 
   // BindDebugInterfaceRegisterer@133 was removed.
   // BindDesk@103 was removed.
-
-  // Binds the desk profiles interface.
-  // Added in M119.
-  [MinVersion=122] BindDeskProfileObserver@124(
-      pending_receiver<DeskProfileObserver> receiver);
-
+  // BindDeskProfileObserver@124 was removed.
   // BindDeskTemplate@71 was removed.
 
   // Binds the device attributes service which is used by enterprise extension
@@ -430,11 +418,7 @@ interface Crosapi {
   [MinVersion=49] BindKioskSessionService@53(
       pending_receiver<KioskSessionService> receiver);
 
-  // Binds the chrome app kiosk service. This service is used to install and
-  // launch the chrome app inside lacros.
-  [MinVersion=73] BindChromeAppKioskService@76(
-      pending_receiver<ChromeAppKioskService> receiver);
-
+  // BindChromeAppKioskService@76 was removed.
   // BindWebKioskService@114 was removed.
   // BindDeviceLocalAccountExtensionService@100 was removed.
   // BindVolumeManager@94 was removed.

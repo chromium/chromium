@@ -23,6 +23,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/notimplemented.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -132,7 +133,9 @@
 
 #if BUILDFLAG(IS_IOS)
 #include "components/permissions/bluetooth_delegate_impl.h"
+#if !BUILDFLAG(IS_IOS_TVOS)
 #include "content/shell/browser/bluetooth/shell_bluetooth_delegate_impl_client.h"
+#endif
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -770,10 +773,11 @@ void ShellContentBrowserClient::OverrideURLLoaderFactoryParams(
     BrowserContext* browser_context,
     const url::Origin& origin,
     bool is_for_isolated_world,
+    bool is_for_service_worker,
     network::mojom::URLLoaderFactoryParams* factory_params) {
   if (url_loader_factory_params_callback_) {
-    url_loader_factory_params_callback_.Run(factory_params, origin,
-                                            is_for_isolated_world);
+    url_loader_factory_params_callback_.Run(
+        factory_params, origin, is_for_isolated_world, is_for_service_worker);
   }
 }
 
@@ -834,11 +838,16 @@ ShellContentBrowserClient::GetNetworkContextsParentDirectory() {
 
 #if BUILDFLAG(IS_IOS)
 BluetoothDelegate* ShellContentBrowserClient::GetBluetoothDelegate() {
+#if !BUILDFLAG(IS_IOS_TVOS)
   if (!bluetooth_delegate_) {
     bluetooth_delegate_ = std::make_unique<permissions::BluetoothDelegateImpl>(
         std::make_unique<ShellBluetoothDelegateImplClient>());
   }
   return bluetooth_delegate_.get();
+#else
+  TVOS_NOT_YET_IMPLEMENTED();
+  return nullptr;
+#endif
 }
 #endif
 

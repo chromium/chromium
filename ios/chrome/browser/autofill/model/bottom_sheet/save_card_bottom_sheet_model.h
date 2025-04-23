@@ -26,15 +26,65 @@ class SaveCardBottomSheetModel {
 
   SaveCardBottomSheetModel(SaveCardBottomSheetModel&) = delete;
   SaveCardBottomSheetModel& operator=(SaveCardBottomSheetModel&) = delete;
-  ~SaveCardBottomSheetModel();
+  virtual ~SaveCardBottomSheetModel();
 
   // Calls `AutofillSaveCardDelegate` to handle the accept event.
-  void OnAccepted(std::u16string cardholder_name,
-                  std::u16string expiration_date_month,
-                  std::u16string expiration_date_year);
+  virtual void OnAccepted();
 
   // Calls `AutofillSaveCardDelegate` to handle the dismiss event.
-  void OnDismissed();
+  virtual void OnCanceled();
+
+  // Logo to be displayed above the title in the bottomsheet.
+  inline int logo_icon_id() const { return ui_info_.logo_icon_id; }
+
+  // Accessibility description for the logo.
+  inline const std::u16string& logo_icon_description() const {
+    return ui_info_.logo_icon_description;
+  }
+
+  // Title displayed in the bottomsheet.
+  inline const std::u16string& title() const { return ui_info_.title_text; }
+
+  // Explanatory text displayed below the title in the bottomsheet.
+  inline const std::u16string& subtitle() const {
+    return ui_info_.description_text;
+  }
+
+  // Text for the button to accept saving the card in the bottomsheet.
+  inline const std::u16string& accept_button_text() const {
+    return ui_info_.confirm_text;
+  }
+
+  // Text for the button to dismiss the bottomsheet.
+  inline const std::u16string& cancel_button_text() const {
+    return ui_info_.cancel_text;
+  }
+
+  // Card name and its last four digits displayed in the bottomsheet for the
+  // card to be saved.
+  inline const std::u16string& card_name_last_four_digits() const {
+    return ui_info_.card_label;
+  }
+
+  // Expiry date displayed in the bottomsheet for the card to be saved.
+  inline const std::u16string& card_expiry_date() const {
+    return ui_info_.card_sub_label;
+  }
+
+  // Card's accessibility description with the card's nick name (if present),
+  // card issuer name, last four digits and expiry date.
+  inline const std::u16string& card_accessibility_description() const {
+    return ui_info_.card_description;
+  }
+
+  // Accessibility description announced when loading is shown to indicate card
+  // upload is in progress.
+  inline const std::u16string& loading_accessibility_description() const {
+    return ui_info_.loading_description;
+  }
+
+  // Card's issuer icon displayed in the bottomsheet for the card to be saved.
+  inline int issuer_icon_id() const { return ui_info_.issuer_icon_id; }
 
   base::WeakPtr<SaveCardBottomSheetModel> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

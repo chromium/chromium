@@ -49,6 +49,7 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/common/url_constants.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
+#include "components/page_load_metrics/browser/features.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/ads_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/third_party_metrics_observer.h"
@@ -204,15 +205,17 @@ void PageLoadMetricsEmbedder::RegisterObservers(
                         web_contents()->GetBrowserContext()),
                     ServiceAccessType::EXPLICIT_ACCESS),
                 base::BindRepeating(&GetApplicationLocale), is_incognito);
-    if (ads_observer)
+    if (ads_observer) {
       tracker->AddObserver(std::move(ads_observer));
+    }
 
     tracker->AddObserver(std::make_unique<ThirdPartyMetricsObserver>());
 
     std::unique_ptr<page_load_metrics::PageLoadMetricsObserver> ukm_observer =
         UkmPageLoadMetricsObserver::CreateIfNeeded(is_incognito);
-    if (ukm_observer)
+    if (ukm_observer) {
       tracker->AddObserver(std::move(ukm_observer));
+    }
 
 #if BUILDFLAG(IS_ANDROID)
     tracker->AddObserver(std::make_unique<AndroidPageLoadMetricsObserver>());
@@ -221,8 +224,9 @@ void PageLoadMetricsEmbedder::RegisterObservers(
         loading_predictor_observer =
             LoadingPredictorPageLoadMetricsObserver::CreateIfNeeded(
                 web_contents());
-    if (loading_predictor_observer)
+    if (loading_predictor_observer) {
       tracker->AddObserver(std::move(loading_predictor_observer));
+    }
     if (blink::LcppEnabled()) {
       tracker->AddObserver(
           std::make_unique<LcpCriticalPathPredictorPageLoadMetricsObserver>());
@@ -249,8 +253,9 @@ void PageLoadMetricsEmbedder::RegisterObservers(
   std::unique_ptr<TranslatePageLoadMetricsObserver> translate_observer =
       TranslatePageLoadMetricsObserver::CreateIfNeeded(
           tracker->GetWebContents());
-  if (translate_observer)
+  if (translate_observer) {
     tracker->AddObserver(std::move(translate_observer));
+  }
   tracker->AddObserver(std::make_unique<ZstdPageLoadMetricsObserver>());
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -266,8 +271,9 @@ void PageLoadMetricsEmbedder::RegisterObservers(
 bool PageLoadMetricsEmbedder::IsNewTabPageUrl(const GURL& url) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  if (!profile)
+  if (!profile) {
     return false;
+  }
   return search::IsInstantNTPURL(url, profile);
 }
 
@@ -304,8 +310,10 @@ bool PageLoadMetricsEmbedder::IsIncognito(content::WebContents* web_contents) {
 page_load_metrics::PageLoadMetricsMemoryTracker*
 PageLoadMetricsEmbedder::GetMemoryTrackerForBrowserContext(
     content::BrowserContext* browser_context) {
-  if (!base::FeatureList::IsEnabled(features::kV8PerFrameMemoryMonitoring))
+  if (!base::FeatureList::IsEnabled(
+          page_load_metrics::features::kV8PerFrameMemoryMonitoring)) {
     return nullptr;
+  }
 
   return page_load_metrics::PageLoadMetricsMemoryTrackerFactory::
       GetForBrowserContext(browser_context);

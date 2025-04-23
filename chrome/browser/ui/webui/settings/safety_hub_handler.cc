@@ -99,33 +99,21 @@ PermissionsData GetUnusedSitePermissionsFromDict(
       chooser_permissions_data ? chooser_permissions_data->Clone()
                                : base::Value::Dict();
 
-  // Handle expiration and lifetime for both revoked unused permissions and
-  // revoked abusive notifications.
-  std::vector<std::tuple<std::string, std::string,
-                         content_settings::ContentSettingConstraints*>>
-      keys = {{safety_hub::kExpirationKey, safety_hub::kLifetimeKey,
-               &permissions_data.constraints}};
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kSafetyHubAbusiveNotificationRevocation)) {
-    keys.emplace_back(safety_hub::kAbusiveRevocationExpirationKey,
-                      safety_hub::kAbusiveRevocationLifetimeKey,
-                      &permissions_data.abusive_revocation_constraints);
-  }
-  for (const auto& [expiration_key, lifetime_key, constraints] : keys) {
-    const base::Value* js_expiration =
-        unused_site_permissions.Find(expiration_key);
-    CHECK(js_expiration);
-    base::Time expiration = base::ValueToTime(js_expiration).value();
+  // Handle expiration and lifetime for revoked permission.
+  const base::Value* js_expiration =
+      unused_site_permissions.Find(safety_hub::kExpirationKey);
+  CHECK(js_expiration);
+  base::Time expiration = base::ValueToTime(js_expiration).value();
 
-    const base::Value* js_lifetime = unused_site_permissions.Find(lifetime_key);
-    base::TimeDelta lifetime = content_settings::RuleMetaData::ComputeLifetime(
-        /*lifetime=*/
-        base::ValueToTimeDelta(js_lifetime).value_or(base::TimeDelta()),
-        /*expiration=*/expiration);
-    *constraints =
-        content_settings::ContentSettingConstraints(expiration - lifetime);
-    constraints->set_lifetime(lifetime);
-  }
+  const base::Value* js_lifetime =
+      unused_site_permissions.Find(safety_hub::kLifetimeKey);
+  base::TimeDelta lifetime = content_settings::RuleMetaData::ComputeLifetime(
+      /*lifetime=*/
+      base::ValueToTimeDelta(js_lifetime).value_or(base::TimeDelta()),
+      /*expiration=*/expiration);
+  permissions_data.constraints =
+      content_settings::ContentSettingConstraints(expiration - lifetime);
+  permissions_data.constraints.set_lifetime(lifetime);
 
   return permissions_data;
 }
@@ -178,12 +166,8 @@ SafetyHubHandler::SafetyHubHandler(Profile* profile)
     : profile_(profile), clock_(base::DefaultClock::GetInstance()) {
   prefs_observation_.Observe(ExtensionPrefs::Get(profile_));
   extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
-  auto* build_state = g_browser_process->GetBuildState();
-  build_state->AddObserver(this);
 }
-SafetyHubHandler::~SafetyHubHandler() {
-  g_browser_process->GetBuildState()->RemoveObserver(this);
-}
+SafetyHubHandler::~SafetyHubHandler() = default;
 
 // static
 std::unique_ptr<SafetyHubHandler> SafetyHubHandler::GetForProfile(
@@ -274,7 +258,7 @@ void SafetyHubHandler::HandleUndoAcknowledgeRevokedUnusedSitePermissionsList(
               ContentSettingsType::NOTIFICATIONS)) {
         safety_hub_util::SetRevokedAbusiveNotificationPermission(
             map, permission_url, /*is_ignored=*/false,
-            permissions_data.abusive_revocation_constraints);
+            permissions_data.constraints);
         // Remove `NOTIFICATIONS` from permission type list for handling unused
         // permission revocation below.
         permissions_data.permission_types.erase(
@@ -340,19 +324,6 @@ base::Value::List SafetyHubHandler::PopulateUnusedSitePermissionsData() {
     revoked_permission_value.Set(
         safety_hub::kSafetyHubChooserPermissionsData,
         base::Value(permissions_data.chooser_permissions_data.Clone()));
-
-    if (base::FeatureList::IsEnabled(
-            safe_browsing::kSafetyHubAbusiveNotificationRevocation)) {
-      revoked_permission_value.Set(
-          safety_hub::kAbusiveRevocationExpirationKey,
-          base::TimeToValue(
-              permissions_data.abusive_revocation_constraints.expiration()));
-
-      revoked_permission_value.Set(
-          safety_hub::kAbusiveRevocationLifetimeKey,
-          base::TimeDeltaToValue(
-              permissions_data.abusive_revocation_constraints.lifetime()));
-    }
 
     result.Append(std::move(revoked_permission_value));
   }
@@ -525,13 +496,6 @@ void SafetyHubHandler::HandleGetVersionCardData(const base::Value::List& args) {
 
   ResolveJavascriptCallback(callback_id,
                             base::Value(safety_hub::GetVersionCardData()));
-}
-
-void SafetyHubHandler::OnUpdate(const BuildState* build_state) {
-  AllowJavascript();
-
-  FireWebUIListener("chrome-version-maybe-changed",
-                    safety_hub::GetVersionCardData());
 }
 
 void SafetyHubHandler::HandleGetSafetyHubEntryPointData(

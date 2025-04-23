@@ -82,16 +82,21 @@ void MaybeFlushBFCacheImpl(content::WebContents* contents,
   CHECK(contents);
 
   int cache_size = -1;
+  content::BackForwardCache::NotRestoredReason reason;
   bool foregrounded =
       (contents->GetVisibility() == content::Visibility::VISIBLE);
   switch (memory_pressure_level) {
     case MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE:
       cache_size = foregrounded ? ForegroundCacheSizeOnModeratePressure()
                                 : BackgroundCacheSizeOnModeratePressure();
+      reason = content::BackForwardCache::NotRestoredReason::
+          kCacheLimitPrunedOnModerateMemoryPressure;
       break;
     case MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL:
       cache_size = foregrounded ? ForegroundCacheSizeOnCriticalPressure()
                                 : BackgroundCacheSizeOnCriticalPressure();
+      reason = content::BackForwardCache::NotRestoredReason::
+          kCacheLimitPrunedOnCriticalMemoryPressure;
       break;
     default:
       NOTREACHED();
@@ -105,7 +110,7 @@ void MaybeFlushBFCacheImpl(content::WebContents* contents,
   // TODO(sebmarchand): Check if this is really needed.
   auto& navigation_controller = contents->GetController();
   if (!navigation_controller.GetPendingEntry())
-    navigation_controller.GetBackForwardCache().Prune(cache_size);
+    navigation_controller.GetBackForwardCache().Prune(cache_size, reason);
 }
 
 }  // namespace

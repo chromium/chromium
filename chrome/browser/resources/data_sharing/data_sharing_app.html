@@ -70,6 +70,16 @@
     /* clean-css ignore:end */
   }
 
+  @media (prefers-color-scheme: dark) {
+    .container {
+      /* ShareKit defaults to a 'light' color scheme when creating a component.
+      While custom styles handle dark mode correctly, browser-native elements
+      (e.g. scrollbars) remain in light mode unless color-scheme is explicitly
+      set. */
+      color-scheme: dark;
+    }
+  }
+
   .invite {
     width: 320px;
   }

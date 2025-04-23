@@ -6,6 +6,7 @@
 
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/commerce/core/commerce_feature_list.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_tile_layout_util.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_config.h"
@@ -307,6 +308,7 @@ const CGFloat kSeparatorHeight = 0.5;
                                                            config:config];
 
   _seeMoreButton.hidden = !config.shouldShowSeeMore;
+  [self setCustomAccessibilityLabelForSeeMoreButton:_type config:config];
 
   // The notifications opt-in button is hidden if either the "See More"
   // button or the module's subtitle is displayed, or if the option is disabled
@@ -462,6 +464,25 @@ const CGFloat kSeparatorHeight = 0.5;
       return [self titleStringForModule:type
                            inMagicStack:inMagicStack
                                  config:config];
+  }
+}
+
+- (void)setCustomAccessibilityLabelForSeeMoreButton:
+            (ContentSuggestionsModuleType)type
+                                             config:(MagicStackModule*)config {
+  switch (type) {
+    case ContentSuggestionsModuleType::kShopCard: {
+      if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
+        ShopCardItem* shopCardItem = static_cast<ShopCardItem*>(config);
+        _seeMoreButton.accessibilityLabel = [@[
+          _seeMoreButton.titleLabel.text, shopCardItem.shopCardData.productTitle
+        ] componentsJoinedByString:@", "];
+      }
+      break;
+    }
+    default:
+      // No customized accessibility label
+      break;
   }
 }
 

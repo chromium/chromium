@@ -6,21 +6,21 @@ package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.settings.ImageButtonPreference;
 
 /** A Preference to represent a Topic. */
+@NullMarked
 public class TopicPreference extends ImageButtonPreference {
-    private final @NonNull Topic mTopic;
+    private final Topic mTopic;
 
-    public TopicPreference(Context context, @NonNull Topic topic) {
+    public TopicPreference(Context context, Topic topic) {
         super(context);
         mTopic = topic;
         setTitle(topic.getName());
     }
 
-    public @NonNull Topic getTopic() {
+    public Topic getTopic() {
         return mTopic;
     }
 }

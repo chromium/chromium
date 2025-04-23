@@ -710,4 +710,22 @@ class AndroidNetworkLibrary {
             ThreadStatsUid.clear();
         }
     }
+
+    @CalledByNative
+    public static void registerQuicConnectionClosePayload(final int socket, final byte[] payload) {
+        final ConnectivityManager cm =
+                (ConnectivityManager)
+                        ContextUtils.getApplicationContext()
+                                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManagerShim.registerQuicConnectionClosePayload(cm, socket, payload);
+    }
+
+    @CalledByNative
+    public static void unregisterQuicConnectionClosePayload(final int socket) {
+        final ConnectivityManager cm =
+                (ConnectivityManager)
+                        ContextUtils.getApplicationContext()
+                                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManagerShim.unregisterQuicConnectionClosePayload(cm, socket);
+    }
 }

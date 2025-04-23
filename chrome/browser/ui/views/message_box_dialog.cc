@@ -91,9 +91,16 @@ chrome::MessageBoxResult ShowSync(gfx::NativeWindow parent,
   return result;
 }
 
-bool CanUseNativeMessageBox() {
+bool CanUseNativeMessageBox(bool has_checkbox) {
   // Only Windows and macOS have native message box.
-  return BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN);
+#if BUILDFLAG(IS_MAC)
+  return true;
+#elif BUILDFLAG(IS_WIN)
+  // Windows message box cannot display checkbox.
+  return !has_checkbox;
+#else
+  return false;
+#endif
 }
 
 bool CanUseViewsMessageBox() {
@@ -129,11 +136,9 @@ void ShowNativeMessageBox(gfx::NativeWindow parent,
                           std::u16string_view no_text,
                           std::u16string_view checkbox_text,
                           MessageBoxDialog::MessageBoxResultCallback callback) {
-  CHECK(CanUseNativeMessageBox());
+  const bool has_checkbox = !checkbox_text.empty();
+  CHECK(CanUseNativeMessageBox(has_checkbox));
 #if BUILDFLAG(IS_WIN)
-  LOG_IF(ERROR, !checkbox_text.empty())
-      << "Dialog checkbox won't be shown, checkbox text: " << checkbox_text;
-
   int result = ui::MessageBox(views::HWNDForNativeWindow(parent),
                               base::AsWString(message), base::AsWString(title),
                               GetMessageBoxFlagsFromType(type));
@@ -177,17 +182,19 @@ chrome::MessageBoxResult MessageBoxDialog::Show(
     return chrome::MESSAGE_BOX_RESULT_DEFERRED;
   }
 
+  const bool has_checkbox = !checkbox_text.empty();
   // Use a native message box if views is not available or no parent is given.
   // This typically is used during browser startup and shutdown when there is
   // no browser window to be used as a parent window.
-  if (CanUseNativeMessageBox() && (!CanUseViewsMessageBox() || !parent)) {
+  if (CanUseNativeMessageBox(has_checkbox) &&
+      (!CanUseViewsMessageBox() || !parent)) {
     ShowNativeMessageBox(parent, title, message, type, yes_text, no_text,
                          checkbox_text, std::move(callback));
     return chrome::MESSAGE_BOX_RESULT_DEFERRED;
   }
 
   if (!CanUseViewsMessageBox()) {
-    CHECK(!CanUseNativeMessageBox());
+    CHECK(!CanUseNativeMessageBox(has_checkbox));
     LOG(ERROR) << "Unable to show message box: " << title << " - " << message;
     std::move(callback).Run(chrome::MESSAGE_BOX_RESULT_NO);
     return chrome::MESSAGE_BOX_RESULT_DEFERRED;
@@ -284,7 +291,7 @@ MessageBoxDialog::MessageBoxDialog(std::u16string_view title,
   SetCloseCallback(base::BindOnce(&MessageBoxDialog::Done,
                                   base::Unretained(this),
                                   chrome::MESSAGE_BOX_RESULT_NO));
-  SetOwnedByWidget(true);
+  SetOwnedByWidget(OwnedByWidgetPassKey());
 
   std::u16string ok_text(yes_text);
   if (ok_text.empty()) {

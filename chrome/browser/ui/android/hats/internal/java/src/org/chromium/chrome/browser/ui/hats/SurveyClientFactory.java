@@ -6,19 +6,19 @@ package org.chromium.chrome.browser.ui.hats;
 
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** Factory class used to create SurveyClient. */
+@NullMarked
 public class SurveyClientFactory {
-    private static SurveyClientFactory sInstance;
+    private static @Nullable SurveyClientFactory sInstance;
     private static boolean sHasInstanceForTesting;
 
     protected final ObservableSupplierImpl<Boolean> mCrashUploadPermissionSupplier;
@@ -77,7 +77,7 @@ public class SurveyClientFactory {
      * @return SurveyClient to display the given survey matching the config.
      */
     public @Nullable SurveyClient createClient(
-            @NonNull SurveyConfig config, @NonNull SurveyUiDelegate uiDelegate, Profile profile) {
+            SurveyConfig config, SurveyUiDelegate uiDelegate, Profile profile) {
         if (config.mProbability == 0f || TextUtils.isEmpty(config.mTriggerId)) return null;
 
         SurveyController surveyController;

@@ -337,14 +337,14 @@ enum {
 // signals to the OS that the object is no longer valid and no further methods
 // should be called on it.
 //
-#define UIA_VALIDATE_CALL()               \
-  if (!AXPlatformNodeBase::GetDelegate()) \
+#define UIA_VALIDATE_CALL()              \
+  if (AXPlatformNodeBase::IsDestroyed()) \
     return UIA_E_ELEMENTNOTAVAILABLE;
-#define UIA_VALIDATE_CALL_1_ARG(arg)      \
-  if (!AXPlatformNodeBase::GetDelegate()) \
-    return UIA_E_ELEMENTNOTAVAILABLE;     \
-  if (!arg)                               \
-    return E_INVALIDARG;                  \
+#define UIA_VALIDATE_CALL_1_ARG(arg)     \
+  if (AXPlatformNodeBase::IsDestroyed()) \
+    return UIA_E_ELEMENTNOTAVAILABLE;    \
+  if (!arg)                              \
+    return E_INVALIDARG;                 \
   *arg = {};
 
 // A helper for tracing calls for functions implementing accessibility COM
@@ -474,8 +474,6 @@ class COMPONENT_EXPORT(AX_PLATFORM)
     COM_INTERFACE_ENTRY(IWindowProvider)
     COM_INTERFACE_ENTRY(IServiceProvider)
   END_COM_MAP()
-
-  ~AXPlatformNodeWin() override;
 
   // AXPlatformNode overrides.
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
@@ -1228,9 +1226,10 @@ class COMPONENT_EXPORT(AX_PLATFORM)
 
  protected:
   AXPlatformNodeWin();
+  ~AXPlatformNodeWin() override;
 
   // AXPlatformNode overrides.
-  void Init(AXPlatformNodeDelegate* delegate) override;
+  void Init(AXPlatformNodeDelegate& delegate) override;
 
   // This is hard-coded; all products based on the Chromium engine will have the
   // same framework name, so that assistive technology can detect any
@@ -1587,7 +1586,7 @@ class COMPONENT_EXPORT(AX_PLATFORM)
   gfx::Range active_composition_range_;
 
   friend AXPlatformNode::Pointer AXPlatformNode::Create(
-      AXPlatformNodeDelegate* delegate);
+      AXPlatformNodeDelegate& delegate);
 };
 
 }  // namespace ui

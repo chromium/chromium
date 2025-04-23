@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 # List of files that don't need to be passed to html_to_wrapper().
-file_suggestion_non_web_component_files = [
+file_suggestion_ts_files = [
   "modules/v2/file_suggestion/file_module_proxy.ts",
   "modules/v2/file_suggestion/microsoft_files_proxy.ts",
 ]

@@ -32,11 +32,7 @@
 #import "ios/chrome/browser/credential_provider/model/archivable_credential+password_form.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_util.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/profile/features.h"
-#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
-#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
-#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
@@ -159,7 +155,9 @@ void RecordNumberFaviconsFetched(size_t fetched_favicon_count) {
 }  // namespace
 
 CredentialProviderService::CredentialProviderService(
+    const std::string& profile_name,
     PrefService* prefs,
+    PrefService* local_state,
     scoped_refptr<PasswordStoreInterface> profile_password_store,
     scoped_refptr<PasswordStoreInterface> account_password_store,
     webauthn::PasskeyModel* passkey_model,
@@ -168,7 +166,9 @@ CredentialProviderService::CredentialProviderService(
     syncer::SyncService* sync_service,
     affiliations::AffiliationService* affiliation_service,
     FaviconLoader* favicon_loader)
-    : prefs_(prefs),
+    : profile_name_(profile_name),
+      prefs_(prefs),
+      local_state_(local_state),
       profile_password_store_(profile_password_store),
       account_password_store_(account_password_store),
       passkey_model_(passkey_model),
@@ -341,6 +341,10 @@ void CredentialProviderService::SyncAllCredentials(
 }
 
 void CredentialProviderService::SyncStore() {
+  if (!IsLastUsedProfile()) {
+    return;
+  }
+
   base::UmaHistogramBoolean(kSyncStoreHistogramName, true);
 
   // Create a callback to process the read credentials, matching the signature
@@ -530,36 +534,15 @@ void CredentialProviderService::RemoveCredentials(
   }
 }
 
-bool CredentialProviderService::IsUsingMultiProfile() const {
-  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
-    return false;
-  }
-
-  ProfileManagerIOS* profile_manager =
-      GetApplicationContext()->GetProfileManager();
-  ProfileAttributesStorageIOS* storage =
-      profile_manager ? profile_manager->GetProfileAttributesStorage()
-                      : nullptr;
-  if (!storage) {
-    // ProfileManagerIOS nor ProfileAttributesStorageIOS should never be null,
-    // except in tests.
-    CHECK_IS_TEST();
-    return false;
-  }
-
-  int number_of_fully_initialized_profiles = 0;
-  storage->IterateOverProfileAttributes(base::BindRepeating(
-      [](int& number_of_fully_initialized_profiles,
-         const ProfileAttributesIOS& attr) {
-        if (attr.IsFullyInitialized()) {
-          ++number_of_fully_initialized_profiles;
-        }
-      },
-      std::ref(number_of_fully_initialized_profiles)));
-  return number_of_fully_initialized_profiles > 1;
+bool CredentialProviderService::IsLastUsedProfile() const {
+  return profile_name_ == local_state_->GetString(prefs::kLastUsedProfile);
 }
 
 void CredentialProviderService::UpdateAccountId() {
+  if (!IsLastUsedProfile()) {
+    return;
+  }
+
   CoreAccountInfo account =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   NSString* account_id = account.gaia.ToNSString();
@@ -574,13 +557,13 @@ void CredentialProviderService::UpdateAccountId() {
   [app_group::GetGroupUserDefaults()
       setObject:is_valid_account ? account_id : nil
          forKey:AppGroupUserDefaultsCredentialProviderUserID()];
-
-  [app_group::GetGroupUserDefaults()
-      setObject:[NSNumber numberWithBool:IsUsingMultiProfile()]
-         forKey:AppGroupUserDefaultsCredentialProviderMultiProfileSetting()];
 }
 
 void CredentialProviderService::UpdateUserEmail() {
+  if (!IsLastUsedProfile()) {
+    return;
+  }
+
   std::optional accountForSaving =
       password_manager::sync_util::GetAccountForSaving(prefs_, sync_service_);
   [app_group::GetGroupUserDefaults()
@@ -590,6 +573,10 @@ void CredentialProviderService::UpdateUserEmail() {
 }
 
 void CredentialProviderService::UpdatePasswordSyncSetting() {
+  if (!IsLastUsedProfile()) {
+    return;
+  }
+
   BOOL is_syncing =
       password_manager::sync_util::HasChosenToSyncPasswords(sync_service_);
   [app_group::GetGroupUserDefaults()
@@ -598,6 +585,10 @@ void CredentialProviderService::UpdatePasswordSyncSetting() {
 }
 
 void CredentialProviderService::UpdateAutomaticPasskeyUpgradeSetting() {
+  if (!IsLastUsedProfile()) {
+    return;
+  }
+
   BOOL is_enabled = base::FeatureList::IsEnabled(
                         kCredentialProviderAutomaticPasskeyUpgrade) &&
                     saving_passwords_enabled_.GetValue() &&
@@ -610,6 +601,10 @@ void CredentialProviderService::UpdateAutomaticPasskeyUpgradeSetting() {
 }
 
 void CredentialProviderService::UpdatePasskeyPRFSetting() {
+  if (!IsLastUsedProfile()) {
+    return;
+  }
+
   BOOL is_enabled = base::FeatureList::IsEnabled(kCredentialProviderPasskeyPRF);
   [app_group::GetGroupUserDefaults()
       setObject:[NSNumber numberWithBool:is_enabled]
@@ -617,6 +612,10 @@ void CredentialProviderService::UpdatePasskeyPRFSetting() {
 }
 
 void CredentialProviderService::UpdatePasskeysM2Availability() {
+  if (!IsLastUsedProfile()) {
+    return;
+  }
+
   [app_group::GetGroupUserDefaults()
       setObject:[NSNumber numberWithBool:IOSPasskeysM2Enabled()]
          forKey:AppGroupUserDefaultsCredentialProviderPasskeysM2Enabled()];
@@ -722,6 +721,10 @@ void CredentialProviderService::OnPasskeyModelShuttingDown() {
 void CredentialProviderService::OnPasskeyModelIsReady(bool is_ready) {}
 
 void CredentialProviderService::OnPrefOrPolicyStatusChanged() {
+  if (!IsLastUsedProfile()) {
+    return;
+  }
+
   [app_group::GetGroupUserDefaults()
       setObject:[NSNumber numberWithBool:saving_passwords_enabled_.GetValue()]
          forKey:AppGroupUserDefaultsCredentialProviderSavingPasswordsEnabled()];

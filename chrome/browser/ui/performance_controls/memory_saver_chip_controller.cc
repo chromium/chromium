@@ -39,11 +39,12 @@ void MemorySaverChipController::ShowIcon() {
 }
 
 void MemorySaverChipController::ShowEducationChip() {
-  page_action_controller_->Show(kActionShowMemorySaverChip);
-  page_action_controller_->ShowSuggestionChip(kActionShowMemorySaverChip);
   page_action_controller_->OverrideText(
       kActionShowMemorySaverChip,
       l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_CHIP_LABEL));
+  page_action_controller_->Show(kActionShowMemorySaverChip);
+  page_action_controller_->ShowSuggestionChip(kActionShowMemorySaverChip,
+                                              {.should_announce_chip = true});
   StartChipTimer();
 
   RecordMemorySaverChipState(MemorySaverChipState::kExpandedEducation);

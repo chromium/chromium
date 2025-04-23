@@ -11,7 +11,7 @@ build_webui("build") {
 
   static_files = [ "index.html" ]
 
-  non_web_component_files = [
+  ts_files = [
     "user_education_internals.html.ts",
     "user_education_internals.ts",
     "user_education_internals_card.html.ts",

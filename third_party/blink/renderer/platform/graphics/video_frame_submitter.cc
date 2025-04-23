@@ -17,7 +17,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "cc/metrics/video_playback_roughness_reporter.h"
-#include "components/viz/common/features.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/surfaces/frame_sink_bundle_id.h"
@@ -121,14 +120,6 @@ class VideoFrameSubmitter::FrameSinkBundleProxy
     }
 
     bundle_->SetNeedsBeginFrame(frame_sink_id_.sink_id(), needs_begin_frame);
-  }
-
-  void SetWantsBeginFrameAcks() override {
-    if (!bundle_) {
-      return;
-    }
-
-    bundle_->SetWantsBeginFrameAcks(frame_sink_id_.sink_id());
   }
 
   // Not used by VideoFrameSubmitter.
@@ -394,14 +385,9 @@ void VideoFrameSubmitter::DidReceiveCompositorFrameAck(
 void VideoFrameSubmitter::OnBeginFrame(
     const viz::BeginFrameArgs& args,
     const WTF::HashMap<uint32_t, viz::FrameTimingDetails>& timing_details,
-    bool frame_ack,
     WTF::Vector<viz::ReturnedResource> resources) {
-  if (features::IsOnBeginFrameAcksEnabled()) {
-    if (frame_ack) {
-      DidReceiveCompositorFrameAck(std::move(resources));
-    } else if (!resources.empty()) {
-      ReclaimResources(std::move(resources));
-    }
+  if (!resources.empty()) {
+    ReclaimResources(std::move(resources));
   }
 
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -669,7 +655,6 @@ void VideoFrameSubmitter::StartSubmitting() {
         remote_frame_sink_.BindNewPipeAndPassReceiver());
     compositor_frame_sink_ = remote_frame_sink_.get();
   }
-  compositor_frame_sink_->SetWantsBeginFrameAcks();
 
   if (!surface_embedder_.is_bound()) {
     provider->ConnectToEmbedder(frame_sink_id_,

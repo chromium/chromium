@@ -45,13 +45,14 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.blink_public.common.BlinkFeatures;
-import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageStartedHelper;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.ServerCertificate;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Arrays;
@@ -59,6 +60,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
@@ -1301,16 +1303,15 @@ public class AwPrerenderTest extends AwParameterizedTest {
         final String nonExistentUrl = getUrl("/android_webview/test/data/non_existent.html");
 
         // Construct a custom response.
-        FileInputStream body = new FileInputStream(UrlUtils.getIsolatedTestFilePath(PRERENDER_URL));
-        WebResourceResponseInfo response = new WebResourceResponseInfo("text/html", "utf-8", body);
-        shouldInterceptRequestHelper.setReturnValueForUrl(nonExistentUrl, response);
+        shouldInterceptRequestHelper.enqueueResponseForUrlWithStream(
+                nonExistentUrl, "text/html", "utf-8", getFileInputStreamSupplier(PRERENDER_URL));
 
         final String scriptUrl = getUrl(PRERENDER_SETUP_SCRIPT_URL);
-        FileInputStream scriptBody =
-                new FileInputStream(UrlUtils.getIsolatedTestFilePath(PRERENDER_SETUP_SCRIPT_URL));
-        WebResourceResponseInfo scriptResponse =
-                new WebResourceResponseInfo("text/javascript", "utf-8", scriptBody);
-        shouldInterceptRequestHelper.setReturnValueForUrl(scriptUrl, scriptResponse);
+        shouldInterceptRequestHelper.enqueueResponseForUrlWithStream(
+                scriptUrl,
+                "text/javascript",
+                "utf-8",
+                getFileInputStreamSupplier(PRERENDER_SETUP_SCRIPT_URL));
 
         int currentShouldInterceptRequestCallCount = shouldInterceptRequestHelper.getCallCount();
 
@@ -1331,6 +1332,20 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         // Activation with the non-existent URL should succeed.
         activatePage(nonExistentUrl, ActivationBy.JAVASCRIPT);
+    }
+
+    private static Supplier<InputStream> getFileInputStreamSupplier(
+            String prerenderSetupScriptUrl) {
+        Supplier<InputStream> data1 =
+                () -> {
+                    try {
+                        return new FileInputStream(
+                                UrlUtils.getIsolatedTestFilePath(prerenderSetupScriptUrl));
+                    } catch (FileNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
+                };
+        return data1;
     }
 
     // Tests ShouldOverrideUrlLoading interaction with prerendering.

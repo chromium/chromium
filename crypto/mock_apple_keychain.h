@@ -36,28 +36,17 @@ class CRYPTO_EXPORT MockAppleKeychain : public AppleKeychain {
   ~MockAppleKeychain() override;
 
   // AppleKeychain implementation.
-  OSStatus FindGenericPassword(UInt32 serviceNameLength,
-                               const char* serviceName,
-                               UInt32 accountNameLength,
-                               const char* accountName,
-                               UInt32* passwordLength,
-                               void** passwordData,
-                               AppleSecKeychainItemRef* itemRef) const override;
-  OSStatus ItemFreeContent(void* data) const override;
-  OSStatus AddGenericPassword(UInt32 serviceNameLength,
-                              const char* serviceName,
-                              UInt32 accountNameLength,
-                              const char* accountName,
-                              UInt32 passwordLength,
-                              const void* passwordData,
-                              AppleSecKeychainItemRef* itemRef) const override;
+  base::expected<std::vector<uint8_t>, OSStatus> FindGenericPassword(
+      std::string_view service_name,
+      std::string_view account_name) const override;
+
+  OSStatus AddGenericPassword(
+      std::string_view service_name,
+      std::string_view account_name,
+      base::span<const uint8_t> password) const override;
 
   // Returns the password that OSCrypt uses to generate its encryption key.
   std::string GetEncryptionPassword() const;
-
-#if !BUILDFLAG(IS_IOS)
-  OSStatus ItemDelete(SecKeychainItemRef itemRef) const override;
-#endif  // !BUILDFLAG(IS_IOS)
 
   // |FindGenericPassword()| can return different results depending on user
   // interaction with the system Keychain.  For mocking purposes we allow the
@@ -71,19 +60,12 @@ class CRYPTO_EXPORT MockAppleKeychain : public AppleKeychain {
   // Returns the true if |AddGenericPassword()| was called.
   bool called_add_generic() const { return called_add_generic_; }
 
-  // Returns the number of allocations - deallocations for password data.
-  int password_data_count() const { return password_data_count_; }
-
  private:
   // Result code for the |FindGenericPassword()| method.
-  OSStatus find_generic_result_;
+  OSStatus find_generic_result_ = noErr;
 
   // Records whether |AddGenericPassword()| gets called.
-  mutable bool called_add_generic_;
-
-  // Tracks the allocations and frees of password data in |FindGenericPassword|
-  // and |ItemFreeContent|.
-  mutable int password_data_count_;
+  mutable bool called_add_generic_ = false;
 };
 
 }  // namespace crypto

@@ -79,7 +79,7 @@ class ArcInstanceThrottleTest : public testing::Test {
     arc_metrics_service_ = ArcMetricsService::GetForBrowserContextForTesting(
         testing_profile_.get());
     arc_metrics_service_->SetHistogramNamerCallback(base::BindLambdaForTesting(
-        [](const std::string&) -> std::string { return ""; }));
+        [](const std::string& s) -> std::string { return s; }));
 
     arc_instance_throttle_ =
         ArcInstanceThrottle::GetForBrowserContextForTesting(
@@ -497,7 +497,7 @@ class ArcInstanceThrottleVMTest : public testing::Test {
     arc_metrics_service_ = ArcMetricsService::GetForBrowserContextForTesting(
         testing_profile_.get());
     arc_metrics_service_->SetHistogramNamerCallback(base::BindLambdaForTesting(
-        [](const std::string&) -> std::string { return ""; }));
+        [](const std::string& s) -> std::string { return s; }));
 
     arc_instance_throttle_ =
         ArcInstanceThrottle::GetForBrowserContextForTesting(

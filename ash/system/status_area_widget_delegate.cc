@@ -111,9 +111,9 @@ int PaddingBetweenTrayItems(const bool is_in_primary_tray_set) {
 }  // namespace
 
 StatusAreaWidgetDelegate::StatusAreaWidgetDelegate(Shelf* shelf)
-    : shelf_(shelf), focus_cycler_for_testing_(nullptr) {
+    : shelf_(shelf) {
   DCHECK(shelf_);
-  SetOwnedByWidget(true);
+  SetOwnedByWidget(OwnedByWidgetPassKey());
 
   // Allow the launcher to surrender the focus to another window upon
   // navigation completion by the user.
@@ -123,11 +123,6 @@ StatusAreaWidgetDelegate::StatusAreaWidgetDelegate(Shelf* shelf)
 }
 
 StatusAreaWidgetDelegate::~StatusAreaWidgetDelegate() = default;
-
-void StatusAreaWidgetDelegate::SetFocusCyclerForTesting(
-    const FocusCycler* focus_cycler) {
-  focus_cycler_for_testing_ = focus_cycler;
-}
 
 bool StatusAreaWidgetDelegate::ShouldFocusOut(bool reverse) {
   views::View* focused_view = GetFocusManager()->GetFocusedView();
@@ -210,9 +205,7 @@ void StatusAreaWidgetDelegate::OnGestureEvent(ui::GestureEvent* event) {
 bool StatusAreaWidgetDelegate::CanActivate() const {
   // We don't want mouse clicks to activate us, but we need to allow
   // activation when the user is using the keyboard (FocusCycler).
-  const FocusCycler* focus_cycler = focus_cycler_for_testing_
-                                        ? focus_cycler_for_testing_.get()
-                                        : Shell::Get()->focus_cycler();
+  const FocusCycler* focus_cycler = Shell::Get()->focus_cycler();
   return focus_cycler->widget_activating() == GetWidget();
 }
 

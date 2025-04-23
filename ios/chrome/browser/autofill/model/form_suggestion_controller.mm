@@ -104,16 +104,25 @@ UIImage* defaultIconForType(FormSuggestion* suggestion) {
       BOOL isPlusAddressFeaturesEnabled = base::FeatureList::IsEnabled(
           plus_addresses::features::kPlusAddressesEnabled);
       return isPlusAddressFeaturesEnabled
-                 ? DefaultSymbolWithPointSize(kShieldedEnvelope,
-                                              kSymbolPointSize)
+          ? SymbolWithPalette(
+                DefaultSymbolWithPointSize(kShieldedEnvelope, kSymbolPointSize),
+                @[
+                  [UIColor colorNamed:kTextPrimaryColor],
+                ])
                  : nil;
     }
     case autofill::SuggestionType::kAddressEntry: {
       switch (suggestion.suggestionIconType) {
         case SuggestionIconType::kAccountHome:
-          return DefaultSymbolWithPointSize(kHomeSymbol, kSymbolPointSize);
+          return SymbolWithPalette(
+              DefaultSymbolWithPointSize(kHomeSymbol, kSymbolPointSize), @[
+                [UIColor colorNamed:kTextPrimaryColor],
+              ]);
         case SuggestionIconType::kAccountWork:
-          return DefaultSymbolWithPointSize(kWorkSymbol, kSymbolPointSize);
+          return SymbolWithPalette(
+              DefaultSymbolWithPointSize(kWorkSymbol, kSymbolPointSize), @[
+                [UIColor colorNamed:kTextPrimaryColor],
+              ]);
         default:
           return nil;
       }

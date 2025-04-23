@@ -5,7 +5,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_delegate.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
@@ -21,7 +20,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/signin/public/base/consent_level.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
@@ -55,30 +53,8 @@ syncer::LocalDataItemModel MakeDummyLocalDataModel(size_t id) {
 
 }  // namespace
 
-class BatchUploadWithFeatureOffBrowserTest : public InProcessBrowserTest {
- public:
-  BatchUploadWithFeatureOffBrowserTest() {
-    scoped_feature_list_.InitAndDisableFeature(switches::kBatchUploadDesktop);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(BatchUploadWithFeatureOffBrowserTest, BatchUploadNull) {
-  BatchUploadService* batch_upload =
-      BatchUploadServiceFactory::GetForProfile(browser()->profile());
-  EXPECT_FALSE(batch_upload);
-}
-
 class BatchUploadBrowserTest : public InProcessBrowserTest {
  public:
-  BatchUploadBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{switches::kBatchUploadDesktop},
-        /*disabled_features=*/{});
-  }
-
   void SetUpOnMainThread() override {
     BatchUploadServiceFactory::GetInstance()->SetTestingFactoryAndUse(
         browser()->profile(),
@@ -174,7 +150,6 @@ class BatchUploadBrowserTest : public InProcessBrowserTest {
       returned_descriptions_;
 
   bool dialog_shown_ = false;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest, OpenBatchUpload) {

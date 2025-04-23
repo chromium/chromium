@@ -363,7 +363,7 @@ void PredictionManager::FetchModels() {
   proto::ModelInfo base_model_info;
   // There should only be one supported model engine version at a time.
   base_model_info.add_supported_model_engine_versions(
-      proto::MODEL_ENGINE_VERSION_TFLITE_2_20_0);
+      proto::MODEL_ENGINE_VERSION_TFLITE_2_20_1);
   // This histogram is used for integration tests. Do not remove.
   // Update this to be 10000 if/when we exceed 100 model engine versions.
   LOCAL_HISTOGRAM_COUNTS_100(
@@ -811,7 +811,7 @@ void PredictionManager::OnPredictionModelOverrideLoaded(
   const bool is_available = prediction_model != nullptr;
   VLOG(0) << "Loading override for "
           << proto::OptimizationTarget_Name(optimization_target)
-          << (is_available ? "succeeded" : "failed");
+          << (is_available ? " succeeded" : " failed");
   OnLoadPredictionModel(optimization_target,
                         /*record_availability_metrics=*/false,
                         std::move(prediction_model));

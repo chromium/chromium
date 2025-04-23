@@ -196,16 +196,6 @@ export interface OriginFileSystemGrants {
   editGrants: FileSystemGrant[];
 }
 
-export interface OriginWithDisplayName {
-  origin: string;
-  displayName: string;
-}
-
-export interface SmartCardReaderGrants {
-  readerName: string;
-  origins: OriginWithDisplayName[];
-}
-
 /**
  * Must be kept in sync with the C++ enum of the same name in
  * chrome/browser/content_settings/generated_cookie_prefs.h
@@ -287,24 +277,6 @@ export interface SiteSettingsPrefsBrowserProxy {
   revokeFileSystemGrant(origin: string, filePath: string): void;
 
   revokeFileSystemGrants(origin: string): void;
-
-  /**
-   * Gets the persistent Smart Card Reader permission grants, grouped by reader
-   * name.
-   */
-  getSmartCardReaderGrants(): Promise<SmartCardReaderGrants[]>;
-
-  /**
-   * Revokes all Smart Card Reader permission grants.
-   */
-  revokeAllSmartCardReadersGrants(): void;
-
-  /**
-   * Revokes a particular persistent Smart Card Reader permission grant.
-   * @param reader The smart card reader name.
-   * @param origin URL of the site that was granted the permission.
-   */
-  revokeSmartCardReaderGrant(reader: string, origin: string): void;
 
   /**
    * Gets a list of category permissions for a given origin. Note that this
@@ -591,18 +563,6 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
 
   revokeFileSystemGrants(origin: string) {
     chrome.send('revokeFileSystemGrants', [origin]);
-  }
-
-  getSmartCardReaderGrants() {
-    return sendWithPromise('getSmartCardReaderGrants');
-  }
-
-  revokeAllSmartCardReadersGrants() {
-    chrome.send('revokeAllSmartCardReadersGrants');
-  }
-
-  revokeSmartCardReaderGrant(reader: string, origin: string) {
-    chrome.send('revokeSmartCardReaderGrant', [reader, origin]);
   }
 
   getOriginPermissions(origin: string, contentTypes: ContentSettingsTypes[]) {

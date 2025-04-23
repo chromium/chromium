@@ -6,10 +6,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/extensions/extension_install_ui_desktop.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest.h"
@@ -53,7 +53,7 @@ class ExtensionInstalledBubbleViewsBrowserTest
     }
 
     scoped_refptr<const extensions::Extension> extension = builder.Build();
-    extension_service()->AddExtension(extension.get());
+    extension_registrar()->AddExtension(extension.get());
     return extension;
   }
 

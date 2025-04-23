@@ -243,7 +243,8 @@ std::unique_ptr<content::ScopedAccessibilityMode> _scoped_accessibility_mode;
   if (UIAccessibilityIsVoiceOverRunning()) {
     _scoped_accessibility_mode =
         content::BrowserAccessibilityState::GetInstance()
-            ->CreateScopedModeForProcess(ui::kAXModeComplete);
+            ->CreateScopedModeForProcess(ui::kAXModeComplete |
+                                         ui::AXMode::kFromPlatform);
   }
 
   // Register for VoiceOver notifications.
@@ -428,7 +429,8 @@ std::unique_ptr<content::ScopedAccessibilityMode> _scoped_accessibility_mode;
       content::BrowserAccessibilityState::GetInstance();
   if (UIAccessibilityIsVoiceOverRunning()) {
     _scoped_accessibility_mode =
-        accessibility_state->CreateScopedModeForProcess(ui::kAXModeComplete);
+        accessibility_state->CreateScopedModeForProcess(
+            ui::kAXModeComplete | ui::AXMode::kFromPlatform);
     accessibility_state->SetScreenReaderAppActive(true);
   } else {
     _scoped_accessibility_mode.reset();

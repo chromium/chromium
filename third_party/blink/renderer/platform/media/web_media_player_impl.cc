@@ -46,7 +46,6 @@
 #include "media/base/media_log.h"
 #include "media/base/media_player_logging_id.h"
 #include "media/base/media_switches.h"
-#include "media/base/media_url_demuxer.h"
 #include "media/base/memory_dump_provider_proxy.h"
 #include "media/base/output_device_info.h"
 #include "media/base/remoting_constants.h"
@@ -70,13 +69,12 @@
 #include "net/http/http_request_headers.h"
 #include "net/url_request/url_request_job.h"
 #include "services/device/public/mojom/battery_monitor.mojom-blink.h"
-#include "third_party/blink/public/common/media/display_type.h"
-#include "third_party/blink/public/common/media/watch_time_reporter.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/web_audio_source_provider_impl.h"
 #include "third_party/blink/public/platform/web_content_decryption_module.h"
 #include "third_party/blink/public/platform/web_encrypted_media_types.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
+#include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_media_player_encrypted_media_client.h"
 #include "third_party/blink/public/platform/web_media_player_source.h"
 #include "third_party/blink/public/platform/web_media_source.h"
@@ -97,6 +95,7 @@
 #include "third_party/blink/renderer/platform/media/url_index.h"
 #include "third_party/blink/renderer/platform/media/video_decode_stats_reporter.h"
 #include "third_party/blink/renderer/platform/media/video_frame_compositor.h"
+#include "third_party/blink/renderer/platform/media/watch_time_reporter.h"
 #include "third_party/blink/renderer/platform/media/web_content_decryption_module_impl.h"
 #include "third_party/blink/renderer/platform/media/web_media_source_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -465,9 +464,6 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
           this,
           media_task_runner_,
           media_log_.get(),
-          frame_->GetDocument().SiteForCookies(),
-          frame_->GetDocument().TopFrameOrigin(),
-          frame_->GetDocument().StorageAccessApiStatus(),
           enable_instant_source_buffer_gc,
           std::move(demuxer_override))),
       tick_clock_(base::DefaultTickClock::GetInstance()),
@@ -848,7 +844,8 @@ void WebMediaPlayerImpl::OnHasNativeControlsChanged(bool has_native_controls) {
     watch_time_reporter_->OnNativeControlsDisabled();
 }
 
-void WebMediaPlayerImpl::OnDisplayTypeChanged(DisplayType display_type) {
+void WebMediaPlayerImpl::OnDisplayTypeChanged(
+    WebMediaPlayer::DisplayType display_type) {
   DVLOG(2) << __func__ << ": display_type=" << static_cast<int>(display_type);
 
   if (surface_layer_for_video_enabled_) {
@@ -857,9 +854,10 @@ void WebMediaPlayerImpl::OnDisplayTypeChanged(DisplayType display_type) {
         CrossThreadBindOnce(
             &VideoFrameCompositor::SetForceSubmit,
             CrossThreadUnretained(compositor_.get()),
-            display_type == DisplayType::kVideoPictureInPicture));
+            display_type ==
+                WebMediaPlayer::DisplayType::kVideoPictureInPicture));
 
-    if (display_type == DisplayType::kVideoPictureInPicture) {
+    if (display_type == WebMediaPlayer::DisplayType::kVideoPictureInPicture) {
       // In picture in picture mode, since the video is compositing in the PIP
       // windows, stop composting it in the original window. One exception is
       // for persistent video, where can happen in auto-pip mode, where the
@@ -881,13 +879,13 @@ void WebMediaPlayerImpl::OnDisplayTypeChanged(DisplayType display_type) {
 
   if (watch_time_reporter_) {
     switch (display_type) {
-      case DisplayType::kInline:
+      case WebMediaPlayer::DisplayType::kInline:
         watch_time_reporter_->OnDisplayTypeInline();
         break;
-      case DisplayType::kFullscreen:
+      case WebMediaPlayer::DisplayType::kFullscreen:
         watch_time_reporter_->OnDisplayTypeFullscreen();
         break;
-      case DisplayType::kVideoPictureInPicture:
+      case WebMediaPlayer::DisplayType::kVideoPictureInPicture:
         watch_time_reporter_->OnDisplayTypeVideoPictureInPicture();
         break;
       case DisplayType::kDocumentPictureInPicture:
@@ -896,7 +894,8 @@ void WebMediaPlayerImpl::OnDisplayTypeChanged(DisplayType display_type) {
     }
   }
 
-  SetPersistentState(display_type == DisplayType::kVideoPictureInPicture);
+  SetPersistentState(display_type ==
+                     WebMediaPlayer::DisplayType::kVideoPictureInPicture);
   UpdatePlayState();
 }
 
@@ -917,15 +916,6 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
   // and / or ask blink (via `client_`) for features from the DOM.
   learning::FeatureDictionary dict;
   will_play_helper_.BeginObservation(dict);
-
-#if BUILDFLAG(IS_ANDROID)
-  // Only allow credentials if the crossorigin attribute is unspecified
-  // (kCorsModeUnspecified) or "use-credentials" (kCorsModeUseCredentials).
-  // This value is only used by the MediaPlayerRenderer.
-  // See https://crbug.com/936566.
-  demuxer_manager_->SetAllowMediaPlayerRendererCredentials(cors_mode !=
-                                                           kCorsModeAnonymous);
-#endif  // BUILDFLAG(IS_ANDROID)
 
   // Note: `url` may be very large, take care when making copies.
   demuxer_manager_->SetLoadedUrl(GURL(url));
@@ -1509,15 +1499,10 @@ WebTimeRanges WebMediaPlayerImpl::Seekable() const {
   // finite duration; this allows looping to work.
   const bool is_finite_stream = IsStreaming() && std::isfinite(seekable_end);
 
-  // Do not change the seekable range when using the MediaPlayerRenderer. It
-  // will take care of dropping invalid seeks.
-  const bool force_seeks_to_zero =
-      !using_media_player_renderer_ && is_finite_stream;
-
   // TODO(dalecurtis): Technically this allows seeking on media which return an
   // infinite duration so long as DataSource::IsStreaming() is false. While not
   // expected, disabling this breaks semi-live players, http://crbug.com/427412.
-  return WebTimeRanges(0.0, force_seeks_to_zero ? 0.0 : seekable_end);
+  return WebTimeRanges(0.0, is_finite_stream ? 0.0 : seekable_end);
 }
 
 bool WebMediaPlayerImpl::IsPrerollAttemptNeeded() {
@@ -1902,14 +1887,14 @@ void WebMediaPlayerImpl::OnPipelineSuspended() {
       // will cancel upon destruction of this class and `demuxer_manager_` is
       // gauranteeed to outlive us as a result of the DestructionHelper.
       have_enough_after_lazy_load_cb_.Reset(
-          WTF::BindOnce(&media::DemuxerManager::OnBufferingHaveEnough,
-                        WTF::Unretained(demuxer_manager_.get()), true));
+          WTF::BindOnce(&media::DemuxerManager::StopPreloading,
+                        WTF::Unretained(demuxer_manager_.get())));
       main_task_runner_->PostDelayedTask(
           FROM_HERE, have_enough_after_lazy_load_cb_.callback(),
           base::Milliseconds(250));
     } else {
       have_enough_after_lazy_load_cb_.Cancel();
-      demuxer_manager_->OnBufferingHaveEnough(true);
+      demuxer_manager_->StopPreloading();
     }
   }
 
@@ -1990,27 +1975,13 @@ void WebMediaPlayerImpl::DemuxerRequestsSeek(base::TimeDelta seek_time) {
 
 void WebMediaPlayerImpl::RestartForHls() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  observer_->OnHlsManifestDetected();
-
-  // Use the media player renderer if the native hls demuxer isn't compiled in
-  // or if the feature is disabled.
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
-  if (!base::FeatureList::IsEnabled(media::kBuiltInHlsPlayer)) {
-    renderer_factory_selector_->SetBaseRendererType(
-        media::RendererType::kMediaPlayer);
-  }
-#elif BUILDFLAG(IS_ANDROID)
-  renderer_factory_selector_->SetBaseRendererType(
-      media::RendererType::kMediaPlayer);
-#else
-  // Shouldn't be reachable from desktop where hls is not enabled.
-  NOTREACHED();
-#endif
-
-#if BUILDFLAG(ENABLE_HLS_DEMUXER) || BUILDFLAG(IS_ANDROID)
+  observer_->OnHlsManifestDetected();
   SetMemoryReportingState(false);
   StartPipeline();
-#endif
+#else
+  NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 }
 
 void WebMediaPlayerImpl::OnError(media::PipelineStatus status) {
@@ -2221,8 +2192,9 @@ void WebMediaPlayerImpl::CreateVideoDecodeStatsReporter() {
     return;
 
   // Only record stats from the local pipeline.
-  if (is_flinging_ || is_remote_rendering_ || using_media_player_renderer_)
+  if (is_flinging_ || is_remote_rendering_) {
     return;
+  }
 
   // Stats reporter requires a valid config. We may not have one for HLS cases
   // where URL demuxer doesn't know details of the stream.
@@ -2353,10 +2325,11 @@ void WebMediaPlayerImpl::OnBufferingStateChangeInternal(
     MaybeUpdateBufferSizesForPlayback();
     if (demuxer_manager_->HasDataSource() && !CouldPlayIfEnoughData()) {
       // For LazyLoad this will be handled during OnPipelineSuspended().
-      if (for_suspended_start && did_lazy_load_)
+      if (for_suspended_start && did_lazy_load_) {
         DCHECK(!have_enough_after_lazy_load_cb_.IsCancelled());
-      else
-        demuxer_manager_->OnBufferingHaveEnough(false);
+      } else if (preload_ == media::DataSource::METADATA && !IsStreaming()) {
+        demuxer_manager_->StopPreloading();
+      }
     }
 
     // Blink expects a timeChanged() in response to a seek().
@@ -2485,14 +2458,7 @@ void WebMediaPlayerImpl::OnVideoNaturalSizeChange(const gfx::Size& size) {
 
   pipeline_metadata_.natural_size = rotated_size;
 
-  if (using_media_player_renderer_ && old_size.IsEmpty()) {
-    // If we are using MediaPlayerRenderer and this is the first size change, we
-    // now know that there is a video track. This condition is paired with code
-    // in CreateWatchTimeReporter() that guesses the existence of a video track.
-    CreateWatchTimeReporter();
-  } else {
-    UpdateSecondaryProperties();
-  }
+  UpdateSecondaryProperties();
 
   if (video_decode_stats_reporter_ &&
       !video_decode_stats_reporter_->MatchesBucketedNaturalSize(
@@ -3038,17 +3004,7 @@ media::PipelineStatus WebMediaPlayerImpl::OnDemuxerCreated(
     bool is_streaming,
     bool is_static) {
   CHECK_NE(demuxer, nullptr);
-  switch (demuxer->GetDemuxerType()) {
-    case media::DemuxerType::kMediaUrlDemuxer: {
-      using_media_player_renderer_ = true;
-      video_decode_stats_reporter_.reset();
-      break;
-    }
-    default: {
-      seeking_ = true;
-      break;
-    }
-  }
+  seeking_ = true;
 
   if (start_type != media::Pipeline::StartType::kNormal) {
     attempting_suspended_start_ = true;
@@ -3430,14 +3386,6 @@ bool WebMediaPlayerImpl::CouldPlayIfEnoughData() {
   return client_->CouldPlayIfEnoughData();
 }
 
-bool WebMediaPlayerImpl::IsMediaPlayerRendererClient() {
-  // MediaPlayerRendererClientFactory is the only factory that a uses
-  // MediaResource::Type::URL for the moment.
-  return renderer_factory_selector_->GetCurrentFactory()
-             ->GetRequiredMediaResourceType() ==
-         media::MediaResource::Type::KUrl;
-}
-
 void WebMediaPlayerImpl::ReportMemoryUsage() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
@@ -3533,6 +3481,10 @@ void WebMediaPlayerImpl::OnMediaThreadMemoryDump(
 }
 
 void WebMediaPlayerImpl::ScheduleIdlePauseTimer() {
+  if (!base::FeatureList::IsEnabled(media::kPauseBackgroundTimer)) {
+    return;
+  }
+
   // Only schedule the pause timer if we're not paused or paused but going to
   // resume when foregrounded, and are suspended and have audio.
   if ((paused_ && !IsPausedBecausePageHidden()) ||
@@ -3557,19 +3509,12 @@ void WebMediaPlayerImpl::CreateWatchTimeReporter() {
   if (!HasVideo() && !HasAudio())
     return;
 
-  // MediaPlayerRenderer does not know about tracks until playback starts.
-  // Assume audio-only unless the natural size has been detected.
-  bool has_video = pipeline_metadata_.has_video;
-  if (using_media_player_renderer_) {
-    has_video = !pipeline_metadata_.natural_size.IsEmpty();
-  }
-
   // Create the watch time reporter and synchronize its initial state.
   watch_time_reporter_ = std::make_unique<WatchTimeReporter>(
       media::mojom::PlaybackProperties::New(
-          pipeline_metadata_.has_audio, has_video, false, false,
-          GetDemuxerType() == media::DemuxerType::kChunkDemuxer, is_encrypted_,
-          embedded_media_experience_enabled_,
+          pipeline_metadata_.has_audio, pipeline_metadata_.has_video, false,
+          false, GetDemuxerType() == media::DemuxerType::kChunkDemuxer,
+          is_encrypted_, embedded_media_experience_enabled_,
           media::mojom::MediaStreamType::kNone, renderer_type_),
       pipeline_metadata_.natural_size,
       WTF::BindRepeating(&WebMediaPlayerImpl::GetCurrentTimeInternal,
@@ -3593,13 +3538,13 @@ void WebMediaPlayerImpl::CreateWatchTimeReporter() {
     watch_time_reporter_->OnNativeControlsDisabled();
 
   switch (client_->GetDisplayType()) {
-    case DisplayType::kInline:
+    case WebMediaPlayer::DisplayType::kInline:
       watch_time_reporter_->OnDisplayTypeInline();
       break;
-    case DisplayType::kFullscreen:
+    case WebMediaPlayer::DisplayType::kFullscreen:
       watch_time_reporter_->OnDisplayTypeFullscreen();
       break;
-    case DisplayType::kVideoPictureInPicture:
+    case WebMediaPlayer::DisplayType::kVideoPictureInPicture:
       watch_time_reporter_->OnDisplayTypeVideoPictureInPicture();
       break;
     case DisplayType::kDocumentPictureInPicture:
@@ -3754,13 +3699,6 @@ bool WebMediaPlayerImpl::ShouldPausePlaybackWhenHidden() const {
   // Audio only stream is allowed to play when in background.
   if (!HasVideo() && preserve_audio)
     return false;
-
-  // MediaPlayer always signals audio and video, so use an empty natural size to
-  // determine if there's really video or not.
-  if (using_media_player_renderer_ &&
-      pipeline_metadata_.natural_size.IsEmpty() && preserve_audio) {
-    return false;
-  }
 
   // Video PiP is the only exception when background video playback is disabled.
   if (HasVideo() && IsInVideoPictureInPicture()) {
@@ -4002,7 +3940,6 @@ void WebMediaPlayerImpl::WriteSplitHistogram(
         UmaFunction(base::StrCat({strkey, ".MSE"}), values...);
         break;
       case media::DemuxerType::kManifestDemuxer:
-      case media::DemuxerType::kMediaUrlDemuxer:
         UmaFunction(base::StrCat({strkey, ".HLS"}), values...);
         break;
       default:
@@ -4090,7 +4027,8 @@ void WebMediaPlayerImpl::RecordEncryptionScheme(
 
 bool WebMediaPlayerImpl::IsInVideoPictureInPicture() const {
   DCHECK(client_);
-  return client_->GetDisplayType() == DisplayType::kVideoPictureInPicture;
+  return client_->GetDisplayType() ==
+         WebMediaPlayer::DisplayType::kVideoPictureInPicture;
 }
 
 void WebMediaPlayerImpl::MaybeSetContainerNameForMetrics() {

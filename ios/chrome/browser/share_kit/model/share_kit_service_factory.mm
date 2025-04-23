@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_configuration.h"
@@ -38,6 +39,7 @@ ShareKitServiceFactory::ShareKitServiceFactory()
   DependsOn(data_sharing::DataSharingServiceFactory::GetInstance());
   DependsOn(collaboration::CollaborationServiceFactory::GetInstance());
   DependsOn(tab_groups::TabGroupSyncServiceFactory::GetInstance());
+  DependsOn(TabGroupServiceFactory::GetInstance());
 }
 
 ShareKitServiceFactory::~ShareKitServiceFactory() = default;
@@ -46,8 +48,10 @@ std::unique_ptr<KeyedService> ShareKitServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
-  if (!IsSharedTabGroupsJoinEnabled(profile) &&
-      !IsSharedTabGroupsCreateEnabled(profile)) {
+  collaboration::CollaborationService* collaboration_service =
+      collaboration::CollaborationServiceFactory::GetForProfile(profile);
+  if (!IsSharedTabGroupsJoinEnabled(collaboration_service) &&
+      !IsSharedTabGroupsCreateEnabled(collaboration_service)) {
     return nullptr;
   }
 
@@ -55,13 +59,14 @@ std::unique_ptr<KeyedService> ShareKitServiceFactory::BuildServiceInstanceFor(
       data_sharing::DataSharingServiceFactory::GetForProfile(profile);
   tab_groups::TabGroupSyncService* sync_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
-  collaboration::CollaborationService* collaboration_service =
-      collaboration::CollaborationServiceFactory::GetForProfile(profile);
+  TabGroupService* tab_group_service =
+      TabGroupServiceFactory::GetForProfile(profile);
 
   // Give the opportunity for the test hook to override the service from
   // the provider (allowing EG tests to use a test ShareKitService).
   if (auto share_kit_service = tests_hook::CreateShareKitService(
-          data_sharing_service, collaboration_service, sync_service)) {
+          data_sharing_service, collaboration_service, sync_service,
+          tab_group_service)) {
     return share_kit_service;
   }
 
@@ -69,6 +74,7 @@ std::unique_ptr<KeyedService> ShareKitServiceFactory::BuildServiceInstanceFor(
       std::make_unique<ShareKitServiceConfiguration>(
           IdentityManagerFactory::GetForProfile(profile),
           AuthenticationServiceFactory::GetForProfile(profile),
-          data_sharing_service, collaboration_service, sync_service);
+          data_sharing_service, collaboration_service, sync_service,
+          tab_group_service);
   return ios::provider::CreateShareKitService(std::move(configuration));
 }

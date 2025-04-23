@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.customtabs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -124,5 +126,25 @@ public class CustomTabAdaptiveToolbarBehaviorUnitTest {
         // and the 3rd one (translate) is ignored.
         initBehavior(List.of(openInBrowser, share));
         assertEquals(UNKNOWN, mBehavior.resultFilter(segmentationResults));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON + ":open_in_browser/true")
+    public void hideManuallySetButton() {
+        // Initialize custom action button types.
+        CustomButtonParams openInBrowser = Mockito.mock(CustomButtonParams.class);
+        when(openInBrowser.getType()).thenReturn(ButtonType.CCT_OPEN_IN_BROWSER_BUTTON);
+        CustomButtonParams share = Mockito.mock(CustomButtonParams.class);
+        when(share.getType()).thenReturn(ButtonType.CCT_SHARE_BUTTON);
+
+        assertTrue(mBehavior.canShowManualOverride(OPEN_IN_BROWSER));
+
+        initBehavior(List.of(openInBrowser));
+        assertTrue(mBehavior.canShowManualOverride(SHARE));
+        assertFalse(mBehavior.canShowManualOverride(OPEN_IN_BROWSER));
+
+        initBehavior(List.of(share));
+        assertFalse(mBehavior.canShowManualOverride(SHARE));
+        assertTrue(mBehavior.canShowManualOverride(OPEN_IN_BROWSER));
     }
 }

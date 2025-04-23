@@ -290,6 +290,10 @@ constexpr base::FeatureParam<bool> kSendPageUrlForContextualization{
     &kLensOverlayContextualSearchbox, "send-page-url-for-contextualization",
     true};
 
+constexpr base::FeatureParam<bool> kSendPageTitleForContextualization{
+    &kLensOverlayContextualSearchbox, "send-page-title-for-contextualization",
+    true};
+
 constexpr base::FeatureParam<int> kLensOverlayPageContentRequestTimeoutMs{
     &kLensOverlayContextualSearchbox, "page-content-request-timeout-ms", 60000};
 
@@ -397,6 +401,9 @@ constexpr base::FeatureParam<bool> kAutoFocusSearchbox{
 
 constexpr base::FeatureParam<bool> kUpdateViewportEachQuery{
     &kLensOverlayContextualSearchbox, "update-viewport-each-query", false};
+
+constexpr base::FeatureParam<bool> kSendPdfCurrentPage{
+    &kLensOverlayContextualSearchbox, "send-pdf-current-page", true};
 
 constexpr base::FeatureParam<bool> kUseAltLoadingHintWeb{
     &kLensOverlayContextualSearchbox, "use-alt-loading-hint-web", false};
@@ -697,6 +704,10 @@ bool SendPageUrlForContextualization() {
   return kSendPageUrlForContextualization.Get();
 }
 
+bool SendPageTitleForContextualization() {
+  return kSendPageTitleForContextualization.Get();
+}
+
 int GetLensOverlayVerticalTextMargin() {
   return kLensOverlayVerticalTextMargin.Get();
 }
@@ -962,6 +973,10 @@ bool PageContentUploadRequestIdFixEnabled() {
 
 bool UpdateViewportEachQueryEnabled() {
   return kUpdateViewportEachQuery.Get();
+}
+
+bool SendPdfCurrentPageEnabled() {
+  return kSendPdfCurrentPage.Get();
 }
 
 bool ShowContextualSearchboxZeroPrefixSuggest() {

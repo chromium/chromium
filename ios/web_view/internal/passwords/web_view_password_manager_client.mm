@@ -229,6 +229,7 @@ void WebViewPasswordManagerClient::NotifySuccessfulLoginWithExistingPassword(
         submitted_manager) {
   helper_.NotifySuccessfulLoginWithExistingPassword(
       std::move(submitted_manager));
+  [bridge_ showSignedInWithSavedCredentialMessage];
 }
 
 bool WebViewPasswordManagerClient::IsPasswordChangeOngoing() {

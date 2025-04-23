@@ -27,6 +27,7 @@
 #include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/scoped_group_bookmark_actions.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -468,8 +469,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kShowManagedBookmarksInBookmarkBar, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(prefs::kAddedBookmarkSincePowerBookmarksLaunch,
-                                false);
   RegisterManagedBookmarksPrefs(registry);
 }
 
@@ -495,8 +494,7 @@ void DeleteBookmarkFolders(BookmarkModel* model,
 
 const BookmarkNode* AddIfNotBookmarked(BookmarkModel* model,
                                        const GURL& url,
-                                       const std::u16string& title,
-                                       const BookmarkNode* parent) {
+                                       const std::u16string& title) {
   // Nothing to do, a user bookmark with that url already exists.
   if (IsBookmarkedByUser(model, url)) {
     return nullptr;
@@ -504,8 +502,7 @@ const BookmarkNode* AddIfNotBookmarked(BookmarkModel* model,
 
   base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
 
-  const auto* parent_to_use =
-      parent ? parent : GetParentForNewNodes(model, url);
+  const BookmarkNode* parent_to_use = GetParentForNewNodes(model, url);
   return model->AddNewURL(parent_to_use, parent_to_use->children().size(),
                           title, url);
 }
@@ -563,10 +560,16 @@ const BookmarkNode* GetParentForNewNodes(BookmarkModel* model,
     return parent;
   }
 
+  // Return the last modified folder if there is no save location suggestion.
   std::vector<const BookmarkNode*> nodes =
       GetMostRecentlyModifiedUserFolders(model);
-  CHECK(!nodes.empty());
-  return nodes[0];
+  if (!nodes.empty()) {
+    return nodes[0];
+  }
+
+  // Default save location.
+  return model->account_other_node() ? model->account_other_node()
+                                     : model->other_node();
 }
 
 bool PruneFoldersForDisplay(const BookmarkModel* model,

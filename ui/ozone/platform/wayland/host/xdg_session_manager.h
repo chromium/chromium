@@ -37,6 +37,7 @@ class XdgSessionManager : public wl::GlobalObjectRegistrar<XdgSessionManager>,
   std::optional<std::string> CreateSession() override;
   std::optional<std::string> RestoreSession(const std::string& session_id,
                                             RestoreReason reason) override;
+  void RemoveWindow(const std::string& session_id, int32_t window_id) override;
 
   XdgSession* GetSession(const std::string& session_id) const;
 

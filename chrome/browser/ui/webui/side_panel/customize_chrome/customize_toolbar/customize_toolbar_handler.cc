@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar_handler.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -82,6 +83,8 @@ MojoActionForChromeAction(actions::ActionId action_id) {
       return side_panel::customize_chrome::mojom::ActionId::kCopyLink;
     case kActionTabSearch:
       return side_panel::customize_chrome::mojom::ActionId::kTabSearch;
+    case kActionSplitTab:
+      return side_panel::customize_chrome::mojom::ActionId::kSplitTab;
     default:
       return std::nullopt;
   }
@@ -138,6 +141,8 @@ std::optional<actions::ActionId> ChromeActionForMojoAction(
       return kActionCopyUrl;
     case side_panel::customize_chrome::mojom::ActionId::kTabSearch:
       return kActionTabSearch;
+    case side_panel::customize_chrome::mojom::ActionId::kSplitTab:
+      return kActionSplitTab;
     default:
       return std::nullopt;
   }
@@ -164,6 +169,10 @@ CustomizeToolbarHandler::CustomizeToolbarHandler(
   pref_change_registrar_.Add(
       prefs::kShowForwardButton,
       base::BindRepeating(&CustomizeToolbarHandler::OnShowForwardButtonChanged,
+                          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kPinSplitTabButton,
+      base::BindRepeating(&CustomizeToolbarHandler::OnPinSplitTabButtonChanged,
                           base::Unretained(this)));
 }
 
@@ -206,6 +215,24 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
               vector_icons::kForwardArrowChromeRefreshIcon, icon_color_id)
               .Rasterize(&provider),
           scale_factor)));
+
+  actions.push_back(std::move(home_action));
+  actions.push_back(std::move(forward_action));
+
+  if (base::FeatureList::IsEnabled(features::kSideBySide)) {
+    auto split_tab_action = side_panel::customize_chrome::mojom::Action::New(
+        MojoActionForChromeAction(kActionSplitTab).value(),
+        base::UTF16ToUTF8(l10n_util::GetStringUTF16(IDS_PIN_SPLIT_TAB_TOGGLE)),
+        prefs()->GetBoolean(prefs::kPinSplitTabButton), false,
+        side_panel::customize_chrome::mojom::CategoryId::kNavigation,
+        GURL(webui::EncodePNGAndMakeDataURI(
+            ui::ImageModel::FromVectorIcon(kSplitSceneIcon, icon_color_id)
+                .Rasterize(&provider),
+            scale_factor)));
+
+    actions.push_back(std::move(split_tab_action));
+  }
+
   const auto add_action =
       [&actions, this, &provider, scale_factor, bwi](
           actions::ActionId id,
@@ -250,8 +277,6 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
         actions.push_back(std::move(mojo_action));
       };
 
-  actions.push_back(std::move(home_action));
-  actions.push_back(std::move(forward_action));
   add_action(kActionNewIncognitoWindow,
              side_panel::customize_chrome::mojom::CategoryId::kNavigation);
 
@@ -341,6 +366,9 @@ void CustomizeToolbarHandler::PinAction(
     case kActionForward:
       prefs()->SetBoolean(prefs::kShowForwardButton, pin);
       break;
+    case kActionSplitTab:
+      prefs()->SetBoolean(prefs::kPinSplitTabButton, pin);
+      break;
     default:
       model_->UpdatePinnedState(chrome_action.value(), pin);
       const std::optional<std::string> metrics_name =
@@ -387,6 +415,11 @@ void CustomizeToolbarHandler::OnShowHomeButtonChanged() {
 void CustomizeToolbarHandler::OnShowForwardButtonChanged() {
   OnActionPinnedChanged(kActionForward,
                         prefs()->GetBoolean(prefs::kShowForwardButton));
+}
+
+void CustomizeToolbarHandler::OnPinSplitTabButtonChanged() {
+  OnActionPinnedChanged(kActionSplitTab,
+                        prefs()->GetBoolean(prefs::kPinSplitTabButton));
 }
 
 void CustomizeToolbarHandler::OnActionItemChanged() {

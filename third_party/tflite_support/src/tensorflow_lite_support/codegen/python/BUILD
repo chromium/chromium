@@ -1,5 +1,5 @@
-# Placeholder: load py_binary
 load("@org_tensorflow//tensorflow:tensorflow.bzl", "pybind_extension")
+# Placeholder: load py_binary
 
 package(
     default_visibility = [
@@ -32,7 +32,6 @@ py_binary(
     srcs = [
         "codegen.py",
     ],
-    python_version = "PY3",
     deps = [
         ":_pywrap_codegen",
         "@absl_py//absl:app",

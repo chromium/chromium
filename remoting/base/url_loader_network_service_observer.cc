@@ -161,7 +161,8 @@ void UrlLoaderNetworkServiceObserver::OnSharedStorageHeaderReceived(
 }
 
 void UrlLoaderNetworkServiceObserver::OnAdAuctionEventRecordHeaderReceived(
-    network::AdAuctionEventRecord event_record) {}
+    network::AdAuctionEventRecord event_record,
+    const std::optional<url::Origin>& top_frame_origin) {}
 
 void UrlLoaderNetworkServiceObserver::Clone(
     mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>

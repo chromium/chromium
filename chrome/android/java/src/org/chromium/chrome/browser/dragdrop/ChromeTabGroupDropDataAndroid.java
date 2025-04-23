@@ -5,11 +5,14 @@
 package org.chromium.chrome.browser.dragdrop;
 
 import android.content.ClipDescription;
+import android.content.Context;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
+import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.ui.base.MimeTypeUtils;
 
 /** Chrome-specific drop data containing a {@link TabGroupMetadata}. */
@@ -33,15 +36,17 @@ public class ChromeTabGroupDropDataAndroid extends ChromeDropDataAndroid {
     }
 
     @Override
-    public String buildTabClipDataText() {
-        // TODO(crbug.com/404709214): If the group title from metadata is null (i.e., the user
-        //  didn't set a specific name), fallback to the default "N tabs" format.
+    public String buildTabClipDataText(Context context) {
+        if (TextUtils.isEmpty(tabGroupMetadata.tabGroupTitle)) {
+            return TabGroupTitleUtils.getDefaultTitle(
+                    context, tabGroupMetadata.tabIdsToUrls.size());
+        }
         return tabGroupMetadata.tabGroupTitle;
     }
 
     @Override
     public String[] getSupportedMimeTypes() {
-        // TODO(crbug.com/384945274): Support Link Mimetype by using the shared tab group link.
+        // TODO(crbug.com/404709214): Support Link Mimetype by using the shared tab group link.
         return new String[] {
             MimeTypeUtils.CHROME_MIMETYPE_TAB_GROUP,
             ClipDescription.MIMETYPE_TEXT_PLAIN,

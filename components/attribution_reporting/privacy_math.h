@@ -49,8 +49,7 @@ enum class RandomizedResponseError {
 
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) RandomizedResponseData {
  public:
-  RandomizedResponseData(double rate,
-                         RandomizedResponse);
+  RandomizedResponseData(double rate, RandomizedResponse);
 
   ~RandomizedResponseData();
 

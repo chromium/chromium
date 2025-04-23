@@ -54,9 +54,9 @@ class MediaPickerElement extends MediaPickerElementBase {
     };
   }
 
-  type: string;
-  label: string;
-  devices: MediaPickerEntry[];
+  declare type: string;
+  declare label: string;
+  declare devices: MediaPickerEntry[];
 
   override ready() {
     super.ready();

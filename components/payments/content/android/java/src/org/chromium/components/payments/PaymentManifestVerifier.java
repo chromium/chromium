@@ -239,16 +239,23 @@ public class PaymentManifestVerifier
                 continue;
             }
 
+            Signature[] signatures = packageInfo.signatures;
+            if (signatures == null) {
+                Log.e(TAG, "Unable to get signatures for \"%s\".", packageName);
+                invalidAppsToRemove.add(packageName);
+                continue;
+            }
+
             appInfo.version = packageInfo.versionCode;
             appInfo.sha256CertFingerprints = new HashSet<>();
-            Signature[] signatures = packageInfo.signatures;
-            assumeNonNull(signatures);
             assumeNonNull(mMessageDigest);
             for (int i = 0; i < signatures.length; i++) {
-                mMessageDigest.update(signatures[i].toByteArray());
+                if (signatures[i] != null) {
+                    mMessageDigest.update(signatures[i].toByteArray());
 
-                // The digest is reset after completing the hash computation.
-                appInfo.sha256CertFingerprints.add(byteArrayToString(mMessageDigest.digest()));
+                    // The digest is reset after completing the hash computation.
+                    appInfo.sha256CertFingerprints.add(byteArrayToString(mMessageDigest.digest()));
+                }
             }
         }
 

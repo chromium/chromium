@@ -67,12 +67,12 @@
     {
         "name": "asynclayoutinflater",
         "group": "androidx.asynclayoutinflater",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.1.0"
     },
     {
         "name": "asynclayoutinflater-appcompat",
         "group": "androidx.asynclayoutinflater",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.1.0"
     },
     {
         "name": "autofill",
@@ -447,7 +447,7 @@
     {
         "name": "dynamicanimation",
         "group": "androidx.dynamicanimation",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.1.0"
     },
     {
         "name": "emoji2",
@@ -512,7 +512,7 @@
     {
         "name": "gridlayout",
         "group": "androidx.gridlayout",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.1.0"
     },
     {
         "name": "interpolator",
@@ -576,6 +576,11 @@
     },
     {
         "name": "lifecycle-livedata-core-ktx",
+        "group": "androidx.lifecycle",
+        "version": "2.9.0-SNAPSHOT"
+    },
+    {
+        "name": "lifecycle-livedata-ktx",
         "group": "androidx.lifecycle",
         "version": "2.9.0-SNAPSHOT"
     },
@@ -763,6 +768,36 @@
         "name": "navigation-runtime-android",
         "group": "androidx.navigation",
         "version": "2.9.0-SNAPSHOT"
+    },
+    {
+        "name": "paging-common",
+        "group": "androidx.paging",
+        "version": "3.4.0-SNAPSHOT"
+    },
+    {
+        "name": "paging-common-android",
+        "group": "androidx.paging",
+        "version": "3.4.0-SNAPSHOT"
+    },
+    {
+        "name": "paging-common-ktx",
+        "group": "androidx.paging",
+        "version": "3.4.0-SNAPSHOT"
+    },
+    {
+        "name": "paging-compose",
+        "group": "androidx.paging",
+        "version": "3.4.0-SNAPSHOT"
+    },
+    {
+        "name": "paging-compose-android",
+        "group": "androidx.paging",
+        "version": "3.4.0-SNAPSHOT"
+    },
+    {
+        "name": "paging-runtime",
+        "group": "androidx.paging",
+        "version": "3.4.0-SNAPSHOT"
     },
     {
         "name": "palette",

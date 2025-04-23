@@ -1,0 +1,12 @@
+Document
+++Group
+++++Text Name='All of the following '
+++++Hyperlink Name='links'
+++++++Text Name='links' IsControlElement=false
+++++Text Name=' are included '
+++++Hyperlink Name='within'
+++++++Text Name='within' IsControlElement=false
+++++Text Name=' one '
+++++Hyperlink Name='span'
+++++++Text Name='span' IsControlElement=false
+++++Text Name='.'

@@ -29,8 +29,9 @@ bool SuitableOrigin::IsSuitable(const url::Origin& origin) {
 
 // static
 std::optional<SuitableOrigin> SuitableOrigin::Create(url::Origin origin) {
-  if (!IsSuitable(origin))
+  if (!IsSuitable(origin)) {
     return std::nullopt;
+  }
 
   return SuitableOrigin(std::move(origin));
 }

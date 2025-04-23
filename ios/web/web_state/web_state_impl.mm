@@ -180,6 +180,13 @@ WebStateImpl::~WebStateImpl() {
   } else {
     saved_->TearDown();
   }
+
+  // Destroy all attached UserData before invalidating pimpl_ or saved_.
+  // As most of them have a pointer back to the WebState, this ensures
+  // they are destroyed while the pointer is still valid (i.e. they can
+  // use the pointer in their destructor, even if they don't observe
+  // WebStateDestroyed).
+  ClearAllUserData();
 }
 
 /* static */

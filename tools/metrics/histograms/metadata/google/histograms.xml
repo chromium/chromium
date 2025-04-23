@@ -31,20 +31,10 @@ chromium-metrics-reviews@google.com.
   <summary>The HRESULT for a failed on-demand update check.</summary>
 </histogram>
 
-<histogram name="GoogleUpdate.InstallDetails.UpdateCohort"
-    enum="GoogleUpdateHashedCohortName" expires_after="2025-04-25">
-  <owner>waffles@chromium.org</owner>
-  <owner>chrome-metrics-team@google.com</owner>
-  <owner>omaha-team@google.com</owner>
-  <summary>
-    The hash of the browser's update cohort name that was present during browser
-    startup. Warning: this histogram was expired from 2019-06-01 to 2023-01-23;
-    data may be missing. This histogram is reported on every UMA log on Windows.
-  </summary>
-</histogram>
-
 <histogram name="GoogleUpdate.InstallDetails.UpdateCohortId"
-    enum="GoogleUpdateHashedCohortId" expires_after="2025-08-31">
+    enum="GoogleUpdateHashedCohortId" expires_after="never">
+<!-- expires-never: Core metric for monitoring per-milestone regressions. -->
+
   <owner>waffles@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <owner>omaha-team@google.com</owner>

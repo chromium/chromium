@@ -157,7 +157,7 @@ class SidePanelBorder : public views::Border {
 
     cc::PaintFlags flags;
     flags.setStrokeWidth(stroke_thickness);
-    flags.setColor(color().ConvertToSkColor(view.GetColorProvider()));
+    flags.setColor(color().ResolveToSkColor(view.GetColorProvider()));
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setAntiAlias(true);
 

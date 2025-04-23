@@ -523,6 +523,12 @@
   <message name="IDS_WEBSITE_SETTINGS_PRIVACY_AND_SECURITY_JAVASCRIPT_OPTIMIZER_SUMMARY" desc="Description for the link row of the V8 security settings page.">
     Turn on additional protection in Chrome’s JavaScript and WebAssembly engine
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_JAVASCRIPT_OPTIMIZER_ALLOWED" desc="Primary text corresponding to the allow button in the V8 optimizer permission radio button group.">
+    Sites can use the V8 optimizer
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_JAVASCRIPT_OPTIMIZER_BLOCKED" desc="Primary text corresponding to the block button in the V8 optimizer permission radio button group.">
+    Don't allow sites to use the V8 optimizer
+  </message>
 
   <!-- Bluetooth -->
 
@@ -750,6 +756,12 @@
   </message>
   <message name="IDS_WEBSITE_SETTINGS_FEDERATED_IDENTITY_PAGE_DESCRIPTION" desc="Description of third-party sign-in content setting.">
     Lets you sign in to websites using the account that you have with an identity service
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_FEDERATED_IDENTITY_ALLOWED" desc="Primary text corresponding to the block button in the Third-party sign-in permission radio button group.">
+    Sites can show sign-in prompts from identity services
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_FEDERATED_IDENTITY_BLOCKED" desc="Primary text corresponding to the block button in the Thrid-party sign-in permission radio button group.">
+    Block sign-in prompts from identity services
   </message>
 
   <!-- File editing -->

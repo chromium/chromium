@@ -52,10 +52,12 @@ LoadPolicy DocumentSubresourceFilter::GetLoadPolicy(
 
   ++statistics_.num_loads_total;
 
-  if (activation_state_.filtering_disabled_for_document)
+  if (activation_state_.filtering_disabled_for_document) {
     return LoadPolicy::ALLOW;
-  if (subresource_url.SchemeIs(url::kDataScheme))
+  }
+  if (subresource_url.SchemeIs(url::kDataScheme)) {
     return LoadPolicy::ALLOW;
+  }
 
   // If ThreadTicks is not supported, then no CPU time measurements have been
   // collected. Don't report both CPU and wall duration to be consistent.
@@ -104,10 +106,12 @@ const url_pattern_index::flat::UrlRule*
 DocumentSubresourceFilter::FindMatchingUrlRule(
     const GURL& subresource_url,
     url_pattern_index::proto::ElementType subresource_type) {
-  if (activation_state_.filtering_disabled_for_document)
+  if (activation_state_.filtering_disabled_for_document) {
     return nullptr;
-  if (subresource_url.SchemeIs(url::kDataScheme))
+  }
+  if (subresource_url.SchemeIs(url::kDataScheme)) {
     return nullptr;
+  }
 
   return ruleset_matcher_.MatchedUrlRule(
       subresource_url, *document_origin_, subresource_type,

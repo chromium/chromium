@@ -34,6 +34,7 @@
 *FrequentFeatureUserModelTest.*
 *HistogramSignalHandlerTest.*
 *HistoryDelegateImplTest.*
+*HistorySyncPromoTest.*
 *HomeModulesCardRegistryTest.*
 *InputContextAndroidTest.*
 *IntentionalUserModelTest.*

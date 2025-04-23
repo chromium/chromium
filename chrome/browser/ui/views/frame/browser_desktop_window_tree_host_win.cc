@@ -19,6 +19,7 @@
 #include "base/win/windows_version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -300,6 +301,16 @@ void BrowserDesktopWindowTreeHostWin::HandleWindowMinimizedOrRestored(
   browser_view_->UpdateLoadingAnimations(restored);
 }
 
+void BrowserDesktopWindowTreeHostWin::HandleRequestClose() {
+  if (browser_shutdown::HasShutdownStarted()) {
+    return;
+  }
+  // Ignore unload handlers.
+  browser_shutdown::OnShutdownStarting(
+      browser_shutdown::ShutdownType::kSilentExit);
+  chrome::CloseAllBrowsersAndQuit();
+}
+
 std::string BrowserDesktopWindowTreeHostWin::GetWorkspace() const {
   return virtual_desktop_helper_ ? virtual_desktop_helper_->GetWorkspace()
                                  : std::string();
@@ -315,7 +326,7 @@ int BrowserDesktopWindowTreeHostWin::GetInitialShowState() const {
 
 bool BrowserDesktopWindowTreeHostWin::GetClientAreaInsets(
     gfx::Insets* insets,
-    HMONITOR monitor) const {
+    int frame_thickness) const {
   // Always use default insets for opaque frame.
   if (!ShouldUseNativeFrame()) {
     return false;
@@ -332,7 +343,6 @@ bool BrowserDesktopWindowTreeHostWin::GetClientAreaInsets(
     // In fullscreen mode there is no frame.
     *insets = gfx::Insets();
   } else {
-    const int frame_thickness = ui::GetFrameThickness(monitor);
     // Reduce the non-client border size; UpdateDWMFrame() will instead extend
     // the border into the window client area. For maximized windows, Windows
     // outdents the window rect from the screen's client rect by
@@ -376,7 +386,7 @@ bool BrowserDesktopWindowTreeHostWin::GetDwmFrameInsetsInPixels(
     // The glass should extend to the bottom of the tabstrip.
     gfx::Rect tabstrip_region_bounds(browser_frame_->GetBoundsForTabStripRegion(
         browser_view_->tab_strip_region_view()->GetMinimumSize()));
-    tabstrip_region_bounds = display::win::ScreenWin::DIPToClientRect(
+    tabstrip_region_bounds = display::win::GetScreenWin()->DIPToClientRect(
         GetHWND(), tabstrip_region_bounds);
 
     *insets = gfx::Insets::TLBR(tabstrip_region_bounds.bottom(), 0, 0, 0);

@@ -60,7 +60,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
@@ -99,6 +98,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/browser/entry_info.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "net/base/mime_util.h"
@@ -245,12 +245,6 @@ class TestController {
 
   std::string InstallExtension(const char* path) {
     return test::InstallTestingChromeApp(profile(), path)->id();
-  }
-
-  void RemoveComponentExtension(const std::string& extension_id) {
-    extensions::ExtensionSystem::Get(profile())
-        ->extension_service()
-        ->RemoveComponentExtension(extension_id);
   }
 
   std::string ExecuteFileTaskAndWaitForDomMessage(
@@ -727,13 +721,13 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, FallbackFailsNoQuickOffice) {
   }
 
   // Uninstall QuickOffice.
-  test_controller()->RemoveComponentExtension(
+  Profile* const profile = browser()->profile();
+  extensions::ExtensionRegistrar::Get(profile)->RemoveComponentExtension(
       extension_misc::kQuickOfficeComponentExtensionId);
 
   // GetUserFallbackChoice() returns `False` because QuickOffice is not
   // installed.
   storage::FileSystemURL test_url;
-  Profile* const profile = browser()->profile();
   const TaskDescriptor task = CreateWebDriveOfficeTask();
   std::vector<FileSystemURL> file_url{test_url};
   ash::office_fallback::FallbackReason fallback_reason =

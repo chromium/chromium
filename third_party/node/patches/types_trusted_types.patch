@@ -1,0 +1,10 @@
+diff --git a/node_modules/@types/trusted-types/index.d.ts b/node_modules/@types/trusted-types/index.d.ts
+index 18ab043a3eea4..41f1cda229af2 100644
+--- a/node_modules/@types/trusted-types/index.d.ts
++++ b/node_modules/@types/trusted-types/index.d.ts
+@@ -1,4 +1,4 @@
+-import * as lib from "./lib";
++import * as lib from "./lib/index.js";
+ 
+ // Re-export the type definitions globally.
+ declare global {

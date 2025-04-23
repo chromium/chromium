@@ -12,10 +12,32 @@ if (build_with_chromium) {
   rust_allocator_uses_partition_alloc = use_partition_alloc_as_malloc
 }
 
+# In ASAN builds, PartitionAlloc-Everywhere is disabled, meaning malloc() and
+# friends in C++ do not go to PartitionAlloc. So we also don't point the Rust
+# allocation functions at PartitionAlloc. Generally, this means we just direct
+# them to the Standard Library's allocator.
+#
+# However, on Windows the Standard Library uses HeapAlloc() and Windows ASAN
+# does *not* hook that method, so ASAN does not get to hear about allocations
+# made in Rust. To resolve this, we redirect allocation to _aligned_malloc
+# which Windows ASAN *does* hook.
+#
+# Note that there is a runtime option to make ASAN hook HeapAlloc() but
+# enabling it breaks Win32 APIs like CreateProcess:
+# https://crbug.com/368070343#comment29
+rust_allocator_uses_aligned_malloc = false
+if (!rust_allocator_uses_partition_alloc && is_win && is_asan) {
+  rust_allocator_uses_aligned_malloc = true
+}
+
+rust_allocator_uses_allocator_impls_h =
+    rust_allocator_uses_partition_alloc || rust_allocator_uses_aligned_malloc
+
 buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
     "RUST_ALLOCATOR_USES_PARTITION_ALLOC=$rust_allocator_uses_partition_alloc",
+    "RUST_ALLOCATOR_USES_ALIGNED_MALLOC=$rust_allocator_uses_aligned_malloc",
   ]
   visibility = [ ":*" ]
 }
@@ -30,61 +52,55 @@ if (toolchain_has_rust) {
     crate_root = "lib.rs"
     cxx_bindings = [ "lib.rs" ]
 
-    deps = [
-      ":allocator_impls",
-      ":allocator_shim_definitions",
-    ]
+    deps = [ ":alloc_error_handler_impl" ]
+    if (rust_allocator_uses_allocator_impls_h) {
+      deps += [ ":allocator_impls" ]
+    }
 
     no_chromium_prelude = true
     no_allocator_crate = true
     allow_unsafe = true
-  }
 
-  static_library("allocator_impls") {
-    public_deps = []
-    if (rust_allocator_uses_partition_alloc) {
-      public_deps += [ "//base/allocator/partition_allocator:partition_alloc" ]
+    rustflags = []
+    if (rust_allocator_uses_allocator_impls_h) {
+      rustflags += [ "--cfg=rust_allocator_uses_allocator_impls_h" ]
+      cxx_bindings += [ "allocator_impls_ffi.rs" ]
+      sources += [ "allocator_impls_ffi.rs" ]
     }
 
-    sources = [
-      "allocator_impls.cc",
-      "allocator_impls.h",
-    ]
-
-    deps = [
-      ":allocator_cpp_shared",
-      ":buildflags",
-
-      # TODO(crbug.com/408221149): remove the C++ -> Rust dependency for the
-      # default allocator.
-      "//build/rust/std",
-    ]
-
-    visibility = [ ":*" ]
+    # TODO(https://crbug.com/410596442): Stop using unstable features here.
+    configs -= [ "//build/config/compiler:disallow_unstable_features" ]
   }
 
-  source_set("allocator_shim_definitions") {
-    sources = [ "allocator_shim_definitions.cc" ]
+  if (rust_allocator_uses_allocator_impls_h) {
+    static_library("allocator_impls") {
+      public_deps = []
+      if (rust_allocator_uses_partition_alloc) {
+        public_deps +=
+            [ "//base/allocator/partition_allocator:partition_alloc" ]
+      }
 
-    deps = [ ":allocator_cpp_shared" ]
-
-    visibility = [ ":*" ]
+      sources = [
+        "allocator_impls.cc",
+        "allocator_impls.h",
+      ]
+      deps = [ ":buildflags" ]
+      visibility = [ ":*" ]
+    }
   }
 
-  source_set("allocator_cpp_shared") {
+  static_library("alloc_error_handler_impl") {
     sources = [
       # `alias.*`, `compiler_specific.h`, and `immediate_crash.*` have been
       # copied from `//base`.
       # TODO(crbug.com/40279749): Avoid duplication / reuse code.
       "alias.cc",
       "alias.h",
+      "alloc_error_handler_impl.cc",
+      "alloc_error_handler_impl.h",
       "compiler_specific.h",
       "immediate_crash.h",
     ]
-
-    visibility = [
-      ":allocator_impls",
-      ":allocator_shim_definitions",
-    ]
+    visibility = [ ":*" ]
   }
 }

@@ -5,8 +5,11 @@
 package org.chromium.ui.listmenu;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+
+import androidx.annotation.DrawableRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -30,9 +33,27 @@ public class ListMenuItemProperties {
     // A11y content description of menu item
     public static final WritableObjectPropertyKey<@Nullable String> CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
+
+    /**
+     * The {@link DrawableRes} ID of the start icon. Mutually exclusive from {@code
+     * START_ICON_DRAWABLE} and {@code START_ICON_BITMAP}.
+     */
     public static final WritableIntPropertyKey START_ICON_ID = new WritableIntPropertyKey();
+
+    /**
+     * The {@link Drawable} for the start icon. Mutually exclusive from {@code START_ICON_ID} and
+     * {@code START_ICON_BITMAP}.
+     */
     public static final WritableObjectPropertyKey<@Nullable Drawable> START_ICON_DRAWABLE =
             new WritableObjectPropertyKey<>();
+
+    /**
+     * The {@link Bitmap} for the start icon. Mutually exclusive from {@code START_ICON_ID} and
+     * {@code START_ICON_DRAWABLE}.
+     */
+    public static final WritableObjectPropertyKey<@Nullable Bitmap> START_ICON_BITMAP =
+            new WritableObjectPropertyKey<>();
+
     public static final WritableIntPropertyKey END_ICON_ID = new WritableIntPropertyKey();
     public static final WritableIntPropertyKey GROUP_ID = new WritableIntPropertyKey();
     public static final WritableIntPropertyKey MENU_ITEM_ID = new WritableIntPropertyKey();
@@ -55,6 +76,7 @@ public class ListMenuItemProperties {
         CONTENT_DESCRIPTION,
         START_ICON_ID,
         START_ICON_DRAWABLE,
+        START_ICON_BITMAP,
         END_ICON_ID,
         GROUP_ID,
         MENU_ITEM_ID,

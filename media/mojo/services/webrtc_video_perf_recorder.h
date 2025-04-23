@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <array>
+
 #include "media/base/video_codecs.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "media/mojo/mojom/webrtc_video_perf.mojom.h"
@@ -56,8 +58,8 @@ class MEDIA_MOJO_EXPORT WebrtcVideoPerfRecorder
   // `features_` tracks the last video configuration that was supplied to
   // UpdateRecord(). This is individually tracked for encode and decode stats
   // per the video configuration.
-  media::mojom::WebrtcPredictionFeatures features_[2];
-  media::mojom::WebrtcVideoStats video_stats_[2];
+  std::array<media::mojom::WebrtcPredictionFeatures, 2> features_;
+  std::array<media::mojom::WebrtcVideoStats, 2> video_stats_;
 };
 
 }  // namespace media

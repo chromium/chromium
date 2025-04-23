@@ -127,6 +127,9 @@ class SyncedBookmarkTracker {
   // Returns true if there are any local entities to be committed.
   bool HasLocalChanges() const;
 
+  // Gets the number of unsynced bookmarks.
+  size_t GetUnsyncedDataCount() const;
+
   const sync_pb::DataTypeState& data_type_state() const {
     return data_type_state_;
   }

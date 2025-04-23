@@ -23,7 +23,7 @@ void OnMediaParsed(ThumbnailMediaParser*,
                    bool success,
                    chrome::mojom::MediaMetadataPtr metadata,
                    SkBitmap thumbnail_bitmap) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   DCHECK(metadata);
 
   // Copy the thumbnail bitmap to a Java Bitmap object.

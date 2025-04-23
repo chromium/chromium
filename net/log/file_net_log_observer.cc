@@ -523,6 +523,8 @@ FileNetLogObserver::FileNetLogObserver(
 
 std::string FileNetLogObserver::CaptureModeToString(NetLogCaptureMode mode) {
   switch (mode) {
+    case NetLogCaptureMode::kHeavilyRedacted:
+      return "HeavilyRedacted";
     case NetLogCaptureMode::kDefault:
       return "Default";
     case NetLogCaptureMode::kIncludeSensitive:

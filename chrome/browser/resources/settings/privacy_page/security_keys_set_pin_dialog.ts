@@ -187,26 +187,26 @@ export class SettingsSecurityKeysSetPinDialogElement extends
     };
   }
 
-  private currentPINValid_: boolean;
-  private newPINValid_: boolean;
-  private confirmPINValid_: boolean;
-  private setPINButtonValid_: boolean;
-  private newPIN_: string;
-  private confirmPIN_: string;
-  private currentPIN_: string;
-  private currentMinPinLength_?: number;
-  private newMinPinLength_?: number;
-  private retries_?: number;
-  private errorCode_?: number;
-  private showCurrentEntry_: boolean;
-  private currentPINError_: string;
-  private newPINError_: string;
-  private confirmPINError_: string;
-  private complete_: boolean;
-  private shown_: SetPinDialogPage;
-  private pinsVisible_: boolean;
-  private title_: string;
-  private newPINDialogDescription_: string;
+  declare private currentPINValid_: boolean;
+  declare private newPINValid_: boolean;
+  declare private confirmPINValid_: boolean;
+  declare private setPINButtonValid_: boolean;
+  declare private newPIN_: string;
+  declare private confirmPIN_: string;
+  declare private currentPIN_: string;
+  declare private currentMinPinLength_?: number;
+  declare private newMinPinLength_?: number;
+  declare private retries_?: number;
+  declare private errorCode_?: number;
+  declare private showCurrentEntry_: boolean;
+  declare private currentPINError_: string;
+  declare private newPINError_: string;
+  declare private confirmPINError_: string;
+  declare private complete_: boolean;
+  declare private shown_: SetPinDialogPage;
+  declare private pinsVisible_: boolean;
+  declare private title_: string;
+  declare private newPINDialogDescription_: string;
   private browserProxy_: SecurityKeysPinBrowserProxy =
       SecurityKeysPinBrowserProxyImpl.getInstance();
 

@@ -41,6 +41,7 @@ class OobeTestAPIHandler : public BaseWebUIHandler {
   void HandleGetShouldSkipChoobe(const std::string& callback_id);
   void HandleGetShouldSkipTouchpadScroll(const std::string& callback_id);
   void HandleGetMetricsClientID(const std::string& callback_id);
+  void HandleGetShouldSkipSplitModifierScreen(const std::string& callback_id);
 
   void OnGetDisplayUnitInfoList(
       const std::string& callback_id,

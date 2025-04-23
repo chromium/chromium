@@ -31,7 +31,7 @@
 
     [
       RuntimeEnabled = GetAllScreensMedia, CallWith = ScriptState, RaisesException,
-      MeasureAs = GetAllScreensMedia, InjectionMitigated
+      MeasureAs = GetAllScreensMedia, IsolatedContext
     ] Promise<sequence<MediaStream>>
     getAllScreensMedia();
 

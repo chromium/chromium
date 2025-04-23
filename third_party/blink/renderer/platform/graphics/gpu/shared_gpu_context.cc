@@ -67,6 +67,15 @@ SharedGpuContext::ContextProviderWrapper() {
   return this_ptr->context_provider_wrapper_->GetWeakPtr();
 }
 
+base::WeakPtr<WebGraphicsContext3DProviderWrapper>
+SharedGpuContext::GetExistingContextProviderWrapper() {
+  SharedGpuContext* this_ptr = GetInstanceForCurrentThread();
+  if (!this_ptr->context_provider_wrapper_) {
+    return nullptr;
+  }
+  return this_ptr->context_provider_wrapper_->GetWeakPtr();
+}
+
 // static
 WebGraphicsSharedImageInterfaceProvider*
 SharedGpuContext::SharedImageInterfaceProvider() {

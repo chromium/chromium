@@ -339,8 +339,6 @@ class SafeBrowsingTabHelper
   QueryObserver query_observer_;
   NavigationObserver navigation_observer_;
   __weak id<SafeBrowsingTabHelperDelegate> delegate_ = nil;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_SAFE_BROWSING_TAB_HELPER_H_

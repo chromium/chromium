@@ -11,6 +11,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.LocaleUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.language.LanguageProfileController;
 
@@ -19,6 +20,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 /** Bridge class for native code to access ULP data for a profile. */
+@NullMarked
 public class LanguageBridge {
     /**
      * Returns the TopULPMatchType for |language| and the top ULP language. Only language bases are

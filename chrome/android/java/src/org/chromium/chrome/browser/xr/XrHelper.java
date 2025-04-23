@@ -16,11 +16,11 @@ import androidx.xr.scenecore.Session;
 import androidx.xr.scenecore.impl.JxrPlatformAdapterAxr;
 
 import org.chromium.base.Log;
+import org.chromium.base.task.ChromiumExecutorServiceFactory;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.util.XrUtils;
-
-import java.util.concurrent.Executors;
 
 /** A singleton utility class to manages XR session and UI environment. */
 @NullMarked
@@ -78,7 +78,7 @@ public class XrHelper {
         // TODO(crbug.com/397984536) Upstream ClankListeningScheduledExecutorService.
         return JxrPlatformAdapterAxr.create(
                 activity,
-                Executors.newSingleThreadScheduledExecutor(),
+                ChromiumExecutorServiceFactory.create(TaskTraits.BEST_EFFORT_MAY_BLOCK),
                 /* useSplitEngine= */ false);
     }
 

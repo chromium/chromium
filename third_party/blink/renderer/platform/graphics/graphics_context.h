@@ -317,10 +317,10 @@ class PLATFORM_EXPORT GraphicsContext {
                   const FloatRoundedRect&,
                   const Color&,
                   const AutoDarkMode& auto_dark_mode);
-  void FillRectWithRoundedHole(const gfx::RectF&,
-                               const FloatRoundedRect& rounded_hole_rect,
-                               const Color&,
-                               const AutoDarkMode& auto_dark_mode);
+  void FillRectWithContouredHole(const gfx::RectF&,
+                                 const ContouredRect& contoured_hole_rect,
+                                 const Color&,
+                                 const AutoDarkMode& auto_dark_mode);
 
   void StrokeRect(const gfx::RectF&,
                   const AutoDarkMode& auto_dark_mode);

@@ -4,24 +4,41 @@
 
 #include "chrome/browser/actor/tools/page_tool.h"
 
+#include "chrome/browser/actor/actor_coordinator.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-
-using content::RenderFrameHost;
-using optimization_guide::proto::ActionInformation;
-using optimization_guide::proto::ClickAction_ClickCount;
-using optimization_guide::proto::ClickAction_ClickType;
+#include "ui/gfx/geometry/point.h"
 
 namespace {
+
+using ::content::RenderFrameHost;
+using ::optimization_guide::proto::ActionInformation;
+using ::optimization_guide::proto::ActionTarget;
+using ::optimization_guide::proto::ClickAction_ClickCount;
+using ::optimization_guide::proto::ClickAction_ClickType;
+using ::optimization_guide::proto::ScrollAction_ScrollDirection;
+using ::optimization_guide::proto::TypeAction_TypeMode;
+
+void SetMojoTarget(const ActionTarget& target,
+                   actor::mojom::ToolTargetPtr& out_mojo_target) {
+  if (target.has_coordinate()) {
+    out_mojo_target = actor::mojom::ToolTarget::NewCoordinate(
+        gfx::Point(target.coordinate().x(), target.coordinate().y()));
+  } else {
+    out_mojo_target =
+        actor::mojom::ToolTarget::NewDomNodeId(target.content_node_id());
+  }
+}
+
 // Set mojom for click action based on proto. Returns false if the proto does
 // not contain correct/sufficient information, true otherwise.
 bool SetClickToolArgs(actor::mojom::ClickActionPtr& click,
-                      ActionInformation action_info) {
-  click->target = actor::mojom::ToolTarget::New(
-      action_info.click().target().content_node_id());
+                      const ActionInformation& action_info) {
+  SetMojoTarget(action_info.click().target(), click->target);
+
   switch (action_info.click().click_type()) {
     case ClickAction_ClickType::ClickAction_ClickType_LEFT:
       click->type = actor::mojom::ClickAction::Type::kLeft;
@@ -30,7 +47,10 @@ bool SetClickToolArgs(actor::mojom::ClickActionPtr& click,
       click->type = actor::mojom::ClickAction::Type::kRight;
       break;
     default:
-      return false;
+      // TODO(issuetracker.google.com/412700289): Revert once this is set.
+      click->type = actor::mojom::ClickAction::Type::kLeft;
+      break;
+      // return false;
   }
   switch (action_info.click().click_count()) {
     case ClickAction_ClickCount::ClickAction_ClickCount_SINGLE:
@@ -40,18 +60,103 @@ bool SetClickToolArgs(actor::mojom::ClickActionPtr& click,
       click->count = actor::mojom::ClickAction::Count::kDouble;
       break;
     default:
-      return false;
+      // TODO(issuetracker.google.com/412700289): Revert once this is set.
+      click->count = actor::mojom::ClickAction::Count::kSingle;
+      break;
+      // return false;
   }
   return true;
 }
 
-// Set mojom for mouse move action based on proto. Returns false if the proto
-// does not contain correct/sufficient information, true otherwise.
+// Set mojom for mouse move action based on proto.
 void SetMouseMoveToolArgs(actor::mojom::MouseMoveActionPtr& move,
-                          ActionInformation action_info) {
-  move->target = actor::mojom::ToolTarget::New(
-      action_info.move_mouse().target().content_node_id());
+                          const ActionInformation& action_info) {
+  SetMojoTarget(action_info.move_mouse().target(), move->target);
 }
+
+// Set mojom for type action based on proto.
+// Returns false if the proto does not contain correct/sufficient information,
+// true otherwise.
+bool SetTypeToolArgs(actor::mojom::TypeActionPtr& type_action,
+                     const ActionInformation& action_info) {
+  SetMojoTarget(action_info.type().target(), type_action->target);
+
+  type_action->text = action_info.type().text();
+  type_action->follow_by_enter = action_info.type().follow_by_enter();
+
+  // Map proto enum to mojom enum
+  switch (action_info.type().mode()) {
+    case TypeAction_TypeMode::TypeAction_TypeMode_DELETE_EXISTING:
+      type_action->mode = actor::mojom::TypeAction::Mode::kDeleteExisting;
+      break;
+    case TypeAction_TypeMode::TypeAction_TypeMode_PREPEND:
+      type_action->mode = actor::mojom::TypeAction::Mode::kPrepend;
+      break;
+    case TypeAction_TypeMode::TypeAction_TypeMode_APPEND:
+      type_action->mode = actor::mojom::TypeAction::Mode::kAppend;
+      break;
+    case TypeAction_TypeMode::TypeAction_TypeMode_UNKNOWN_TYPE_MODE:
+    default:
+      // TODO(issuetracker.google.com/412700289): Revert once this is set.
+      type_action->mode = actor::mojom::TypeAction::Mode::kDeleteExisting;
+      break;
+      //      DLOG(ERROR) << "TypeAction proto type mode not supported"
+      //                  << action_info.type().mode();
+      //      return false;
+  }
+
+  return true;
+}
+
+bool SetScrollToolArgs(actor::mojom::ScrollActionPtr& scroll,
+                       const ActionInformation& action_info) {
+  if (action_info.scroll().has_target()) {
+    SetMojoTarget(action_info.scroll().target(), scroll->target);
+  }
+  switch (action_info.scroll().direction()) {
+    case ScrollAction_ScrollDirection::ScrollAction_ScrollDirection_LEFT:
+      scroll->direction = actor::mojom::ScrollAction::ScrollDirection::kLeft;
+      break;
+    case ScrollAction_ScrollDirection::ScrollAction_ScrollDirection_RIGHT:
+      scroll->direction = actor::mojom::ScrollAction::ScrollDirection::kRight;
+      break;
+    case ScrollAction_ScrollDirection::ScrollAction_ScrollDirection_UP:
+      scroll->direction = actor::mojom::ScrollAction::ScrollDirection::kUp;
+      break;
+    case ScrollAction_ScrollDirection::ScrollAction_ScrollDirection_DOWN:
+      scroll->direction = actor::mojom::ScrollAction::ScrollDirection::kDown;
+      break;
+    default:
+      // TODO(issuetracker.google.com/412700289): Revert once this is set.
+      scroll->direction = actor::mojom::ScrollAction::ScrollDirection::kDown;
+      break;
+      //      return false;
+  }
+  scroll->distance = action_info.scroll().distance();
+  return true;
+}
+
+void SetSelectToolArgs(actor::mojom::SelectActionPtr& select,
+                       const ActionInformation& action_info) {
+  SetMojoTarget(action_info.select().target(), select->target);
+  select->value = action_info.select().value();
+}
+
+void SetDragAndReleaseToolArgs(
+    actor::mojom::DragAndReleaseActionPtr& drag_and_release,
+    ActionInformation action_info) {
+  SetMojoTarget(action_info.drag_and_release().from_target(),
+                drag_and_release->from_target);
+  SetMojoTarget(action_info.drag_and_release().to_target(),
+                drag_and_release->to_target);
+}
+
+void DelayedInvokeCallback(actor::Tool::InvokeCallback callback, bool success) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(std::move(callback), success),
+      actor::ActorCoordinator::GetActionObservationDelay());
+}
+
 }  // namespace
 
 namespace actor {
@@ -83,26 +188,53 @@ void PageTool::Invoke(InvokeCallback callback) {
       request->action = mojom::ToolAction::NewClick(std::move(click));
       break;
     }
-    case ActionInformation::ActionInfoCase::kType:
-    case ActionInformation::ActionInfoCase::kScroll:
+    case ActionInformation::ActionInfoCase::kType: {
+      auto type = mojom::TypeAction::New();
+      if (!SetTypeToolArgs(type, action_info)) {
+        std::move(callback).Run(false);
+        return;
+      }
+      request->action = mojom::ToolAction::NewType(std::move(type));
+      break;
+    }
+    case ActionInformation::ActionInfoCase::kScroll: {
+      auto scroll = mojom::ScrollAction::New();
+      if (!SetScrollToolArgs(scroll, action_info)) {
+        std::move(callback).Run(false);
+        return;
+      }
+      request->action = mojom::ToolAction::NewScroll(std::move(scroll));
+      break;
+    }
     case ActionInformation::ActionInfoCase::kMoveMouse: {
       auto mouse_move = mojom::MouseMoveAction::New();
       SetMouseMoveToolArgs(mouse_move, action_info);
       request->action = mojom::ToolAction::NewMouseMove(std::move(mouse_move));
       break;
     }
-    case ActionInformation::ActionInfoCase::kDragAndRelease:
+    case ActionInformation::ActionInfoCase::kDragAndRelease: {
+      auto drag_and_release = mojom::DragAndReleaseAction::New();
+      SetDragAndReleaseToolArgs(drag_and_release, action_info);
+      request->action =
+          mojom::ToolAction::NewDragAndRelease(std::move(drag_and_release));
+      break;
+    }
     case ActionInformation::ActionInfoCase::kSelect: {
-      // Not implemented yet.
-      NOTIMPLEMENTED();
-      std::move(callback).Run(false);
-      return;
+      auto select = mojom::SelectAction::New();
+      SetSelectToolArgs(select, action_info);
+      request->action = mojom::ToolAction::NewSelect(std::move(select));
+      break;
     }
     default:
       NOTREACHED();
   }
 
-  chrome_render_frame_->InvokeTool(std::move(request), std::move(callback));
+  // TODO(crbug.com/409564704): Delay the callback to give the page a chance to
+  // react to the tool's effects. Temporary until we can do this more reliably
+  // in the renderer.
+  chrome_render_frame_->InvokeTool(
+      std::move(request),
+      base::BindOnce(DelayedInvokeCallback, std::move(callback)));
 }
 
 }  // namespace actor

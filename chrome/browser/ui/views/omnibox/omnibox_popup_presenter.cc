@@ -24,7 +24,7 @@ OmniboxPopupPresenter::OmniboxPopupPresenter(LocationBarView* location_bar_view,
       location_bar_view_(location_bar_view),
       widget_(nullptr),
       requested_handler_(false) {
-  set_owned_by_client();
+  set_owned_by_client(OwnedByClientPassKey());
 
   // Build URL with SessionID to ensure correct omnibox controller binding
   // without relying on mutable state subject to timing and destruction issues.

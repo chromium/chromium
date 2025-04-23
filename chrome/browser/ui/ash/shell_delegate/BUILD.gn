@@ -20,6 +20,7 @@ static_library("shell_delegate") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/api/tasks",
     "//chrome/browser/ash/arc",

@@ -29,16 +29,18 @@
 #include "chrome/common/chromeos/extensions/chromeos_system_extensions_api_provider.h"
 #endif
 
-namespace {
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+namespace {
 
 // Helper method to merge all the FeatureDelegatedAvailabilityCheckMaps into a
 // single map.
 extensions::Feature::FeatureDelegatedAvailabilityCheckMap
 CombineAllAvailabilityCheckMaps() {
   extensions::Feature::FeatureDelegatedAvailabilityCheckMap map_list[] = {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
       controlled_frame::CreateAvailabilityCheckMap(),
+#endif
       extensions::user_scripts_availability::CreateAvailabilityCheckMap(),
       extensions::webstore_override::CreateAvailabilityCheckMap(),
 
@@ -58,8 +60,6 @@ CombineAllAvailabilityCheckMaps() {
   return result;
 }
 
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
 }  // namespace
 
 void EnsureExtensionsClientInitialized() {
@@ -71,10 +71,8 @@ void EnsureExtensionsClientInitialized() {
   if (!initialized) {
     initialized = true;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
     extensions_client->SetFeatureDelegatedAvailabilityCheckMap(
         CombineAllAvailabilityCheckMaps());
-#endif
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
     extensions_client->AddAPIProvider(
         std::make_unique<chrome_apps::ChromeAppsAPIProvider>());

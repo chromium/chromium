@@ -51,14 +51,14 @@ class Cursor : public blink::mojom::IDBCursor {
                 blink::mojom::IDBCursor::PrefetchCallback callback) override;
   void PrefetchReset(int32_t used_prefetches) override;
 
-  const blink::IndexedDBKey& key() const { return cursor_->key(); }
+  const blink::IndexedDBKey& key() const { return cursor_->GetKey(); }
   const blink::IndexedDBKey& primary_key() const {
-    return cursor_->primary_key();
+    return cursor_->GetPrimaryKey();
   }
   IndexedDBValue* Value() const {
     return (cursor_type_ == indexed_db::CursorType::kKeyOnly)
                ? nullptr
-               : cursor_->value();
+               : &cursor_->GetValue();
   }
 
   void Close();

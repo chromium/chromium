@@ -38,7 +38,7 @@ class CORE_EXPORT CSSInterpolationType : public InterpolationType {
   virtual InterpolationValue MaybeConvertInherit(const StyleResolverState&,
                                                  ConversionCheckers&) const = 0;
   virtual InterpolationValue MaybeConvertValue(const CSSValue&,
-                                               const StyleResolverState*,
+                                               const StyleResolverState&,
                                                ConversionCheckers&) const = 0;
   virtual const CSSValue* CreateCSSValue(const InterpolableValue&,
                                          const NonInterpolableValue*,
@@ -63,6 +63,11 @@ class CORE_EXPORT CSSInterpolationType : public InterpolationType {
       EffectModel::CompositeOperation,
       ConversionCheckers&) const {
     return value;
+  }
+
+  virtual InterpolationValue MaybeConvertCustomPropertyUnderlyingValue(
+      const CSSValue&) const {
+    NOTREACHED();
   }
 
  protected:

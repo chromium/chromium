@@ -6,10 +6,13 @@ package org.chromium.chrome.browser.keyboard_accessory;
 
 import androidx.annotation.ColorInt;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * A class that can be observed to be notified of changes to the visual state of the keyboard
  * accessory view.
  */
+@NullMarked
 public interface AccessorySheetVisualStateProvider {
     /** An observer watching for changes to the visual state of the keyboard accessory sheet. */
     interface Observer {

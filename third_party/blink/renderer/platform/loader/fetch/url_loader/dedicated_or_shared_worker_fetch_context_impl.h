@@ -141,6 +141,12 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
 
   void set_client_id(const WebString& client_id);
 
+  // TODO(crbug.com/324939068): remove the code when the feature launched.
+  void set_container_is_blob_url_shared_worker(bool is_blob_url) {
+    container_is_blob_url_shared_worker_ = is_blob_url;
+  }
+  void set_container_is_shared_worker(bool is_sharedworker) override;
+
   WebString GetAcceptLanguages() const override;
 
   std::unique_ptr<ResourceLoadInfoNotifierWrapper>
@@ -218,6 +224,10 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
   // dedicated workers are not yet service worker clients, it is the parent
   // document's id in that case). Passed to ControllerServiceWorkerConnector.
   WebString client_id_;
+
+  // TODO(crbug.com/324939068): remove the flag when the feature launched.
+  bool container_is_blob_url_shared_worker_ = false;
+  bool container_is_shared_worker_ = false;
 
   // Initialized on the worker thread when InitializeOnWorkerThread() is called.
   // |loader_factory_| is used for regular loading by the worker. In

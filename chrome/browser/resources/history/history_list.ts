@@ -70,16 +70,28 @@ export class HistoryListElement extends HistoryListElementBase {
   static get properties() {
     return {
       // The search term for the current query. Set when the query returns.
-      searchedTerm: String,
+      searchedTerm: {
+        type: String,
+        value: '',
+      },
 
-      resultLoadingDisabled_: Boolean,
+      resultLoadingDisabled_: {
+        type: Boolean,
+        value: false,
+      },
 
       /**
        * Indexes into historyData_ of selected items.
        */
-      selectedItems: Object,
+      selectedItems: {
+        type: Object,
+        value: () => new Set(),
+      },
 
-      canDeleteHistory_: Boolean,
+      canDeleteHistory_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('allowDeletingHistory'),
+      },
 
       // An array of history entries in reverse chronological order.
       historyData_: {
@@ -96,17 +108,25 @@ export class HistoryListElement extends HistoryListElementBase {
       pendingDelete: {
         notify: true,
         type: Boolean,
+        value: false,
       },
 
       queryState: Object,
 
-      actionMenuModel_: Object,
+      actionMenuModel_: {
+        type: Object,
+        value: null,
+      },
 
       scrollTarget: {
         type: Object,
         observer: 'onScrollTargetChanged_',
+        value: () => document.documentElement,
       },
-      scrollOffset: Number,
+      scrollOffset: {
+        type: Number,
+        value: 0,
+      },
 
       // Whether this element is active, i.e. visible to the user.
       isActive: {
@@ -123,13 +143,12 @@ export class HistoryListElement extends HistoryListElementBase {
     };
   }
 
-  private historyData_: HistoryEntry[];
+  declare private historyData_: HistoryEntry[];
   private browserService_: BrowserService = BrowserServiceImpl.getInstance();
   private callbackRouter_: PageCallbackRouter =
       BrowserServiceImpl.getInstance().callbackRouter;
-  private canDeleteHistory_: boolean =
-      loadTimeData.getBoolean('allowDeletingHistory');
-  private actionMenuModel_: ActionMenuModel|null = null;
+  declare private canDeleteHistory_: boolean;
+  declare private actionMenuModel_: ActionMenuModel|null;
   private lastOffsetHeight_: number = 0;
   private pageHandler_: PageHandlerRemote =
       BrowserServiceImpl.getInstance().handler;
@@ -143,21 +162,21 @@ export class HistoryListElement extends HistoryListElementBase {
       this.onScrollOrResize_();
     }
   });
-  private resultLoadingDisabled_: boolean = false;
+  declare private resultLoadingDisabled_: boolean;
   private scrollDebounce_: number = 200;
   private scrollListener_: EventListener = () => this.onScrollOrResize_();
   private scrollTimeout_: number|null = null;
-  isActive: boolean;
-  isEmpty: boolean;
-  searchedTerm: string = '';
-  selectedItems: Set<number> = new Set();
-  pendingDelete: boolean = false;
-  private lastFocused_: HTMLElement|null;
-  private listBlurred_: boolean;
-  lastSelectedIndex: number;
-  queryState: QueryState;
-  scrollTarget: HTMLElement = document.documentElement;
-  scrollOffset: number = 0;
+  declare isActive: boolean;
+  declare isEmpty: boolean;
+  declare searchedTerm: string;
+  declare selectedItems: Set<number>;
+  declare pendingDelete: boolean;
+  declare private lastFocused_: HTMLElement|null;
+  declare private listBlurred_: boolean;
+  declare lastSelectedIndex: number;
+  declare queryState: QueryState;
+  declare scrollTarget: HTMLElement;
+  declare scrollOffset: number;
   private onHistoryDeletedListenerId_: number|null = null;
 
   override connectedCallback() {

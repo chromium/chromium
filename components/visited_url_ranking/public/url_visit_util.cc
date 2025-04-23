@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 
+#include "base/hash/hash.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_split.h"
@@ -356,6 +357,14 @@ scoped_refptr<InputContext> AsInputContextInternal(
       case kTabId:
         if (tab_data) {
           value = ProcessedValue::FromFloat(tab_data->last_active_tab.id);
+        }
+        break;
+      case kTabUrlOriginHash:
+        if (tab_data) {
+          GURL origin =
+              tab_data->last_active_tab.visit.url.DeprecatedGetOriginAsURL();
+          size_t hash = origin.is_empty() ? 0 : base::FastHash(origin.spec());
+          value = ProcessedValue::FromFloat(hash);
         }
         break;
     }

@@ -84,7 +84,8 @@ void NetworkHintsHandlerImpl::Preconnect(const url::SchemeHostPort& url,
   preconnect_manager_->StartPreconnectUrl(
       url.GetURL(), allow_credentials,
       GetPendingNetworkAnonymizationKey(render_frame_host),
-      kNetworkHintsTrafficAnnotation, /*storage_partition_config=*/nullptr);
+      kNetworkHintsTrafficAnnotation, /*storage_partition_config=*/nullptr,
+      /*keepalive_config=*/std::nullopt, mojo::NullRemote());
 }
 
 NetworkHintsHandlerImpl::NetworkHintsHandlerImpl(

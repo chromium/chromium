@@ -4,13 +4,17 @@
 
 #import "ios/chrome/browser/push_notification/model/constants.h"
 
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+
+// LINT.IfChange(ClientId)
 const char kCommerceNotificationKey[] = "PRICE_DROP";
 const char kContentNotificationKey[] = "CONTENT";
-const char kTipsNotificationKey[] = "TIPS";
-const char kSportsNotificationKey[] = "SPORTS";
+const char kReminderNotificationKey[] = "REMINDER";
 const char kSafetyCheckNotificationKey[] = "SAFETY_CHECK";
 const char kSendTabNotificationKey[] = "SEND_TAB";
-const char kReminderNotificationKey[] = "REMINDER";
+const char kSportsNotificationKey[] = "SPORTS";
+const char kTipsNotificationKey[] = "TIPS";
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/histograms.xml:ClientId)
 
 NSString* const kSendTabNotificationCategoryIdentifier = @"SendTabNotification";
 
@@ -33,3 +37,27 @@ const char kContentNotificationActionHistogramName[] =
 const int kDeliveredNAUMaxSendsPerSession = 30;
 
 NSString* const kPushNotificationClientIdKey = @"push_notification_client_id";
+
+NSString* const kOriginatingProfileNameKey = @"originating_profile_name";
+
+NSString* const kOriginatingGaiaIDKey = @"SenderGaiaId";
+
+std::string PushNotificationClientIdToString(
+    PushNotificationClientId client_id) {
+  switch (client_id) {
+    case PushNotificationClientId::kCommerce:
+      return kCommerceNotificationKey;
+    case PushNotificationClientId::kContent:
+      return kContentNotificationKey;
+    case PushNotificationClientId::kTips:
+      return kTipsNotificationKey;
+    case PushNotificationClientId::kSports:
+      return kSportsNotificationKey;
+    case PushNotificationClientId::kSafetyCheck:
+      return kSafetyCheckNotificationKey;
+    case PushNotificationClientId::kSendTab:
+      return kSendTabNotificationKey;
+    case PushNotificationClientId::kReminders:
+      return kReminderNotificationKey;
+  }
+}

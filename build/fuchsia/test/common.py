@@ -19,6 +19,7 @@ from typing import Iterable, List, Optional, Tuple
 from dataclasses import dataclass
 
 from compatible_utils import get_ssh_prefix, get_host_arch
+from repeating_log import RepeatingLog
 
 
 def _find_src_root() -> str:
@@ -387,19 +388,42 @@ def get_ip_address(target_id: Optional[str], ipv4_only: bool = False):
 
 def get_ssh_address(target_id: Optional[str],
                     ipv4_only: bool = False) -> Tuple[str, int]:
-    """Determines SSH address for given target."""
+    """Determines SSH address for given target, this function waits for the
+    device to be reachable up to 5 minutes, or throws an error if it fails."""
     cmd = ['target', 'list']
     if ipv4_only:
         cmd.append('--no-ipv6')
     if target_id:
         # target list does not respect -t / --target flag.
         cmd.append(target_id)
-    target = json.loads(
-        run_ffx_command(cmd=cmd, json_out=True,
-                        capture_output=True).stdout.strip())
-    addr = target[0]['addresses'][0]
-    if 'Ip' in addr:
-        addr = addr['Ip']
+
+    # A temporary solution to avoid cycle dependency. The DIR_SRC_ROOT should be
+    # moved away from common.py.
+    # pylint: disable=cyclic-import, import-outside-toplevel
+    import monitors
+
+    # The initial ffx target list command may return an empty list or without
+    # the ipv4 address, wait for a while to allow it detecting the devices and
+    # their addresses.
+    with monitors.time_consumption('ffx', 'get_ssh_address',
+                                    ipv4_only and 'ipv4' or ''), \
+         RepeatingLog("Waiting for the ssh address"):
+        for _ in range(60):
+            target = json.loads(
+                run_ffx_command(cmd=cmd, json_out=True,
+                                capture_output=True).stdout.strip())
+            if target:
+                addrs = target[0]['addresses']
+                if addrs:
+                    addr = addrs[0]
+                    if 'Ip' in addr:
+                        addr = addr['Ip']
+                    break
+            time.sleep(5)
+        else:
+            monitors.count('ffx', 'get_ssh_address', ipv4_only and 'ipv4' or '',
+                           'failed').record(1)
+            raise RuntimeError('No addresses found for target.')
     ssh_port = int(addr['ssh_port'])
     if ssh_port == 0:
         # Returning an unset ssh_port means the default port 22.

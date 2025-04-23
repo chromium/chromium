@@ -29,12 +29,6 @@ bool PasswordAccessLossWarningBridgeImpl::ShouldShowAccessLossNoticeSheet(
     return false;
   }
 
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::
-              kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning)) {
-    return false;
-  }
-
   if (base::FeatureList::IsEnabled(
           password_manager::features::kLoginDbDeprecationAndroid)) {
     // If the login DB is being deprecated, the warning is no longer relevant.
@@ -49,10 +43,6 @@ bool PasswordAccessLossWarningBridgeImpl::ShouldShowAccessLossNoticeSheet(
           pref_service) ==
       password_manager_android_util::PasswordAccessLossWarningType::kNone) {
     return false;
-  }
-
-  if (password_manager::features::kIgnoreAccessLossWarningTimeout.Get()) {
-    return true;
   }
 
   base::Time last_shown_timestamp = pref_service->GetTime(

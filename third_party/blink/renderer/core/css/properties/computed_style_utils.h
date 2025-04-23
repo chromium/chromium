@@ -161,8 +161,8 @@ class CORE_EXPORT ComputedStyleUtils {
                                          const ComputedStyle&,
                                          bool force_computed_value = false);
   static CSSValue* ValueForGridPosition(const GridPosition&);
-  static CSSValue* ValueForMasonrySlack(const std::optional<Length>&,
-                                        const ComputedStyle&);
+  static CSSValue* ValueForItemTolerance(const std::optional<Length>&,
+                                         const ComputedStyle&);
   static CSSValue* ValueForMasonryTrackList(const LayoutObject*,
                                             const ComputedStyle&);
   static gfx::SizeF UsedBoxSize(const LayoutObject&);
@@ -221,6 +221,15 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForAnimationTriggerRangeEndList(
       const CSSAnimationData* animation_data,
       const ComputedStyle& style);
+  static CSSValue* ValueForAnimationRangeOrAuto(
+      const TimelineOffsetOrAuto& offset,
+      const ComputedStyle& style,
+      const Length& default_offset);
+  static CSSValue* ValueForAnimationTriggerExitRangeList(
+      const Vector<TimelineOffsetOrAuto>& range_list,
+      const CSSAnimationData* animation_data,
+      const ComputedStyle& style,
+      const Length& default_offset);
   static CSSValue* ValueForAnimationTriggerExitRangeStartList(
       const CSSAnimationData* animation_data,
       const ComputedStyle& style);
@@ -350,6 +359,14 @@ class CORE_EXPORT ComputedStyleUtils {
       const LayoutObject*,
       bool allow_visited_style,
       CSSValuePhase value_phase);
+
+  static const CSSValue* ValuesForBidirectionalGapRuleShorthand(
+      const StylePropertyShorthand&,
+      const ComputedStyle&,
+      const LayoutObject*,
+      bool allow_visited_style,
+      CSSValuePhase value_phase);
+
   static CSSValueList* ValuesForSidesShorthand(const StylePropertyShorthand&,
                                                const ComputedStyle&,
                                                const LayoutObject*,

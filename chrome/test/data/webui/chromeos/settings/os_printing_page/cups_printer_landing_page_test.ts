@@ -1636,12 +1636,14 @@ suite('CupsEnterprisePrintersTests', () => {
     const enterprisePrinterEntries:
         NodeListOf<SettingsCupsPrintersEntryElement> =
             getPrinterEntries(enterprisePrintersElement);
+
     // Users are not allowed to remove enterprise printers.
     const removeButton =
         enterprisePrintersElement.shadowRoot!.querySelector<HTMLButtonElement>(
             '#removeButton');
     assertTrue(!!removeButton);
     assertTrue(removeButton.disabled);
+
     const button = enterprisePrinterEntries[0]!.shadowRoot!
                        .querySelector<HTMLButtonElement>('.icon-more-vert');
     assertTrue(!!button);
@@ -1676,18 +1678,42 @@ suite('CupsEnterprisePrintersTests', () => {
             '#printerPPDManufacturer');
     assertTrue(!!printerPPDManufacturer);
     assertTrue(printerPPDManufacturer.readonly);
-    // The "specify PDD" section should be hidden.
+
+    // View printer PPD button should be visible. Help text should be hidden.
+    const ppdLabel =
+        editDialog.shadowRoot!.querySelector<HTMLElement>('#ppdLabel');
+    assertTrue(!!ppdLabel);
+    assertFalse(ppdLabel.hidden);
+    const ppdButton =
+        editDialog.shadowRoot!.querySelector<HTMLElement>('.ppd-button');
+    assertTrue(!!ppdButton);
+    assertFalse(ppdButton.hidden);
+    const localizedLink =
+        editDialog.shadowRoot!.querySelector<HTMLElement>('localized-link');
+    assertTrue(!!localizedLink);
+    assertTrue(localizedLink.hidden);
+
+    // PPD textbox should be hidden. Browse button should be hidden.
+    const browseFileInput =
+        editDialog.shadowRoot!.querySelector<HTMLTextAreaElement>(
+            '.browse-file-input');
+    assertTrue(!!browseFileInput);
+    assertTrue(browseFileInput.hidden);
     const browseButton =
         editDialog.shadowRoot!.querySelector<HTMLButtonElement>(
             '.browse-button');
     assertTrue(!!browseButton);
+    assertTrue(browseButton.hidden);
     const parentElement = browseButton.parentElement;
     assertTrue(!!parentElement);
-    assertTrue(parentElement.hidden);
-    const ppdLabel =
-        editDialog.shadowRoot!.querySelector<HTMLElement>('#ppdLabel');
-    assertTrue(!!ppdLabel);
-    assertTrue(ppdLabel.hidden);
+    assertFalse(parentElement.hidden);
+
+    // PPD textbox should be visible when userPPD isn't empty.
+    editDialog.set('userPPD_', 'custom-ppd-path');
+    flush();
+    assertTrue(!!browseFileInput);
+    assertFalse(browseFileInput.hidden);
+
     // Save and Cancel buttons should be hidden. Close button should be
     // visible.
     const cancelButton =

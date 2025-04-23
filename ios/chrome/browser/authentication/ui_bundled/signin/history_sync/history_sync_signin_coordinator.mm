@@ -44,6 +44,7 @@
                    showUserEmail:NO
                signOutIfDeclined:NO
                       isOptional:NO
+                    contextStyle:self.contextStyle
                      accessPoint:self.accessPoint];
   _syncPopupCoordinator.delegate = self;
   [_syncPopupCoordinator start];
@@ -52,7 +53,7 @@
 #pragma mark - InterruptibleChromeCoordinator
 
 - (void)interruptAnimated:(BOOL)animated {
-  [_syncPopupCoordinator interruptAnimated:animated];
+  [_syncPopupCoordinator stopAnimated:animated];
   _syncPopupCoordinator.delegate = nil;
   _syncPopupCoordinator = nil;
 }

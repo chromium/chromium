@@ -157,6 +157,7 @@ public class LocalTabGroupMutationHelperUnitTest {
         verify(mTabGroupSyncService)
                 .updateLocalTabGroupMapping(any(), any(), eq(OpeningSource.AUTO_OPENED_FROM_SYNC));
         verify(mTabGroupSyncService, times(2)).updateLocalTabId(any(), any(), anyInt());
+        verify(mTabGroupSyncService).updateArchivalStatus(savedTabGroup.syncId, false);
     }
 
     @Test
@@ -171,6 +172,7 @@ public class LocalTabGroupMutationHelperUnitTest {
         verify(mTabGroupSyncService)
                 .updateLocalTabGroupMapping(any(), any(), eq(OpeningSource.OPENED_FROM_REVISIT_UI));
         verify(mTabGroupSyncService, times(1)).updateLocalTabId(any(), any(), anyInt());
+        verify(mTabGroupSyncService).updateArchivalStatus(savedTabGroup.syncId, false);
     }
 
     @Test

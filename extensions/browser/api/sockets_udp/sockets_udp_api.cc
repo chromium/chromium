@@ -314,8 +314,8 @@ void SocketsUdpSendFunction::SetSendResult(int net_result, int bytes_sent) {
   if (net_result == net::OK) {
     Respond(ArgumentList(std::move(args)));
   } else {
-    Respond(
-        ErrorWithArguments(std::move(args), net::ErrorToString(net_result)));
+    Respond(ErrorWithArgumentsDoNotUse(std::move(args),
+                                       net::ErrorToString(net_result)));
   }
 }
 

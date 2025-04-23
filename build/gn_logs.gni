@@ -5,8 +5,12 @@
 import("//build/config/compiler/compiler.gni")
 import("//build/toolchain/concurrent_links.gni")
 import("//build/toolchain/rbe.gni")
+import("//build/toolchain/siso.gni")
 
-build_gn_logs = [ "### rbe.gni ###" ] + rbe_logs
+build_gn_logs = [ "### siso.gni ###" ] + siso_logs
+build_gn_logs += [ "" ]
+
+build_gn_logs += [ "### rbe.gni ###" ] + rbe_logs
 build_gn_logs += [ "" ]
 
 # Log lines for gn_logs.txt that originate from within //build.

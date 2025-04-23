@@ -41,8 +41,8 @@ class FileBackgroundIO : public disk_cache::BackgroundIO {
   FileBackgroundIO(const FileBackgroundIO&) = delete;
   FileBackgroundIO& operator=(const FileBackgroundIO&) = delete;
 
-  disk_cache::FileIOCallback* callback() {
-    return callback_;
+  disk_cache::FileIOCallback* ReleaseCallback() {
+    return callback_.ExtractAsDangling();
   }
 
   disk_cache::File* file() {
@@ -150,12 +150,18 @@ void FileInFlightIO::OnOperationComplete(disk_cache::BackgroundIO* operation,
                                          bool cancel) {
   FileBackgroundIO* op = static_cast<FileBackgroundIO*>(operation);
 
-  disk_cache::FileIOCallback* callback = op->callback();
   int bytes = operation->result();
 
   // Release the references acquired in PostRead / PostWrite.
   op->file()->Release();
-  callback->OnFileIOComplete(bytes);
+
+  // The callback may be be deleted by the `OnFileIOComplete` call below,
+  // and we also won't need it ourselves after this.
+  // TODO(morlovich): It may be better to refactor this so that the callback is
+  // just owned here; that would require splitting ChildDeleter to have rather
+  // than be one. See
+  // https://chromium-review.googlesource.com/c/chromium/src/+/6426561/2..3/net/disk_cache/blockfile/file_ios.cc#b45
+  op->ReleaseCallback()->OnFileIOComplete(bytes);
 }
 
 // A static object that will broker all async operations.

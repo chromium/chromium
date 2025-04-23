@@ -7,7 +7,7 @@ GEN_INCLUDE(['../testing/chromevox_e2e_test_base.js']);
 GEN_INCLUDE(['../../../common/testing/documents.js']);
 
 /** Test fixture for ChromeVoxRange. */
-ChromeVoxRangeTest = class extends ChromeVoxE2ETest {
+ChromeVoxMV2RangeTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
@@ -15,7 +15,7 @@ ChromeVoxRangeTest = class extends ChromeVoxE2ETest {
   }
 };
 
-AX_TEST_F('ChromeVoxRangeTest', 'Observer', async function() {
+AX_TEST_F('ChromeVoxMV2RangeTest', 'Observer', async function() {
   const root =
       await this.runWithLoadedTree(Documents.button + Documents.slider);
   const button = root.find({role: RoleType.BUTTON});
@@ -52,7 +52,8 @@ AX_TEST_F('ChromeVoxRangeTest', 'Observer', async function() {
 });
 
 AX_TEST_F(
-    'ChromeVoxRangeTest', 'GetCurrentRangeWithoutRecovery', async function() {
+    'ChromeVoxMV2RangeTest', 'GetCurrentRangeWithoutRecovery',
+    async function() {
       const root = await this.runWithLoadedTree('');
       ChromeVoxRange.instance.current_ = CursorRange.fromNode(root);
       ChromeVoxRange.instance.current_.isValid = () => false;
@@ -61,7 +62,7 @@ AX_TEST_F(
           ChromeVoxRange.getCurrentRangeWithoutRecovery());
     });
 
-AX_TEST_F('ChromeVoxRangeTest', 'Current', async function() {
+AX_TEST_F('ChromeVoxMV2RangeTest', 'Current', async function() {
   const root = await this.runWithLoadedTree('');
   ChromeVoxRange.instance.current_ = null;
   assertEquals(null, ChromeVoxRange.current, 'First');
@@ -74,7 +75,7 @@ AX_TEST_F('ChromeVoxRangeTest', 'Current', async function() {
   assertEquals(null, ChromeVoxRange.current, 'Third');
 });
 
-AX_TEST_F('ChromeVoxRangeTest', 'Set', async function() {
+AX_TEST_F('ChromeVoxMV2RangeTest', 'Set', async function() {
   const root = await this.runWithLoadedTree(Documents.button);
   const rootRange = CursorRange.fromNode(root);
   const button = root.find({role: RoleType.BUTTON});
@@ -143,7 +144,7 @@ AX_TEST_F('ChromeVoxRangeTest', 'Set', async function() {
   assertEquals(1, Object.keys(ChromeVoxState.position).length);
 });
 
-TEST_F('ChromeVoxRangeTest', 'MaybeResetFromFocus', async function() {
+TEST_F('ChromeVoxMV2RangeTest', 'MaybeResetFromFocus', async function() {
   const root = await this.runWithLoadedTree(Documents.button);
   const button = root.find({role: RoleType.BUTTON});
 

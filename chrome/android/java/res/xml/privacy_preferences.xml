@@ -30,14 +30,10 @@ found in the LICENSE file.
         android:fragment="org.chromium.components.privacy_sandbox.TrackingProtectionSettings"
         app:isPreferenceVisible="false" />
     <Preference
-        android:key="ip_protection"
-        android:title="@string/ip_protection_title"
-        android:fragment="org.chromium.components.privacy_sandbox.IpProtectionSettingsFragment"
-        app:isPreferenceVisible="false" />
-    <Preference
-        android:key="fp_protection"
-        android:title="@string/tracking_protection_fingerprinting_protection_title"
-        android:fragment="org.chromium.components.privacy_sandbox.FingerprintingProtectionSettingsFragment"
+        android:key="incognito_tracking_protections"
+        android:title="@string/incognito_tracking_protections_page_title"
+        android:summary="@string/incognito_tracking_protections_page_entrypoint_description"
+        android:fragment="org.chromium.components.privacy_sandbox.IncognitoTrackingProtectionsFragment"
         app:isPreferenceVisible="false" />
     <Preference
         android:key="privacy_sandbox"

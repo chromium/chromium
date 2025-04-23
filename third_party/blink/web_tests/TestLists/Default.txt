@@ -866,7 +866,6 @@ svg/custom/svg-use-style-float-crash.svg
 svg/custom/use-invalid-font-face.svg
 svg/dispatch-event-crash-on-destruct.html
 svg/dom/smil-methods.svg
-svg/dom/SVGScriptElement/script-async-attr.svg
 svg/dom/SVGStyleElement/disable-svg-style-element.html
 svg/dom/SVGStyleElement/style-langspace.html
 svg/filters/feComponentTransfer-style-crash.xhtml

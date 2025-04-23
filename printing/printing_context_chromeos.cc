@@ -365,33 +365,34 @@ ScopedIppPtr SettingsToIPPOptions(const PrintSettings& settings,
 // static
 std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
     Delegate* delegate,
-    ProcessBehavior process_behavior) {
-  return std::make_unique<PrintingContextChromeos>(delegate, process_behavior);
+    OutOfProcessBehavior out_of_process_behavior) {
+  return std::make_unique<PrintingContextChromeos>(delegate,
+                                                   out_of_process_behavior);
 }
 
 // static
 std::unique_ptr<PrintingContextChromeos>
 PrintingContextChromeos::CreateForTesting(
     Delegate* delegate,
-    ProcessBehavior process_behavior,
+    OutOfProcessBehavior out_of_process_behavior,
     std::unique_ptr<CupsConnection> connection) {
   // Private ctor.
   return base::WrapUnique(new PrintingContextChromeos(
-      delegate, process_behavior, std::move(connection)));
+      delegate, out_of_process_behavior, std::move(connection)));
 }
 
 PrintingContextChromeos::PrintingContextChromeos(
     Delegate* delegate,
-    ProcessBehavior process_behavior)
-    : PrintingContext(delegate, process_behavior),
+    OutOfProcessBehavior out_of_process_behavior)
+    : PrintingContext(delegate, out_of_process_behavior),
       connection_(CupsConnection::Create()),
       ipp_options_(WrapIpp(nullptr)) {}
 
 PrintingContextChromeos::PrintingContextChromeos(
     Delegate* delegate,
-    ProcessBehavior process_behavior,
+    OutOfProcessBehavior out_of_process_behavior,
     std::unique_ptr<CupsConnection> connection)
-    : PrintingContext(delegate, process_behavior),
+    : PrintingContext(delegate, out_of_process_behavior),
       connection_(std::move(connection)),
       ipp_options_(WrapIpp(nullptr)) {}
 
@@ -532,7 +533,8 @@ mojom::ResultCode PrintingContextChromeos::NewDocument(
   in_print_job_ = true;
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (process_behavior() == ProcessBehavior::kOopEnabledSkipSystemCalls) {
+  if (out_of_process_behavior() ==
+      OutOfProcessBehavior::kEnabledSkipSystemCalls) {
     return mojom::ResultCode::kSuccess;
   }
 #endif

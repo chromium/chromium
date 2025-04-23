@@ -690,7 +690,11 @@ chromium-metrics-reviews@google.com.
   <int value="74" label="Glic launch button"/>
   <int value="75" label="History page (Android only)"/>
   <int value="76" label="Join collaboration tab group authentication"/>
-  <int value="77" label="History Sync Opt-in Expanded Pill"/>
+  <int value="77" label="History Sync Opt-in Expanded Pill on startup"/>
+  <int value="78" label="Widget (iOS only)"/>
+  <int value="79" label="Leave or delete collaboration tab group"/>
+  <int value="80" label="History Sync Opt-in Expanded Pill on inactivity"/>
+  <int value="81" label="History sync educational tip module (Android only)"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">
@@ -1025,6 +1029,11 @@ chromium-metrics-reviews@google.com.
       label="Signed out before a forced sign-in with a supervised account">
     A sign-out was triggered to allow a switch to a supervised account that was
     added to the device. Android only.
+  </int>
+  <int value="39" label="Sign out when opening the app from widget">
+    The user has a widget with no account on it, opens the app from the widget
+    and if there is a signed-in account in the app, sign-out is performed. iOS
+    only.
   </int>
 </enum>
 

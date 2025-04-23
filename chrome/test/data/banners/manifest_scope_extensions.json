@@ -4,6 +4,7 @@
   "display": "fullscreen",
   "scope_extensions": [
     {
+      "type": "origin",
       "origin": "https://test.com"
     }
   ]

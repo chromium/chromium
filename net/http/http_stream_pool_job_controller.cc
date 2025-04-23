@@ -11,6 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
+#include "base/values.h"
 #include "net/base/load_flags.h"
 #include "net/base/load_states.h"
 #include "net/base/net_error_details.h"
@@ -117,7 +119,8 @@ HttpStreamPool::JobController::JobController(
                                         origin_stream_key_,
                                         request_info,
                                         enable_alternative_services_)),
-      net_log_(request_info.factory_job_controller_net_log) {
+      net_log_(request_info.factory_job_controller_net_log),
+      created_time_(base::TimeTicks::Now()) {
   net_log_.BeginEvent(
       NetLogEventType::HTTP_STREAM_POOL_JOB_CONTROLLER_ALIVE, [&] {
         base::Value::Dict dict;
@@ -423,6 +426,17 @@ void HttpStreamPool::JobController::SetPriority(RequestPriority priority) {
   if (alternative_job_) {
     alternative_job_->SetPriority(priority);
   }
+}
+
+base::Value::Dict HttpStreamPool::JobController::GetInfoAsValue() const {
+  base::Value::Dict dict;
+  dict.Set("origin_stream_key", origin_stream_key_.ToValue());
+  if (alternative_.has_value()) {
+    dict.Set("alternative_stream_key", alternative_->stream_key.ToValue());
+  }
+  base::TimeDelta elapsed = base::TimeTicks::Now() - created_time_;
+  dict.Set("elapsed_ms", static_cast<int>(elapsed.InMilliseconds()));
+  return dict;
 }
 
 QuicSessionPool* HttpStreamPool::JobController::quic_session_pool() {

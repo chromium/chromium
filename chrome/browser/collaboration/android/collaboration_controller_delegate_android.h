@@ -40,6 +40,10 @@ class CollaborationControllerDelegateAndroid
                          ResultCallback result) override;
   void ShowManageDialog(const tab_groups::EitherGroupID& either_id,
                         ResultCallback result) override;
+  void ShowLeaveDialog(const tab_groups::EitherGroupID& either_id,
+                       ResultCallback result) override;
+  void ShowDeleteDialog(const tab_groups::EitherGroupID& either_id,
+                        ResultCallback result) override;
   void PromoteTabGroup(const data_sharing::GroupId& group_id,
                        ResultCallback result) override;
   void PromoteCurrentScreen() override;

@@ -75,6 +75,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -146,25 +147,19 @@ static inline WhitespaceMode RecomputeWhiteSpaceMode(
                : WhitespaceMode::kNotAllWhitespace;
   }
 
-  auto check_whitespace = [](auto* buffer, size_t length) {
+  return VisitCharacters(string_view, [](auto chars) {
     WhitespaceMode result = WhitespaceMode::kNewlineThenWhitespace;
-    for (size_t i = 1; i < length; ++i) {
-      if (UNSAFE_TODO(buffer[i]) == ' ') [[likely]] {
+    for (auto ch : chars) {
+      if (ch == ' ') [[likely]] {
         continue;
-      } else if (IsHTMLSpecialWhitespace(UNSAFE_TODO(buffer[i]))) {
+      } else if (IsHTMLSpecialWhitespace(ch)) {
         result = WhitespaceMode::kAllWhitespace;
       } else {
         return WhitespaceMode::kNotAllWhitespace;
       }
     }
     return result;
-  };
-
-  if (string_view.Is8Bit()) {
-    return check_whitespace(string_view.Characters8(), string_view.length());
-  } else {
-    return check_whitespace(string_view.Characters16(), string_view.length());
-  }
+  });
 }
 
 enum class RecomputeMode {
@@ -358,7 +353,7 @@ static unsigned FindBreakIndexBetween(const StringBuilder& string,
   unsigned break_search_length =
       std::min(proposed_break_index - current_position + 2,
                string.length() - current_position);
-  NonSharedCharacterBreakIterator it(
+  CharacterBreakIterator it(
       string.Span16().subspan(current_position, break_search_length));
 
   if (it.IsBreak(proposed_break_index - current_position))

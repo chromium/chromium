@@ -12,6 +12,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <numbers>
 #include <optional>
@@ -1969,13 +1970,13 @@ TEST(XFormTest, verifyCopyConstructor) {
 TEST(XFormTest, GetColMajor) {
   auto transform = GetTestMatrix1();
 
-  double data[16];
-  transform.GetColMajor(data);
+  std::array<double, 16> data;
+  transform.GetColMajor(data.data());
   for (int i = 0; i < 16; i++) {
     EXPECT_EQ(i + 10.0, data[i]);
     EXPECT_EQ(data[i], transform.ColMajorData(i));
   }
-  EXPECT_EQ(transform, Transform::ColMajor(data));
+  EXPECT_EQ(transform, Transform::ColMajor(data.data()));
 }
 
 TEST(XFormTest, Affine) {

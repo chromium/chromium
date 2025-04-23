@@ -72,12 +72,12 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
     };
   }
 
-  prefs: Object;
-  private searchEngines_: SearchEngine[];
-  private searchEnginesFilter_: string;
-  private showSearchEngineListDialog_: boolean;
-  private defaultSearchEngine_: SearchEngine|null;
-  private focusConfig_: Map<string, string>|null;
+  declare prefs: Object;
+  declare private searchEngines_: SearchEngine[];
+  declare private searchEnginesFilter_: string;
+  declare private showSearchEngineListDialog_: boolean;
+  declare private defaultSearchEngine_: SearchEngine|null;
+  declare private focusConfig_: Map<string, string>|null;
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();
 
@@ -86,7 +86,7 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
   private isEeaChoiceCountry_: boolean =
       loadTimeData.getBoolean('isEeaChoiceCountry');
 
-  private confirmationToastLabel_: string;
+  declare private confirmationToastLabel_: string;
 
   override ready() {
     super.ready();

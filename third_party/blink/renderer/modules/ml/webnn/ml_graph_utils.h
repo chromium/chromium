@@ -16,20 +16,11 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
-#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
-class MLOperator;
 class ScriptState;
-
-// Return the operators in topological order by searching from the named
-// output operands. It ensures operator 'j' appears before operator 'i' in the
-// result, if 'i' depends on 'j'.
-MODULES_EXPORT GCedHeapVector<Member<const MLOperator>>*
-GetOperatorsInTopologicalOrder(const MLNamedOperands& named_outputs);
 
 MODULES_EXPORT DOMArrayBufferView::ViewType GetArrayBufferViewType(
     webnn::OperandDataType data_type);

@@ -28,6 +28,10 @@ FakeTileManagerClient::CreateTilesWithResourceIterator() {
   return nullptr;
 }
 
+viz::SharedImageFormat FakeTileManagerClient::GetTileFormat() const {
+  return viz::SinglePlaneFormat::kRGBA_8888;
+}
+
 TargetColorParams FakeTileManagerClient::GetTargetColorParams(
     gfx::ContentColorUsage /*content_color_usage*/) const {
   TargetColorParams result;

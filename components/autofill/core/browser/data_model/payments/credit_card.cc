@@ -173,8 +173,7 @@ Suggestion::Icon ConvertCardNetworkIntoIcon(std::string_view network) {
   if (network == kUnionPay) {
     return Suggestion::Icon::kCardUnionPay;
   }
-  if (network == kVerveCard &&
-      base::FeatureList::IsEnabled(features::kAutofillEnableVerveCardSupport)) {
+  if (network == kVerveCard) {
     return Suggestion::Icon::kCardVerve;
   }
   if (network == kVisaCard) {

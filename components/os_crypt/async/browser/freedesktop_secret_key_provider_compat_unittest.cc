@@ -52,6 +52,7 @@ class FreedesktopSecretKeyProviderCompatTest : public ::testing::Test {
     std::vector<std::pair<size_t, std::unique_ptr<KeyProvider>>> providers;
     if (v11) {
       auto provider = std::make_unique<FreedesktopSecretKeyProvider>(
+          "gnome-libsecret",
           /*use_for_encryption=*/true, "", nullptr);
       provider->secret_for_testing_ = kSecretKey;
       providers.emplace_back(0, std::move(provider));

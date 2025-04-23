@@ -833,8 +833,6 @@ void TabletModeController::OnLayerAnimationEnded(
   // This may be called before |OnLayerAnimationScheduled()| if tablet is
   // entered/exited while an animation is in progress, so we won't get
   // stats/screenshot in those cases.
-  // TODO(sammiequon): We may want to remove the |transition_tracker_| check and
-  // simplify things since those are edge cases.
   if (!transition_tracker_ || !ShouldObserveSequence(sequence)) {
     return;
   }
@@ -917,8 +915,6 @@ void TabletModeController::SetTabletModeEnabledInternal(bool should_enable) {
     // Floated windows will always get animated, and if the only window is a
     // floated window, we don't take a screenshot since the floated window in
     // tablet mode does not cover the whole work area.
-    // TODO(sammiequon): Handle the case where the top window is not on the
-    // primary display.
     aura::Window* top_window = window_util::GetTopNonFloatedWindow();
     const bool top_window_on_primary_display =
         top_window &&

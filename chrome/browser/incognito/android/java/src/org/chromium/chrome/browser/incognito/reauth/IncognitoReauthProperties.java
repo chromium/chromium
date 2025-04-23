@@ -4,14 +4,15 @@
 
 package org.chromium.chrome.browser.incognito.reauth;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 
+@NullMarked
 class IncognitoReauthProperties {
     public static final ReadableObjectPropertyKey<Runnable> ON_UNLOCK_INCOGNITO_CLICKED =
             new ReadableObjectPropertyKey<>("on_unlock_incognito_clicked");
@@ -35,9 +36,9 @@ class IncognitoReauthProperties {
      *     other tabs" button.
      * @param fullscreen A boolean indicating whether the incognito re-auth view needs to be shown
      *     fullscreen style or tab-switcher style.
-     * @param menuButtonDelegate A {@link ListMenuDelegate} which would be triggered when the
-     *     user interact with the three dots menu view in fullscreen re-auth page. This is null when
-     *     we show the non full-screen re-auth page.
+     * @param menuButtonDelegate A {@link ListMenuDelegate} which would be triggered when the user
+     *     interact with the three dots menu view in fullscreen re-auth page. This is null when we
+     *     show the non full-screen re-auth page.
      * @return A {@link PropertyModel} instance for the incognito re-auth view with the above
      *     attributes.
      */

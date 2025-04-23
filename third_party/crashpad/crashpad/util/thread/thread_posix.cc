@@ -37,6 +37,7 @@ void Thread::Join() {
 }
 
 #if BUILDFLAG(IS_APPLE)
+// static
 uint64_t Thread::GetThreadIdForTesting() {
   uint64_t thread_self;
   errno = pthread_threadid_np(pthread_self(), &thread_self);

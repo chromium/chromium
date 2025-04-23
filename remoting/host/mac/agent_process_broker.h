@@ -21,7 +21,10 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
+#include "remoting/host/chromoting_host_services_server.h"
 #include "remoting/host/mojom/agent_process_broker.mojom.h"
+#include "remoting/host/mojom/chromoting_host_services.mojom.h"
+#include "remoting/host/mojom/remoting_host.mojom.h"
 
 namespace remoting {
 
@@ -41,11 +44,13 @@ class AgentProcessBroker final : public mojom::AgentProcessBroker {
   friend class AgentProcessBrokerTest;
 
   struct AgentProcess {
-    AgentProcess(size_t reference_id,
-                 base::ProcessId pid,
-                 mojo::Remote<mojom::AgentProcess> remote,
-                 bool is_root,
-                 bool is_active);
+    AgentProcess(
+        size_t reference_id,
+        base::ProcessId pid,
+        mojo::Remote<mojom::AgentProcess> agent_process_remote,
+        mojo::Remote<mojom::RemotingHostControl> remoting_host_control_remote,
+        bool is_root,
+        bool is_active);
     AgentProcess(AgentProcess&&);
     ~AgentProcess();
 
@@ -59,7 +64,8 @@ class AgentProcessBroker final : public mojom::AgentProcessBroker {
 
     size_t reference_id;  // For reverse lookup in `agent_processes_`.
     base::ProcessId pid;  // For logging only. Not for book keeping.
-    mojo::Remote<mojom::AgentProcess> remote;
+    mojo::Remote<mojom::AgentProcess> agent_process_remote;
+    mojo::Remote<mojom::RemotingHostControl> remoting_host_control_remote;
     bool is_root;
     bool is_active;
   };
@@ -74,6 +80,10 @@ class AgentProcessBroker final : public mojom::AgentProcessBroker {
   AgentProcessBroker(const mojo::NamedPlatformChannel::ServerName& server_name,
                      Validator validator,
                      IsRootProcessGetter is_root_process);
+
+  void BindChromotingHostServices(
+      mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
+      base::ProcessId peer_pid);
 
   void OnAgentProcessDisconnected(size_t reference_id);
   void BrokerAgentProcesses();
@@ -91,6 +101,8 @@ class AgentProcessBroker final : public mojom::AgentProcessBroker {
   SEQUENCE_CHECKER(sequence_checker_);
 
   named_mojo_ipc_server::NamedMojoIpcServer<mojom::AgentProcessBroker> server_;
+  std::unique_ptr<ChromotingHostServicesServer>
+      chromoting_host_services_server_;
   IsRootProcessGetter is_root_process_;
   base::flat_map<size_t /* reference_id */, AgentProcess> agent_processes_;
   // We use our own reference ID for book keeping. While unlikely, the OS is

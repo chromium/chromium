@@ -30,6 +30,7 @@
 <translation id="1107856713690040084">Audioja e <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">Informacione</translation>
 <translation id="1118572504348554005">Ne mund t'i ndajmë komentet e dërguara nëpërmjet këtij formulari me partnerët tanë për të zgjidhur problemet për defektet në kod dhe probleme të tjera që ti i raporton te ne. Mos përfshi informacione delikate si p.sh. fjalëkalime.</translation>
+<translation id="1118596190635569417">Zhvendose këtë meny në të djathtë</translation>
 <translation id="1119403468619527527">Shumë pak fjalë për t'i thjeshtuar</translation>
 <translation id="1119447706177454957">Gabim i brendshëm</translation>
 <translation id="1124772482545689468">Përdoruesi</translation>
@@ -91,8 +92,10 @@
 <translation id="1367951781824006909">Zgjidh një skedar</translation>
 <translation id="1371650399987522809">Komentet për imazhin e sfondit të mundësuara nga inteligjenca artificiale e Google</translation>
 <translation id="1374385338586507108">Përkufizo</translation>
+<translation id="1376064675713230088">tiranozaur</translation>
 <translation id="1383876407941801731">Kërko</translation>
 <translation id="1387854245479784695">Kjo është një përmbledhje e të gjitha të dhënave kryesore</translation>
+<translation id="1388919980490622894">me gradimin e ngjyrave</translation>
 <translation id="1393206549145430405">kështjellë</translation>
 <translation id="1394661041439318933">Pajisja ka <ph name="BATTERY_PERCENTAGE" />% bateri në kasë.</translation>
 <translation id="1397738625398125236">Porta e kalimit mund të kryejë verifikimin "ping"</translation>
@@ -125,11 +128,11 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> menaxhon këtë përdorues dhe mund të menaxhojë në distancë cilësimet dhe të monitorojë aktivitetin e përdoruesit.</translation>
 <translation id="150962533380566081">Kodi PUK i pavlefshëm.</translation>
 <translation id="1510238584712386396">Nisësi</translation>
+<translation id="1512872158112631650">hije dramatike</translation>
 <translation id="1514446283880973949">Shkruaj me më shumë besim, përmblidh përmbajtjen, merr përkufizime etj.</translation>
 <translation id="1515129336378114413">faqja kryesore e shfletuesit</translation>
 <translation id="1526389707933164996">Animacioni i mbrojtësit të ekranit</translation>
 <translation id="152892567002884378">Rrit volumin</translation>
-<translation id="1531038290222364269">Shfaq skedat</translation>
 <translation id="1539864135338521185">lapis</translation>
 <translation id="1548555207631326346">Zgjidh një temë dhe më pas zgjidh fjalët e nënvizuara për të personalizuar imazhet nga IA-ja.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -229,6 +232,7 @@
 <translation id="1854156910036166007">slothë</translation>
 <translation id="1856388568474281774">Shigjeta poshtë</translation>
 <translation id="1858620243986915808">Bashkëngjit pamjen e ekranit</translation>
+<translation id="1860654594958086756">paraqitje 3D</translation>
 <translation id="1871413952174074704">APN-ja nuk mund të ketë më shumë se <ph name="CHAR_LIMIT" /> karaktere</translation>
 <translation id="1871569928317311284">Çaktivizo temën e errët</translation>
 <translation id="1874612839560830905">MTU</translation>
@@ -242,10 +246,11 @@
 <translation id="1905710495812624430">U kaluan përpjekjet maksimale të lejuara.</translation>
 <translation id="1908234395526491708">Dështimet e kërkesave UDP</translation>
 <translation id="1908394185991500139">shigjeta majtas</translation>
-<translation id="1911678930322867245">Lëvize në krye djathtas</translation>
 <translation id="1914144885717544695">të premten</translation>
 <translation id="1915960750806557358">Ndaj komentet e tua ose përshkruaj problemin tënd. Sigurohu që të mos përdorësh asgjë që është personale, delikate ose konfidenciale.</translation>
 <translation id="1923388006036088459">Ngjyrat e theksimit</translation>
+<translation id="1926611810597212636">njëbrirësh</translation>
+<translation id="1944321879609775960">Për të krijuar një përmbledhje, rinis pajisjen tënde <ph name="DEVICE_TYPE" /></translation>
 <translation id="1945403655450283000">Regjistruesi</translation>
 <translation id="1947737735496445907">Printuar</translation>
 <translation id="1951012854035635156">Asistenti</translation>
@@ -315,6 +320,7 @@
 <translation id="2230624078793142213">Krijo më shumë</translation>
 <translation id="2236746079896696523">Aktivizimi/çaktivizimi i dritës së sfondit të tastierës</translation>
 <translation id="2240366984605217732">Ndërrimi i strukturës</translation>
+<translation id="224421911978987610">ekspozimi i gjatë</translation>
 <translation id="2244834438220057800">jeshile</translation>
 <translation id="225692081236532131">Statusi i aktivizimit</translation>
 <translation id="2267285889943769271">Shto një pamje ekrani</translation>
@@ -342,6 +348,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Dërgo raportin e komenteve</translation>
 <translation id="2407209115954268704">Statusi i kyçjes së kartës SIM</translation>
+<translation id="240798792848608143">Për të marrë transkriptimin në <ph name="LANGUAGE_NAME" />, rinis pajisjen tënde <ph name="DEVICE_TYPE" /></translation>
 <translation id="241419523391571119">Rihap kapakun për të kryer testin</translation>
 <translation id="2414660853550118611">Rreth imazhit të sfondit</translation>
 <translation id="2414886740292270097">E errët</translation>
@@ -362,6 +369,7 @@
 <translation id="2493126929778606526">Fotografitë e tua më të mira, të zgjedhura automatikisht</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">opal</translation>
+<translation id="2501278716633472235">Kthehu prapa</translation>
 <translation id="2505327257735685095">Rifresko imazhin aktual të sfondit</translation>
 <translation id="2507491234071975894">Altoparlanti</translation>
 <translation id="2512979179176933762">shfaq dritaret</translation>
@@ -382,6 +390,7 @@
 <translation id="2584559707064218956">Për ta konfiguruar, shko te "Cilësimet"</translation>
 <translation id="2586146417912237930">blu dhe llullaqi</translation>
 <translation id="2589921777872778654">Menyja e modifikimit dhe fshirjes</translation>
+<translation id="2590424100019931043">Je hequr nga kjo orë mësimi</translation>
 <translation id="2597774443162333062">Skedarët do të dërgohen te Google për korrigjimin e gabimeve</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Skanimi përfundoi. U skanua 1 faqe}other{Skanimi përfundoi. U skanuan {NUMBER_OF_PAGES} faqe}}</translation>
 <translation id="261322795497077164">Identifikimi i folësit</translation>
@@ -460,6 +469,7 @@
 <translation id="3084958266922136097">Çaktivizo mbrojtësin e ekranit</translation>
 <translation id="3091839911843451378">Dështoi - Ndaloi</translation>
 <translation id="3102119246920354026">Memoria specifike</translation>
+<translation id="3103783611481501187">surreale</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">pishina</translation>
 <translation id="3122883569442693641">Më shumë detaje</translation>
@@ -474,6 +484,7 @@
 <translation id="3156846309055100599">Po skanon faqen <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">U zbulua portal izolues</translation>
 <translation id="3160172848211257835">Dërgo <ph name="BEGIN_LINK1" />informacionet e sistemit dhe të aplikacionit<ph name="END_LINK1" />, si dhe <ph name="BEGIN_LINK2" />metrikën<ph name="END_LINK2" /></translation>
+<translation id="3161556797767210144">Për të krijuar përmbledhjen dhe titullin, rinis pajisjen tënde <ph name="DEVICE_TYPE" /></translation>
 <translation id="3170673040743561620">Vendos dokumentin tënd në skaner</translation>
 <translation id="3174321110679064523">Imazhi i sfondit nga agimi në muzg</translation>
 <translation id="3178532070248519384">avantgardë</translation>
@@ -488,6 +499,7 @@
 <translation id="3226405216343213872">Po kërkon për skanerë</translation>
 <translation id="3226657629376379887">Menyja e veprimeve të strukturës</translation>
 <translation id="3227186760713762082">Pjesëto vlerën <ph name="CATEGORY_TEXT" /> me <ph name="CONVERSION_RATE" /></translation>
+<translation id="3242622575335502454">art dixhital</translation>
 <translation id="3246869037381808805">Printimet më të vjetra se 1 ditë do të hiqen</translation>
 <translation id="3248791727258378769">Nuk do të krijohet transkript</translation>
 <translation id="324961752321393509">Administratori yt nuk e lejon mbylljen e këtij aplikacioni</translation>
@@ -524,6 +536,7 @@
 <translation id="3428551088151258685">në ambient të jashtëm</translation>
 <translation id="3428971106895559033">pastel</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="3434988468785284438">pasqyrime</translation>
 <translation id="3435738964857648380">Siguria</translation>
 <translation id="3435896845095436175">Aktivizo</translation>
 <translation id="345256797477978759">Dritarja e stacionit në pjesën më të madhe <ph name="DIRECTION" /> të ekranit</translation>
@@ -564,6 +577,7 @@
 <translation id="3604713164406837697">Ndrysho imazhin e sfondit</translation>
 <translation id="360565022852130722">Rrjeti Wi-Fi është i siguruar me protokollin e dobët WEP 802.1x</translation>
 <translation id="3606583719724308068">Vonesë e lartë në uebsajtet HTTPS</translation>
+<translation id="3614639364827854748">Zhvendose këtë meny në të majtë</translation>
 <translation id="361575905210396100">Faleminderit për komentet e tua</translation>
 <translation id="3621072146987826699">elefantë</translation>
 <translation id="3628462041319107639">Modeli i transkriptimit po shkarkohet…</translation>
@@ -624,6 +638,7 @@
 <translation id="3889914174935857450">Rivendos datën</translation>
 <translation id="3897092660631435901">Menyja</translation>
 <translation id="3902271751020176019">Gjuha e transkriptimit</translation>
+<translation id="390890062090528082">qielli i mbushur me yje</translation>
 <translation id="391412459402535266">Pajisja nuk mund të testohet. Kalo te modaliteti i laptopit për të kryer testin.</translation>
 <translation id="3916998944874125962">nxirr një pamje të ekranit</translation>
 <translation id="3923184630988645767">Përdorimi i të dhënave</translation>
@@ -713,6 +728,7 @@
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           IA-ja gjeneruese mund të bëjë gabime, duke përfshirë edhe për njerëzit, prandaj kontrolloje përsëri. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Mëso më shumë<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
+<translation id="4253971074682120908">hapësirë negative</translation>
 <translation id="4258281355379922695">Vonesa e HTTP-së</translation>
 <translation id="4266143281602681663">fill</translation>
 <translation id="4269815121975886860">Preferencat për nisjen</translation>
@@ -740,6 +756,7 @@
 <translation id="4378373042927530923">Nuk u ekzekutua</translation>
 <translation id="4378551569595875038">Po lidhet...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4383322413532809099">Për të krijuar titujt për regjistrimin tënd, rinis pajisjen tënde <ph name="DEVICE_TYPE" /></translation>
 <translation id="4394049700291259645">Çaktivizo</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> po riniset</translation>
 <translation id="4395835743215824109">personalizo tastierën</translation>
@@ -768,6 +785,7 @@
 <translation id="4486524074141928967">Do të dalësh nga llogaria në <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Shkurtorja nuk ofrohet. Shtyp një shkurtore të re duke përdorur një tast modifikues (Ctrl, Alt, Shift ose "<ph name="META_KEY" />").</translation>
 <translation id="4500966230243561393">Ngjyra e ndërfaqes</translation>
+<translation id="4501302804999678844">Për të krijuar transkriptin, rinis pajisjen tënde <ph name="DEVICE_TYPE" /></translation>
 <translation id="4503223151711056411">Shigjeta majtas</translation>
 <translation id="4503441351962730761">e artit modern</translation>
 <translation id="4507392511610824664">rrit ndriçimin</translation>
@@ -810,7 +828,9 @@
 <translation id="4691278870498629773">Ndaloi - Tabakaja mungon</translation>
 <translation id="469379815867856270">Fuqia e sinjalit</translation>
 <translation id="4697260493945012995">Zgjidh llojin e kontrollit</translation>
+<translation id="4712940987669302829">efekti bokeh</translation>
 <translation id="4731797938093519117">Qasja e prindit</translation>
+<translation id="4734982181169850310">ngjyrat pastel</translation>
 <translation id="473775607612524610">Përditësoje</translation>
 <translation id="4744944742468440486">Informacion në lidhje me zgjedhjen tënde</translation>
 <translation id="4750394297954878236">Sugjerime</translation>
@@ -818,6 +838,7 @@
 <translation id="4771607256327216405">ndriço tastierën</translation>
 <translation id="4771923071974529837">nesër</translation>
 <translation id="4773299976671772492">Ndaloi</translation>
+<translation id="4777310452073659583">Për të marrë transkriptin, rinis pajisjen tënde <ph name="DEVICE_TYPE" /></translation>
 <translation id="4778082030331381943">ametist</translation>
 <translation id="4782311465517282004">Merr përkufizime, përkthime ose konvertime të njësive kur klikon me të djathtin ose prek e mban shtypur tekstin</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotografi</translation>
@@ -860,14 +881,17 @@
 <translation id="4921665434385737356">U karikua <ph name="RATE" /> në <ph name="NUM_SECONDS" /> sekonda.</translation>
 <translation id="4930320165497208503">Për të konfiguruar ose përditësuar një lidhje, shko te <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="493637535592633700">ndriçim i organizmave biologjike</translation>
 <translation id="494102685638938793"><ph name="LINK_TEXT" />, hapet në skedë të re</translation>
 <translation id="4946927805998996217">Po gjenerohet përmbledhja</translation>
 <translation id="4950314376641394653">Firmueri <ph name="DEVICE_NAME" /> është përditësuar në versionin <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">tunel pemësh</translation>
+<translation id="4964806321337443935">4K</translation>
 <translation id="4965661459364092269">Rivendosja e sigurisë është përfunduar</translation>
 <translation id="4965703485264574128">Për rezultatin e përafërt, shumëzo vlerën <ph name="CATEGORY_TEXT" /> me <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">I ndarë</translation>
 <translation id="4972592110715526173">ndryshimi i modalitetit</translation>
+<translation id="497421865427891073">Vazhdo përpara</translation>
 <translation id="4981003703840817201">blu dhe rozë</translation>
 <translation id="498186245079027698">Kontrollo skanerin dhe provo përsëri. Sigurohu që të jetë hapësirë lokale të mjaftueshme për të ruajtur skedarët e skanuar.</translation>
 <translation id="4982627662315910959">Shkurtorja nuk ofrohet. Shtyp një shkurtore të re duke përdorur Shift dhe 1 tast tjetër modifikues (Ctrl, Alt ose "<ph name="META_KEY" />").</translation>
@@ -875,6 +899,7 @@
 <translation id="4987769320337599931">Mur mbrojtës</translation>
 <translation id="4988526792673242964">Faqet</translation>
 <translation id="4989542687859782284">Nuk ofrohen</translation>
+<translation id="4999267570108760491">stili i artit vektorial</translation>
 <translation id="4999333166442584738">Fshih raportin</translation>
 <translation id="500920857929044050">Ndalo testin</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -943,6 +968,7 @@
 <translation id="5300172019534884676">aktivizo/çaktivizo qasjen te kamera</translation>
 <translation id="5300814202279832142">Zhvendose dritaren te tavolina e punës</translation>
 <translation id="5302048478445481009">Gjuha</translation>
+<translation id="5303459213631364445">me shkëlqim</translation>
 <translation id="5303837385540978511">Imazhi ekskluziv i sfondit për <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="530883153651464140">Përditëso <ph name="DEVICE_NAME" /> në versionin <ph name="VERSION" /></translation>
@@ -1030,7 +1056,6 @@
 <translation id="5760715441271661976">Gjendja e portalit</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> po riniset dhe po përditësohet</translation>
 <translation id="576835345334454681">Ngritja e ndriçimit të ekranit</translation>
-<translation id="5775340474232476653">Mësuesi yt e ka përfunduar orën e mësimit</translation>
 <translation id="5779818640587041940">Mbaje ekranin ndezur ndërsa regjistron</translation>
 <translation id="57838592816432529">Hiqi zërin</translation>
 <translation id="5784136236926853061">Vonesë shumë e lartë e HTTP-së</translation>
@@ -1047,6 +1072,7 @@
 <translation id="5859969039821714932">Shkurtorja nuk ofrohet. Shtyp një shkurtore të re pa tastin <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Çaktivizuar</translation>
 <translation id="5860491529813859533">Aktivizo</translation>
+<translation id="586463370326011345">vetëtimë</translation>
 <translation id="5875913454160982848">Shkarko modelin e transkriptimit</translation>
 <translation id="5876385649737594562">Aktivizoje për të zgjedhur opsionet</translation>
 <translation id="5877503382465267833">Vendose në pauzë "<ph name="RECORDING_NAME" />"</translation>
@@ -1056,7 +1082,6 @@
 <translation id="5896602941605730551">Luaj</translation>
 <translation id="5901630391730855834">E verdhë</translation>
 <translation id="5903200662178656908">Pajisja është një kombinim i tastierës dhe mausit.</translation>
-<translation id="5903822368221507416">Fshih skedat</translation>
 <translation id="5904994456462260490">Shto një APN të re</translation>
 <translation id="590746845088109442">mace</translation>
 <translation id="5907649332524363701">ngjyra e tastit</translation>
@@ -1182,6 +1207,7 @@
 <translation id="6417265370957905582">Asistenti i Google</translation>
 <translation id="6419454453018688975">Aktivizo qasjen te vendndodhja e sistemit</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="642713342828771202">perëndimi i diellit</translation>
 <translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">I dobët (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Shko te cilësimet e llogarisë</translation>
@@ -1291,6 +1317,7 @@
 <translation id="6926069762081461162">Titulli i regjistrimit</translation>
 <translation id="6930242544192836755">Kohëzgjatja</translation>
 <translation id="6930597342185648547">Rreth sfondit</translation>
+<translation id="6931666215260956151">galaktikë</translation>
 <translation id="6939766318048400022">Kafene</translation>
 <translation id="6942253772720771875">Ndaj komentet e tua ose përshkruaj problemin tënd</translation>
 <translation id="6943893908656559156">Identiteti në distancë (opsional)</translation>
@@ -1367,6 +1394,7 @@
 <translation id="7212547870105584639">Menaxho cilësimet e APN-së së rrjetit. APN-të vendosin një lidhje mes një rrjeti celular dhe internetit. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Përditësimet e firmuerit për pajisjet e jashtme</translation>
 <translation id="7216409898977639127">Operatori celular</translation>
+<translation id="7221869452894271364">Ringarkoje këtë faqe</translation>
 <translation id="7223952304612664117">Kjo i lejon shërbimet e sistemit që të përdorin "Saktësinë e vendndodhjes" për të përcaktuar vendndodhjen tënde. "Saktësia e vendndodhjes" përdor informacionet për sinjalet wireless dhe sensorët për të përllogaritur vendndodhjen e pajisjes.</translation>
 <translation id="7233782086689993269">Shkurtorja u restaurua</translation>
 <translation id="723419678599947502">Krijo titullin duke përdorur IA-në e Google</translation>
@@ -1425,6 +1453,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="7481312909269577407">Përpara</translation>
 <translation id="7487067081878637334">Teknologjia</translation>
 <translation id="7490813197707563893">Adresa MAC</translation>
+<translation id="7494145938791663804">e bukur</translation>
 <translation id="7497215489070763236">Certifikata CA e serverit</translation>
 <translation id="7500205272584643581">Të lejohet që "Regjistruesi" të zbulojë dhe të etiketojë folësit?</translation>
 <translation id="7501957181231305652">ose</translation>
@@ -1480,6 +1509,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="7760571082554155847">Cilësimet e faqes kryesore</translation>
 <translation id="7762130827864645708">Ndryshimi i fjalëkalimit tënd u krye me sukses. Përdor fjalëkalimin e ri këtej e tutje.</translation>
 <translation id="7763470514545477072">Përputhje e prapashtesës së domenit</translation>
+<translation id="7764171263909999400">drita volumetrike</translation>
 <translation id="7769672763586021400">ID-ja e modelit</translation>
 <translation id="7774759755755950354">Prapa</translation>
 <translation id="7778717409420828014">Komentet e tua na ndihmojnë të përmirësojmë përvojën me Chromebook dhe do të rishikohen nga ekipi ynë. Për shkak të numrit të lartë të raportimeve, nuk do të mund të dërgojmë një përgjigje.</translation>
@@ -1604,7 +1634,6 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8318753676953949627">Nuk ka imazhe</translation>
 <translation id="8319809980370328428">Krijimi i përmbledhjes dhe titullit të regjistrimit</translation>
 <translation id="8320910311642849813">pyll</translation>
-<translation id="8322464149031882595">Kliko për të vazhduar përpara</translation>
 <translation id="8329018942023753850">aplikacioni i makinës llogaritëse</translation>
 <translation id="8336739000755212683">Ndrysho imazhin e llogarisë së pajisjes</translation>
 <translation id="8339024191194156249">Mëso më shumë për hapjen automatike</translation>
@@ -1652,12 +1681,13 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8503813439785031346">Emri i përdoruesit</translation>
 <translation id="8503836310948963452">Edhe vetëm pak minuta...</translation>
 <translation id="8505011850330200833">Modeli i Gemini kërkon 2 GB hapësirë ruajtëse për të përpunuar transkriptet dhe për të krijuar përmbledhje</translation>
+<translation id="8506394543220680287">mbuluar me borë</translation>
 <translation id="8508640263392900755">Detajet e APN-së</translation>
 <translation id="8522687886059337719">Tani ke qasje tek <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />imazhet e reja të sfondit<ph name="END_LINK_WALLPAPER_SUBPAGE" /> dhe te <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />mbrojtësit e rinj të ekranit<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">çajtore</translation>
+<translation id="8531692079895415839">me mjegull</translation>
 <translation id="8538236298648811558">Mundësuar nga inteligjenca artificiale e Google</translation>
-<translation id="8543574988889671960">Ringarko skedën</translation>
 <translation id="8550364285433943656">Vendos kontrollet për veprimet e lojës për të luajtur me tastet e tastierës</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">IA-ja gjeneruese mund të bëjë gabime, duke përfshirë edhe për njerëzit, prandaj kontrolloje përsëri.</translation>
@@ -1674,11 +1704,13 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8655295600908251630">Kanali</translation>
 <translation id="8655828773034788261">Ndaj URL-në:</translation>
 <translation id="8660881923941176839">paundë</translation>
+<translation id="8669187096858652220">Kliko për të shfaqur skedat</translation>
 <translation id="8670574982334489519">ana e djathtë</translation>
 <translation id="8675354002693747642">Çelës i ndarë paraprakisht</translation>
 <translation id="8677859815076891398">Nuk ka albume. Krijo një album te <ph name="LINK_BEGIN" />Fotografitë e Google<ph name="LINK_END" />.</translation>
 <translation id="8682949824227998083">ramen</translation>
 <translation id="8689520252402395106">Fut sërish kabllon USB të pajisjes "<ph name="DEVICE_NAME" />" për të vazhduar procesin e përditësimit</translation>
+<translation id="8699053192961439771">Kliko për të fshehur automatikisht skedat</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Përdor tastet "Shigjeta majtas" ose "Shigjeta djathtas" për ta menaxhuar këtë veçori.</translation>
 <translation id="8712637175834984815">E kuptova</translation>
 <translation id="871560550817059752">Dështoi - Nuk ka bojë</translation>
@@ -1708,7 +1740,6 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8820817407110198400">Faqeshënuesit</translation>
 <translation id="8833620912470026819">pyll me kaktuse</translation>
 <translation id="8834539327799336565">Të lidhur aktualisht</translation>
-<translation id="8842526499753992487">Lëvize në krye majtas</translation>
 <translation id="8845001906332463065">Kërko ndihmë</translation>
 <translation id="8849799913685544685">far</translation>
 <translation id="8851859208664803097">U ndalua - Printeri është i paarritshëm</translation>
@@ -1748,15 +1779,16 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8961025972867871808">pinguinë</translation>
 <translation id="8968751544471797276">Shpejtësia e karikimit</translation>
 <translation id="8970109610781093811">Ekzekuto përsëri</translation>
-<translation id="8972061581514441296">Kliko për t'u rikthyer</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skano}=1{Skano faqen {NUMBER_OF_PAGES}}other{Skano faqen {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">fshat</translation>
 <translation id="8997710128084572139">Pajisja ka <ph name="BATTERY_PERCENTAGE" />% bateri.</translation>
+<translation id="8998002498898621320">fotografi realiste</translation>
 <translation id="8998289560386111590">Nuk ofrohet në pajisjen tënde</translation>
 <translation id="9000871120886759611">Rivendose për t'u siguruar që mund të qasesh tek informacionet në gjuhën tënde të preferuar. Kontrollo që të përdoren vetëm gjuhët e preferuara.</translation>
 <translation id="9003499805101629690">picë</translation>
 <translation id="9003704114456258138">Frekuenca</translation>
+<translation id="9017411601860840405">drita neoni</translation>
 <translation id="901834265349196618">mail</translation>
 <translation id="9022897536196898720">lule</translation>
 <translation id="9024331582947483881">ekrani i plotë</translation>

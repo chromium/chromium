@@ -75,6 +75,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/weak_document_ptr.h"
@@ -1186,7 +1187,9 @@ void ContentSettingMediaStreamBubbleModel::SetRadioGroup() {
             ->GetBrowserContext()
             ->GetPermissionController()
             ->GetPermissionStatusForCurrentDocument(
-                blink::PermissionType::CAMERA_PAN_TILT_ZOOM,
+                content::PermissionDescriptorUtil::
+                    CreatePermissionDescriptorForPermissionType(
+                        blink::PermissionType::CAMERA_PAN_TILT_ZOOM),
                 &GetPage().GetMainDocument()) ==
         blink::mojom::PermissionStatus::GRANTED;
 

@@ -44,6 +44,21 @@ AuthController::AuthController(Profile* profile,
 
 AuthController::~AuthController() = default;
 
+bool AuthController::CheckAuthBeforeShowSync(base::OnceClosure after_signin) {
+  if (IsAutomationEnabled()) {
+    return true;
+  }
+  switch (GetTokenState()) {
+    case TokenState::kRequiresSignIn:
+      ShowReauthForAccount(std::move(after_signin));
+      return false;
+    case TokenState::kUnknownError:
+    case TokenState::kOk:
+    default:
+      return true;
+  }
+}
+
 void AuthController::CheckAuthBeforeLoad(
     base::OnceCallback<void(mojom::PrepareForClientResult)> callback) {
   // If automation is enabled skip auth check.
@@ -64,48 +79,6 @@ void AuthController::CheckAuthBeforeLoad(
   cookie_synchronizer_->CopyCookiesToWebviewStoragePartition(
       base::BindOnce(&AuthController::CookieSyncBeforeLoadDone, GetWeakPtr(),
                      std::move(callback)));
-}
-
-void AuthController::CheckAuthBeforeShow(
-    FallbackBehavior fallback_behavior,
-    base::OnceCallback<void(BeforeShowResult)> callback) {
-  after_signin_callback_.Reset();
-  // If automation is enabled skip auth check.
-  if (IsAutomationEnabled()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), BeforeShowResult::kReady));
-    return;
-  }
-
-  switch (GetTokenState()) {
-    case TokenState::kUnknownError:
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(callback), BeforeShowResult::kSyncFailed));
-      return;
-    case TokenState::kRequiresSignIn:
-      if (fallback_behavior == FallbackBehavior::kShowReauthPage) {
-        // TODO(harringtond): There should be some kind of transition to
-        // make it clear the sign-in is for Glic.
-        signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
-            profile_, signin_metrics::AccessPoint::kGlicLaunchButton);
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE,
-            base::BindOnce(std::move(callback),
-                           BeforeShowResult::kShowingReauthSigninPage));
-      } else {
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE,
-            base::BindOnce(std::move(callback), BeforeShowResult::kSyncFailed));
-      }
-      return;
-    case TokenState::kOk:
-      SyncCookiesIfRequired(base::BindOnce(&AuthController::DoFallback,
-                                           GetWeakPtr(), fallback_behavior,
-                                           std::move(callback)));
-      return;
-  }
 }
 
 AuthController::TokenState AuthController::GetTokenState() const {
@@ -189,19 +162,6 @@ void AuthController::SyncCookiesIfRequired(
       &AuthController::CookieSyncDone, GetWeakPtr(), std::move(callback)));
 }
 
-void AuthController::DoFallback(
-    FallbackBehavior fallback_behavior,
-    base::OnceCallback<void(BeforeShowResult)> callback,
-    bool sync_success) {
-  if (fallback_behavior == FallbackBehavior::kShowReauthPage && !sync_success) {
-    ShowReauthForAccount(base::DoNothing());
-    std::move(callback).Run(BeforeShowResult::kShowingReauthSigninPage);
-    return;
-  }
-  std::move(callback).Run(sync_success ? BeforeShowResult::kReady
-                                       : BeforeShowResult::kSyncFailed);
-}
-
 void AuthController::CookieSyncDone(base::OnceCallback<void(bool)> callback,
                                     bool sync_success) {
   if (sync_success) {
@@ -224,6 +184,10 @@ void AuthController::ShowReauthForAccount(base::OnceClosure after_signin) {
 
 void AuthController::OnGlicWindowOpened() {
   after_signin_callback_.Reset();
+}
+
+bool AuthController::RequiresSignIn() const {
+  return GetTokenState() == TokenState::kRequiresSignIn;
 }
 
 void AuthController::CookieSyncBeforeLoadDone(

@@ -9,6 +9,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/shell/browser/shell.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
@@ -88,8 +89,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityFullscreenBrowserTest,
   shell()->web_contents()->SetDelegate(&delegate);
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
+  ScopedAccessibilityModeOverride complete_mode(ui::kAXModeComplete);
+
   GURL url(
       embedded_test_server()->GetURL("/accessibility/fullscreen/links.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -126,8 +128,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityFullscreenBrowserTest,
   shell()->web_contents()->SetDelegate(&delegate);
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
+  ScopedAccessibilityModeOverride complete_mode(ui::kAXModeComplete);
+
   GURL url(
       embedded_test_server()->GetURL("/accessibility/fullscreen/iframe.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));

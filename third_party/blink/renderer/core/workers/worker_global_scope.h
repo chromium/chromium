@@ -213,8 +213,7 @@ class CORE_EXPORT WorkerGlobalScope
       std::unique_ptr<PolicyContainer> policy_container,
       const FetchClientSettingsObjectSnapshot& outside_settings_object,
       WorkerResourceTimingNotifier& outside_resource_timing_notifier,
-      network::mojom::CredentialsMode,
-      RejectCoepUnsafeNone reject_coep_unsafe_none) = 0;
+      network::mojom::CredentialsMode) = 0;
 
   void ReceiveMessage(BlinkTransferableMessage);
   Event* ReceiveCustomEventInternal(

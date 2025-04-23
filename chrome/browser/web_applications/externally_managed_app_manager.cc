@@ -171,23 +171,6 @@ void ExternallyManagedAppManager::Install(
   PostMaybeStartNext();
 }
 
-void ExternallyManagedAppManager::InstallApps(
-    std::vector<ExternalInstallOptions> install_options_list,
-    const RepeatingInstallCallback& callback) {
-  if (DropRequestsForTesting()) {
-    CHECK_IS_TEST();
-    return;
-  }
-
-  for (auto& install_options : install_options_list) {
-    pending_installs_metadata_.push_back(
-        std::make_unique<ExternalInstallMetadata>(std::move(install_options),
-                                                  callback));
-  }
-
-  PostMaybeStartNext();
-}
-
 void ExternallyManagedAppManager::SynchronizeInstalledApps(
     std::vector<ExternalInstallOptions> desired_apps_install_options,
     ExternalInstallSource install_source,
@@ -520,6 +503,23 @@ void ExternallyManagedAppManager::MaybeEnqueueServiceWorkerRegistration(
 
 bool ExternallyManagedAppManager::IsShuttingDown() {
   return is_in_shutdown_ || profile()->ShutdownStarted();
+}
+
+void ExternallyManagedAppManager::InstallApps(
+    std::vector<ExternalInstallOptions> install_options_list,
+    const RepeatingInstallCallback& callback) {
+  if (DropRequestsForTesting()) {
+    CHECK_IS_TEST();
+    return;
+  }
+
+  for (auto& install_options : install_options_list) {
+    pending_installs_metadata_.push_back(
+        std::make_unique<ExternalInstallMetadata>(std::move(install_options),
+                                                  callback));
+  }
+
+  PostMaybeStartNext();
 }
 
 void ExternallyManagedAppManager::UninstallApps(

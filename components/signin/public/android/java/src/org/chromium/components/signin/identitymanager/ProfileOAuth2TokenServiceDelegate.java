@@ -8,6 +8,7 @@ import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Promise;
@@ -19,6 +20,8 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.google_apis.gaia.GoogleServiceAuthError;
+import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 
 import java.util.List;
 
@@ -60,49 +63,54 @@ final class ProfileOAuth2TokenServiceDelegate {
                 .getCoreAccountInfos()
                 .then(
                         coreAccountInfos -> {
-                            final CoreAccountInfo coreAccountInfo =
+                            final @Nullable CoreAccountInfo coreAccountInfo =
                                     AccountUtils.findCoreAccountInfoByEmail(
                                             coreAccountInfos, accountEmail);
-                            if (coreAccountInfo == null) {
-                                ThreadUtils.postOnUiThread(
-                                        () -> {
-                                            ProfileOAuth2TokenServiceDelegateJni.get()
-                                                    .onOAuth2TokenFetched(
-                                                            null,
-                                                            AccessTokenData
-                                                                    .NO_KNOWN_EXPIRATION_TIME,
-                                                            false,
-                                                            nativeCallback);
-                                        });
-                                return;
-                            }
-                            String oauth2Scope = OAUTH2_SCOPE_PREFIX + scope;
-                            mAccountManagerFacade.getAccessToken(
-                                    coreAccountInfo,
-                                    oauth2Scope,
-                                    new AccountManagerFacade.GetAccessTokenCallback() {
-                                        @Override
-                                        public void onGetTokenSuccess(AccessTokenData token) {
-                                            ProfileOAuth2TokenServiceDelegateJni.get()
-                                                    .onOAuth2TokenFetched(
-                                                            token.getToken(),
-                                                            token.getExpirationTimeSecs(),
-                                                            false,
-                                                            nativeCallback);
-                                        }
-
-                                        @Override
-                                        public void onGetTokenFailure(boolean isTransientError) {
-                                            ProfileOAuth2TokenServiceDelegateJni.get()
-                                                    .onOAuth2TokenFetched(
-                                                            null,
-                                                            AccessTokenData
-                                                                    .NO_KNOWN_EXPIRATION_TIME,
-                                                            isTransientError,
-                                                            nativeCallback);
-                                        }
-                                    });
+                            getAccessToken(coreAccountInfo, scope, nativeCallback);
                         });
+    }
+
+    private void getAccessToken(
+            @Nullable CoreAccountInfo coreAccountInfo, String scope, final long nativeCallback) {
+        if (coreAccountInfo == null) {
+            ThreadUtils.postOnUiThread(
+                    () -> {
+                        ProfileOAuth2TokenServiceDelegateJni.get()
+                                .onOAuth2TokenFetched(
+                                        null,
+                                        AccessTokenData.NO_KNOWN_EXPIRATION_TIME,
+                                        new GoogleServiceAuthError(
+                                                GoogleServiceAuthErrorState.REQUEST_CANCELED),
+                                        nativeCallback);
+                    });
+            return;
+        }
+        String oauth2Scope = OAUTH2_SCOPE_PREFIX + scope;
+        mAccountManagerFacade.getAccessToken(
+                coreAccountInfo,
+                oauth2Scope,
+                new AccountManagerFacade.GetAccessTokenCallback() {
+                    @Override
+                    public void onGetTokenSuccess(AccessTokenData token) {
+                        ProfileOAuth2TokenServiceDelegateJni.get()
+                                .onOAuth2TokenFetched(
+                                        token.getToken(),
+                                        token.getExpirationTimeSecs(),
+                                        new GoogleServiceAuthError(
+                                                GoogleServiceAuthErrorState.NONE),
+                                        nativeCallback);
+                    }
+
+                    @Override
+                    public void onGetTokenFailure(GoogleServiceAuthError authError) {
+                        ProfileOAuth2TokenServiceDelegateJni.get()
+                                .onOAuth2TokenFetched(
+                                        null,
+                                        AccessTokenData.NO_KNOWN_EXPIRATION_TIME,
+                                        authError,
+                                        nativeCallback);
+                    }
+                });
     }
 
     /**
@@ -138,15 +146,15 @@ final class ProfileOAuth2TokenServiceDelegate {
          * @param authToken The string value of the OAuth2 token.
          * @param expirationTimeSecs The number of seconds after the Unix epoch when the token is
          *     scheduled to expire. It is set to 0 if there's no known expiration time.
-         * @param isTransientError Indicates if the error is transient (network timeout or *
-         *     unavailable, etc) or persistent (bad credentials, permission denied, etc).
+         * @param authError The {@link GoogleServiceAuthError} encountered during token fetch. Not
+         *     checked if authToken is not null.
          * @param nativeCallback the pointer to the native callback that should be run upon
          *     completion.
          */
         void onOAuth2TokenFetched(
                 @Nullable String authToken,
                 long expirationTimeSecs,
-                boolean isTransientError,
+                @JniType("GoogleServiceAuthError") GoogleServiceAuthError authError,
                 long nativeCallback);
     }
 }

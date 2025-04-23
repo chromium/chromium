@@ -8,7 +8,6 @@
 
 #include "base/debug/alias.h"
 #include "base/logging.h"
-#include "base/process/process.h"
 #include "base/strings/strcat.h"
 #include "components/viz/service/gl/exit_code.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -53,7 +52,7 @@ SoftwareOutputDeviceWinSwapChain::SoftwareOutputDeviceWinSwapChain(
     HWND& child_hwnd,
     OutputDeviceBacking* output_backing)
     : SoftwareOutputDeviceWinBase(hwnd), output_backing_(output_backing) {
-  child_window_.Initialize();
+  child_window_.Initialize(/*remove_redirection_bitmap=*/true);
   child_hwnd = child_window_.window();
   output_backing_->RegisterClient(this);
 }
@@ -88,14 +87,12 @@ bool SoftwareOutputDeviceWinSwapChain::ResizeDelegated(
                                                 viewport_pixel_size.height(),
                                                 kDXGISwapChainFormat, 0);
     if (FAILED(hr)) {
-      LOG(ERROR) << "Exiting GPU process due to unrecoverable error. "
-                    "IDXGISwapChain::ResizeBuffers failed: "
-                 << logging::SystemErrorCodeToString(hr);
       // If ResizeBuffers fails, the swapchain and window sizes will be out of
       // sync, causing unexpected behavior such as permanent gutters or
       // clipping. Therefore, terminate the GPU process to refresh state.
-      base::Process::TerminateCurrentProcessImmediately(
-          static_cast<int>(ExitCode::RESULT_CODE_GPU_EXIT_ON_CONTEXT_LOST));
+      RestartGpuProcessForContextLoss(
+          base::StringPrintf("IDXGISwapChain::ResizeBuffers failed: %s",
+                             logging::SystemErrorCodeToString(hr)));
     }
   } else {
     // Defer the creation of DirectX related objects to when they're needed
@@ -110,7 +107,14 @@ bool SoftwareOutputDeviceWinSwapChain::ResizeDelegated(
     Microsoft::WRL::ComPtr<IDCompositionDevice> dcomp_device;
     HRESULT hr = output_backing_->GetOrCreateDXObjects(
         &d3d11_device, &dxgi_factory, &dcomp_device);
-    CHECK_EQ(hr, S_OK);
+    if (FAILED(hr)) {
+      // If the error code is E_ACCESSDENIED, it indicates that the browser is
+      // running in session 0, which is non-interactive. There would be no
+      // rendering in this case, and there is no need to terminate the GPU
+      // process.
+      CHECK_EQ(hr, E_ACCESSDENIED);
+      return false;
+    }
 
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> d3d11_device_context;
     d3d11_device->GetImmediateContext(&d3d11_device_context);
@@ -158,15 +162,13 @@ bool SoftwareOutputDeviceWinSwapChain::ResizeDelegated(
     hr = dxgi_factory->CreateSwapChainForComposition(
         d3d11_device.Get(), &dxgi_swapchain_desc, nullptr, &dxgi_swapchain);
     if (FAILED(hr)) {
-      LOG(ERROR) << "Exiting GPU process due to unrecoverable error. "
-                    "IDXGIFactory2::CreateSwapChainForComposition failed: "
-                 << logging::SystemErrorCodeToString(hr);
       // An error in CreateSwapChainForComposition is observed to happen mostly
       // due to OOM issues. This causes the DXGI device to be removed resulting
       // in an error somewhere else. If this occurs, terminate the GPU process
       // here to refresh state.
-      base::Process::TerminateCurrentProcessImmediately(
-          static_cast<int>(ExitCode::RESULT_CODE_GPU_EXIT_ON_CONTEXT_LOST));
+      RestartGpuProcessForContextLoss(base::StringPrintf(
+          "IDXGIFactory2::CreateSwapChainForComposition failed: %s",
+          logging::SystemErrorCodeToString(hr)));
     }
 
     // Set swapchain as root visual content.

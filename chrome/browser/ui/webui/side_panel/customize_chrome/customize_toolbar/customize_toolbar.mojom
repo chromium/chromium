@@ -32,6 +32,7 @@ enum ActionId {
   kShowChromeLabs,
   kCopyLink,
   kTabSearch,
+  kSplitTab,
 };
 
 // Unique identifiers for categories the actions can belong to.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Google Inc.
+ * Copyright 2019 Google LLC.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -36,6 +36,10 @@
 #ifndef CRYPTO_ELGAMAL_H_
 #define CRYPTO_ELGAMAL_H_
 
+#include <memory>
+#include <utility>
+#include <vector>
+
 #include "third_party/private-join-and-compute/src/crypto/ec_group.h"
 #include "third_party/private-join-and-compute/src/crypto/ec_point.h"
 #include "third_party/private-join-and-compute/src/util/status.inc"
@@ -68,6 +72,10 @@ struct PrivateKey {
 StatusOr<std::pair<std::unique_ptr<PublicKey>, std::unique_ptr<PrivateKey>>>
 GenerateKeyPair(const ECGroup& ec_group);
 
+// Joins the public key shares in a public key. The shares should be nonempty.
+StatusOr<std::unique_ptr<PublicKey>> GeneratePublicKeyFromShares(
+    const std::vector<std::unique_ptr<elgamal::PublicKey>>& shares);
+
 // Homomorphically multiply two ciphertexts.
 // (Note: this corresponds to addition in the EC group.)
 StatusOr<elgamal::Ciphertext> Mul(const elgamal::Ciphertext& ciphertext1,
@@ -78,10 +86,16 @@ StatusOr<elgamal::Ciphertext> Mul(const elgamal::Ciphertext& ciphertext1,
 StatusOr<elgamal::Ciphertext> Exp(const elgamal::Ciphertext& ciphertext,
                                   const BigNum& scalar);
 
+// Returns a ciphertext encrypting the point at infinity, using fixed randomness
+// "0". This is a multiplicative identity for ElGamal ciphertexts.
 StatusOr<Ciphertext> GetZero(const ECGroup* group);
 
+// A convenience function that creates a copy of this ciphertext with the same
+// randomness and underlying message.
 StatusOr<Ciphertext> CloneCiphertext(const Ciphertext& ciphertext);
 
+// Checks if the given ciphertext is an encryption of the point of infinity
+// using randomness "0".
 bool IsCiphertextZero(const Ciphertext& ciphertext);
 
 }  // namespace elgamal
@@ -132,6 +146,12 @@ class PRIVATE_COMPUTE_EXPORT ElGamalDecrypter {
 
   // Decrypts a given ElGamal ciphertext.
   StatusOr<ECPoint> Decrypt(const elgamal::Ciphertext& ciphertext) const;
+
+  // Partially decrypts a given ElGamal ciphertext with a share of the secret
+  // key. The caller should rerandomize the ciphertext using the remaining
+  // partial public keys.
+  StatusOr<elgamal::Ciphertext> PartialDecrypt(
+      const elgamal::Ciphertext& ciphertext) const;
 
   // Returns a pointer to the owned ElGamal private key
   const elgamal::PrivateKey* getPrivateKey() const {

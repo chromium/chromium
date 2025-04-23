@@ -30,6 +30,8 @@ void PopulateTerminationInfo(
   info->renderer_has_visible_clients =
       content_info.renderer_has_visible_clients;
   info->renderer_was_subframe = content_info.renderer_was_subframe;
+  info->is_spare_renderer = content_info.is_spare_renderer;
+  info->has_spare_renderer = content_info.has_spare_renderer;
 }
 
 }  // namespace

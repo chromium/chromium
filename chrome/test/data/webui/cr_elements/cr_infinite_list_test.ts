@@ -39,7 +39,7 @@ class TestItem extends CrLitElement {
     button.focus();
   }
 
-  name: string = '';
+  accessor name: string = '';
 }
 
 customElements.define('test-item', TestItem);
@@ -56,8 +56,8 @@ class TestApp extends CrLitElement {
     };
   }
 
-  listItems: Array<{name: string}> = [];
-  useDefaultScroll: boolean = false;
+  accessor listItems: Array<{name: string}> = [];
+  accessor useDefaultScroll: boolean = false;
 
   override render() {
     return this.useDefaultScroll ?

@@ -462,7 +462,8 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
     }
 
     if (basic_shape) {
-      const Path path = basic_shape->GetPath(reference_size, zoom);
+      const Path path =
+          basic_shape->GetPath(reference_size, zoom, /*path_scale=*/1.f);
       paths.push_back(path.GetSkPath());
       prev_type = basic_shape->GetType();
     } else {
@@ -497,7 +498,7 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
         switch (static_op->GetType()) {
           case ClipPathOperation::kShape:
             path = To<ShapeClipPathOperation>(static_op)->GetPath(
-                reference_size, zoom);
+                reference_size, zoom, /*path_scale=*/1.f);
             break;
           case ClipPathOperation::kGeometryBox:
             path = ClipPathClipper::RoundedReferenceBox(

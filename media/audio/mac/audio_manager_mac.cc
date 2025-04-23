@@ -718,6 +718,8 @@ AudioParameters AudioManagerMac::GetInputStreamParameters(
 
   if (AUAudioInputStream::IsEchoCancellationSupported(device, params)) {
     params.set_effects(params.effects() | AudioParameters::ECHO_CANCELLER);
+    params.set_effects(params.effects() |
+                       AudioParameters::AUTOMATIC_GAIN_CONTROL);
   }
 
   return params;

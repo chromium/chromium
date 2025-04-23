@@ -43,14 +43,15 @@ jobs:
         with:
           path: ~/.cargo/registry/index
           key: cargo-git-index
+      - name: Lock MSRV-compatible dependencies
+        if: matrix.rust == '1.63.0'
+        env:
+          CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS: fallback
+        # Note that this uses the runner's pre-installed stable cargo
+        run: cargo generate-lockfile
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
-      - name: Downgrade dependencies
-        if: matrix.rust == '1.63.0'
-        run: |
-          cargo generate-lockfile
-          cargo update -p hashbrown --precise 0.15.0
       - name: Tests
         run: |
           cargo build --verbose --features "${{ matrix.features }}"
@@ -82,15 +83,16 @@ jobs:
         with:
           path: ~/.cargo/registry/index
           key: cargo-git-index
+      - name: Lock MSRV-compatible dependencies
+        if: matrix.rust == '1.63.0'
+        env:
+          CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS: fallback
+        # Note that this uses the runner's pre-installed stable cargo
+        run: cargo generate-lockfile
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
           target: ${{ matrix.target }}
-      - name: Downgrade dependencies
-        if: matrix.rust == '1.63.0'
-        run: |
-          cargo generate-lockfile
-          cargo update -p hashbrown --precise 0.15.0
       - name: Tests
         run: |
           cargo build -vv --target=${{ matrix.target }} --no-default-features
@@ -132,7 +134,10 @@ jobs:
       - uses: taiki-e/install-action@v2
         with:
           tool: cargo-hack
-      - run: cargo +nightly hack generate-lockfile --remove-dev-deps -Z direct-minimal-versions
+      - name: Lock minimal direct dependencies
+        run: cargo +nightly hack generate-lockfile --remove-dev-deps -Z direct-minimal-versions
+        env:
+          CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS: fallback
       - name: Build (nightly)
         run: cargo +nightly build --verbose --all-features
       - name: Build (MSRV)

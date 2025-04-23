@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <set>
 #include <vector>
@@ -53,11 +54,12 @@ namespace storage {
 
 namespace {
 
-const struct RootPathTest {
+struct RootPathTest {
   FileSystemType type;
   const char* origin_url;
   const char* expected_path;
-} kRootPathTestCases[] = {
+};
+const auto kRootPathTestCases = std::to_array<RootPathTest>({
     {kFileSystemTypeTemporary, "http://foo:1/", "000" PS "t"},
     {kFileSystemTypePersistent, "http://foo:1/", "000" PS "p"},
     {kFileSystemTypeTemporary, "http://bar.com/", "001" PS "t"},
@@ -66,23 +68,26 @@ const struct RootPathTest {
     {kFileSystemTypePersistent, "https://foo:2/", "002" PS "p"},
     {kFileSystemTypeTemporary, "https://bar.com/", "003" PS "t"},
     {kFileSystemTypePersistent, "https://bar.com/", "003" PS "p"},
+});
+
+struct RootPathFileURITest {
+  FileSystemType type;
+  const char* origin_url;
+  const char* expected_path;
 };
+const auto kRootPathFileURITestCases = std::to_array<RootPathFileURITest>(
+    {{kFileSystemTypeTemporary, "file:///", "000" PS "t"},
+     {kFileSystemTypePersistent, "file:///", "000" PS "p"}});
 
-const struct RootPathFileURITest {
+struct RootPathFileURINonDefaulBucketTest {
   FileSystemType type;
   const char* origin_url;
   const char* expected_path;
-} kRootPathFileURITestCases[] = {
-    {kFileSystemTypeTemporary, "file:///", "000" PS "t"},
-    {kFileSystemTypePersistent, "file:///", "000" PS "p"}};
-
-const struct RootPathFileURINonDefaulBucketTest {
-  FileSystemType type;
-  const char* origin_url;
-  const char* expected_path;
-} kRootPathFileURIAndBucketTestCases[] = {
-    {kFileSystemTypeTemporary, "file:///", "1" PS "FileSystem" PS "t"},
-    {kFileSystemTypePersistent, "file:///", "1" PS "FileSystem" PS "p"}};
+};
+const auto kRootPathFileURIAndBucketTestCases =
+    std::to_array<RootPathFileURINonDefaulBucketTest>(
+        {{kFileSystemTypeTemporary, "file:///", "1" PS "FileSystem" PS "t"},
+         {kFileSystemTypePersistent, "file:///", "1" PS "FileSystem" PS "p"}});
 
 void DidOpenFileSystem(base::File::Error* error_out,
                        const GURL& origin_url,
@@ -227,16 +232,18 @@ TEST_F(SandboxFileSystemBackendTest, Empty) {
 
 TEST_F(SandboxFileSystemBackendTest, EnumerateOrigins) {
   SetUpNewBackend(CreateAllowFileAccessOptions());
-  const char* temporary_origins[] = {
-      "http://www.bar.com/",       "http://www.foo.com/",
-      "http://www.foo.com:1/",     "http://www.example.com:8080/",
+  auto temporary_origins = std::to_array<const char*>({
+      "http://www.bar.com/",
+      "http://www.foo.com/",
+      "http://www.foo.com:1/",
+      "http://www.example.com:8080/",
       "http://www.google.com:80/",
-  };
-  const char* persistent_origins[] = {
+  });
+  auto persistent_origins = std::to_array<const char*>({
       "http://www.bar.com/",
       "http://www.foo.com:8080/",
       "http://www.foo.com:80/",
-  };
+  });
   size_t temporary_size = std::size(temporary_origins);
   size_t persistent_size = std::size(persistent_origins);
   std::set<blink::StorageKey> temporary_set, persistent_set;

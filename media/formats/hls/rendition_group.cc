@@ -109,12 +109,13 @@ ParseStatus::Or<std::monostate> RenditionGroup::AddRendition(
           .autoselect = std::move(tag.autoselect),
       });
 
+  tracks_.push_back(*track);
   renditions_map_.emplace(track->track_id(),
                           std::make_tuple(*track, &rendition));
 
   if (tag.is_default) {
-    if (!default_rendition_) {
-      default_rendition_ = &rendition;
+    if (!default_rendition_.has_value()) {
+      default_rendition_ = std::make_tuple(*track, &rendition);
     } else if (!HLSQuirks::AllowMultipleDefaultRenditionsInGroup()) {
       return ParseStatusCode::kRenditionGroupHasDuplicateRenditionNames;
     }
@@ -146,6 +147,60 @@ RenditionGroup::RenditionTrack RenditionGroup::MakeImplicitRendition(
       /*enabled = */ true,
       /*stream_id =*/rendition_unique_id);
   return std::make_tuple(track, &rendition);
+}
+
+const std::optional<RenditionGroup::RenditionTrack> RenditionGroup::MostSimilar(
+    const std::optional<RenditionTrack>& to) const {
+#define CHECK_RENDITIONS(expr)                  \
+  do {                                          \
+    for (const auto& entry : renditions_map_) { \
+      if (expr(std::get<1>(entry.second))) {    \
+        return entry.second;                    \
+      }                                         \
+    }                                           \
+  } while (0)
+
+  if (to.has_value()) {
+    // Find an exact match for the track, and use if if it exists.
+    const auto& [track, rendition] = *to;
+    auto lookup = renditions_map_.find(track.track_id());
+    if (lookup != renditions_map_.end()) {
+      if (std::get<0>(lookup->second).stream_id() == track.stream_id()) {
+        return lookup->second;
+      }
+    }
+
+    // If the URI is an exact match, use this one.
+    CHECK_RENDITIONS([&](const Rendition* entry) {
+      return entry->GetUri() == rendition->GetUri();
+    });
+
+    // Prefer to match language next.
+    CHECK_RENDITIONS([&](const Rendition* entry) {
+      return entry->GetLanguage() == rendition->GetLanguage();
+    });
+  }
+
+  // We didn't find any URI or language matches, so fall back to default.
+  if (default_rendition_.has_value()) {
+    return *default_rendition_;
+  }
+
+  // Find anything with AUTOSELECT=YES
+  CHECK_RENDITIONS([&](const Rendition* e) { return e->MayAutoSelect(); });
+
+#undef CHECK_RENDITIONS
+
+  return std::nullopt;
+}
+
+const std::optional<RenditionGroup::RenditionTrack>
+RenditionGroup::GetRenditionById(const MediaTrack::Id& id) const {
+  auto lookup = renditions_map_.find(id);
+  if (lookup == renditions_map_.end()) {
+    return std::nullopt;
+  }
+  return lookup->second;
 }
 
 }  // namespace media::hls

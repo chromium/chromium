@@ -9,10 +9,10 @@ android.webkit.WebView focusable focused
 ++++++android.widget.TextView name=' '
 ++++++android.view.View role_description='deletion'
 ++++++++android.view.View focusable interesting
-++++++++++android.widget.TextView interesting name='3' hint='oops'
+++++++++++android.widget.TextView interesting name='3' tooltip_text='oops'
 ++++++android.widget.TextView name=' '
 ++++++android.view.View role_description='insertion'
 ++++++++android.view.View role_description='link' clickable focusable link interesting name='2'
-++++++++++android.widget.TextView name='2' hint='better'
+++++++++++android.widget.TextView name='2' tooltip_text='better'
 ++++++android.widget.TextView name=' '
 ++++android.widget.TextView interesting name='O'

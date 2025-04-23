@@ -603,7 +603,7 @@ void KeyboardEventManager::DefaultEscapeEventHandler(KeyboardEvent* event) {
     auto elements{document.CurrentInterestTargetElements()};
     for (Element* el : elements) {
       Element::GainOrLoseInterest(el, el->InterestTargetElement(),
-                                  /*interest_gained*/ false);
+                                  Element::InterestState::kNoInterest);
     }
   }
 

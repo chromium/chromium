@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -171,6 +172,28 @@ enum class LcppHintStatus {
   kMaxValue = kConversionFailure,
 };
 
+std::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
+GetLCPPHint(content::NavigationHandle& navigation_handle,
+            LoadingPredictor& predictor) {
+  std::optional<LcppStat> lcpp_stat =
+      predictor.resource_prefetch_predictor()->GetLcppStat(
+          navigation_handle.GetInitiatorOrigin(), navigation_handle.GetURL());
+  if (!lcpp_stat) {
+    base::UmaHistogramEnumeration(
+        "LoadingPredictor.SetLCPPNavigationHint.Status",
+        LcppHintStatus::kNoLcppData);
+    return std::nullopt;
+  }
+  if (!IsValidLcppStat(*lcpp_stat)) {
+    base::UmaHistogramEnumeration(
+        "LoadingPredictor.SetLCPPNavigationHint.Status",
+        LcppHintStatus::kInvalidLcppStat);
+    return std::nullopt;
+  }
+
+  return ConvertLcppStatToLCPCriticalPathPredictorNavigationTimeHint(
+      *lcpp_stat);
+}
 // Attach LCP Critical Path Predictor hint to NavigationHandle, so that it
 // would be sent to the renderer process upon navigation commit.
 void MaybeSetLCPPNavigationHint(content::NavigationHandle& navigation_handle,
@@ -185,23 +208,17 @@ void MaybeSetLCPPNavigationHint(content::NavigationHandle& navigation_handle,
   if (!navigation_url.is_valid() || !navigation_url.SchemeIsHTTPOrHTTPS()) {
     return;
   }
-  std::optional<LcppStat> lcpp_stat =
-      predictor.resource_prefetch_predictor()->GetLcppStat(
-          navigation_handle.GetInitiatorOrigin(), navigation_url);
-  if (!lcpp_stat) {
-    base::UmaHistogramEnumeration(
-        "LoadingPredictor.SetLCPPNavigationHint.Status",
-        LcppHintStatus::kNoLcppData);
-    return;
-  }
-  if (!IsValidLcppStat(*lcpp_stat)) {
-    base::UmaHistogramEnumeration(
-        "LoadingPredictor.SetLCPPNavigationHint.Status",
-        LcppHintStatus::kInvalidLcppStat);
-    return;
-  }
+
   std::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint> hint =
-      ConvertLcppStatToLCPCriticalPathPredictorNavigationTimeHint(*lcpp_stat);
+      GetLCPPHint(navigation_handle, predictor);
+  if (predictor.IsLCPPTestingEnabled()) {
+    CHECK_IS_TEST();
+    if (!hint) {
+      hint = blink::mojom::LCPCriticalPathPredictorNavigationTimeHint(
+          {}, {}, {}, {}, {}, /*for_testing=*/false);
+    }
+    hint->for_testing = true;
+  }
   if (hint) {
     navigation_handle.SetLCPPNavigationHint(*hint);
     base::UmaHistogramEnumeration(

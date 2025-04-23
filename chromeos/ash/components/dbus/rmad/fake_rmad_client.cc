@@ -128,7 +128,7 @@ void FakeRmadClient::GetCurrentState(
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(reply)));
   }
-  TriggerHardwareVerificationResultObservation(true, "");
+  TriggerHardwareVerificationResultObservation(true, "", false);
 }
 
 void FakeRmadClient::TransitionNextState(
@@ -497,10 +497,12 @@ void FakeRmadClient::TriggerExternalDiskStateObservation(bool detected) {
 
 void FakeRmadClient::TriggerHardwareVerificationResultObservation(
     bool is_compliant,
-    const std::string& error_str) {
+    const std::string& error_str,
+    bool is_skipped) {
   rmad::HardwareVerificationResult verificationStatus;
   verificationStatus.set_is_compliant(is_compliant);
   verificationStatus.set_error_str(error_str);
+  verificationStatus.set_is_skipped(is_skipped);
   for (auto& observer : observers_) {
     observer.HardwareVerificationResult(verificationStatus);
   }

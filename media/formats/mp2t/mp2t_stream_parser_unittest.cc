@@ -87,7 +87,7 @@ std::string DecryptSampleAES(const std::string& key,
   std::string result;
   const EVP_CIPHER* cipher = EVP_aes_128_cbc();
   ScopedCipherCTX ctx;
-  EXPECT_EQ(EVP_CipherInit_ex(ctx.get(), cipher, NULL,
+  EXPECT_EQ(EVP_CipherInit_ex(ctx.get(), cipher, nullptr,
                               reinterpret_cast<const uint8_t*>(key.data()),
                               reinterpret_cast<const uint8_t*>(iv.data()), 0),
             1);

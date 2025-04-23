@@ -29,11 +29,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_BINDING_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_BINDING_H_
 
@@ -139,14 +134,15 @@ inline v8::Local<v8::String> V8String(v8::Isolate* isolate,
         isolate, impl);
   }
   if (string.Is8Bit()) {
-    return v8::String::NewFromOneByte(
-               isolate, reinterpret_cast<const uint8_t*>(string.Characters8()),
-               v8::NewStringType::kNormal, static_cast<int>(string.length()))
+    base::span<const LChar> chars = string.Span8();
+    return v8::String::NewFromOneByte(isolate, chars.data(),
+                                      v8::NewStringType::kNormal,
+                                      static_cast<int>(chars.size()))
         .ToLocalChecked();
   }
-  return v8::String::NewFromTwoByte(
-             isolate, reinterpret_cast<const uint16_t*>(string.Characters16()),
-             v8::NewStringType::kNormal, static_cast<int>(string.length()))
+  return v8::String::NewFromTwoByte(isolate, string.SpanUint16().data(),
+                                    v8::NewStringType::kNormal,
+                                    static_cast<int>(string.length()))
       .ToLocalChecked();
 }
 
@@ -175,16 +171,15 @@ inline v8::Local<v8::String> V8AtomicString(v8::Isolate* isolate,
                                             const StringView& string) {
   DCHECK(isolate);
   if (string.Is8Bit()) {
-    return v8::String::NewFromOneByte(
-               isolate, reinterpret_cast<const uint8_t*>(string.Characters8()),
-               v8::NewStringType::kInternalized,
-               static_cast<int>(string.length()))
+    base::span<const LChar> chars = string.Span8();
+    return v8::String::NewFromOneByte(isolate, chars.data(),
+                                      v8::NewStringType::kInternalized,
+                                      static_cast<int>(chars.size()))
         .ToLocalChecked();
   }
-  return v8::String::NewFromTwoByte(
-             isolate, reinterpret_cast<const uint16_t*>(string.Characters16()),
-             v8::NewStringType::kInternalized,
-             static_cast<int>(string.length()))
+  return v8::String::NewFromTwoByte(isolate, string.SpanUint16().data(),
+                                    v8::NewStringType::kInternalized,
+                                    static_cast<int>(string.length()))
       .ToLocalChecked();
 }
 

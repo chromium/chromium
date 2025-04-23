@@ -127,7 +127,8 @@ void SetUserType(PrefService* local_state, TipsNotificationUserType user_type) {
 }  // namespace
 
 TipsNotificationClient::TipsNotificationClient()
-    : PushNotificationClient(PushNotificationClientId::kTips) {
+    : PushNotificationClient(PushNotificationClientId::kTips,
+                             PushNotificationClientScope::kAppWide) {
   local_state_ = GetApplicationContext()->GetLocalState();
   pref_change_registrar_.Init(local_state_);
   PrefChangeRegistrar::NamedChangeCallback pref_callback = base::BindRepeating(
@@ -145,10 +146,15 @@ TipsNotificationClient::TipsNotificationClient()
 
 TipsNotificationClient::~TipsNotificationClient() = default;
 
+bool TipsNotificationClient::CanHandleNotification(
+    UNNotification* notification) {
+  return IsTipsNotification(notification.request);
+}
+
 bool TipsNotificationClient::HandleNotificationInteraction(
     UNNotificationResponse* response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsTipsNotification(response.notification.request)) {
+  if (!CanHandleNotification(response.notification)) {
     return false;
   }
 
@@ -248,6 +254,7 @@ void TipsNotificationClient::OnSceneActiveForegroundBrowserReady() {
 void TipsNotificationClient::OnSceneActiveForegroundBrowserReady(
     base::OnceClosure closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  UpdateProvisionalAllowed();
   if (user_type_ == TipsNotificationUserType::kUnknown &&
       !CanSendReactivation()) {
     ClassifyUser();
@@ -763,7 +770,7 @@ bool TipsNotificationClient::CanSendReactivation() {
   // or if the feature is not enabled, Reactivation notifications should not
   // be sent.
   if (permitted_ || !IsFirstRunRecent(base::Days(28)) ||
-      !IsIOSReactivationNotificationsEnabled()) {
+      !IsIOSReactivationNotificationsEnabled() || !provisional_allowed_) {
     return false;
   }
 
@@ -774,6 +781,13 @@ bool TipsNotificationClient::CanSendReactivation() {
   }
 
   return local_state_->GetInteger(kReactivationNotificationsCanceledCount) < 2;
+}
+
+void TipsNotificationClient::UpdateProvisionalAllowed() {
+  Browser* browser = GetSceneLevelForegroundActiveBrowser();
+  CHECK(browser);
+  provisional_allowed_ = [PushNotificationUtil
+      provisionalAllowedByPolicyForProfile:browser->GetProfile()];
 }
 
 bool TipsNotificationClient::DismissLimitReached() {

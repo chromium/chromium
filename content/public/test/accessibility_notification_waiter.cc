@@ -29,7 +29,6 @@ AccessibilityNotificationWaiter::AccessibilityNotificationWaiter(
     WebContents* web_contents)
     : WebContentsObserver(web_contents),
       event_to_wait_for_(ax::mojom::Event::kNone),
-      generated_event_to_wait_for_(std::nullopt),
       loop_runner_(std::make_unique<base::RunLoop>()),
       loop_runner_quit_closure_(loop_runner_->QuitClosure()),
       wait_for_any_event_(true) {
@@ -38,40 +37,22 @@ AccessibilityNotificationWaiter::AccessibilityNotificationWaiter(
 
 AccessibilityNotificationWaiter::AccessibilityNotificationWaiter(
     WebContents* web_contents,
-    ui::AXMode accessibility_mode,
-    ax::mojom::Event event_type)
+    ax::mojom::Event event)
     : WebContentsObserver(web_contents),
-      event_to_wait_for_(event_type),
-      generated_event_to_wait_for_(std::nullopt),
+      event_to_wait_for_(event),
       loop_runner_(std::make_unique<base::RunLoop>()),
       loop_runner_quit_closure_(loop_runner_->QuitClosure()) {
   ListenToAllFrames(web_contents);
-  static_cast<WebContentsImpl*>(web_contents)
-      ->AddAccessibilityModeForTesting(accessibility_mode);
-  // Add the the accessibility mode on BrowserAccessibilityState so it can be
-  // also be added to AXPlatformNode, auralinux uses this to determine if it
-  // should enable accessibility or not.
-  BrowserAccessibilityState::GetInstance()->AddAccessibilityModeFlags(
-      accessibility_mode);
 }
 
 AccessibilityNotificationWaiter::AccessibilityNotificationWaiter(
     WebContents* web_contents,
-    ui::AXMode accessibility_mode,
     ui::AXEventGenerator::Event event_type)
     : WebContentsObserver(web_contents),
-      event_to_wait_for_(std::nullopt),
       generated_event_to_wait_for_(event_type),
       loop_runner_(std::make_unique<base::RunLoop>()),
       loop_runner_quit_closure_(loop_runner_->QuitClosure()) {
   ListenToAllFrames(web_contents);
-  static_cast<WebContentsImpl*>(web_contents)
-      ->AddAccessibilityModeForTesting(accessibility_mode);
-  // Add the the accessibility mode on BrowserAccessibilityState so it can be
-  // also be added to AXPlatformNode, auralinux uses this to determine if it
-  // should enable accessibility or not.
-  BrowserAccessibilityState::GetInstance()->AddAccessibilityModeFlags(
-      accessibility_mode);
 }
 
 AccessibilityNotificationWaiter::~AccessibilityNotificationWaiter() = default;

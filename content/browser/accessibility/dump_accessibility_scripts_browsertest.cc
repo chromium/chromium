@@ -98,7 +98,7 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
     property_filters->push_back(AXPropertyFilter(filter, type));
   }
 
-  std::vector<std::string> Dump(ui::AXMode mode) override {
+  std::vector<std::string> Dump() override {
     std::vector<std::string> dump;
     std::unique_ptr<AXTreeFormatter> formatter(CreateFormatter());
     ui::BrowserAccessibility* root =
@@ -136,8 +136,7 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
         auto pair = CaptureEvents(
             base::BindOnce(&DumpAccessibilityScriptTest::EvaluateScript,
                            base::Unretained(this), formatter.get(), root,
-                           scenario_.script_instructions, start_index, index),
-            ui::kAXModeComplete);
+                           scenario_.script_instructions, start_index, index));
         actual_contents = pair.first.ExtractString();
         for (auto event : pair.second) {
           if (base::StartsWith(event, wait_for)) {
@@ -162,7 +161,7 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
 
         // Input presses could create a11y events. Wait for those to clear
         // before procceding.
-        WaitForEndOfTest(mode);
+        WaitForEndOfTest();
       }
       if (printTree) {
         actual_contents += DumpTreeAsString() + '\n';

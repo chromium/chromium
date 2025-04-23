@@ -49,6 +49,9 @@ class IdentityManager;
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Must be called before -dealloc.
+- (void)disconnect;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_GOOGLE_SERVICES_GOOGLE_SERVICES_SETTINGS_MEDIATOR_H_

@@ -198,7 +198,7 @@ public class ContentSettingsResources {
 
             case ContentSettingsType.AUTOMATIC_DOWNLOADS:
                 return new ResourceItem(
-                        R.drawable.infobar_downloading,
+                        R.drawable.download_24px,
                         R.string.automatic_downloads_permission_title,
                         ContentSettingValues.ASK,
                         ContentSettingValues.BLOCK,
@@ -224,7 +224,7 @@ public class ContentSettingsResources {
 
             case ContentSettingsType.BACKGROUND_SYNC:
                 return new ResourceItem(
-                                R.drawable.permission_background_sync,
+                                R.drawable.sync_24px,
                                 R.string.background_sync_permission_title,
                                 ContentSettingValues.ALLOW,
                                 ContentSettingValues.BLOCK,
@@ -312,8 +312,8 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_federated_identity_blocked,
                         R.string.website_settings_category_federated_identity_a11y,
                         R.drawable.account_circle_off_24px,
-                        R.string.website_settings_category_federated_identity_allowed,
-                        R.string.website_settings_category_federated_identity_blocked);
+                        R.string.website_settings_federated_identity_allowed,
+                        R.string.website_settings_federated_identity_blocked);
 
             case ContentSettingsType.FILE_SYSTEM_WRITE_GUARD:
                 return new ResourceItem(
@@ -390,10 +390,8 @@ public class ContentSettingsResources {
                                 R.string.website_settings_category_javascript_optimizer_blocked,
                                 R.string.website_settings_category_javascript_optimizer_a11y,
                                 0,
-                                R.string
-                                        .website_settings_category_javascript_optimizer_allowed_list,
-                                R.string
-                                        .website_settings_category_javascript_optimizer_blocked_list)
+                                R.string.website_settings_javascript_optimizer_allowed,
+                                R.string.website_settings_javascript_optimizer_blocked)
                         .setEnabledDescriptionText(
                                 R.string.website_settings_category_javascript_optimizer_allowed)
                         .setDisabledDescriptionText(

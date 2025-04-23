@@ -6306,4 +6306,173 @@ TEST(CanonicalCookieTest, IsSecure) {
   }
 }
 
+TEST(CanonicalCookieTest, IsWebEquivalentTo) {
+  const auto kCreationTime = base::Time::Now();
+  const auto kFutureDate = kCreationTime + base::Seconds(10);
+
+  struct {
+    std::string desc;
+    const std::unique_ptr<CanonicalCookie> lhs;
+    const std::unique_ptr<CanonicalCookie> rhs;
+    bool expected;
+  } kTestCases[] = {
+      {
+          "EquivalentSession",
+          CanonicalCookie::CreateForTesting(GURL("https://www.example.com/"),
+                                            "A=B", kCreationTime),
+          CanonicalCookie::CreateForTesting(GURL("https://www.example.com/"),
+                                            "A=B", kCreationTime),
+          true,
+      },
+      {
+          "EquivalentPersistent",
+          CanonicalCookie::CreateForTesting(
+              GURL("https://www.example.com/"),
+              "A=B; Expires=" + HttpUtil::TimeFormatHTTP(kFutureDate),
+              kCreationTime),
+          CanonicalCookie::CreateForTesting(
+              GURL("https://www.example.com/"),
+              "A=B; Expires=" + HttpUtil::TimeFormatHTTP(kFutureDate),
+              kCreationTime),
+          true,
+      },
+      {
+          "EquivalentPartitioned",
+          CanonicalCookie::CreateForTesting(
+              GURL("https://www.example.com/"), "A=B; Secure; Partitioned;",
+              kCreationTime, /*server_time=*/std::nullopt,
+              CookiePartitionKey::FromURLForTesting(
+                  GURL("https://example.com/"))),
+          CanonicalCookie::CreateForTesting(
+              GURL("https://www.example.com/"), "A=B; Secure; Partitioned",
+              kCreationTime, /*server_time=*/std::nullopt,
+              CookiePartitionKey::FromURLForTesting(
+                  GURL("https://example.com/"))),
+          true,
+      },
+      {
+          "DifferentName",
+          CanonicalCookie::CreateForTesting(GURL("https://www.example.com/"),
+                                            "A=B", kCreationTime),
+          CanonicalCookie::CreateForTesting(GURL("https://www.example.com/"),
+                                            "B=B", kCreationTime),
+          false,
+      },
+      {
+          "DifferentHost",
+          CanonicalCookie::CreateForTesting(GURL("https://www.example.com/"),
+                                            "A=B", kCreationTime),
+          CanonicalCookie::CreateForTesting(
+              GURL("https://subdomain.example.com/"), "A=B", kCreationTime),
+          false,
+      },
+      {
+          "DifferentDomain",
+          CanonicalCookie::CreateForTesting(GURL("https://www.example.com/"),
+                                            "A=B", kCreationTime),
+          CanonicalCookie::CreateForTesting(GURL("https://www.foo.com/"), "A=B",
+                                            kCreationTime),
+          false,
+      },
+      {
+          "SameDomainDifferentHost",
+          CanonicalCookie::CreateForTesting(GURL("https://www.example.com/"),
+                                            "A=B; Domain=example.com",
+                                            kCreationTime),
+          CanonicalCookie::CreateForTesting(
+              GURL("https://subdomain.example.com/"), "A=B; Domain=example.com",
+              kCreationTime),
+          true,
+      },
+      {
+          "DifferentPath",
+          CanonicalCookie::CreateForTesting(GURL("https://www.example.com/"),
+                                            "A=B; Path=/foo", kCreationTime),
+          CanonicalCookie::CreateForTesting(GURL("https://www.example.com/"),
+                                            "A=B; Path=/bar", kCreationTime),
+          false,
+      },
+      {
+          "DifferentCookiePartitionKey",
+          CanonicalCookie::CreateForTesting(
+              GURL("https://www.example.com/"), "A=B; Secure; Partitioned;",
+              kCreationTime, /*server_time=*/std::nullopt,
+              CookiePartitionKey::FromURLForTesting(
+                  GURL("https://example.com/"))),
+          CanonicalCookie::CreateForTesting(
+              GURL("https://www.example.com/"), "A=B; Secure; Partitioned",
+              kCreationTime, /*server_time=*/std::nullopt,
+              CookiePartitionKey::FromURLForTesting(GURL("https://foo.com/"))),
+          false,
+      },
+      {
+          "DifferentValue",
+          CanonicalCookie::CreateForTesting(GURL("https://www.example.com/"),
+                                            "A=B", kCreationTime),
+          CanonicalCookie::CreateForTesting(GURL("https://www.example.com/"),
+                                            "A=C", kCreationTime),
+          false,
+      },
+      {
+          "DifferentSecure",
+          CanonicalCookie::CreateForTesting(GURL("https://www.example.com/"),
+                                            "A=B", kCreationTime),
+          CanonicalCookie::CreateForTesting(GURL("https://www.example.com/"),
+                                            "A=B; Secure", kCreationTime),
+          false,
+      },
+      {
+          "DifferentSameSite",
+          CanonicalCookie::CreateForTesting(GURL("https://www.example.com/"),
+                                            "A=B; Secure; SameSite=None",
+                                            kCreationTime),
+          CanonicalCookie::CreateForTesting(GURL("https://www.example.com/"),
+                                            "A=B; Secure; SameSite=Lax",
+                                            kCreationTime),
+          false,
+      },
+      {
+          "PersistentAndSession",
+          CanonicalCookie::CreateForTesting(GURL("https://www.example.com/"),
+                                            "A=B", kCreationTime),
+          CanonicalCookie::CreateForTesting(GURL("https://www.example.com/"),
+                                            "A=B; Max-Age=10", kCreationTime),
+          false,
+      },
+      {
+          "DifferentExpiry",
+          CanonicalCookie::CreateForTesting(
+              GURL("https://www.example.com/"),
+              "A=B; Expires=" + HttpUtil::TimeFormatHTTP(kFutureDate),
+              kCreationTime),
+          CanonicalCookie::CreateForTesting(
+              GURL("https://www.example.com/"),
+              "A=B; Expires=" +
+                  HttpUtil::TimeFormatHTTP(kFutureDate + base::Seconds(10)),
+              kCreationTime),
+          false,
+      },
+      {
+          "DifferentHttpOnly",
+          CanonicalCookie::CreateForTesting(GURL("https://www.example.com/"),
+                                            "A=B", kCreationTime),
+          CanonicalCookie::CreateForTesting(GURL("https://www.example.com/"),
+                                            "A=B; HttpOnly", kCreationTime),
+          false,
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.desc);
+    EXPECT_EQ(test_case.lhs->IsWebEquivalentTo(*test_case.rhs),
+              test_case.expected);
+    // Test symmetry.
+    EXPECT_EQ(test_case.rhs->IsWebEquivalentTo(*test_case.lhs),
+              test_case.expected);
+    // Test reflexivity.
+    EXPECT_TRUE(test_case.lhs->IsWebEquivalentTo(*test_case.lhs));
+    EXPECT_TRUE(test_case.rhs->IsWebEquivalentTo(*test_case.rhs));
+  }
+}
+
 }  // namespace net

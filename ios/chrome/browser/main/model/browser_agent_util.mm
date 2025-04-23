@@ -7,6 +7,7 @@
 #import "base/feature_list.h"
 #import "components/breadcrumbs/core/breadcrumbs_status.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_browser_agent.h"
+#import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/bubble/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/breadcrumb_manager_browser_agent.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
@@ -129,6 +130,7 @@ void AttachBrowserAgents(Browser* browser) {
   UserActivityBrowserAgent::CreateForBrowser(browser);
 
   if (!browser_is_inactive) {
+    BrowserViewVisibilityNotifierBrowserAgent::CreateForBrowser(browser);
     TabBasedIPHBrowserAgent::CreateForBrowser(browser);
   }
 

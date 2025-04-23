@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.autofill.data.AuthenticatorOption;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -26,6 +28,7 @@ import java.util.List;
  * Dialog that presents {@link AuthenticatorOption}s to the user to choose from for fetching credit
  * card information from the backend.
  */
+@NullMarked
 public class AuthenticatorSelectionDialog implements AuthenticatorOptionsAdapter.ItemClickListener {
     private static final int ANIMATION_DURATION_MS = 250;
 
@@ -69,7 +72,6 @@ public class AuthenticatorSelectionDialog implements AuthenticatorOptionsAdapter
     private View mAuthenticatorSelectionDialogContentsView;
     private RecyclerView mAuthenticationOptionsRecyclerView;
     private AuthenticatorOptionsAdapter mAuthenticatorOptionsAdapter;
-
     private PropertyModel mDialogModel;
     private AuthenticatorOption mSelectedAuthenticatorOption;
 
@@ -114,6 +116,7 @@ public class AuthenticatorSelectionDialog implements AuthenticatorOptionsAdapter
      *
      * @param authenticatorOptions The authenticator options available to the user.
      */
+    @Initializer
     public void show(List<AuthenticatorOption> authenticatorOptions) {
         // By default, the first option will be selected.
         mSelectedAuthenticatorOption = authenticatorOptions.get(0);

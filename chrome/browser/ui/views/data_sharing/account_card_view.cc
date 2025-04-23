@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/data_sharing/account_card_view.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/image/image_skia_operations.h"

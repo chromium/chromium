@@ -10,7 +10,7 @@ build_webui("build") {
   grd_prefix = "ash_focus_mode_player"
 
   static_files = [ "player.html" ]
-  non_web_component_files = [ "player.ts" ]
+  ts_files = [ "player.ts" ]
 
   ts_deps = [
     "//ash/webui/common/resources:build_ts",

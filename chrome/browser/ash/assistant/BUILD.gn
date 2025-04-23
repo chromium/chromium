@@ -46,24 +46,3 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
-
-if (is_chromeos_device) {
-  crosier_tests("integration_tests") {
-    sources = [ "assistant_integration_test.cc" ]
-
-    sources_metadata = [ "assistant_integration_test.yaml" ]
-
-    deps = [
-      "//ash",
-      "//ash:test_support",
-      "//ash/public/cpp",
-      "//base",
-      "//chrome/browser/ash/login/test:test_support",
-      "//chrome/test:ash_integration_test_support",
-      "//chrome/test:test_support",
-      "//chromeos/ash/services/assistant/public/cpp",
-      "//ui/base:test_support",
-      "//ui/events",
-    ]
-  }
-}

@@ -760,4 +760,4 @@ void Mp4MuxerDelegate::LogBoxInfo() const {
   DVLOG(1) << __func__ << ", " << s.str();
 }
 
-}  // namespace media.
+}  // namespace media

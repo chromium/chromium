@@ -12,6 +12,8 @@ interface CustomElementRegistry {
     DOMString? getName(CustomElementConstructor constructor);
     [CallWith=ScriptState,RaisesException] Promise<CustomElementConstructor> whenDefined(DOMString name);
     [CEReactions] void upgrade(Node root);
+
+    [RuntimeEnabled=ScopedCustomElementRegistry] void initialize((Element or ShadowRoot) root);
 };
 
 callback CustomElementConstructor = any ();

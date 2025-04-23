@@ -56,6 +56,8 @@ class GURL;
 @protocol ChromeLensOverlay
 
 // Whether the current mode is translate.
+//
+// Note: this method will always return `NO` until the overlay is started.
 @property(nonatomic, readonly) BOOL translateFilterActive;
 
 // The layout guide that demarcates the start of the unobstructed area.
@@ -71,7 +73,7 @@ class GURL;
 // If `clearSelection` is YES, the current visual selection will be cleared.
 - (void)setQueryText:(NSString*)text clearSelection:(BOOL)clearSelection;
 
-// Starts executing requests.
+// Starts executing requests. Subsequent calls after the first one are no-op.
 - (void)start;
 
 // Reloads a previous result in the overlay.

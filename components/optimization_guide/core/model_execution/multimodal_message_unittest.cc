@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
 
 #include <optional>
 
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
+#include "components/optimization_guide/core/model_execution/test/request_builder.h"
 #include "components/optimization_guide/proto/features/example_for_testing.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,14 +17,6 @@ namespace {
 
 using RequestProto = ::optimization_guide::proto::ExampleForTestingRequest;
 using NestedProto = ::optimization_guide::proto::ExampleForTestingMessage;
-
-SkBitmap CreateBlackSkBitmap(int width, int height) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(width, height);
-  // Setting the pixels to transparent-black.
-  memset(bitmap.getPixels(), 0, width * height * 4);
-  return bitmap;
-}
 
 TEST(MultimodalMessageTest, InvalidField) {
   auto field = ProtoField({999});

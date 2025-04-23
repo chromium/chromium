@@ -30,6 +30,7 @@ import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
@@ -44,14 +45,32 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
- * Base-class that an AwContents embedder derives from to receive callbacks.
- * For any other callbacks we need to make transformations of (e.g. adapt parameters
- * or perform filtering) we can provide final overrides for methods here, and then introduce
- * new abstract methods that the our own client must implement.
- * i.e.: all methods in this class should either be final, or abstract.
+ * Base-class that an AwContents embedder derives from to receive callbacks. For any other callbacks
+ * we need to make transformations of (e.g. adapt parameters or perform filtering) we can provide
+ * final overrides for methods here, and then introduce new abstract methods that the our own client
+ * must implement. i.e.: all methods in this class should either be final, or abstract.
  */
 @Lifetime.WebView
 public abstract class AwContentsClient {
+
+    // LINT.IfChange(SendIntentState)
+    @IntDef({
+        SendIntentState.SKIPPED,
+        SendIntentState.INVOKED,
+        SendIntentState.ACTIVITY_STARTED,
+        SendIntentState.MAX_VALUE
+    })
+    private @interface SendIntentState {
+        // These values are persisted to logs. Entries should not be renumbered and
+        // numeric values should never be reused.
+        int SKIPPED = 0;
+        int INVOKED = 1;
+        int ACTIVITY_STARTED = 2;
+        int MAX_VALUE = ACTIVITY_STARTED;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:WebViewSendIntentState)
+
     private static final String TAG = "AwContentsClient";
     private final AwContentsClientCallbackHelper mCallbackHelper;
 
@@ -175,6 +194,7 @@ public abstract class AwContentsClient {
         if (poller != null && poller.shouldCancelAllCallbacks()) return false;
 
         if (hasWebViewClient()) {
+            recordSendBrowsingIntentState(SendIntentState.SKIPPED);
             // Note: only GET requests can be overridden, so we hardcode the method.
             AwWebResourceRequest request =
                     new AwWebResourceRequest(
@@ -192,6 +212,7 @@ public abstract class AwContentsClient {
 
     private static boolean sendBrowsingIntent(
             Context context, String url, boolean hasUserGesture, boolean isRedirect) {
+        recordSendBrowsingIntentState(SendIntentState.INVOKED);
         if (!hasUserGesture && !isRedirect) {
             Log.w(TAG, "Denied starting an intent without a user gesture, URI %s", url);
             return true;
@@ -236,6 +257,7 @@ public abstract class AwContentsClient {
         }
 
         try {
+            recordSendBrowsingIntentState(SendIntentState.ACTIVITY_STARTED);
             context.startActivity(intent);
             return true;
         } catch (ActivityNotFoundException ex) {
@@ -249,6 +271,11 @@ public abstract class AwContentsClient {
         }
 
         return false;
+    }
+
+    private static void recordSendBrowsingIntentState(@SendIntentState int activityStarted) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.WebView.SendBrowsingIntent", activityStarted, SendIntentState.MAX_VALUE);
     }
 
     public static Uri[] parseFileChooserResult(int resultCode, Intent intent) {

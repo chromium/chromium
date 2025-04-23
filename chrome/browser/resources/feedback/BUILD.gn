@@ -22,7 +22,7 @@ build_webui("build") {
     "images/button_butter_bar_close_pressed.png",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "app.html.ts",
     "app.ts",
     "autofill_metadata_app.html.ts",
@@ -44,7 +44,7 @@ build_webui("build") {
   ]
 
   if (is_chromeos) {
-    non_web_component_files += [ "js/jelly_colors.ts" ]
+    ts_files += [ "js/jelly_colors.ts" ]
   }
 
   ts_composite = true

@@ -158,7 +158,7 @@ public class PageStation extends Station {
     public static final ViewElement TAB_SWITCHER_BUTTON =
              unscopedViewElement(withId(R.id.tab_switcher_button));
 
-+   Supplier<View> mTabSwitcherButton;
++   ViewElement mTabSwitcherButton;
 
     public void declareElements(Elements.Builder elements) {
         [...]
@@ -168,7 +168,6 @@ public class PageStation extends Station {
     }
 
 +   public ImageButton getTabSwitcherButton() {
-+       assertSuppliersCanBeUsed();
 +       return (ImageButton) mTabSwitcherButton.get();
 +   }
 }
@@ -325,7 +324,6 @@ public class TabSwitcherButtonFacility extends Facility<PageStation> {
     }
 
     public ImageButton getView() {
-        assertSuppliersCanBeUsed();
         return (ImageButton) mTabSwitcherButton.get();
     }
 
@@ -350,7 +348,6 @@ after all its Enter Conditions are met:
 ```java
 public class PageStation extends Station {
 -   public ImageButton getTabSwitcherButton() {
--       assertSuppliersCanBeUsed();
 -       return (ImageButton) mTabSwitcherButton.get();
 -   }
 

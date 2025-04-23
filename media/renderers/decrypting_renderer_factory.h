@@ -19,9 +19,6 @@ class MediaLog;
 // underlying factory, and returns it as a DecryptingRenderer.
 //
 // See DecryptingRenderer for more information.
-//
-// The caller must guarantee that the returned DecryptingRenderer will never
-// be initialized with a |media_resource| of type MediaResource::Type::URL.
 class MEDIA_EXPORT DecryptingRendererFactory final : public RendererFactory {
  public:
   DecryptingRendererFactory(

@@ -163,6 +163,7 @@ android_library("full_java") {
     "java/src/org/chromium/components/payments/AndroidPaymentApp.java",
     "java/src/org/chromium/components/payments/AndroidPaymentAppFactory.java",
     "java/src/org/chromium/components/payments/AndroidPaymentAppFinder.java",
+    "java/src/org/chromium/components/payments/BrowserGlobalPaymentFlowManager.java",
     "java/src/org/chromium/components/payments/BrowserPaymentRequest.java",
     "java/src/org/chromium/components/payments/CSPCheckerBridge.java",
     "java/src/org/chromium/components/payments/ErrorMessageUtil.java",
@@ -199,7 +200,6 @@ android_library("full_java") {
     ":browser_binding_java",
     ":feature_list_java",
     ":minimal_java",
-    ":pre_purchase_query_enum_java",
     ":service_java",
     "//base:base_java",
     "//build/android:build_java",
@@ -272,11 +272,6 @@ android_library("browser_binding_unit_device_javatests") {
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
   ]
-}
-
-android_library("pre_purchase_query_enum_java") {
-  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
-  srcjar_deps = [ ":pre_purchase_query_enum_javagen" ]
 }
 
 # Minimal target that only includes what downstream code depends on.
@@ -372,10 +367,6 @@ java_cpp_enum("payments_journey_logger_enum_javagen") {
   sources = [ "//components/payments/core/journey_logger.h" ]
 }
 
-java_cpp_enum("pre_purchase_query_enum_javagen") {
-  sources = [ "//components/payments/core/pre_purchase_query.h" ]
-}
-
 robolectric_library("junit_test_support") {
   sources = [
     "junit/src/org/chromium/components/payments/test_support/DefaultPaymentFeatureConfig.java",
@@ -401,9 +392,11 @@ robolectric_library("junit_test_support") {
 
 robolectric_library("junit") {
   sources = [
+    "junit/src/org/chromium/components/payments/BrowserGlobalPaymentFlowManagerUnitTest.java",
     "junit/src/org/chromium/components/payments/DeduplicatePaymentAppsUnitTest.java",
     "junit/src/org/chromium/components/payments/PaymentDetailsUpdateConnectionTest.java",
     "junit/src/org/chromium/components/payments/PaymentRequestServiceTest.java",
+    "junit/src/org/chromium/components/payments/intent/WebPaymentIntentHelperTypeConverterTest.java",
   ]
   deps = [
     ":browser_binding_junit_test",

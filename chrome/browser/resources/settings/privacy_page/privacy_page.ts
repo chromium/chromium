@@ -261,11 +261,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
                 '#thirdPartyCookiesLinkRow');
           }
 
-          if (routes.TRACKING_PROTECTION) {
-            map.set(
-                routes.TRACKING_PROTECTION.path, '#trackingProtectionLinkRow');
-          }
-
           if (routes.SITE_SETTINGS) {
             map.set(routes.SITE_SETTINGS.path, '#permissionsLinkRow');
           }
@@ -276,6 +271,11 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
 
           if (routes.PRIVACY_SANDBOX) {
             map.set(routes.PRIVACY_SANDBOX.path, '#privacySandboxLinkRow');
+          }
+
+          if (routes.INCOGNITO_TRACKING_PROTECTIONS) {
+            map.set(routes.INCOGNITO_TRACKING_PROTECTIONS.path,
+              '#incognitoTrackingProtectionsLinkRow');
           }
 
           return map;
@@ -357,6 +357,11 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         value: () => loadTimeData.getBoolean('enableLocalNetworkAccessSetting'),
       },
 
+      enableIncognitoTrackingProtections_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableIncognitoTrackingProtections'),
+      },
+
       isNotificationAllowed_: Boolean,
       isLocationAllowed_: Boolean,
       notificationPermissionsReviewHeader_: String,
@@ -365,42 +370,42 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     };
   }
 
-  private isGuest_: boolean;
-  private showPersistentPermissions_: boolean;
-  private showClearBrowsingDataDialog_: boolean;
-  private showPrivacyGuideDialog_: boolean;
-  private enableSafeBrowsingSubresourceFilter_: boolean;
-  private enableBlockAutoplayContentSetting_: boolean;
-  private enableManagePhones_: boolean;
-  private blockAutoplayStatus_: BlockAutoplayStatus;
-  private enableDeleteBrowsingDataRevamp_: boolean;
-  private enableFederatedIdentityApiContentSetting_: boolean;
-  private enablePaymentHandlerContentSetting_: boolean;
-  private enableHandTrackingContentSetting_: boolean;
-  private enableExperimentalWebPlatformFeatures_: boolean;
-  private enableSecurityKeysSubpage_: boolean;
+  declare private isGuest_: boolean;
+  declare private showPersistentPermissions_: boolean;
+  declare private showClearBrowsingDataDialog_: boolean;
+  declare private showPrivacyGuideDialog_: boolean;
+  declare private enableSafeBrowsingSubresourceFilter_: boolean;
+  declare private enableBlockAutoplayContentSetting_: boolean;
+  declare private enableManagePhones_: boolean;
+  declare private blockAutoplayStatus_: BlockAutoplayStatus;
+  declare private enableDeleteBrowsingDataRevamp_: boolean;
+  declare private enableFederatedIdentityApiContentSetting_: boolean;
+  declare private enablePaymentHandlerContentSetting_: boolean;
+  declare private enableHandTrackingContentSetting_: boolean;
+  declare private enableExperimentalWebPlatformFeatures_: boolean;
+  declare private enableSecurityKeysSubpage_: boolean;
   // <if expr="is_chromeos">
-  private enableSmartCardReadersContentSetting_: boolean;
+  declare private enableSmartCardReadersContentSetting_: boolean;
   // </if>
-  private enableWebBluetoothNewPermissionsBackend_: boolean;
-  private enableWebPrintingContentSetting_: boolean;
-  private showNotificationPermissionsReview_: boolean;
-  private isPrivacySandboxRestricted_: boolean;
-  private isPrivacySandboxRestrictedNoticeEnabled_: boolean;
-  private enableAutomaticFullscreenContentSetting_: boolean;
-  private enablePermissionSiteSettingsRadioButton_: boolean;
+  declare private enableWebBluetoothNewPermissionsBackend_: boolean;
+  declare private enableWebPrintingContentSetting_: boolean;
+  declare private showNotificationPermissionsReview_: boolean;
+  declare private isPrivacySandboxRestricted_: boolean;
+  declare private isPrivacySandboxRestrictedNoticeEnabled_: boolean;
+  declare private enableAutomaticFullscreenContentSetting_: boolean;
+  declare private enablePermissionSiteSettingsRadioButton_: boolean;
   private privateStateTokensEnabled_: boolean;
-  private autoPictureInPictureEnabled_: boolean;
-  private capturedSurfaceControlEnabled_: boolean;
-  private enableAiSettingsPageRefresh_: boolean;
-  private enableComposeProactiveNudge_: boolean;
-  private shouldShowSafetyHub_: boolean;
-  private enableWebAppInstallation_: boolean;
-  private enableLocalNetworkAccessSetting_: boolean;
-  private focusConfig_: FocusConfig;
-  private searchFilter_: string;
-  private notificationPermissionsReviewHeader_: string;
-  private notificationPermissionsReviewSubheader_: string;
+  declare private autoPictureInPictureEnabled_: boolean;
+  declare private capturedSurfaceControlEnabled_: boolean;
+  declare private enableAiSettingsPageRefresh_: boolean;
+  declare private enableComposeProactiveNudge_: boolean;
+  declare private shouldShowSafetyHub_: boolean;
+  declare private enableWebAppInstallation_: boolean;
+  declare private enableLocalNetworkAccessSetting_: boolean;
+  declare private focusConfig_: FocusConfig;
+  declare private searchFilter_: string;
+  declare private notificationPermissionsReviewHeader_: string;
+  declare private notificationPermissionsReviewSubheader_: string;
   private browserProxy_: PrivacyPageBrowserProxy =
       PrivacyPageBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -409,14 +414,15 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       SiteSettingsPrefsBrowserProxyImpl.getInstance();
   private safetyHubBrowserProxy_: SafetyHubBrowserProxy =
       SafetyHubBrowserProxyImpl.getInstance();
-  private isNotificationAllowed_: boolean;
-  private isLocationAllowed_: boolean;
+  declare private isNotificationAllowed_: boolean;
+  declare private isLocationAllowed_: boolean;
   // <if expr="chrome_root_store_cert_management_ui">
-  private enableCertManagementUIV2_: boolean;
+  declare private enableCertManagementUIV2_: boolean;
   // </if>
-  private enableKeyboardLockPrompt_: boolean;
-  private enableRelatedWebsiteSetsV2Ui_: boolean;
-  private allSitesPageTitle_: string;
+  declare private enableKeyboardLockPrompt_: boolean;
+  declare private enableRelatedWebsiteSetsV2Ui_: boolean;
+  declare private allSitesPageTitle_: string;
+  declare private enableIncognitoTrackingProtections_: boolean;
 
   override ready() {
     super.ready();
@@ -494,13 +500,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     Router.getInstance().navigateTo(routes.COOKIES);
   }
 
-  private onTrackingProtectionClick_() {
-    this.interactedWithPage_();
-    this.metricsBrowserProxy_.recordAction(
-        'Settings.TrackingProtection.OpenedFromPrivacyPage');
-    Router.getInstance().navigateTo(routes.TRACKING_PROTECTION);
-  }
-
   private onCbdDialogClosed_() {
     Router.getInstance().navigateTo(routes.CLEAR_BROWSER_DATA.parent!);
     setTimeout(() => {
@@ -539,6 +538,12 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacySandbox.OpenedFromSettingsParent');
     Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX);
+  }
+
+  private onIncognitoTrackingProtectionsClick_() {
+    this.interactedWithPage_();
+    // TODO(crbug.com/408036586): Add user action for Incognito tracking protections row click.
+    Router.getInstance().navigateTo(routes.INCOGNITO_TRACKING_PROTECTIONS);
   }
 
   private async updateLocationAndNotificationState_() {
@@ -580,6 +585,30 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         this.setPrefValue('generated.notification', SettingsState.CPSS);
         this.isNotificationAllowed_ = true;
         break;
+    }
+  }
+
+  private onLocationTopLevelRadioChanged2_(
+      event: CustomEvent<{value: boolean}>) {
+    const selected = event.detail.value;
+    if (selected) {
+      this.setPrefValue('generated.geolocation', SettingsState.CPSS);
+      this.isLocationAllowed_ = true;
+    } else {
+      this.setPrefValue('generated.geolocation', SettingsState.BLOCK);
+      this.isLocationAllowed_ = false;
+    }
+  }
+
+  private onNotificationTopLevelRadioChanged2_(
+      event: CustomEvent<{value: boolean}>) {
+    const selected = event.detail.value;
+    if (selected) {
+      this.setPrefValue('generated.notification', SettingsState.CPSS);
+      this.isNotificationAllowed_ = true;
+    } else {
+      this.setPrefValue('generated.notification', SettingsState.BLOCK);
+      this.isNotificationAllowed_ = false;
     }
   }
 

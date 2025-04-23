@@ -4,10 +4,10 @@
 
 #import "components/autofill/ios/common/features.h"
 
-// Features that are exlusive to iOS go here in alphabetical order.
+// Keep the alphabetical order.
 
 BASE_FEATURE(kAddAddressManually,
-             "AddAdressManually",
+             "AddAddressManually",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAddAddressManuallyEnabled() {
@@ -15,6 +15,12 @@ bool IsAddAddressManuallyEnabled() {
          base::FeatureList::IsEnabled(
              kAutofillDynamicallyLoadsFieldsForAddressInput);
 }
+
+// LINT.IfChange(autofill_allow_default_prevented_submission)
+BASE_FEATURE(kAutofillAllowDefaultPreventedSubmission,
+             "AutofillAllowDefaultPreventedSubmission",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// LINT.ThenChange(/components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_allow_default_prevented_submission)
 
 // LINT.IfChange(autofill_correct_user_edited_bit_in_parsed_field)
 BASE_FEATURE(kAutofillCorrectUserEditedBitInParsedField,

@@ -20,6 +20,10 @@ namespace infobars {
 class InfoBarManager;
 }
 
+// Defines a period of time when the infobar should not be displayed again
+// after a previous dismissal.
+inline constexpr base::TimeDelta kSyncErrorInfobarTimeout = base::Hours(24);
+
 // Shows a sync error in an infobar.
 class SyncErrorInfoBarDelegate : public ConfirmInfoBarDelegate,
                                  public syncer::SyncServiceObserver {
@@ -49,6 +53,9 @@ class SyncErrorInfoBarDelegate : public ConfirmInfoBarDelegate,
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;
+
+  // Called when the infobar is dismissed through timing out.
+  void InfoBarDismissedByTimeout() const;
 
  private:
   raw_ptr<ProfileIOS> profile_;

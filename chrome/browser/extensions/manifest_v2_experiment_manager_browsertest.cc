@@ -278,9 +278,9 @@ class ManifestV2ExperimentManagerBrowserTest : public ExtensionBrowserTest {
   void UninstallExtension(const ExtensionId& extension_id,
                           UninstallReason uninstall_reason) {
     base::RunLoop run_loop;
-    extension_service()->UninstallExtension(extension_id, uninstall_reason,
-                                            /*error=*/nullptr,
-                                            run_loop.QuitWhenIdleClosure());
+    extension_registrar()->UninstallExtension(extension_id, uninstall_reason,
+                                              /*error=*/nullptr,
+                                              run_loop.QuitWhenIdleClosure());
     run_loop.Run();
   }
 
@@ -981,7 +981,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   base::RunLoop run_loop;
   std::string id;
   scoped_refptr<UnpackedInstaller> installer =
-      UnpackedInstaller::Create(extension_service());
+      UnpackedInstaller::Create(profile());
   auto on_complete = [&run_loop, &id](const Extension* extension,
                                       const base::FilePath& file_path,
                                       const std::string& error) {
@@ -1017,7 +1017,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   base::RunLoop run_loop;
   std::string install_error;
   scoped_refptr<UnpackedInstaller> installer =
-      UnpackedInstaller::Create(extension_service());
+      UnpackedInstaller::Create(profile());
   auto on_complete = [&run_loop, &install_error](
                          const Extension* extension,
                          const base::FilePath& file_path,

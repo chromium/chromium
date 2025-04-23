@@ -94,6 +94,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -874,12 +875,13 @@ gfx::PointF WebLocalFrameImpl::GetScrollOffset() const {
   return gfx::PointF();
 }
 
-void WebLocalFrameImpl::SetScrollOffset(const gfx::PointF& offset) {
+bool WebLocalFrameImpl::SetScrollOffset(const gfx::PointF& offset) {
   if (ScrollableArea* scrollable_area = LayoutViewport()) {
-    scrollable_area->SetScrollOffset(
+    return scrollable_area->SetScrollOffset(
         scrollable_area->ScrollPositionToOffset(offset),
         mojom::blink::ScrollType::kProgrammatic);
   }
+  return false;
 }
 
 gfx::Size WebLocalFrameImpl::DocumentSize() const {
@@ -3394,6 +3396,11 @@ void WebLocalFrameImpl::SetLCPPHint(
     unused_preloads.emplace_back(url);
   }
   lcpp->set_unused_preloads(std::move(unused_preloads));
+
+  if (hint->for_testing) {
+    CHECK_IS_TEST();
+    lcpp->enable_testing();
+  }
 }
 
 bool WebLocalFrameImpl::IsFeatureEnabled(

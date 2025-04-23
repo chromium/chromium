@@ -11,12 +11,14 @@ import static org.chromium.chrome.browser.ui.autofill.OtpVerificationDialogPrope
 import static org.chromium.chrome.browser.ui.autofill.OtpVerificationDialogProperties.SHOW_PROGRESS_BAR_OVERLAY;
 import static org.chromium.chrome.browser.ui.autofill.OtpVerificationDialogProperties.VIEW_DELEGATE;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Optional;
 
-/** Class responsible for binding the model and the view in OTP Verification Dialog. **/
+/** Class responsible for binding the model and the view in OTP Verification Dialog. */
+@NullMarked
 class OtpVerificationDialogViewBinder {
     private OtpVerificationDialogViewBinder() {}
 

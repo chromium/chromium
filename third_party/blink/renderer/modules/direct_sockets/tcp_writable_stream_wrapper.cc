@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/direct_sockets/tcp_writable_stream_wrapper.h"
 
+#include <optional>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "mojo/public/cpp/system/handle_signals_state.h"
@@ -13,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
+#include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/events/event_target_impl.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -32,15 +35,23 @@
 
 namespace blink {
 
+namespace {
+static constexpr char kErrorMessageDataPipeDisconnected[] =
+    "The underlying data pipe was disconnected.";
+static constexpr char kErrorBufferSource[] = "Create buffer source error";
+}  // namespace
+
 TCPWritableStreamWrapper::TCPWritableStreamWrapper(
     ScriptState* script_state,
     CloseOnceCallback on_close,
-    mojo::ScopedDataPipeProducerHandle handle)
+    mojo::ScopedDataPipeProducerHandle handle,
+    uint64_t inspector_id)
     : WritableStreamWrapper(script_state),
       on_close_(std::move(on_close)),
       data_pipe_(std::move(handle)),
       write_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL),
-      close_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC) {
+      close_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC),
+      inspector_id_(inspector_id) {
   write_watcher_.Watch(
       data_pipe_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
       MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
@@ -109,20 +120,22 @@ ScriptPromise<IDLUndefined> TCPWritableStreamWrapper::Write(
     ScriptValue chunk,
     ExceptionState& exception_state) {
   // There can only be one call to write() in progress at a time.
+
   DCHECK(!write_promise_resolver_);
   DCHECK(!buffer_source_);
   DCHECK_EQ(0u, offset_);
 
   if (!data_pipe_) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNetworkError,
-        "The underlying data pipe was disconnected.");
+    exception_state.ThrowDOMException(DOMExceptionCode::kNetworkError,
+                                      kErrorMessageDataPipeDisconnected);
+    ReportWriteError(kErrorMessageDataPipeDisconnected);
     return EmptyPromise();
   }
 
   buffer_source_ = V8BufferSource::Create(GetScriptState()->GetIsolate(),
                                           chunk.V8Value(), exception_state);
   if (exception_state.HadException()) {
+    ReportWriteError(kErrorBufferSource);
     return EmptyPromise();
   }
   DCHECK(buffer_source_);
@@ -185,6 +198,13 @@ size_t TCPWritableStreamWrapper::WriteDataSynchronously(
 }
 
 void TCPWritableStreamWrapper::FinalizeWrite() {
+  if (buffer_source_) {
+    // report to CDP
+    DOMArrayPiece array_piece(buffer_source_);
+    base::span<const uint8_t> data = array_piece.ByteSpan();
+    probe::DirectTCPSocketChunkSent(*GetScriptState(), inspector_id_, data);
+  }
+
   buffer_source_ = nullptr;
   offset_ = 0;
   write_promise_resolver_->Resolve();
@@ -246,6 +266,7 @@ void TCPWritableStreamWrapper::ErrorStream(int32_t error_code) {
   if (write_promise_resolver_) {
     write_promise_resolver_->Reject(exception);
     write_promise_resolver_ = nullptr;
+    ReportWriteError(message);
   } else {
     Controller()->error(script_state,
                         ScriptValue(script_state->GetIsolate(), exception));
@@ -264,6 +285,10 @@ void TCPWritableStreamWrapper::ResetPipe() {
 
 void TCPWritableStreamWrapper::Dispose() {
   ResetPipe();
+}
+
+void TCPWritableStreamWrapper::ReportWriteError(const WTF::String& message) {
+  probe::DirectTCPSocketChunkError(*GetScriptState(), inspector_id_, message);
 }
 
 }  // namespace blink

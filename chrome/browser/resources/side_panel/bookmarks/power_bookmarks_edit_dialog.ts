@@ -16,6 +16,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {BookmarksTreeNode} from './bookmarks.mojom-webui.js';
 import {getTemplate} from './power_bookmarks_edit_dialog.html.js';
 import {getFolderDescendants} from './power_bookmarks_service.js';
 
@@ -69,23 +70,25 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
         type: Boolean,
         value: false,
       },
+
+      newFolderName_: String,
+      showNewFolderInput_: Boolean,
     };
   }
 
-  private topLevelBookmarks_: chrome.bookmarks.BookmarkTreeNode[];
-  private selectedBookmarks_: chrome.bookmarks.BookmarkTreeNode[];
-  private selectedFolder_: chrome.bookmarks.BookmarkTreeNode|undefined;
-  private activeFolderPath_: chrome.bookmarks.BookmarkTreeNode[];
-  private newFolders_: chrome.bookmarks.BookmarkTreeNode[];
-  private moveOnly_: boolean;
-  private newFolderName_: string;
-  private showNewFolderInput_: boolean;
+  declare private topLevelBookmarks_: BookmarksTreeNode[];
+  declare private selectedBookmarks_: BookmarksTreeNode[];
+  declare private selectedFolder_: BookmarksTreeNode|undefined;
+  declare private activeFolderPath_: BookmarksTreeNode[];
+  declare private newFolders_: BookmarksTreeNode[];
+  declare private moveOnly_: boolean;
+  declare private newFolderName_: string;
+  declare private showNewFolderInput_: boolean;
 
   showDialog(
-      activeFolderPath: chrome.bookmarks.BookmarkTreeNode[],
-      topLevelBookmarks: chrome.bookmarks.BookmarkTreeNode[],
-      selectedBookmarks: chrome.bookmarks.BookmarkTreeNode[],
-      moveOnly: boolean) {
+      activeFolderPath: BookmarksTreeNode[],
+      topLevelBookmarks: BookmarksTreeNode[],
+      selectedBookmarks: BookmarksTreeNode[], moveOnly: boolean) {
     this.activeFolderPath_ = activeFolderPath.slice();
     this.topLevelBookmarks_ = topLevelBookmarks;
     this.selectedBookmarks_ = selectedBookmarks;
@@ -96,7 +99,7 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
     this.showNewFolderInput_ = false;
   }
 
-  private isAvailableFolder_(node: chrome.bookmarks.BookmarkTreeNode): boolean {
+  private isAvailableFolder_(node: BookmarksTreeNode): boolean {
     if (node.url) {
       return false;
     }
@@ -132,7 +135,7 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
     return '';
   }
 
-  private getActiveFolder_(): chrome.bookmarks.BookmarkTreeNode|undefined {
+  private getActiveFolder_(): BookmarksTreeNode|undefined {
     if (this.activeFolderPath_.length) {
       return this.activeFolderPath_[this.activeFolderPath_.length - 1];
     }
@@ -143,8 +146,7 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
     return this.getFolderTitle_(this.getActiveFolder_());
   }
 
-  private getFolderTitle_(folder: chrome.bookmarks.BookmarkTreeNode|
-                          undefined): string {
+  private getFolderTitle_(folder: BookmarksTreeNode|undefined): string {
     if (folder && folder.id !== loadTimeData.getString('otherBookmarksId') &&
         folder.id !== loadTimeData.getString('mobileBookmarksId')) {
       return folder.title;
@@ -153,7 +155,7 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
     }
   }
 
-  private getShownFolders_(): chrome.bookmarks.BookmarkTreeNode[] {
+  private getShownFolders_(): BookmarksTreeNode[] {
     const activeFolder = this.getActiveFolder_();
     if (activeFolder && activeFolder.children) {
       return activeFolder.children.filter(this.isAvailableFolder_, this);
@@ -164,7 +166,7 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
   }
 
   private getBackButtonLabel_(): string {
-    let activeFolderParent: chrome.bookmarks.BookmarkTreeNode|undefined;
+    let activeFolderParent: BookmarksTreeNode|undefined;
     if (this.activeFolderPath_.length > 1) {
       activeFolderParent =
           this.activeFolderPath_[this.activeFolderPath_.length - 2];
@@ -173,20 +175,17 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
         'backButtonLabel', this.getFolderTitle_(activeFolderParent));
   }
 
-  private getForwardButtonTooltip_(folder: chrome.bookmarks.BookmarkTreeNode):
-      string {
+  private getForwardButtonTooltip_(folder: BookmarksTreeNode): string {
     return loadTimeData.getStringF(
         'openBookmarkLabel', this.getFolderTitle_(folder));
   }
 
-  private getForwardButtonLabel_(folder: chrome.bookmarks.BookmarkTreeNode):
-      string {
+  private getForwardButtonLabel_(folder: BookmarksTreeNode): string {
     return loadTimeData.getStringF(
         'forwardButtonLabel', this.getFolderTitle_(folder));
   }
 
-  private hasAvailableChildFolders_(folder: chrome.bookmarks.BookmarkTreeNode):
-      boolean {
+  private hasAvailableChildFolders_(folder: BookmarksTreeNode): boolean {
     return folder.children!.filter(this.isAvailableFolder_, this).length > 0;
   }
 
@@ -208,7 +207,7 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
     return false;
   }
 
-  private isSelected_(folder: chrome.bookmarks.BookmarkTreeNode): boolean {
+  private isSelected_(folder: BookmarksTreeNode): boolean {
     return folder === this.selectedFolder_;
   }
 
@@ -217,13 +216,12 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
     this.pop('activeFolderPath_');
   }
 
-  private onForward_(event: DomRepeatEvent<chrome.bookmarks.BookmarkTreeNode>) {
+  private onForward_(event: DomRepeatEvent<BookmarksTreeNode>) {
     this.selectedFolder_ = undefined;
     this.push('activeFolderPath_', event.model.item);
   }
 
-  private onFolderSelected_(
-      event: DomRepeatEvent<chrome.bookmarks.BookmarkTreeNode>) {
+  private onFolderSelected_(event: DomRepeatEvent<BookmarksTreeNode>) {
     if (this.selectedFolder_ === event.model.item) {
       this.selectedFolder_ = undefined;
     } else {
@@ -286,11 +284,16 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
         this.selectedFolder_ ? this.selectedFolder_ : this.getActiveFolder_();
     const parentId =
         parent ? parent.id : loadTimeData.getString('otherBookmarksId');
-    const newFolder: chrome.bookmarks.BookmarkTreeNode = {
+    const newFolder: BookmarksTreeNode = {
       id: TEMP_FOLDER_ID_PREFIX + this.newFolders_.length,
       title: this.newFolderName_,
+      index: 0,
+      url: null,
       children: [],
       parentId: parentId,
+      dateAdded: null,
+      dateLastUsed: null,
+      unmodifiable: false,
     };
     if (parent) {
       parent.children!.unshift(newFolder);

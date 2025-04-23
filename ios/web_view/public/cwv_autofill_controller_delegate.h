@@ -179,6 +179,11 @@ typedef NS_OPTIONS(NSInteger, CWVPasswordLeakType) {
                          (void (^)(CWVAutofillProfileUserDecision decision))
                              decisionHandler;
 
+// Called when the user successfully logs into a web site with an existing
+// password.
+- (void)autofillControllerDidLoginWithExistingPassword:
+    (CWVAutofillController*)autofillController;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -83,6 +83,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.context_menu_on_mouse_up;
   }
 
+  static bool always_show_context_menu_on_touch(
+      const blink::web_pref::WebPreferences& r) {
+    return r.always_show_context_menu_on_touch;
+  }
+
   static bool javascript_enabled(const blink::web_pref::WebPreferences& r) {
     return r.javascript_enabled;
   }

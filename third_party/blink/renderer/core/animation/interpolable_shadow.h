@@ -41,7 +41,7 @@ class InterpolableShadow : public InterpolableValue {
   static InterpolableShadow* CreateNeutral();
 
   static InterpolableShadow* MaybeConvertCSSValue(const CSSValue&,
-                                                  const StyleResolverState*);
+                                                  const StyleResolverState&);
 
   // Helpers for CSSListInterpolationFunctions.
   static PairwiseInterpolationValue MaybeMergeSingles(InterpolableValue* start,

@@ -417,8 +417,9 @@ TEST(ServiceWorkerRouterTypeConverterTest, Race) {
   expected_rule.condition =
       blink::ServiceWorkerRouterCondition::WithUrlPattern(expected_url_pattern);
   blink::ServiceWorkerRouterSource expected_source;
-  expected_source.type = network::mojom::ServiceWorkerRouterSourceType::kRace;
-  expected_source.race_source.emplace();
+  expected_source.type =
+      network::mojom::ServiceWorkerRouterSourceType::kRaceNetworkAndFetchEvent;
+  expected_source.race_network_and_fetch_event_source.emplace();
   expected_rule.sources.emplace_back(expected_source);
 
   V8TestingScope scope;

@@ -22,7 +22,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
-#include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-forward.h"
@@ -90,8 +89,10 @@ class AILanguageModel : public AIContextBoundObject,
     SpaceReservationResult AddContextItem(ContextItem context_item);
 
     // Combines the initial prompts and all current items into a request.
-    // The type of request produced is a PromptApiRequest.
-    optimization_guide::MultimodalMessage MakeRequest();
+    // The type of request produced is a PromptApiRequest. `capabilities`
+    // contains the capabilities of the target model.
+    optimization_guide::MultimodalMessage MakeRequest(
+        const on_device_model::Capabilities& capabilities);
 
     // Returns true if the system prompt is set or there is at least one context
     // item.
@@ -105,38 +106,6 @@ class AILanguageModel : public AIContextBoundObject,
     uint32_t current_tokens_ = 0;
     ContextItem initial_prompts_;
     std::deque<ContextItem> context_items_;
-  };
-
-  // TODO(crbug.com/385173789): Remove hacky multimodal prototype workarounds.
-  class MultimodalResponder : public on_device_model::mojom::StreamingResponder,
-                              public on_device_model::mojom::ContextClient {
-   public:
-    explicit MultimodalResponder(
-        AILanguageModel* model,
-        mojo::PendingReceiver<on_device_model::mojom::StreamingResponder>
-            response_receiver,
-        mojo::PendingReceiver<on_device_model::mojom::ContextClient>
-            context_receiver,
-        mojo::PendingRemote<blink::mojom::ModelStreamingResponder> responder);
-    ~MultimodalResponder() override;
-    // on_device_model::mojom::StreamingResponder:
-    void OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) override;
-    void OnComplete(
-        on_device_model::mojom::ResponseSummaryPtr summary) override;
-
-    // on_device_model::mojom::ContextClient:
-    void OnComplete(uint32_t tokens_processed) override;
-
-   private:
-    void OnDisconnect();
-
-    uint32_t tokens_processed_ = 0;
-    raw_ptr<AILanguageModel> model_;
-    mojo::Receiver<on_device_model::mojom::StreamingResponder>
-        response_receiver_;
-    mojo::Receiver<on_device_model::mojom::ContextClient> context_receiver_;
-    mojo::Remote<blink::mojom::ModelStreamingResponder> responder_;
-    std::string current_response_;
   };
 
   AILanguageModel(
@@ -169,6 +138,9 @@ class AILanguageModel : public AIContextBoundObject,
       const std::string& input,
       mojo::PendingRemote<blink::mojom::AILanguageModelMeasureInputUsageClient>
           client) override;
+
+  // AIContextBoundObject:
+  void SetPriority(on_device_model::mojom::Priority priority) override;
 
   // Format the initial prompts, gets the token count, updates the session,
   // and passes the session information back through the callback.
@@ -214,9 +186,6 @@ class AILanguageModel : public AIContextBoundObject,
 
   mojo::PendingRemote<blink::mojom::AILanguageModel> pending_remote_;
   mojo::Receiver<blink::mojom::AILanguageModel> receiver_;
-
-  // TODO(crbug.com/385173789): Remove hacky multimodal prototype workarounds.
-  std::unique_ptr<MultimodalResponder> multimodal_responder_;
 
   base::WeakPtrFactory<AILanguageModel> weak_ptr_factory_{this};
 };

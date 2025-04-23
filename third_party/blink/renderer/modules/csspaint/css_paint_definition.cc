@@ -120,7 +120,7 @@ PaintRecord CSSPaintDefinition::Paint(
   // invalid image.
   if (paint_
           ->Invoke(instance_.Get(isolate), rendering_context, paint_size,
-                   style_map, *paint_arguments)
+                   style_map, CSSStyleValueVector(std::move(*paint_arguments)))
           .IsNothing()) {
     return PaintRecord();
   }

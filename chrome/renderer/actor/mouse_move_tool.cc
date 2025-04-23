@@ -37,7 +37,7 @@ blink::WebMouseEvent CreateMouseEvent(blink::WebInputEvent::Type event_type,
 namespace actor {
 
 MouseMoveTool::MouseMoveTool(mojom::MouseMoveActionPtr action,
-                             base::raw_ref<content::RenderFrame> frame)
+                             content::RenderFrame& frame)
     : frame_(frame), action_(std::move(action)) {}
 
 MouseMoveTool::~MouseMoveTool() = default;
@@ -52,9 +52,13 @@ void MouseMoveTool::Execute(ToolFinishedCallback callback) {
 
   mojom::ToolTargetPtr& target = action_->target;
 
-  // Currently only support DOMNodeId as target.
-  int32_t dom_node_id = target->dom_node_id;
-  CHECK(dom_node_id);
+  if (target->is_coordinate()) {
+    NOTIMPLEMENTED() << "Coordinate-based target not yet supported.";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  int32_t dom_node_id = target->get_dom_node_id();
 
   blink::WebNode node = GetNodeFromId(frame_.get(), dom_node_id);
   if (node.IsNull()) {
@@ -68,6 +72,12 @@ void MouseMoveTool::Execute(ToolFinishedCallback callback) {
   if (!center_point.has_value()) {
     DLOG(ERROR) << "Cannot get center interaction point for node id "
                 << dom_node_id;
+    std::move(callback).Run(false);
+    return;
+  }
+
+  if (!IsPointWithinViewport(center_point.value(), frame_.get())) {
+    DLOG(ERROR) << "Target is outside viewport";
     std::move(callback).Run(false);
     return;
   }

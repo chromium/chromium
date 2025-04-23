@@ -6,6 +6,7 @@
 #define SERVICES_DEVICE_GEOLOCATION_NETWORK_LOCATION_REQUEST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -100,7 +101,7 @@ class NetworkLocationRequest {
   std::vector<mojom::AccessPointDataPtr> GetRequestDataForDiagnostics() const;
 
  private:
-  void OnRequestComplete(std::unique_ptr<std::string> data);
+  void OnRequestComplete(std::optional<std::string> data);
 
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const std::string api_key_;

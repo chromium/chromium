@@ -21,12 +21,15 @@ namespace blink {
 
 class UrlIndexTest : public testing::Test {
  public:
-  UrlIndexTest() = default;
+  UrlIndexTest()
+      : url_index_(std::make_unique<UrlIndex>(
+            nullptr,
+            task_environment_.GetMainThreadTaskRunner())) {}
 
   scoped_refptr<UrlData> GetByUrl(const KURL& url,
                                   UrlData::CorsMode cors_mode) {
     scoped_refptr<UrlData> ret =
-        url_index_.GetByUrl(url, cors_mode, UrlData::kNormal);
+        url_index_->GetByUrl(url, cors_mode, UrlData::kNormal);
     EXPECT_EQ(ret->url(), url);
     EXPECT_EQ(ret->cors_mode(), cors_mode);
     return ret;
@@ -34,7 +37,7 @@ class UrlIndexTest : public testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  UrlIndex url_index_{nullptr, task_environment_.GetMainThreadTaskRunner()};
+  std::unique_ptr<UrlIndex> url_index_;
 };
 
 TEST_F(UrlIndexTest, SimpleTest) {
@@ -45,22 +48,22 @@ TEST_F(UrlIndexTest, SimpleTest) {
   a->Use();
   a->set_range_supported();
   EXPECT_TRUE(a->Valid());
-  EXPECT_EQ(a, url_index_.TryInsert(a));
+  EXPECT_EQ(a, url_index_->TryInsert(a));
   scoped_refptr<UrlData> b = GetByUrl(url1, UrlData::CORS_ANONYMOUS);
   b->Use();
   b->set_range_supported();
   EXPECT_TRUE(b->Valid());
-  EXPECT_EQ(b, url_index_.TryInsert(b));
+  EXPECT_EQ(b, url_index_->TryInsert(b));
   scoped_refptr<UrlData> c = GetByUrl(url1, UrlData::CORS_USE_CREDENTIALS);
   c->Use();
   c->set_range_supported();
   EXPECT_TRUE(c->Valid());
-  EXPECT_EQ(c, url_index_.TryInsert(c));
+  EXPECT_EQ(c, url_index_->TryInsert(c));
   scoped_refptr<UrlData> d = GetByUrl(url2, UrlData::CORS_UNSPECIFIED);
   d->Use();
   d->set_range_supported();
   EXPECT_TRUE(d->Valid());
-  EXPECT_EQ(d, url_index_.TryInsert(d));
+  EXPECT_EQ(d, url_index_->TryInsert(d));
 
   EXPECT_NE(a, b);
   EXPECT_NE(a, c);
@@ -122,19 +125,19 @@ TEST_F(UrlIndexTest, TryInsert) {
   base::Time valid_until = now + base::Seconds(500);
 
   // Not sharable yet. (no ranges)
-  EXPECT_EQ(a, url_index_.TryInsert(a));
+  EXPECT_EQ(a, url_index_->TryInsert(a));
   EXPECT_NE(a, GetByUrl(url, UrlData::CORS_UNSPECIFIED));
   a->set_last_modified(last_modified);
 
   // Not sharable yet. (no ranges)
-  EXPECT_EQ(a, url_index_.TryInsert(a));
+  EXPECT_EQ(a, url_index_->TryInsert(a));
   EXPECT_NE(a, GetByUrl(url, UrlData::CORS_UNSPECIFIED));
 
   // Now we should be able to insert it into the index.
   a->set_range_supported();
   a->set_valid_until(valid_until);
   EXPECT_TRUE(a->Valid());
-  EXPECT_EQ(a, url_index_.TryInsert(a));
+  EXPECT_EQ(a, url_index_->TryInsert(a));
   EXPECT_EQ(a, GetByUrl(url, UrlData::CORS_UNSPECIFIED));
 
   // |a| becomes expired...
@@ -148,7 +151,7 @@ TEST_F(UrlIndexTest, TryInsert) {
   b->set_last_modified(last_modified);
   EXPECT_TRUE(b->Valid());
 
-  EXPECT_EQ(b, url_index_.TryInsert(b));
+  EXPECT_EQ(b, url_index_->TryInsert(b));
   EXPECT_EQ(b, GetByUrl(url, UrlData::CORS_UNSPECIFIED));
 
   c->set_range_supported();
@@ -157,7 +160,7 @@ TEST_F(UrlIndexTest, TryInsert) {
   EXPECT_TRUE(c->Valid());
 
   // B is still valid, so it should be preferred over C.
-  EXPECT_EQ(b, url_index_.TryInsert(c));
+  EXPECT_EQ(b, url_index_->TryInsert(c));
   EXPECT_EQ(b, GetByUrl(url, UrlData::CORS_UNSPECIFIED));
 }
 
@@ -166,14 +169,14 @@ TEST_F(UrlIndexTest, GetByUrlCacheDisabled) {
   UrlData::CorsMode cors = UrlData::CORS_UNSPECIFIED;
 
   scoped_refptr<UrlData> url_data =
-      url_index_.GetByUrl(url, cors, UrlData::kNormal);
+      url_index_->GetByUrl(url, cors, UrlData::kNormal);
   url_data->Use();
   url_data->set_range_supported();
   EXPECT_TRUE(url_data->Valid());
-  url_index_.TryInsert(url_data);
+  url_index_->TryInsert(url_data);
 
-  EXPECT_EQ(url_data, url_index_.GetByUrl(url, cors, UrlData::kNormal));
-  EXPECT_NE(url_data, url_index_.GetByUrl(url, cors, UrlData::kCacheDisabled));
+  EXPECT_EQ(url_data, url_index_->GetByUrl(url, cors, UrlData::kNormal));
+  EXPECT_NE(url_data, url_index_->GetByUrl(url, cors, UrlData::kCacheDisabled));
 }
 
 TEST_F(UrlIndexTest, ValidateDataOrigin) {
@@ -185,6 +188,24 @@ TEST_F(UrlIndexTest, ValidateDataOrigin) {
   // First call assigns the data origin, second call will assert them are the
   // same.
   EXPECT_TRUE(a->ValidateDataOrigin(data_url));
+}
+
+TEST_F(UrlIndexTest, DestructionWithOrphanedUrlData) {
+  KURL url("http://foo.bar.com");
+  scoped_refptr<UrlData> a = GetByUrl(url, UrlData::CORS_UNSPECIFIED);
+
+  KURL url2("http://foo2.bar.com");
+  scoped_refptr<UrlData> b = GetByUrl(url2, UrlData::CORS_UNSPECIFIED);
+
+  a->Use();
+  a->set_range_supported();
+  EXPECT_EQ(a, url_index_->TryInsert(a));
+
+  url_index_.reset();
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(a->url_index());
+  EXPECT_FALSE(b->url_index());
 }
 
 }  // namespace blink

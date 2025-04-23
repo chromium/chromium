@@ -666,11 +666,7 @@ TEST_F(VaapiTest, CheckSupportedSVCScalabilityModes) {
   const auto scalability_modes_vp8 = VaapiWrapper::GetSupportedScalabilityModes(
       VP8PROFILE_ANY, VAProfileVP8Version0_3);
 #if BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(kVaapiVp8TemporalLayerHWEncoding)) {
-    EXPECT_EQ(scalability_modes_vp8, kSupportedTemporalSVC);
-  } else {
-    EXPECT_EQ(scalability_modes_vp8, kSupportedL1T1);
-  }
+  EXPECT_EQ(scalability_modes_vp8, kSupportedTemporalSVC);
 #else
   EXPECT_EQ(scalability_modes_vp8, kSupportedL1T1);
 #endif
@@ -679,11 +675,7 @@ TEST_F(VaapiTest, CheckSupportedSVCScalabilityModes) {
       VaapiWrapper::GetSupportedScalabilityModes(
           H264PROFILE_BASELINE, VAProfileH264ConstrainedBaseline);
 #if BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(kVaapiH264TemporalLayerHWEncoding)) {
-    EXPECT_EQ(scalability_modes_h264_baseline, kSupportedTemporalSVC);
-  } else {
-    EXPECT_EQ(scalability_modes_h264_baseline, kSupportedL1T1);
-  }
+  EXPECT_EQ(scalability_modes_h264_baseline, kSupportedTemporalSVC);
 #else
   EXPECT_EQ(scalability_modes_h264_baseline, kSupportedL1T1);
 #endif

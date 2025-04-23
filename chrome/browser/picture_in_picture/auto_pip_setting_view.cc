@@ -4,6 +4,7 @@
 
 #include "chrome/browser/picture_in_picture/auto_pip_setting_view.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
@@ -62,6 +63,7 @@ AutoPipSettingView::AutoPipSettingView(
     views::BubbleBorder::Arrow arrow)
     : views::BubbleDialogDelegate(anchor_view, arrow),
       result_cb_(std::move(result_cb)) {
+  SetOwnedByWidget(OwnedByWidgetPassKey());
   DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   CHECK(result_cb_);
   SetAnchorView(anchor_view);

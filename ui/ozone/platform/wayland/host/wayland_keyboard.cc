@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
 
 #include <keyboard-extension-unstable-v1-client-protocol.h>
@@ -248,7 +243,7 @@ void WaylandKeyboard::OnKeymap(void* data,
 
   const char* keymap_string = static_cast<const char*>(keymap);
   if (!self->layout_engine_->SetCurrentLayoutFromBuffer(
-          keymap_string, strnlen(keymap_string, size))) {
+          keymap_string, UNSAFE_TODO(strnlen(keymap_string, size)))) {
     DLOG(ERROR) << "Failed to set XKB keymap.";
   }
   munmap(keymap, size);

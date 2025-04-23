@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/previously_syncing_gaia_id_info_for_metrics.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/model/model_error.h"
@@ -59,6 +60,12 @@ class FakeDataTypeControllerDelegate : public DataTypeControllerDelegate {
   // TODO(crbug.com/40945017): Replace this with something like "HasMetadata".
   int clear_metadata_count() const;
 
+  // The last value of the enum received via OnSyncStarting().
+  PreviouslySyncingGaiaIdInfoForMetrics previously_syncing_gaia_id_info()
+      const {
+    return previously_syncing_gaia_id_info_;
+  }
+
   // The value that will be returned for GetAllNodesForDebugging().
   void SetNodesForDebugging(base::Value::List nodes);
 
@@ -66,7 +73,7 @@ class FakeDataTypeControllerDelegate : public DataTypeControllerDelegate {
   void OnSyncStarting(const DataTypeActivationRequest& request,
                       StartCallback callback) override;
   void OnSyncStopping(SyncStopMetadataFate metadata_fate) override;
-  void HasUnsyncedData(base::OnceCallback<void(bool)> callback) override;
+  void GetUnsyncedDataCount(base::OnceCallback<void(size_t)> callback) override;
   void GetAllNodesForDebugging(AllNodesCallback callback) override;
   void RecordMemoryUsageAndCountsHistograms() override;
   void GetTypeEntitiesCountForDebugging(
@@ -88,6 +95,8 @@ class FakeDataTypeControllerDelegate : public DataTypeControllerDelegate {
   std::optional<ModelError> model_error_;
   StartCallback start_callback_;
   ModelErrorHandler error_handler_;
+  PreviouslySyncingGaiaIdInfoForMetrics previously_syncing_gaia_id_info_ =
+      PreviouslySyncingGaiaIdInfoForMetrics::kUnspecified;
   base::Value::List all_nodes_for_debugging_;
   base::WeakPtrFactory<FakeDataTypeControllerDelegate> weak_ptr_factory_{this};
 };

@@ -6,6 +6,7 @@
 
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -53,6 +54,8 @@ void NavigateTool::Invoke(InvokeCallback callback) {
 }
 
 void NavigateTool::DidFinishNavigation(NavigationHandle* navigation_handle) {
+  // TODO(crbug.com/411748801): We should probably handle the case where the
+  // page navigates before it's done loading. Common with client-side redirects.
   if (pending_navigation_handle_id_ &&
       navigation_handle->GetNavigationId() == *pending_navigation_handle_id_) {
     CHECK(invoke_callback_);
@@ -60,11 +63,60 @@ void NavigateTool::DidFinishNavigation(NavigationHandle* navigation_handle) {
     bool success =
         navigation_handle->HasCommitted() && !navigation_handle->IsErrorPage();
 
-    PostResponseTask(std::move(invoke_callback_), success);
+    if (!success || navigation_handle->IsSameDocument()) {
+      PostResponseTask(std::move(invoke_callback_), success);
+      return;
+    }
+
+    post_navigation_state_.emplace();
+    content::GetUIThreadTaskRunner()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&NavigateTool::Timeout, weak_ptr_factory_.GetWeakPtr()),
+        base::Seconds(1));
+  }
+}
+
+void NavigateTool::DidStopLoading() {
+  if (!post_navigation_state_) {
+    return;
+  }
+
+  // Ensure that the main frame's Document has finished loading.
+  if (!web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
+    return;
+  }
+
+  // Once the main Document has fired the `load` event, wait for all subframes
+  // currently in the FrameTree to also finish loading.
+  if (web_contents()->IsLoading()) {
+    return;
+  }
+
+  post_navigation_state_->waiting_for_load = false;
+  if (post_navigation_state_->Done()) {
+    PostResponseTask(std::move(invoke_callback_), /*response=*/true);
+  }
+}
+
+void NavigateTool::OnFirstContentfulPaintInPrimaryMainFrame() {
+  if (!post_navigation_state_) {
+    return;
+  }
+
+  post_navigation_state_->waiting_for_fcp = false;
+  if (post_navigation_state_->Done()) {
+    PostResponseTask(std::move(invoke_callback_), /*response=*/true);
   }
 }
 
 void NavigateTool::NavigationHandleCallback(NavigationHandle& handle) {
   pending_navigation_handle_id_ = handle.GetNavigationId();
 }
+
+void NavigateTool::Timeout() {
+  if (invoke_callback_) {
+    PostResponseTask(std::move(invoke_callback_), /*response=*/true);
+  }
+}
+
 }  // namespace actor

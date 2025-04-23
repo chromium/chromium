@@ -56,9 +56,9 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
     };
   }
 
-  data: PricePoint[];
-  locale: string;
-  currency: string;
+  declare data: PricePoint[];
+  declare locale: string;
+  declare currency: string;
   private points: Array<{date: Date, price: number}>;
   private isGraphInteracted_: boolean = false;
   private currentPricePointIndex_?: number;

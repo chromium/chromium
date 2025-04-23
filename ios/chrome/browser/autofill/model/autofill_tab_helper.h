@@ -72,8 +72,6 @@ class AutofillTabHelper : public web::WebStateObserver,
 
   // The WebState holding this instance of the helper.
   raw_ptr<web::WebState> web_state_;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_MODEL_AUTOFILL_TAB_HELPER_H_

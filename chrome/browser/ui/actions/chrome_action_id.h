@@ -490,9 +490,13 @@
   E(kActionDeviceSystemTrayIconLast, IDC_DEVICE_SYSTEM_TRAY_ICON_LAST) \
   /*Shows the Intent Picker bubble */ \
   E(kActionShowIntentPicker) \
+  /*Shows the File System Access bubble */ \
+  E(kActionShowFileSystemAccess) \
   /*Toolbar pinning*/ \
   E(kActionPinActionToToolbar) \
-  E(kActionUnpinActionFromToolbar)
+  E(kActionUnpinActionFromToolbar) \
+  /*Commerce*/ \
+  E(kActionCommercePriceInsights) \
 
 #if BUILDFLAG(IS_CHROMEOS)
 #define CHROME_PLATFORM_SPECIFIC_ACTION_IDS \
@@ -563,6 +567,7 @@
   E(kActionManagePasswordsForPage, IDC_MANAGE_PASSWORDS_FOR_PAGE) \
   E(kActionCopyUrl, IDC_COPY_URL) \
   E(kActionTabSearch, IDC_TAB_SEARCH) \
+  E(kActionSplitTab, IDC_SPLIT_TAB) \
 
 #define CHROME_ACTION_IDS \
     CHROME_COMMON_ACTION_IDS \

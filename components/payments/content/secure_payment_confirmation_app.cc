@@ -27,6 +27,7 @@
 #include "components/payments/core/features.h"
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/payer_data.h"
+#include "components/payments/core/payments_experimental_features.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -80,7 +81,8 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
     : PaymentApp(/*icon_resource_id=*/0, PaymentApp::Type::INTERNAL),
       content::WebContentsObserver(web_contents_to_observe),
       authenticator_frame_routing_id_(
-          authenticator->GetRenderFrameHost()->GetGlobalId()),
+          authenticator ? authenticator->GetRenderFrameHost()->GetGlobalId()
+                        : content::GlobalRenderFrameHostId()),
       effective_relying_party_identity_(effective_relying_party_identity),
       payment_instrument_label_(payment_instrument_label),
       payment_instrument_icon_(std::move(payment_instrument_icon)),
@@ -94,8 +96,6 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
       network_icon_(std::move(network_icon)),
       issuer_label_(issuer_label),
       issuer_icon_(std::move(issuer_icon)) {
-  DCHECK(!credential_id_.empty());
-
   app_method_names_.insert(methods::kSecurePaymentConfirmation);
 }
 
@@ -174,9 +174,12 @@ std::u16string SecurePaymentConfirmationApp::GetMissingInfoLabel() const {
 }
 
 bool SecurePaymentConfirmationApp::HasEnrolledInstrument() const {
-  // If there's no platform authenticator, then the factory should not create
-  // this app. Therefore, this function can always return true.
-  return true;
+  // If the fallback feature is disabled, the factory should only create this
+  // app if the authenticator and credentials were available. Therefore, this
+  // function can always return true with the fallback feature disabled.
+  return (authenticator_ && !credential_id_.empty()) ||
+         !PaymentsExperimentalFeatures::IsEnabled(
+             features::kSecurePaymentConfirmationFallback);
 }
 
 bool SecurePaymentConfirmationApp::NeedsInstallation() const {
@@ -184,7 +187,15 @@ bool SecurePaymentConfirmationApp::NeedsInstallation() const {
 }
 
 std::string SecurePaymentConfirmationApp::GetId() const {
-  return base::Base64Encode(credential_id_);
+  if (credential_id_.empty()) {
+    CHECK(PaymentsExperimentalFeatures::IsEnabled(
+        features::kSecurePaymentConfirmationFallback));
+    // Since there is no credential_id_ in the fallback flow, we still must
+    // return a non-empty app ID.
+    return "spc";
+  } else {
+    return base::Base64Encode(credential_id_);
+  }
 }
 
 std::u16string SecurePaymentConfirmationApp::GetLabel() const {

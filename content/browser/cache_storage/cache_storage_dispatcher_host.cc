@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "content/browser/cache_storage/cache_storage_dispatcher_host.h"
 
 #include <optional>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -627,7 +623,7 @@ class CacheStorageDispatcherHost::CacheImpl
 
     auto buf = base::MakeRefCounted<net::IOBufferWithSize>(data.size());
     if (data.size())
-      memcpy(buf->data(), data.data(), data.size());
+      UNSAFE_TODO(memcpy(buf->data(), data.data(), data.size()));
 
     cache->WriteSideData(std::move(callback), url, expected_response_time,
                          trace_id, std::move(buf), data.size());

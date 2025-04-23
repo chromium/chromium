@@ -713,7 +713,7 @@ String SecurityOrigin::CanonicalizeSpecialHost(const String& host,
     *success = url::CanonicalizeSpecialHost(
         utf8.data(), url::Component(0, utf8.size()), canon_output, out_host);
   } else {
-    *success = url::CanonicalizeSpecialHost(host.Characters16(),
+    *success = url::CanonicalizeSpecialHost(UNSAFE_TODO(host.Characters16()),
                                             url::Component(0, host.length()),
                                             canon_output, out_host);
   }
@@ -734,7 +734,7 @@ String SecurityOrigin::CanonicalizeHost(const String& host,
     *success = url::CanonicalizeFileHost(
         utf8.data(), url::Component(0, utf8.size()), canon_output, out_host);
   } else {
-    *success = url::CanonicalizeFileHost(host.Characters16(),
+    *success = url::CanonicalizeFileHost(UNSAFE_TODO(host.Characters16()),
                                          url::Component(0, host.length()),
                                          canon_output, out_host);
   }

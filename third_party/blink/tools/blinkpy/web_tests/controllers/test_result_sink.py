@@ -39,10 +39,6 @@ _result_type_to_sink_status = {
     # timeout is just a special case of a reason to abort a test result.
     ResultType.Timeout:
     'ABORT',
-    # 'Aborted' is a web_tests-specific type given on TestResults with a device
-    # failure.
-    'Aborted':
-    'ABORT',
     ResultType.Crash:
     'CRASH',
     ResultType.Skip:
@@ -112,7 +108,7 @@ class TestResultSink:
             The corresponding enum value.
         """
         status = _result_type_to_sink_status.get(
-            'Aborted' if result.device_failed else result.type)
+            ResultType.Timeout if result.device_failed else result.type)
 
         assert status is not None, 'unsupported result.type %r' % result.type
         return status

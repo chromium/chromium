@@ -7,13 +7,13 @@ found in the LICENSE file.
 -->
 
 <resources>
-    <!-- Tab reordering actions for accessibility support-->
+    <!-- Tab reordering actions for accessibility support. -->
     <item type="id" name="move_tab_left" />
     <item type="id" name="move_tab_right" />
     <item type="id" name="move_tab_up" />
     <item type="id" name="move_tab_down" />
 
-    <!-- Tab selection editor menu items-->
+    <!-- Tab selection editor menu items. -->
     <item type="id" name="tab_list_editor_bookmark_menu_item" />
     <item type="id" name="tab_list_editor_close_menu_item" />
     <item type="id" name="tab_list_editor_group_menu_item" />
@@ -29,4 +29,7 @@ found in the LICENSE file.
     <item type="id" name="tab_list_editor_select_archived_tabs_menu_item" />
     <item type="id" name="tab_list_editor_close_archived_tabs_menu_item" />
     <item type="id" name="tab_list_editor_archive_settings_menu_item" />
+
+    <!-- Tab Switcher Context Menu. -->
+    <item type="id" name="edit_bookmark" />
 </resources>

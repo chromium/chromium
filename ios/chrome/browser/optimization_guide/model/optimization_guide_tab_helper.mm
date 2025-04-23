@@ -148,5 +148,3 @@ void OptimizationGuideTabHelper::NotifyNavigationFinish(
   last_navigation_data_ = std::move(nav_data_iter->second);
   inflight_optimization_guide_navigation_datas_.erase(navigation_id);
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(OptimizationGuideTabHelper)

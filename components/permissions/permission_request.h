@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permission_hats_trigger_helper.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/request_type.h"
@@ -216,6 +217,12 @@ class PermissionRequest {
 
   bool uses_automatic_embargo() const { return uses_automatic_embargo_; }
 
+  std::optional<PermissionHatsTriggerHelper::PreviewParametersForHats>
+  get_preview_parameters() const;
+
+  void set_preview_parameters(
+      PermissionHatsTriggerHelper::PreviewParametersForHats preview_parmeters);
+
  protected:
   // Sets whether this request is permission element initiated, for testing
   // subclasses only.
@@ -233,6 +240,9 @@ class PermissionRequest {
   base::OnceClosure delete_callback_;
 
   const bool uses_automatic_embargo_ = true;
+
+  std::optional<PermissionHatsTriggerHelper::PreviewParametersForHats>
+      preview_parameters_;
 
   base::WeakPtrFactory<PermissionRequest> weak_factory_{this};
 };

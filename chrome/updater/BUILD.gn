@@ -349,7 +349,6 @@ if (is_win || is_mac || is_linux) {
         "win/ui/progress_wnd.h",
         "win/ui/ui.cc",
         "win/ui/ui.h",
-        "win/ui/ui_constants.cc",
         "win/ui/ui_constants.h",
         "win/ui/ui_ctls.h",
         "win/ui/ui_util.cc",
@@ -534,7 +533,10 @@ if (is_win || is_mac || is_linux) {
       "constants_prod.cc",
     ]
 
-    public_deps = [ ":public_sources" ]
+    public_deps = [
+      ":public_sources",
+      ":tagging",
+    ]
     deps = [ ":constants_header" ]
 
     visibility = [
@@ -562,7 +564,7 @@ if (is_win || is_mac || is_linux) {
 
   source_set("public_sources") {
     sources = [
-      "constants.cc",
+      "branded_constants.h",
       "constants.h",
       "enum_traits.h",
       "ipc/ipc_support.cc",
@@ -604,7 +606,6 @@ if (is_win || is_mac || is_linux) {
         "win/task_scheduler.h",
         "win/user_info.cc",
         "win/user_info.h",
-        "win/win_constants.cc",
         "win/win_constants.h",
       ]
 
@@ -857,9 +858,9 @@ if (is_win || is_mac || is_linux) {
       "app/app_server_unittest.cc",
       "app/app_uninstall_unittest.cc",
       "app/app_utils_unittest.cc",
+      "branded_constants_unittest.cc",
       "certificate_tag_unittest.cc",
       "cleanup_task_unittest.cc",
-      "constants_unittest.cc",
       "device_management/dm_client_unittest.cc",
       "device_management/dm_message_unittest.cc",
       "device_management/dm_policy_builder_for_testing.cc",

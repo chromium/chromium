@@ -71,8 +71,8 @@ class TextBreakIteratorTest : public testing::Test {
   Vector<unsigned> GraphemesClusterList(String input,
                                         unsigned start,
                                         unsigned length) {
-    Vector<unsigned> result;
-    ::blink::GraphemesClusterList(StringView(input, start, length), &result);
+    Vector<unsigned> result(length);
+    ::blink::GraphemesClusterList(StringView(input, start, length), result);
     return result;
   }
 
@@ -97,6 +97,24 @@ TEST_F(TextBreakIteratorTest, PooledBreakIterator) {
   // Because `it2` is released, `it3` should be the same instance as `it2`.
   PooledBreakIterator it3 = AcquireLineBreakIterator(str, locale);
   EXPECT_EQ(it3.get(), ptr2);
+}
+
+TEST_F(TextBreakIteratorTest, PooledCharacterBreakIterator) {
+  String str16(u"a");
+  ASSERT_FALSE(str16.Is8Bit());
+  CharacterBreakIterator it1(str16);
+
+  // Get another and release. It should be a different instance than `it1`.
+  TextBreakIterator* ptr2;
+  {
+    CharacterBreakIterator it2(str16);
+    EXPECT_NE(it2.iterator_.get(), it1.iterator_.get());
+    ptr2 = it2.iterator_.get();
+  }
+
+  // Because `it2` is released, `it3` should be the same instance as `it2`.
+  CharacterBreakIterator it3(str16);
+  EXPECT_EQ(it3.iterator_.get(), ptr2);
 }
 
 static const LineBreakType all_break_types[] = {

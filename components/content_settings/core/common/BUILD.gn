@@ -35,7 +35,6 @@ static_library("common") {
     "host_indexed_content_settings.h",
     "pref_names.h",
     "third_party_site_data_access_type.h",
-    "tracking_protection_feature.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

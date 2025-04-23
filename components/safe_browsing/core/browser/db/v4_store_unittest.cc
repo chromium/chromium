@@ -11,10 +11,12 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
+#include "components/safe_browsing/core/browser/db/safebrowsing.pb.h"
 #include "components/safe_browsing/core/browser/db/v4_store.pb.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "crypto/sha2.h"
@@ -182,6 +184,21 @@ TEST_F(V4StoreTest, TestAddUnlumpedHashesWithEmptyString) {
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             V4Store::AddUnlumpedHashes(5, "", &prefix_map));
   EXPECT_TRUE(prefix_map[5].empty());
+}
+
+TEST_F(V4StoreTest, TestAddUnlumpedHashesWithTooSmallPrefixSize) {
+  std::unordered_map<PrefixSize, HashPrefixes> prefix_map;
+  EXPECT_EQ(PREFIX_SIZE_TOO_SMALL_FAILURE,
+            V4Store::AddUnlumpedHashes(3, "abcde5432100000-----", &prefix_map));
+  EXPECT_TRUE(prefix_map.empty());
+}
+
+TEST_F(V4StoreTest, TestAddUnlumpedHashesWithTooLargePrefixSize) {
+  std::unordered_map<PrefixSize, HashPrefixes> prefix_map;
+  EXPECT_EQ(
+      PREFIX_SIZE_TOO_LARGE_FAILURE,
+      V4Store::AddUnlumpedHashes(33, "abcde5432100000-----", &prefix_map));
+  EXPECT_TRUE(prefix_map.empty());
 }
 
 TEST_F(V4StoreTest, TestAddUnlumpedHashes) {
@@ -802,6 +819,18 @@ TEST_F(V4StoreTest, TestAdditionsWithRiceEncodingFailsWithInvalidInput) {
                                                   &additions_map));
 }
 
+TEST_F(V4StoreTest,
+       TestAdditionsWithRiceEncodingFailsWithInvalidCompressionType) {
+  RepeatedPtrField<ThreatEntrySet> additions;
+  ThreatEntrySet* addition = additions.Add();
+  addition->set_compression_type(COMPRESSION_TYPE_UNSPECIFIED);
+  std::unordered_map<PrefixSize, HashPrefixes> additions_map;
+  EXPECT_EQ(UNEXPECTED_COMPRESSION_TYPE_ADDITIONS_FAILURE,
+            V4Store(task_runner(), store_path_)
+                .UpdateHashPrefixMapFromAdditions("V4Metric", additions,
+                                                  &additions_map));
+}
+
 TEST_F(V4StoreTest, TestAdditionsWithRiceEncodingSucceeds) {
   RepeatedPtrField<ThreatEntrySet> additions;
   ThreatEntrySet* addition = additions.Add();
@@ -962,6 +991,7 @@ TEST_F(V4StoreTest, WriteToDiskFails) {
 }
 
 TEST_F(V4StoreTest, FullUpdateFailsChecksumSynchronously) {
+  base::HistogramTester histogram_tester;
   V4Store store(task_runner(), store_path_);
   base::RunLoop run_loop;
   UpdatedStoreReadyCallback store_ready_callback =
@@ -984,6 +1014,71 @@ TEST_F(V4StoreTest, FullUpdateFailsChecksumSynchronously) {
   // Ensure that the file is still not created.
   EXPECT_FALSE(base::PathExists(store.store_path_));
   EXPECT_FALSE(updated_store_);
+
+  EXPECT_EQ(store.last_apply_update_result_, CHECKSUM_MISMATCH_FAILURE);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.V4ProcessUpdate.UpdateType",
+                                      V4Store::ApplyUpdateType::kFull, 1);
+}
+
+TEST_F(V4StoreTest, ApplyUpdateFailsWithInvalidResponseType) {
+  base::HistogramTester histogram_tester;
+  V4Store store(task_runner(), store_path_);
+  base::RunLoop run_loop;
+  UpdatedStoreReadyCallback store_ready_callback =
+      base::BindOnce(&V4StoreTest::UpdatedStoreReady, base::Unretained(this),
+                     &run_loop, false /* expect_store */);
+  EXPECT_FALSE(base::PathExists(store.store_path_));
+  EXPECT_FALSE(store.HasValidData());  // Never actually read from disk.
+
+  // Now create a response with an invalid response type.
+  std::unique_ptr<ListUpdateResponse> lur(new ListUpdateResponse);
+  lur->set_response_type(ListUpdateResponse::RESPONSE_TYPE_UNSPECIFIED);
+  store.ApplyUpdate(std::move(lur), task_runner(),
+                    std::move(store_ready_callback));
+  // The update should fail synchronously and not create a store file.
+  EXPECT_FALSE(base::PathExists(store.store_path_));
+
+  run_loop.Run();
+
+  // Ensure that the file is still not created.
+  EXPECT_FALSE(base::PathExists(store.store_path_));
+  EXPECT_FALSE(updated_store_);
+
+  EXPECT_EQ(store.last_apply_update_result_, UNEXPECTED_RESPONSE_TYPE_FAILURE);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.V4ProcessUpdate.UpdateType",
+                                      V4Store::ApplyUpdateType::kInvalid, 1);
+}
+
+TEST_F(V4StoreTest, ApplyUpdateRemovalsFailsWithInvalidCompressionType) {
+  base::HistogramTester histogram_tester;
+  V4Store store(task_runner(), store_path_);
+  base::RunLoop run_loop;
+  UpdatedStoreReadyCallback store_ready_callback =
+      base::BindOnce(&V4StoreTest::UpdatedStoreReady, base::Unretained(this),
+                     &run_loop, false /* expect_store */);
+  EXPECT_FALSE(base::PathExists(store.store_path_));
+  EXPECT_FALSE(store.HasValidData());  // Never actually read from disk.
+
+  // Now create a response with an invalid removals compression type.
+  std::unique_ptr<ListUpdateResponse> lur(new ListUpdateResponse);
+  lur->set_response_type(ListUpdateResponse::PARTIAL_UPDATE);
+  ThreatEntrySet* removal = lur->add_removals();
+  removal->set_compression_type(COMPRESSION_TYPE_UNSPECIFIED);
+  store.ApplyUpdate(std::move(lur), task_runner(),
+                    std::move(store_ready_callback));
+  // The update should fail synchronously and not create a store file.
+  EXPECT_FALSE(base::PathExists(store.store_path_));
+
+  run_loop.Run();
+
+  // Ensure that the file is still not created.
+  EXPECT_FALSE(base::PathExists(store.store_path_));
+  EXPECT_FALSE(updated_store_);
+
+  EXPECT_EQ(store.last_apply_update_result_,
+            UNEXPECTED_COMPRESSION_TYPE_REMOVALS_FAILURE);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.V4ProcessUpdate.UpdateType",
+                                      V4Store::ApplyUpdateType::kPartial, 1);
 }
 
 TEST_F(V4StoreTest, VerifyChecksumMmapFile) {

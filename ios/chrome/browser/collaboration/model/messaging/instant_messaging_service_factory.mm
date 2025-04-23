@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "components/collaboration/public/features.h"
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/collaboration/model/messaging/instant_messaging_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -28,7 +29,9 @@ InstantMessagingServiceFactory* InstantMessagingServiceFactory::GetInstance() {
 
 InstantMessagingServiceFactory::InstantMessagingServiceFactory()
     : ProfileKeyedServiceFactoryIOS("InstantMessagingService",
-                                    ProfileSelection::kNoInstanceInIncognito) {}
+                                    ProfileSelection::kNoInstanceInIncognito) {
+  DependsOn(collaboration::CollaborationServiceFactory::GetInstance());
+}
 
 InstantMessagingServiceFactory::~InstantMessagingServiceFactory() = default;
 
@@ -38,7 +41,9 @@ InstantMessagingServiceFactory::BuildServiceInstanceFor(
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   CHECK(!profile->IsOffTheRecord());
 
-  if (!IsSharedTabGroupsJoinEnabled(profile) ||
+  collaboration::CollaborationService* collaboration_service =
+      collaboration::CollaborationServiceFactory::GetForProfile(profile);
+  if (!IsSharedTabGroupsJoinEnabled(collaboration_service) ||
       !base::FeatureList::IsEnabled(
           collaboration::features::kCollaborationMessaging)) {
     return nullptr;

@@ -469,6 +469,10 @@ class CONTENT_EXPORT SavePackage final
   ukm::SourceId ukm_source_id_;
   uint64_t ukm_download_id_;
 
+  // Display name of the main file. If this is empty, the name will be
+  // inferred from `saved_main_file_path_`.
+  base::FilePath saved_main_file_display_name_;
+
   base::WeakPtrFactory<SavePackage> weak_ptr_factory_{this};
 };
 

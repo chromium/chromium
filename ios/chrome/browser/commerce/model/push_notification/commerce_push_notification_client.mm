@@ -21,6 +21,8 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "url/gurl.h"
 
 namespace {
@@ -44,10 +46,24 @@ NSString* kUntrackPriceIdentifier = @"untrack_price";
 // Text for option 'Untrack price' when long pressing notification.
 NSString* kUntrackPriceTitle = @"Untrack price";
 
+// Returns an arbitrary profile amongst the currently loaded profile. This
+// means that this API is not safe when there are multiple profiles. Instead
+// the push notification system should be re-designed to not depend on this
+// method (either create specific manager per-profile, or include in the
+// notification an identifier for the profile, e.g. gaia id).
+// TODO(crbug.com/41497027): This API should be redesigned.
+ProfileIOS* GetAnyProfile() {
+  std::vector<ProfileIOS*> loaded_profiles =
+      GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
+  CHECK(!loaded_profiles.empty());
+  return loaded_profiles.back();
+}
+
 }  // namespace
 
 CommercePushNotificationClient::CommercePushNotificationClient()
-    : PushNotificationClient(PushNotificationClientId::kCommerce) {}
+    : PushNotificationClient(PushNotificationClientId::kCommerce,
+                             PushNotificationClientScope::kPerProfile) {}
 
 CommercePushNotificationClient::~CommercePushNotificationClient() = default;
 
@@ -71,6 +87,13 @@ CommercePushNotificationClient::ParseHintNotificationPayload(
     return nullptr;
   }
   return hint_notification_payload;
+}
+
+bool CommercePushNotificationClient::CanHandleNotification(
+    UNNotification* notification) {
+  NSDictionary* user_info = notification.request.content.userInfo;
+  return ParseHintNotificationPayload(
+             [user_info objectForKey:kSerializedPayloadKey]) != nullptr;
 }
 
 bool CommercePushNotificationClient::HandleNotificationInteraction(

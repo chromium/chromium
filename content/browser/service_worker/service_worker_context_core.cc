@@ -21,6 +21,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/services/storage/public/cpp/quota_client_callback_wrapper.h"
 #include "content/browser/log_console_message.h"
@@ -49,6 +50,7 @@
 #include "content/public/browser/console_message.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/service_worker_registration_information.h"
 #include "content/public/browser/service_worker_running_info.h"
 #include "content/public/common/url_utils.h"
 #include "ipc/ipc_message.h"
@@ -1128,15 +1130,45 @@ int ServiceWorkerContextCore::GetVersionFailureCount(int64_t version_id) {
   return it->second.count;
 }
 
-void ServiceWorkerContextCore::NotifyRegistrationStored(
-    int64_t registration_id,
-    const GURL& scope,
-    const blink::StorageKey& key) {
+void ServiceWorkerContextCore::NotifyWillCreateURLLoaderFactory(
+    const GURL& scope) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  for (auto& observer : sync_observer_list_->observers) {
+    observer.OnWillCreateURLLoaderFactory(scope);
+  }
+}
+
+void ServiceWorkerContextCore::NotifyRegistrationStored(
+    const int64_t registration_id,
+    const GURL& scope,
+    const blink::StorageKey& key,
+    uint64_t stored_resources_total_size_bytes) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  scoped_refptr<ServiceWorkerRegistration> registration =
+      GetLiveRegistration(registration_id);
+  ServiceWorkerRegistrationInformation service_worker_info;
+
+  if (registration) {
+    registration->SetStored();
+    registration->set_resources_total_size_bytes(
+        stored_resources_total_size_bytes);
+
+    ServiceWorkerVersion* version = registration->GetNewestVersion();
+    content::ServiceWorkerRegistry::ResourceList resources;
+    if (version) {
+      resources = version->script_cache_map()->GetResources();
+    }
+    for (const auto& resource : resources) {
+      service_worker_info.resources.push_back(resource->url);
+    }
+  }
+
   registered_storage_keys_.insert(key);
+
   observer_list_->Notify(
       FROM_HERE, &ServiceWorkerContextCoreObserver::OnRegistrationStored,
-      registration_id, scope, key);
+      registration_id, scope, key, service_worker_info);
 }
 
 void ServiceWorkerContextCore::NotifyAllRegistrationsDeletedForStorageKey(
@@ -1219,6 +1251,16 @@ void ServiceWorkerContextCore::OnControlleeNavigationCommitted(
       FROM_HERE,
       &ServiceWorkerContextCoreObserver::OnControlleeNavigationCommitted,
       version->version_id(), client_uuid, render_frame_host_id);
+}
+
+void ServiceWorkerContextCore::OnStartWorkerMessageSent(
+    ServiceWorkerVersion* version) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_EQ(this, version->context().get());
+
+  for (auto& observer : sync_observer_list_->observers) {
+    observer.OnStartWorkerMessageSent(version->version_id(), version->scope());
+  }
 }
 
 void ServiceWorkerContextCore::OnRunningStateChanged(

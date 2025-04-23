@@ -36,7 +36,7 @@ class StunTcpPacketProcessor final : public StreamPacketProcessor {
   void ApplyPacketOptions(
       uint8_t* data,
       size_t data_size,
-      const rtc::PacketTimeUpdateParams& packet_time_params) const override;
+      const webrtc::PacketTimeUpdateParams& packet_time_params) const override;
 };
 
 }  // namespace remoting::protocol

@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include <array>
+
 #include "base/base_export.h"
 #include "base/feature_list.h"
 #include "base/task/task_traits.h"
@@ -38,14 +40,14 @@ struct EnvironmentParams {
   ThreadType thread_type_hint;
 };
 
-constexpr EnvironmentParams kEnvironmentParams[] = {
+constexpr auto kEnvironmentParams = std::to_array<EnvironmentParams>({
     {"Foreground", base::ThreadType::kDefault},
     {"ForegroundBlocking", base::ThreadType::kDefault},
     {"Utility", base::ThreadType::kUtility},
     {"UtilityBlocking", base::ThreadType::kUtility},
     {"Background", base::ThreadType::kBackground},
     {"BackgroundBlocking", base::ThreadType::kBackground},
-};
+});
 
 // Returns true if this platform supports having WorkerThreads running with a
 // background thread type.

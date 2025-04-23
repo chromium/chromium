@@ -2,14 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
 import("//build/config/gclient_args.gni")
 import("//chromeos/components/libsegmentation/buildflags.gni")
 import("//components/optimization_guide/features.gni")
 
 declare_args() {
+  # Constraint code is disabled on platforms where the on-device model does not
+  # run due to binary size.
+  enable_constraints = is_win || is_mac || is_linux || is_ios
   enable_ml_internal =
-      build_with_internal_optimization_guide && checkout_src_internal &&
+      build_with_internal_optimization_guide &&
       (is_win || is_mac || is_linux || is_ios)
   use_chromeos_model_service =
-      checkout_src_internal && (is_chromeos && overlay_include_cbx)
+      is_chrome_branded && (is_chromeos && overlay_include_cbx)
 }

@@ -3788,8 +3788,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXEvents,
   // kLoadStart event has definitely already passed and any kLoadStart we see
   // from this frame in the future is newly generated.
   AccessibilityNotificationWaiter waiter_complete(
-      shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kLoadComplete);
+      shell()->web_contents(), ax::mojom::Event::kLoadComplete);
   ASSERT_TRUE(waiter_complete.WaitForNotification());
 
   // 2) Navigate to B.
@@ -3833,7 +3832,6 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXEvents,
                       {reason}, FROM_HERE);
   } else {
     AccessibilityNotificationWaiter waiter_start(shell()->web_contents(),
-                                                 ui::kAXModeComplete,
                                                  ax::mojom::Event::kLoadStart);
     // Ensure that |rfh_a| is successfully restored from bfcache and that we see
     // LOAD_START event.
@@ -3885,8 +3883,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXLocationChange,
   // kLoadStart event has definitely already passed and any kLoadStart we see
   // from this frame in the future is newly generated.
   AccessibilityNotificationWaiter waiter_complete(
-      shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kLoadComplete);
+      shell()->web_contents(), ax::mojom::Event::kLoadComplete);
   ASSERT_TRUE(waiter_complete.WaitForNotification());
 
   // 2) Navigate to B.
@@ -3936,7 +3933,6 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXLocationChange,
     EXPECT_EQ(0, location_change_counter_for_testing);
   } else {
     AccessibilityNotificationWaiter waiter_start(shell()->web_contents(),
-                                                 ui::kAXModeComplete,
                                                  ax::mojom::Event::kLoadStart);
     // Ensure that |rfh_a| is successfully restored from bfcache and that we see
     // LOAD_START event.
@@ -3977,6 +3973,8 @@ class BackgroundForegroundProcessLimitBackForwardCacheBrowserTest
   const size_t kBackForwardCacheSize = 4;
   const size_t kForegroundBackForwardCacheSize = 2;
   const size_t kPruneSize = 1u;
+  const NotRestoredReason kPruneReason =
+      NotRestoredReason::kCacheLimitPrunedOnModerateMemoryPressure;
 };
 
 // Test that a series of same-site navigations (which use the same process)
@@ -4104,7 +4102,8 @@ IN_PROC_BROWSER_TEST_F(
   CHECK_LE(kPruneSize, kBackForwardCacheSize);
 
   // Prune the BFCache entries.
-  web_contents()->GetController().GetBackForwardCache().Prune(kPruneSize);
+  web_contents()->GetController().GetBackForwardCache().Prune(kPruneSize,
+                                                              kPruneReason);
 
   for (int i = kBackForwardCacheSize - 1 - 1 - kPruneSize; i >= 0; --i) {
     SCOPED_TRACE(i);
@@ -4120,8 +4119,7 @@ IN_PROC_BROWSER_TEST_F(
     if (i < kPruneSize) {
       ExpectRestored(FROM_HERE);
     } else {
-      ExpectNotRestored({NotRestoredReason::kCacheLimitPruned}, {}, {}, {}, {},
-                        FROM_HERE);
+      ExpectNotRestored({kPruneReason}, {}, {}, {}, {}, FROM_HERE);
     }
   }
 }
@@ -4185,12 +4183,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
 
   // Now the BFCache entry list is: [a, pp, b].
   // Prune the BFCache entries to 0.
-  web_contents()->GetController().GetBackForwardCache().Prune(0);
+  web_contents()->GetController().GetBackForwardCache().Prune(0, kPruneReason);
   // All the entries should be evicted
   for (size_t i = 0; i < 2; ++i) {
     ASSERT_TRUE(HistoryGoBack(web_contents()));
-    ExpectNotRestored({NotRestoredReason::kCacheLimitPruned}, {}, {}, {}, {},
-                      FROM_HERE);
+    ExpectNotRestored({kPruneReason}, {}, {}, {}, {}, FROM_HERE);
   }
 }
 
@@ -4217,7 +4214,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
   // Now the BFCache entry list is: [pe1, a, pe2, b].
   // Prune the BFCache entries to 1, the result should be:
   // [pe1(evicted), a(evicted), pe2(prioritized entry special rule), b].
-  web_contents()->GetController().GetBackForwardCache().Prune(1);
+  web_contents()->GetController().GetBackForwardCache().Prune(1, kPruneReason);
 
   // The last non-prioritized entry should be restored because it's within the
   // cache limit.
@@ -4230,8 +4227,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
   // The other entries (including the prioritized one) should not be restored.
   for (size_t i = 0; i < 2; ++i) {
     ASSERT_TRUE(HistoryGoBack(web_contents()));
-    ExpectNotRestored({NotRestoredReason::kCacheLimitPruned}, {}, {}, {}, {},
-                      FROM_HERE);
+    ExpectNotRestored({kPruneReason}, {}, {}, {}, {}, FROM_HERE);
   }
 }
 
@@ -4254,12 +4250,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
   // Now the BFCache entry list is: [a, pe].
   // Prune the BFCache entries to 1, the result should be:
   // [a(evicted), pe].
-  web_contents()->GetController().GetBackForwardCache().Prune(1);
+  web_contents()->GetController().GetBackForwardCache().Prune(1, kPruneReason);
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ExpectNotRestored({NotRestoredReason::kCacheLimitPruned}, {}, {}, {}, {},
-                    FROM_HERE);
+  ExpectNotRestored({kPruneReason}, {}, {}, {}, {}, FROM_HERE);
 }
 
 // Test that when pruning with a positive number size while there is already an
@@ -4282,7 +4277,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
   // Now the BFCache entry list is: [pe1, a].
   // Prune the BFCache entries to 1, the result should still be
   // [pe1(prioritized entry special rule), a].
-  web_contents()->GetController().GetBackForwardCache().Prune(1);
+  web_contents()->GetController().GetBackForwardCache().Prune(1, kPruneReason);
 
   // The last non-prioritized entry should be restored because it's within the
   // cache limit.
@@ -4305,7 +4300,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
   // Now the BFCache entry list is: [pe1, c, pe2, d].
   // Prune the BFCache entries to 1, the result should still be
   // [pe1(evicted), a(evicted), pe2(prioritized entry special rule), d].
-  web_contents()->GetController().GetBackForwardCache().Prune(1);
+  web_contents()->GetController().GetBackForwardCache().Prune(1, kPruneReason);
 
   // The last non-prioritized entry should be restored because it's within the
   // cache limit.
@@ -4318,8 +4313,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
   // The other entries (including the prioritized one) should not be restored.
   for (size_t i = 0; i < 2; ++i) {
     ASSERT_TRUE(HistoryGoBack(web_contents()));
-    ExpectNotRestored({NotRestoredReason::kCacheLimitPruned}, {}, {}, {}, {},
-                      FROM_HERE);
+    ExpectNotRestored({kPruneReason}, {}, {}, {}, {}, FROM_HERE);
   }
 }
 

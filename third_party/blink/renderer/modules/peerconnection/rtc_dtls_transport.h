@@ -40,7 +40,7 @@ class MODULES_EXPORT RTCDtlsTransport final
  public:
   RTCDtlsTransport(
       ExecutionContext* context,
-      rtc::scoped_refptr<webrtc::DtlsTransportInterface> native_context,
+      webrtc::scoped_refptr<webrtc::DtlsTransportInterface> native_context,
       RTCIceTransport* ice_transport);
   ~RTCDtlsTransport() override;
 
@@ -69,7 +69,7 @@ class MODULES_EXPORT RTCDtlsTransport final
  private:
   webrtc::DtlsTransportInformation current_state_;
   HeapVector<Member<DOMArrayBuffer>> remote_certificates_;
-  rtc::scoped_refptr<webrtc::DtlsTransportInterface> native_transport_;
+  webrtc::scoped_refptr<webrtc::DtlsTransportInterface> native_transport_;
   std::unique_ptr<DtlsTransportProxy> proxy_;
   Member<RTCIceTransport> ice_transport_;
   bool closed_from_owner_ = false;

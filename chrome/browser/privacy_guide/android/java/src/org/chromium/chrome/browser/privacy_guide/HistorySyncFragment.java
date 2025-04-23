@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.privacy_guide;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.privacy_guide.PrivacyGuideUtils.canUpdateHistorySyncValue;
 
 import android.os.Bundle;
@@ -13,28 +14,30 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 
 /** Controls the behavior of the History Sync privacy guide page. */
+@NullMarked
 public class HistorySyncFragment extends PrivacyGuideBasePage
         implements CompoundButton.OnCheckedChangeListener {
-    private SyncService mSyncService;
+    private @Nullable SyncService mSyncService;
     private MaterialSwitchWithText mHistorySyncSwitch;
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.privacy_guide_history_sync_step, container, false);
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         mSyncService = SyncServiceFactory.getForProfile(getProfile());
 
         mHistorySyncSwitch = view.findViewById(R.id.history_sync_switch);
@@ -72,6 +75,7 @@ public class HistorySyncFragment extends PrivacyGuideBasePage
 
         PrivacyGuideMetricsDelegate.recordMetricsOnHistorySyncChange(isChecked);
 
+        assumeNonNull(mSyncService);
         mSyncService.setSelectedType(UserSelectableType.HISTORY, isChecked);
         mSyncService.setSelectedType(UserSelectableType.TABS, isChecked);
     }

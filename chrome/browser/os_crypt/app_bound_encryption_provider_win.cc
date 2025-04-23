@@ -250,12 +250,10 @@ AppBoundEncryptionProviderWin::RetrieveEncryptedKey() {
 void AppBoundEncryptionProviderWin::StoreKey(
     base::span<const uint8_t> encrypted_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ReadWriteKeyData key(sizeof(kCryptAppBoundKeyPrefix) + encrypted_key.size());
+  ReadWriteKeyData key(encrypted_key.begin(), encrypted_key.end());
   // Add header indicating this key is encrypted with App Bound provider.
   key.insert(key.cbegin(), std::begin(kCryptAppBoundKeyPrefix),
              std::end(kCryptAppBoundKeyPrefix));
-  key.insert(key.cbegin() + sizeof(kCryptAppBoundKeyPrefix),
-             encrypted_key.cbegin(), encrypted_key.cend());
   std::string base64_key = base::Base64Encode(key);
   // Store key.
   local_state_->SetString(kEncryptedKeyPrefName, base64_key);

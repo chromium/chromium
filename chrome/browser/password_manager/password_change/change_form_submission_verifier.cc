@@ -159,7 +159,7 @@ void ChangeFormSubmissionVerifier::FillChangePasswordForm(
 
 void ChangeFormSubmissionVerifier::OnPasswordFormSubmission(
     content::WebContents* web_contents) {
-  if (!password_filled_) {
+  if (!password_form_submitted_) {
     return;
   }
   if (!web_contents_) {
@@ -197,35 +197,56 @@ void ChangeFormSubmissionVerifier::TriggerFilling(
     return;
   }
 
-  driver->SubmitChangePasswordForm(
+  driver->FillChangePasswordForm(
       form.password_element_renderer_id, form.new_password_element_renderer_id,
       form.confirmation_password_element_renderer_id, old_password,
       new_password,
       base::BindOnce(&ChangeFormSubmissionVerifier::ChangePasswordFormFilled,
-                     weak_ptr_factory_.GetWeakPtr(), driver));
+                     weak_ptr_factory_.GetWeakPtr(), driver,
+                     form.new_password_element_renderer_id));
 
   form_manager_->PresaveGeneratedPassword(form.form_data, new_password);
 }
 
 void ChangeFormSubmissionVerifier::ChangePasswordFormFilled(
     base::WeakPtr<password_manager::PasswordManagerDriver> driver,
-    const autofill::FormData& submitted_form) {
+    autofill::FieldRendererId field_id,
+    const std::optional<autofill::FormData>& submitted_form) {
   if (!driver) {
     return;
   }
 
-  password_filled_ = true;
+  if (!submitted_form) {
+    // TODO(crbug.com/398754700): Change password form disappeared, consider
+    // searching for change-pwd form again.
+    return;
+  }
+
   form_manager_->ProvisionallySave(
-      submitted_form, form_manager_->GetDriver().get(),
+      submitted_form.value(), form_manager_->GetDriver().get(),
       base::LRUCache<password_manager::PossibleUsernameFieldIdentifier,
                      password_manager::PossibleUsernameData>(
           password_manager::kMaxSingleUsernameFieldsToStore));
+  driver->SubmitFormWithEnter(
+      field_id, base::BindOnce(&ChangeFormSubmissionVerifier::OnFormSubmitted,
+                               weak_ptr_factory_.GetWeakPtr(), driver));
+}
+
+void ChangeFormSubmissionVerifier::OnFormSubmitted(
+    base::WeakPtr<password_manager::PasswordManagerDriver> driver,
+    bool success) {
+  if (success) {
+    password_form_submitted_ = true;
+    return;
+  }
+  // TODO(crbug.com/407487665): Attempt to submit change password form by
+  // looking for a submit button.
 }
 
 void ChangeFormSubmissionVerifier::RequestAXTree() {
   // If browser didn't receive confirmation about change password form
-  // submission fail immediately.
-  if (!password_filled_ || !web_contents_) {
+  // submission from driver, fail immediately.
+  if (!password_form_submitted_ || !web_contents_) {
     std::move(callback_).Run(false);
     return;
   }

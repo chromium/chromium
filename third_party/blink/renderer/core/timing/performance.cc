@@ -256,6 +256,7 @@ using PerformanceObserverVector = HeapVector<Member<PerformanceObserver>>;
 
 constexpr size_t kDefaultResourceTimingBufferSize = 250;
 constexpr size_t kDefaultEventTimingBufferSize = 150;
+constexpr size_t kDefaultContainerTimingBufferSize = 150;
 constexpr size_t kDefaultElementTimingBufferSize = 150;
 constexpr size_t kDefaultLayoutShiftBufferSize = 150;
 constexpr size_t kDefaultLargestContenfulPaintSize = 150;
@@ -278,6 +279,7 @@ Performance::Performance(
       back_forward_cache_restoration_buffer_size_limit_(
           kDefaultBackForwardCacheRestorationBufferSize),
       event_timing_buffer_max_size_(kDefaultEventTimingBufferSize),
+      container_timing_buffer_max_size_(kDefaultContainerTimingBufferSize),
       element_timing_buffer_max_size_(kDefaultElementTimingBufferSize),
       user_timing_(nullptr),
       time_origin_(time_origin),
@@ -466,8 +468,7 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
       break;
 
     case PerformanceEntry::kContainer:
-      // TODO(jdapena): implementation of container timing entries storage and
-      // retrieval.
+      entries = &container_timing_buffer_;
       break;
 
     case PerformanceEntry::kElement:
@@ -654,6 +655,10 @@ void Performance::NotifyNavigationTimingToObservers() {
     NotifyObserversOfEntry(*navigation_timing_);
 }
 
+bool Performance::IsContainerTimingBufferFull() const {
+  return container_timing_buffer_.size() >= container_timing_buffer_max_size_;
+}
+
 bool Performance::IsElementTimingBufferFull() const {
   return element_timing_buffer_.size() >= element_timing_buffer_max_size_;
 }
@@ -694,6 +699,15 @@ void Performance::FireResourceTimingBufferFull(TimerBase*) {
     }
   }
   resource_timing_buffer_full_event_pending_ = false;
+}
+
+void Performance::AddToContainerTimingBuffer(
+    PerformanceContainerTiming& entry) {
+  if (!IsContainerTimingBufferFull()) {
+    InsertEntryIntoSortedBuffer(container_timing_buffer_, entry, kRecordSwaps);
+  } else {
+    ++(dropped_entries_count_map_.find(PerformanceEntry::kContainer)->value);
+  }
 }
 
 void Performance::AddToElementTimingBuffer(PerformanceElementTiming& entry) {
@@ -1272,6 +1286,7 @@ void Performance::InsertEntryIntoSortedBuffer(PerformanceEntryVector& entries,
 void Performance::Trace(Visitor* visitor) const {
   visitor->Trace(resource_timing_buffer_);
   visitor->Trace(resource_timing_secondary_buffer_);
+  visitor->Trace(container_timing_buffer_);
   visitor->Trace(element_timing_buffer_);
   visitor->Trace(event_timing_buffer_);
   visitor->Trace(layout_shift_buffer_);

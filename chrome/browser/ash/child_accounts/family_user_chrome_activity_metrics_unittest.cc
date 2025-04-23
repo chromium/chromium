@@ -31,6 +31,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
+#include "extensions/browser/extension_registrar.h"
 
 namespace ash {
 
@@ -84,7 +85,8 @@ class FamilyUserChromeActivityMetricsTest
     // Install Chrome.
     scoped_refptr<extensions::Extension> chrome = CreateExtension(
         app_constants::kChromeAppId, kExtensionNameChrome, kExtensionAppUrl);
-    extension_service_->AddComponentExtension(chrome.get());
+    extensions::ExtensionRegistrar::Get(profile())->AddComponentExtension(
+        chrome.get());
 
     BrowserList* active_browser_list = BrowserList::GetInstance();
     // Expect BrowserList is empty at the beginning.

@@ -32,8 +32,8 @@ class DummySharedDictionaryWriter : public SharedDictionaryWriter {
       delete;
 
   // SharedDictionaryWriter
-  void Append(const char* buf, int num_bytes) override {
-    data_.emplace_back(buf, num_bytes);
+  void Append(base::span<const uint8_t> data) override {
+    data_.emplace_back(base::as_string_view(data));
   }
   void Finish() override { finished_ = true; }
 

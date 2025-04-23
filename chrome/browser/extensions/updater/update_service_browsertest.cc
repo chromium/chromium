@@ -408,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(UpdateServiceTest, UninstallExtensionWhileUpdating) {
 
   // Uninstall the extension right before the message loop is executed to
   // emulate uninstalling an extension in the middle of an extension update.
-  extension_service()->UninstallExtension(
+  extension_registrar()->UninstallExtension(
       kExtensionId, extensions::UNINSTALL_REASON_COMPONENT_REMOVED, nullptr);
 
   // Update client should issue an update error event for this extension.

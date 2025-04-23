@@ -18,6 +18,7 @@
 #include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "base/containers/flat_tree.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 #include "components/prefs/pref_service.h"
@@ -511,7 +512,7 @@ TabAppSelectionView::TabAppSelectionView(const base::Token& group_id,
   // std::nullopt and apply a rounded rectangle background above on the whole
   // view. We still need to set the viewport rounded corner radius to clip the
   // child backgrounds when they are hovered over.
-  scroll_view_->SetBackgroundThemeColorId(std::nullopt);
+  scroll_view_->SetBackgroundColor(std::nullopt);
   scroll_view_->SetBorder(std::make_unique<views::HighlightBorder>(
       kTabAppItemsContainerCornerRadius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));

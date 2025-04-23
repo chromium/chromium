@@ -7,14 +7,15 @@ package org.chromium.chrome.browser.privacy_guide;
 import android.content.Context;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /** Bottom sheet view for displaying privacy guide control explanations */
+@NullMarked
 public class PrivacyGuideBottomSheetView implements BottomSheetContent {
     private final View mContentView;
     private final Runnable mCloseBottomSheetCallback;
@@ -44,9 +45,8 @@ public class PrivacyGuideBottomSheetView implements BottomSheetContent {
         return mContentView;
     }
 
-    @Nullable
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
@@ -100,7 +100,7 @@ public class PrivacyGuideBottomSheetView implements BottomSheetContent {
     }
 
     @Override
-    public @NonNull String getSheetContentDescription(Context context) {
+    public String getSheetContentDescription(Context context) {
         return context.getString(R.string.privacy_guide_explanation_content_description);
     }
 

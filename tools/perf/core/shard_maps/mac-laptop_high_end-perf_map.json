@@ -482,9 +482,7 @@
             },
             "speedometer_2.1": {
                 "display_name": "speedometer2.1.crossbench",
-                "arguments": [
-                    "--fileserver"
-                ]
+                "arguments": []
             }
         }
     },

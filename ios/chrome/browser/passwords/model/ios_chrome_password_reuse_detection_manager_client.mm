@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/safe_browsing/model/chrome_password_protection_service.h"
 #import "ios/chrome/browser/safe_browsing/model/chrome_password_protection_service_factory.h"
-#import "ios/chrome/browser/safe_browsing/model/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -36,11 +35,9 @@ IOSChromePasswordReuseDetectionManagerClient::
       password_reuse_detection_manager_(this),
       log_router_(ios::PasswordManagerLogRouterFactory::GetForProfile(
           bridge_.profile)) {
-  if (IsPasswordReuseDetectionEnabled()) {
-    web_state_observation_.Observe(bridge_.webState);
-    input_event_observation_.Observe(
-        PasswordProtectionJavaScriptFeature::GetInstance());
-  }
+  web_state_observation_.Observe(bridge_.webState);
+  input_event_observation_.Observe(
+      PasswordProtectionJavaScriptFeature::GetInstance());
 }
 
 IOSChromePasswordReuseDetectionManagerClient::

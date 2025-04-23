@@ -251,15 +251,16 @@ PageVisitFinalStatus RecordPageVisitFinalStatusForTiming(
     const PageLoadMetricsObserverDelegate& delegate,
     ukm::SourceId source_id);
 
-// Returns the ID if `url` contains a URL param "category" where the param value
-// matches the pattern configured by Finch. Returns std::nullopt if the param
-// value is not recognized.
+// Returns the ID if `url` contains a URL param where the param name and value
+// matches the prefix pattern configured by Finch (the default param name is
+// "category" and the prefix pattern is an empty string / will match anything).
+// Returns std::nullopt if the param value is not recognized.
 //
-// For example, if the valid pattern prefix is "pattern", this function may
-// return an ID for (1) but not for (2):
+// For example, if the valid param name  is "cat" and the prefix pattern is
+// "pattern", this function may return an ID for (1) but not for (2):
 //
-// (1) http://a.com?category=pattern1
-// (2) http://b.com?category=invalid-pattern
+// (1) http://a.com?cat=pattern1
+// (2) http://b.com?cat=invalid-pattern
 //
 // UKM Review:
 // https://docs.google.com/document/d/1TSbtp5I5Bc1pbAKrrEHfmZlAwgeh6AlgAH7GbDMNPRQ/edit?disco=AAABe5h90jQ

@@ -14,7 +14,7 @@ build_webui("build") {
 
   css_files = [ "css/print_preview_cros_shared.css" ]
 
-  non_web_component_files = [
+  ts_files = [
     "js/data/capabilities_manager.ts",
     "js/data/destination_constants.ts",
     "js/data/destination_manager.ts",

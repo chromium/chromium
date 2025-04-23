@@ -67,7 +67,7 @@ scoped_refptr<TransportContext> TransportContext::ForTests(TransportRole role) {
 
 TransportContext::TransportContext(
     std::unique_ptr<PortAllocatorFactory> port_allocator_factory,
-    rtc::SocketFactory* socket_factory,
+    webrtc::SocketFactory* socket_factory,
     std::unique_ptr<IceConfigFetcher> ice_config_fetcher,
     TransportRole role)
     : port_allocator_factory_(std::move(port_allocator_factory)),

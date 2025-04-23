@@ -24,11 +24,11 @@ PrefetchMatchingURLLoaderFactory::PrefetchMatchingURLLoaderFactory(
     mojo::PendingReceiver<mojom::URLLoaderFactory> receiver,
     const cors::OriginAccessList* origin_access_list,
     PrefetchCache* cache)
-    : next_(std::make_unique<cors::CorsURLLoaderFactory>(
+    : ignore_factory_reset_(params->ignore_factory_reset),
+      next_(std::make_unique<cors::CorsURLLoaderFactory>(
           context,
           std::move(params),
           std::move(resource_scheduler_client),
-          mojo::PendingReceiver<mojom::URLLoaderFactory>(),
           origin_access_list,
           this)),
       context_(context),
@@ -113,7 +113,7 @@ void PrefetchMatchingURLLoaderFactory::Clone(
 
 void PrefetchMatchingURLLoaderFactory::ClearBindings() {
   receivers_.Clear();
-  next_->ClearBindings();
+  next_->DeleteIfNeeded();
 }
 
 net::handles::NetworkHandle
@@ -138,6 +138,10 @@ bool PrefetchMatchingURLLoaderFactory::HasAdditionalReferences() const {
   return !receivers_.empty();
 }
 
+bool PrefetchMatchingURLLoaderFactory::ShouldIgnoreFactoryReset() const {
+  return ignore_factory_reset_;
+}
+
 cors::CorsURLLoaderFactory*
 PrefetchMatchingURLLoaderFactory::GetCorsURLLoaderFactoryForTesting() {
   return next_.get();
@@ -145,7 +149,7 @@ PrefetchMatchingURLLoaderFactory::GetCorsURLLoaderFactoryForTesting() {
 
 void PrefetchMatchingURLLoaderFactory::OnDisconnect() {
   if (receivers_.empty()) {
-    next_->ClearBindings();
+    next_->DeleteIfNeeded();
     // `this` may be deleted here.
   }
 }

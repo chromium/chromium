@@ -148,7 +148,7 @@ AccountSelectionModalView::AccountSelectionModalView(
                                std::move(url_loader_factory),
                                rp_for_display) {
   SetModalType(ui::mojom::ModalType::kChild);
-  SetOwnedByWidget(true);
+  SetOwnedByWidget(OwnedByWidgetPassKey());
   SetOwnershipOfNewWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   set_fixed_width(kDialogWidth);
   SetShowTitle(false);

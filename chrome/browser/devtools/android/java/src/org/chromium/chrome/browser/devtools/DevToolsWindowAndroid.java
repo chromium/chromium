@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.devtools;
 
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 
 /** DevToolsWindowAndroid provides an interface to control DevTools windows. */
+@NullMarked
 public class DevToolsWindowAndroid {
     // Make this class's ctor private to prevent it from being instantiated. This class has no
     // non-static method.

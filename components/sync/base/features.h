@@ -160,6 +160,13 @@ inline constexpr base::FeatureParam<int>
 // to ensure it is populated.
 BASE_DECLARE_FEATURE(kSyncSimulateBookmarksPingPongForTesting);
 
+#if BUILDFLAG(IS_IOS)
+// Enables a set of improvements to the existing trusted vault error infobar on
+// iOS (displaying it on pages with password forms, adjusting display time,
+// adding dismiss conditions, adding a notification pause after dismissal).
+BASE_DECLARE_FEATURE(kSyncTrustedVaultInfobarImprovements);
+#endif  // BUILDFLAG(IS_IOS)
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

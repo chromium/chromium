@@ -145,6 +145,17 @@ UserPermission UserPermissionServiceImpl::CanCollectSignals() const {
                                : UserPermission::kMissingConsent;
 }
 
+UserPermission UserPermissionServiceImpl::CanCollectReportSignals() const {
+  // Only collect PII signals for reporting if both device and user are managed,
+  // and they are affiliated.
+  if (IsDeviceCloudManaged() && user_delegate_->IsManagedUser() &&
+      user_delegate_->IsAffiliated()) {
+    return UserPermission::kGranted;
+  }
+
+  return UserPermission::kMissingConsent;
+}
+
 bool UserPermissionServiceImpl::IsConsentFlowPolicyEnabled() const {
   return user_prefs_->GetBoolean(
       prefs::kUnmanagedDeviceSignalsConsentFlowEnabled);

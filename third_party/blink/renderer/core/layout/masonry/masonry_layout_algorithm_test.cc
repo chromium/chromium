@@ -23,13 +23,15 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
 
   void ComputeGeometry(const MasonryLayoutAlgorithm& algorithm) {
     wtf_size_t start_offset;
-    const GridLineResolver line_resolver(algorithm.Style(),
-                                         /*auto_repetitions=*/0);
+    const auto& style = algorithm.Style();
+    const GridLineResolver line_resolver(style, /*auto_repetitions=*/0);
 
     grid_axis_tracks_ = algorithm.BuildGridAxisTracks(
         line_resolver, SizingConstraint::kLayout, start_offset);
 
     const auto grid_axis_direction = grid_axis_tracks_->Direction();
+    ASSERT_EQ(grid_axis_direction, style.MasonryTrackSizingDirection());
+
     for (const auto& masonry_item :
          algorithm.BuildVirtualMasonryItems(line_resolver, start_offset)) {
       MasonryItemCachedData item_data;
@@ -112,18 +114,18 @@ TEST_F(MasonryLayoutAlgorithmTest, ConstructMasonryItems) {
     <style>
     #masonry {
       display: masonry;
-      masonry-template-tracks: auto auto [header-start] auto auto [header-end];
+      grid-template-columns: auto auto [header-start] auto auto [header-end];
     }
     </style>
     <div id="masonry">
       <div>1</div>
-      <div style="masonry-track: 3 / span 2">2</div>
-      <div style="masonry-track: span 2">3</div>
-      <div style="masonry-track: span 3">4</div>
-      <div style="masonry-track: 2 / 5">5</div>
-      <div style="masonry-track: header-start / header-end">1</div>
-      <div style="masonry-track: 1 / header-start">2</div>
-      <div style="masonry-track: 3 / header-end">2</div>
+      <div style="grid-column: 3 / span 2">2</div>
+      <div style="grid-column: span 2">3</div>
+      <div style="grid-column: span 3">4</div>
+      <div style="grid-column: 2 / 5">5</div>
+      <div style="grid-column: header-start / header-end">1</div>
+      <div style="grid-column: 1 / header-start">2</div>
+      <div style="grid-column: 3 / header-end">2</div>
     </div>
   )HTML");
 
@@ -157,12 +159,12 @@ TEST_F(MasonryLayoutAlgorithmTest, BuildRanges) {
     <style>
     #masonry {
       display: masonry;
-      masonry-template-tracks: 5% repeat(3, 10px auto) repeat(1, auto 5px 1fr);
+      grid-template-columns: 5% repeat(3, 10px auto) repeat(1, auto 5px 1fr);
     }
     </style>
     <div id="masonry">
-      <div style="masonry-track: span 2 / 1"></div>
-      <div style="masonry-track: 9 / span 5"></div>
+      <div style="grid-column: span 2 / 1"></div>
+      <div style="grid-column: 9 / span 5"></div>
     </div>
   )HTML");
 
@@ -204,7 +206,7 @@ TEST_F(MasonryLayoutAlgorithmTest, BuildFixedTrackSizes) {
     <style>
     #masonry {
       display: masonry;
-      masonry-template-tracks: 5% repeat(3, 10px 15%) repeat(1, 15px 5px 20px);
+      grid-template-columns: 5% repeat(3, 10px 15%) repeat(1, 15px 5px 20px);
     }
     </style>
     <div id="masonry"></div>
@@ -233,10 +235,10 @@ TEST_F(MasonryLayoutAlgorithmTest, CollectMasonryItemGroups) {
   SetBodyInnerHTML(R"HTML(
     <div id="masonry" style="display: masonry">
       <div></div>
-      <div style="masonry-track: 1"></div>
-      <div style="masonry-track: 1 / 4"></div>
-      <div style="masonry-track: span 3"></div>
-      <div style="masonry-track: span 3 / 4"></div>
+      <div style="grid-column: 1"></div>
+      <div style="grid-column: 1 / 4"></div>
+      <div style="grid-column: span 3"></div>
+      <div style="grid-column: span 3 / 4"></div>
       <div></div>
     </div>
   )HTML");
@@ -271,13 +273,13 @@ TEST_F(MasonryLayoutAlgorithmTest, ExplicitlyPlacedVirtualItems) {
     body { font: 10px/1 Ahem }
     #masonry {
       display: masonry;
-      masonry-template-tracks: repeat(2, 100px);
+      grid-template-columns: repeat(2, 100px);
     }
     </style>
     <div id="masonry">
-      <div style="masonry-track: 1">XX XX</div>
-      <div style="masonry-track: -4 / 3">XXX X</div>
-      <div style="masonry-track: span 3 / 3">X XX X</div>
+      <div style="grid-column: 1">XX XX</div>
+      <div style="grid-column: -4 / 3">XXX X</div>
+      <div style="grid-column: span 3 / 3">X XX X</div>
     </div>
   )HTML");
 
@@ -320,14 +322,14 @@ TEST_F(MasonryLayoutAlgorithmTest, AutoPlacedVirtualItems) {
     body { font: 10px/1 Ahem }
     #masonry {
       display: masonry;
-      masonry-template-tracks: repeat(3, auto);
+      grid-template-columns: repeat(3, auto);
     }
     </style>
     <div id="masonry">
       <div>X X X X X</div>
-      <div style="masonry-track: span 2">XXX X</div>
+      <div style="grid-column: span 2">XXX X</div>
       <div>XX XX XX XX XX</div>
-      <div style="masonry-track: span 2">X XX X</div>
+      <div style="grid-column: span 2">X XX X</div>
       <div>X XX XXX XX X</div>
     </div>
   )HTML");
@@ -374,13 +376,13 @@ TEST_F(MasonryLayoutAlgorithmTest, BuildIntrinsicTrackSizes) {
     body { font: 10px/1 Ahem }
     #masonry {
       display: masonry;
-      masonry-template-tracks: min-content max-content;
+      grid-template-columns: min-content max-content;
     }
     </style>
     <div id="masonry">
-      <div style="masonry-track: 1">XX XX</div>
-      <div style="masonry-track: 2">XX XX</div>
-      <div style="masonry-track: 1 / 3">XXX XXXXXX XXXXXXXXX</div>
+      <div style="grid-column: 1">XX XX</div>
+      <div style="grid-column: 2">XX XX</div>
+      <div style="grid-column: 1 / 3">XXX XXXXXX XXXXXXXXX</div>
     </div>
   )HTML");
 
@@ -409,12 +411,12 @@ TEST_F(MasonryLayoutAlgorithmTest, MaximizeAndStretchAutoTracks) {
     body { font: 10px/1 Ahem }
     #masonry {
       display: masonry;
-      masonry-template-tracks: minmax(15px, min-content) max-content auto;
+      grid-template-columns: minmax(15px, min-content) max-content auto;
     }
     </style>
     <div id="masonry">
-      <div style="masonry-track: 1">XXX XXX</div>
-      <div style="masonry-track: 1 / 3">X XX X</div>
+      <div style="grid-column: 1">XXX XXX</div>
+      <div style="grid-column: 1 / 3">X XX X</div>
     </div>
   )HTML");
 
@@ -447,7 +449,7 @@ TEST_F(MasonryLayoutAlgorithmTest, ExpandFlexibleTracks) {
     <style>
     #masonry {
       display: masonry;
-      masonry-template-tracks: 1fr 5fr 3fr 1fr;
+      grid-template-columns: 1fr 5fr 3fr 1fr;
     }
     </style>
     <div id="masonry"></div>
@@ -469,6 +471,37 @@ TEST_F(MasonryLayoutAlgorithmTest, ExpandFlexibleTracks) {
 
   EXPECT_EQ(TrackSizes(), Vector<LayoutUnit>({LayoutUnit(10), LayoutUnit(50),
                                               LayoutUnit(30), LayoutUnit(10)}));
+}
+
+TEST_F(MasonryLayoutAlgorithmTest, BuildRowSizes) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #masonry {
+      height: 100px;
+      display: masonry;
+      masonry-direction: row;
+      grid-template-rows: 20px 1fr 30%;
+    }
+    </style>
+    <div id="masonry"></div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("masonry"));
+
+  const auto space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(100), LayoutUnit(100)),
+      /*stretch_inline_size_if_auto=*/true,
+      /*is_new_formatting_context=*/true);
+
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+
+  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  ComputeGeometry(algorithm);
+
+  EXPECT_EQ(TrackSizes(), Vector<LayoutUnit>({LayoutUnit(20), LayoutUnit(50),
+                                              LayoutUnit(30)}));
 }
 
 TEST_F(MasonryLayoutAlgorithmTest, UpdateRunningPositionsForSpan) {

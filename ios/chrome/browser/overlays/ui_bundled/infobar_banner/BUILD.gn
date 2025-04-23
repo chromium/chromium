@@ -35,6 +35,7 @@ source_set("coordinators") {
     "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/translate:mediators",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:util_swift",
@@ -57,6 +58,7 @@ source_set("mediators") {
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/infobar_banner",
     "//ios/chrome/browser/overlays/ui_bundled:coordinators",
+    "//ios/chrome/browser/shared/public/commands",
   ]
 }
 

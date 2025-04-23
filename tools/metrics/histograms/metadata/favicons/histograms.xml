@@ -22,8 +22,19 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Favicons.FallbackToHostSuccess" enum="BooleanSuccess"
+<histogram name="Favicons.DefaultResponse" enum="BooleanSuccess"
     expires_after="2025-08-10">
+  <owner>mfacey@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <summary>
+    Records whether for a requested favicon the default favicon is served. The
+    favicon service is called when a favicon is requested such as through a
+    navigation to chrome://favicon2.
+  </summary>
+</histogram>
+
+<histogram name="Favicons.FallbackToHostSuccess" enum="BooleanSuccess"
+    expires_after="2025-10-12">
   <owner>mfacey@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
   <summary>
@@ -35,7 +46,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Favicons.IconSuccess.{IconSizes}" enum="BooleanSuccess"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>mastiz@chromium.org</owner>
   <owner>pkotwicz@chromium.org</owner>
   <summary>

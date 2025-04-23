@@ -79,15 +79,13 @@ class SigninUIError {
   credential_provider::UiExitCodes credential_provider_exit_code() const;
 #endif
 
-  bool operator==(const SigninUIError& other) const;
-  bool operator!=(const SigninUIError& other) const;
+  friend bool operator==(const SigninUIError&, const SigninUIError&) = default;
 
  private:
   SigninUIError(Type type,
                 const std::string& email,
                 const std::u16string& error_message);
 
-  // Don't forget to update operator==() when adding new class members.
   Type type_;
   std::u16string email_;
   std::u16string message_;

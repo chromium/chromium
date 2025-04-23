@@ -75,7 +75,8 @@ export class RecorderApp extends ReactiveLitElement {
     const titleState = this.platformHandler.titleSuggestionModelLoader.state;
 
     function isAvailable(state: ModelState) {
-      return state.kind !== 'unavailable' && state.kind !== 'error';
+      return state.kind !== 'unavailable' && state.kind !== 'error' &&
+        state.kind !== 'needsReboot';
     }
 
     this.platformHandler.eventsSender.sendStartSessionEvent({

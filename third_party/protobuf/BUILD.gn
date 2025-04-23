@@ -70,7 +70,7 @@ component("protobuf_lite") {
 
   deps = [ ":utf8_range" ]
 
-  public_deps = [ "//third_party/abseil-cpp:absl" ]
+  public_deps = [ "${protobuf_abseil_dir}:absl" ]
 
   # Required for component builds. See http://crbug.com/172800.
   if (is_component_build) {
@@ -158,7 +158,7 @@ static_library("protobuf_full") {
 
   public = protobuf_headers
 
-  public_deps = [ "//third_party/abseil-cpp:absl" ]
+  public_deps = [ "${protobuf_abseil_dir}:absl" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -318,7 +318,7 @@ source_set("utf8_range") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
   configs += [ ":protobuf_config_internal" ]
 
-  deps = [ "//third_party/abseil-cpp:absl" ]
+  deps = [ "${protobuf_abseil_dir}:absl" ]
 }
 
 google_python_dir = "$root_out_dir/pyproto/google"

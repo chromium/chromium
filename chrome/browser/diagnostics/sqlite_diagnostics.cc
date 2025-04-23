@@ -27,7 +27,6 @@
 #include "sql/database.h"
 #include "sql/sqlite_result_code_values.h"
 #include "sql/statement.h"
-#include "storage/browser/database/database_tracker.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_constants.h"
@@ -217,15 +216,6 @@ std::unique_ptr<DiagnosticsTest> MakeSqliteCookiesDbTest() {
   return std::make_unique<SqliteIntegrityTest>(
       SqliteIntegrityTest::CRITICAL, DIAGNOSTICS_SQLITE_INTEGRITY_COOKIE_TEST,
       base::FilePath(chrome::kCookieFilename));
-}
-
-std::unique_ptr<DiagnosticsTest> MakeSqliteWebDatabaseTrackerDbTest() {
-  base::FilePath databases_dir(storage::kDatabaseDirectoryName);
-  base::FilePath tracker_db =
-      databases_dir.Append(storage::kTrackerDatabaseFileName);
-  return std::make_unique<SqliteIntegrityTest>(
-      SqliteIntegrityTest::NO_FLAGS_SET,
-      DIAGNOSTICS_SQLITE_INTEGRITY_DATABASE_TRACKER_TEST, tracker_db);
 }
 
 std::unique_ptr<DiagnosticsTest> MakeSqliteHistoryDbTest() {

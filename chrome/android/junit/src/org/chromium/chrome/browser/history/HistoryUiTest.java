@@ -105,7 +105,7 @@ import java.util.Date;
 /** Tests the History UI. */
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({ChromeFeatureList.APP_SPECIFIC_HISTORY})
-@EnableFeatures({SigninFeatures.HISTORY_OPT_IN_ENTRY_POINTS})
+@EnableFeatures({SigninFeatures.HISTORY_PAGE_HISTORY_SYNC_PROMO})
 public class HistoryUiTest {
     private static final int PAGE_INCREMENT = 2;
     private static final String HISTORY_SEARCH_QUERY = "some page";

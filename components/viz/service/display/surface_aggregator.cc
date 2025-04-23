@@ -515,7 +515,7 @@ void SurfaceAggregator::AddRenderPassFilterDamageToDamageList(
         /*parent_target_transform*/ gfx::Transform(),
         /*dest_root_target_clip_rect*/ {},
         /*dest_transform_to_root_target*/ gfx::Transform(),
-        /*resolved_frame=*/nullptr);
+        /*resolved_frame=*/nullptr, /*zero_damage_texture_draw_quad=*/false);
   }
 }
 
@@ -524,7 +524,8 @@ void SurfaceAggregator::AddSurfaceDamageToDamageList(
     const gfx::Transform& parent_target_transform,
     const std::optional<gfx::Rect> dest_root_target_clip_rect,
     const gfx::Transform& dest_transform_to_root_target,
-    ResolvedFrameData* resolved_frame) {
+    ResolvedFrameData* resolved_frame,
+    bool zero_damage_texture_draw_quad) {
   gfx::Rect damage_rect;
   if (!resolved_frame) {
     // When the surface is null, it's either the surface is lost or it comes
@@ -538,7 +539,7 @@ void SurfaceAggregator::AddSurfaceDamageToDamageList(
     }
   }
 
-  if (damage_rect.IsEmpty()) {
+  if (damage_rect.IsEmpty() && !zero_damage_texture_draw_quad) {
     current_zero_damage_rect_is_not_recorded_ = true;
     return;
   }
@@ -562,33 +563,21 @@ const DrawQuad* SurfaceAggregator::FindQuadWithOverlayDamage(
     AggregatedRenderPass* dest_pass,
     const gfx::Transform& pass_to_root_target_transform,
     size_t* overlay_damage_index) {
+  // If |source_pass| has per quad damage then don't try to assign the surface
+  // damage to a quad. The order of the surface damage rect list might not match
+  // quad z-order which breaks occlusion when computing damage excluding
+  // overlays, see crbug.com/404618616 and crbug.com/40224514.
+  if (source_pass.has_per_quad_damage) {
+    return nullptr;
+  }
   // The occluding damage optimization currently relies on two things - there
   // can't be any damage above the quad within the surface, and the quad needs
   // its own SQS for the occluding_damage_rect metadata.
-  const DrawQuad* target_quad = nullptr;
-  for (auto* quad : source_pass.quad_list) {
-    // Quads with |per_quad_damage| do not contribute to the |damage_rect| in
-    // the |source_pass|. These quads are also assumed to have unique SQS
-    // objects.
-    if (source_pass.has_per_quad_damage) {
-      auto optional_damage = GetOptionalDamageRectFromQuad(quad);
-      if (optional_damage.has_value()) {
-        continue;
-      }
-    }
-
-    if (target_quad == nullptr) {
-      target_quad = quad;
-    } else {
-      // More that one quad without per_quad_damage.
-      target_quad = nullptr;
-      break;
-    }
+  if (source_pass.quad_list.size() != 1) {
+    return nullptr;
   }
 
-  // No overlay candidate is found.
-  if (!target_quad)
-    return nullptr;
+  const DrawQuad* target_quad = source_pass.quad_list.back();
 
   // Surface damage for a render pass quad does not include damage from its
   // children. We skip this quad to avoid the incomplete damage association.
@@ -785,10 +774,10 @@ void SurfaceAggregator::HandleSurfaceQuad(
     // |combined_clip_rect| is the transforming and clipping result of the
     // entire SurfaceDrawQuad visible_rect on the root target space of the
     // root surface.
-    AddSurfaceDamageToDamageList(surface_in_target_space, target_transform,
-                                 dest_root_target_clip_rect,
-                                 dest_pass->transform_to_root_target,
-                                 /*resolved_frame=*/nullptr);
+    AddSurfaceDamageToDamageList(
+        surface_in_target_space, target_transform, dest_root_target_clip_rect,
+        dest_pass->transform_to_root_target,
+        /*resolved_frame=*/nullptr, /*zero_damage_texture_draw_quad=*/false);
   }
 
     // combined_clip_rect is the result of |dest_root_target_clip_rect|
@@ -938,7 +927,7 @@ void SurfaceAggregator::EmitSurfaceContent(
     AddSurfaceDamageToDamageList(
         /*default_damage_rect =*/gfx::Rect(), combined_transform,
         dest_root_target_clip_rect, dest_pass->transform_to_root_target,
-        &resolved_frame);
+        &resolved_frame, /*zero_damage_texture_draw_quad=*/false);
   }
 
   if (frame_metadata.delegated_ink_metadata) {
@@ -1339,8 +1328,8 @@ void SurfaceAggregator::AddRenderPassHelper(
                       render_pass_damage_rect, gfx::Transform(),
                       /*filters=*/cc::FilterOperations(),
                       /*backdrop_filters=*/cc::FilterOperations(),
-                      /*backdrop_filter_bounds=*/gfx::RRectF(),
-                      pass_color_usage, pass_has_transparent_background,
+                      /*backdrop_filter_bounds=*/SkPath(), pass_color_usage,
+                      pass_has_transparent_background,
                       /*cache_render_pass=*/false,
                       /*has_damage_from_contributing_content=*/false,
                       /*generate_mipmap=*/false);
@@ -1405,9 +1394,6 @@ void SurfaceAggregator::CopyQuadsToPass(
   // Only process the damage rect at the root render pass, once per surface.
   if (needs_surface_damage_rect_list_ &&
       resolved_pass.aggregation().will_draw && resolved_pass.is_root()) {
-    // TODO(crbug.com/40224514): If there is one specific quad for this pass's
-    // damage we should move the allocation of the damage index below to be
-    // consistent with quad ordering.
     quad_with_overlay_damage_index = FindQuadWithOverlayDamage(
         source_pass, dest_pass, pass_to_dest_root_target_transform,
         &overlay_damage_index);
@@ -1479,11 +1465,18 @@ void SurfaceAggregator::CopyQuadsToPass(
               GetOptionalDamageRectFromQuad(quad);
           dest_shared_quad_state->overlay_damage_index =
               surface_damage_rect_list_->size();
+          // This is the only place |zero_damage_texture_draw_quad| is set to
+          // true because we mark all texture draw quads from exo as
+          // per_quad_damage even though quad has zero damage rect. This zero
+          // damage rect is different from the zero surface damage rect we add
+          // when we check the surface damage from the render pass and this zero
+          // damage rect will have an |overlay_damage_index| assigned to it.
           AddSurfaceDamageToDamageList(damage_rect_in_target_space.value(),
                                        target_transform,
                                        new_dest_root_target_clip_rect,
                                        dest_pass->transform_to_root_target,
-                                       /*resolved_frame=*/nullptr);
+                                       /*resolved_frame=*/nullptr,
+                                       /*zero_damage_texture_draw_quad=*/true);
         } else if (quad == quad_with_overlay_damage_index) {
           dest_shared_quad_state->overlay_damage_index = overlay_damage_index;
         }
@@ -1624,7 +1617,8 @@ void SurfaceAggregator::CopyPasses(ResolvedFrameData& resolved_frame) {
           /*default_damage_rect=*/gfx::Rect(),
           /*parent_target_transform=*/surface_transform,
           /*dest_root_target_clip_rect=*/{},
-          copy_pass->transform_to_root_target, &resolved_frame);
+          copy_pass->transform_to_root_target, &resolved_frame,
+          /*zero_damage_texture_draw_quad=*/false);
     }
 
     CopyQuadsToPass(resolved_frame, resolved_pass, copy_pass.get(),

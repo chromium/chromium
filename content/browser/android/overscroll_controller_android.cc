@@ -11,6 +11,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/android/edge_effect.h"
@@ -187,9 +188,9 @@ void OverscrollControllerAndroid::OnOverscrolled(
   if (refresh_effect_) {
     refresh_effect_->OnOverscrolled(params.overscroll_behavior,
                                     params.accumulated_overscroll);
+    is_handling_sequence_ = refresh_effect_->IsActive();
 
-    if (refresh_effect_->IsActive() ||
-        refresh_effect_->IsAwaitingScrollUpdateAck()) {
+    if (is_handling_sequence_ || refresh_effect_->IsAwaitingScrollUpdateAck()) {
       // An active (or potentially active) refresh effect should always pre-empt
       // the passive glow effect.
       return;
@@ -298,19 +299,30 @@ bool OverscrollControllerAndroid::ShouldHandleInputEvents() {
 }
 
 bool OverscrollControllerAndroid::IsHandlingInputSequence() {
-  if (!refresh_effect_) {
-    return false;
-  }
-  return refresh_effect_->IsActive();
+  return is_handling_sequence_;
 }
 
 bool OverscrollControllerAndroid::OnTouchEvent(
     const ui::MotionEventAndroid& event) {
+  const bool handles_current_event = IsHandlingInputSequence();
+
+  const auto action = event.GetAction();
+  const bool is_sequence_terminating_action =
+      (action == ui::MotionEventAndroid::Action::UP ||
+       action == ui::MotionEventAndroid::Action::CANCEL);
+
+  // Clean up state after processing a terminating action.
+  absl::Cleanup update_state = [this, &is_sequence_terminating_action] {
+    if (is_sequence_terminating_action) {
+      last_pos_ = gfx::Vector2dF();  // Reset last position.
+      is_handling_sequence_ = false;
+    }
+  };
+
   if (!ShouldHandleInputEvents()) {
-    return false;
+    return handles_current_event;
   }
 
-  bool handled = false;
   switch (event.GetAction()) {
     case ui::MotionEventAndroid::Action::DOWN:
       last_pos_ = gfx::Vector2dF(event.GetXPix(0), event.GetYPix(0));
@@ -319,21 +331,20 @@ bool OverscrollControllerAndroid::OnTouchEvent(
     case ui::MotionEventAndroid::Action::MOVE: {
       gfx::Vector2dF curr_pointer(event.GetXPix(0), event.GetYPix(0));
       gfx::Vector2dF scroll_delta = curr_pointer - last_pos_;
-      handled = refresh_effect_->WillHandleScrollUpdate(scroll_delta);
+      refresh_effect_->WillHandleScrollUpdate(scroll_delta);
       last_pos_ = curr_pointer;
     } break;
 
+    case ui::MotionEventAndroid::Action::CANCEL:
     case ui::MotionEventAndroid::Action::UP: {
       refresh_effect_->OnScrollEnd(gfx::Vector2dF());
-      last_pos_.set_x(0);
-      last_pos_.set_y(0);
     } break;
 
     default:
       break;
   }
 
-  return handled;
+  return handles_current_event;
 }
 
 void OverscrollControllerAndroid::OnInputEvent(

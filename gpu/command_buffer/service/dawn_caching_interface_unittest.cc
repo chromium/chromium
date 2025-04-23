@@ -12,7 +12,9 @@
 #include <string>
 #include <string_view>
 
+#include "base/test/scoped_feature_list.h"
 #include "gpu/command_buffer/service/mocks.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -27,11 +29,13 @@ class DawnCachingInterfaceTest : public testing::Test {
   static constexpr std::string_view kData = "some data";
   static constexpr size_t kKeySize = kKey.size();
   static constexpr size_t kDataSize = kData.size();
-  static constexpr gpu::GpuDiskCacheDawnWebGPUHandle kDawnHandle =
+  static constexpr gpu::GpuDiskCacheDawnWebGPUHandle kDawnWebGPUHandle =
       gpu::GpuDiskCacheDawnWebGPUHandle(1);
+  static constexpr gpu::GpuDiskCacheDawnGraphiteHandle kDawnGraphiteHandle =
+      gpu::GpuDiskCacheDawnGraphiteHandle(2);
 
   DawnCachingInterfaceFactory factory_;
-  gpu::GpuDiskCacheHandle handle_ = kDawnHandle;
+  gpu::GpuDiskCacheHandle handle_ = kDawnWebGPUHandle;
   StrictMock<MockDecoderClient> decoder_client_mock_;
 };
 
@@ -225,6 +229,69 @@ TEST_F(DawnCachingInterfaceTest, TestVeryLargeEntrySize) {
     // caching fails.
     interface->StoreData(kLarge.data(), kLargeSize, kLarge.data(), kLargeSize);
     EXPECT_EQ(0u, interface->LoadData(kLarge.data(), kLargeSize, nullptr, 0));
+  }
+}
+
+TEST_F(DawnCachingInterfaceTest, TestMemoryPressureCritical) {
+  // Verifies that on PurgeMemory the cache becomes empty for critical pressure
+  // levels without `kAggressiveShaderCacheLimits` feature flag.
+  static constexpr std::string_view kKey1 = "1";
+  static constexpr std::string_view kData1 = "1";
+  static constexpr size_t kKeySize = kKey1.size();
+  static constexpr size_t kDataSize = kData1.size();
+  static constexpr size_t kCacheSize = 2u * kKeySize + 2u * kDataSize - 1u;
+
+  DawnCachingInterfaceFactory factory(base::BindRepeating([]() {
+    return base::MakeRefCounted<detail::DawnCachingBackend>(kCacheSize);
+  }));
+
+  // Pass handles here so that the backends_ are populated.
+  auto interfaces = {factory.CreateInstance(kDawnGraphiteHandle),
+                     factory.CreateInstance(kDawnWebGPUHandle)};
+  for (auto& interface : interfaces) {
+    interface->StoreData(kKey1.data(), kKeySize, kData1.data(), kDataSize);
+    EXPECT_EQ(kDataSize, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
+
+    factory.PurgeMemory(
+        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    EXPECT_EQ(0u, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
+  }
+}
+
+TEST_F(DawnCachingInterfaceTest, TestAggressiveCacheAndMemoryPressure) {
+  // Verifies PurgeMemory with `kAggressiveShaderCacheLimits` feature flag.
+  base::test::ScopedFeatureList feature_list{
+      ::features::kAggressiveShaderCacheLimits};
+  static constexpr std::string_view kKey1 = "1";
+  static constexpr std::string_view kData1 = "1";
+  static constexpr size_t kKeySize = kKey1.size();
+  static constexpr size_t kDataSize = kData1.size();
+  static constexpr size_t kCacheSize = 2u * kKeySize + 2u * kDataSize - 1u;
+
+  DawnCachingInterfaceFactory factory(base::BindRepeating([]() {
+    return base::MakeRefCounted<detail::DawnCachingBackend>(kCacheSize);
+  }));
+
+  // Pass handles here so that the backends_ are populated.
+  auto interfaces = {factory.CreateInstance(kDawnGraphiteHandle),
+                     factory.CreateInstance(kDawnWebGPUHandle)};
+  for (auto& interface : interfaces) {
+    interface->StoreData(kKey1.data(), kKeySize, kData1.data(), kDataSize);
+    EXPECT_EQ(kDataSize, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
+
+    // Moderate memory pressure is ignored
+    factory.PurgeMemory(
+        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+    EXPECT_EQ(kDataSize, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
+
+    // But not critical, except on Android
+    factory.PurgeMemory(
+        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+#if BUILDFLAG(IS_ANDROID)
+    EXPECT_EQ(kDataSize, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
+#else
+    EXPECT_EQ(0u, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
+#endif
   }
 }
 

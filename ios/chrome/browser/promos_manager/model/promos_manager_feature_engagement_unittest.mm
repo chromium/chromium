@@ -27,6 +27,7 @@ class PromosManagerFeatureEngagementTest : public PlatformTest {
         &feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature,
         &feature_engagement::kIPHiOSDockingPromoFeature,
         &feature_engagement::kIPHiOSPromoSigninFullscreenFeature,
+        &feature_engagement::kIPHiOSWelcomeBackFeature,
     };
   }
 };

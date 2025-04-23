@@ -1584,12 +1584,13 @@ GraphBuilderTflite::TrySerializeQuantizedOutput(size_t quantize_op_idx) {
     return std::nullopt;
   }
 
-  quantize_ops_to_skip_.insert(quantize_op_idx);
   auto output = SerializeOutputTensorInfo(quantize_linear.output_operand_id,
                                           *quantize_params);
   if (!output.has_value()) {
     return std::nullopt;
   }
+
+  quantize_ops_to_skip_.insert(quantize_op_idx);
   return output.value();
 }
 
@@ -4562,19 +4563,9 @@ auto GraphBuilderTflite::SerializeInstanceNormalization(
       const TensorInfo& input_tensor_info,
       SerializeInputTensorInfo(instance_normalization.input_operand_id));
   const ::tflite::TensorType input_tensor_type = input_tensor_info.data_type;
-  std::array<int32_t, 2> spatial_dimensions;
-  uint32_t channel_axis;
-  switch (instance_normalization.layout) {
-    case mojom::InputOperandLayout::kChannelsFirst: {
-      spatial_dimensions = {2, 3};
-      channel_axis = 1;
-      break;
-    }
-    case mojom::InputOperandLayout::kChannelsLast:
-      spatial_dimensions = {1, 2};
-      channel_axis = 3;
-      break;
-  }
+  CHECK_EQ(context_properties_.input_operand_layout, InputOperandLayout::kNhwc);
+  std::array<int32_t, 2> spatial_dimensions = {1, 2};
+  uint32_t channel_axis = 3;
   std::vector<int32_t> new_shape(input_tensor_info.dimensions.size(), 1);
   new_shape[channel_axis] = input_tensor_info.dimensions[channel_axis];
 

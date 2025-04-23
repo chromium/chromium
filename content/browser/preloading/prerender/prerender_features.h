@@ -83,6 +83,8 @@ CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2DisallowNonTrustworthyHttp);
 
+CONTENT_EXPORT bool UsePrefetchPrerenderIntegration();
+
 }  // namespace features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_FEATURES_H_

@@ -455,6 +455,12 @@ bool HTMLDialogElement::IsKeyboardFocusableSlow(
   if (!IsFocusable(update_behavior)) {
     return false;
   }
+  // Interest invoker targets with partial interest aren't keyboard focusable.
+  if (IsInPartialInterestPopover()) {
+    CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+        GetDocument().GetExecutionContext()));
+    return false;
+  }
   // This handles cases such as <dialog tabindex=0>, <dialog contenteditable>,
   // etc.
   return Element::SupportsFocus(update_behavior) !=

@@ -131,18 +131,18 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
   }
 
   // <if expr="not is_chromeos">
-  languages: LanguagesModel;
-  languageHelper: LanguageHelper;
-  private enableLiveTranslate_: boolean;
-  private installedLanguagePacks_: LiveCaptionLanguageList;
-  private availableLanguagePacks_: LiveCaptionLanguageList;
-  private detailLanguage_?: LiveCaptionLanguage;
-  private showAddLanguagesDialog_: boolean;
+  declare languages: LanguagesModel;
+  declare languageHelper: LanguageHelper;
+  declare private enableLiveTranslate_: boolean;
+  declare private installedLanguagePacks_: LiveCaptionLanguageList;
+  declare private availableLanguagePacks_: LiveCaptionLanguageList;
+  declare private detailLanguage_?: LiveCaptionLanguage;
+  declare private showAddLanguagesDialog_: boolean;
   // </if>
   private browserProxy_: CaptionsBrowserProxy =
       CaptionsBrowserProxyImpl.getInstance();
-  private enableLiveCaptionSubtitle_: string;
-  private enableLiveCaptionMultiLanguage_: boolean;
+  declare private enableLiveCaptionSubtitle_: string;
+  declare private enableLiveCaptionMultiLanguage_: boolean;
 
   override ready() {
     super.ready();

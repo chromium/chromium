@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="fi">
+<translation id="1293272072740285747">Säilytä tämä ryhmä, niin voit lisätä siihen välilehtiä myöhemmin, tai poista se, jos et enää tarvitse sitä.
+
+Jos poistat sen, kaikki menettävät heti pääsyn välilehtiryhmään "<ph name="TITLE_OF_GROUP" />", ja se poistetaan kaikilta laitteilta.</translation>
+<translation id="1340839264183302272">Poistu ryhmästä</translation>
+<translation id="1419023007528516122">Ryhmä poistetaan laitteelta pysyvästi</translation>
+<translation id="1501480321619201731">Poista ryhmä</translation>
+<translation id="2677748264148917807">Poistu</translation>
+<translation id="3547352561153509682">Ryhmä poistetaan kaikilta laitteilta, jotka ovat kirjautuneena tilille <ph name="USER_EMAIL" /></translation>
+<translation id="381219490185664296">Poistetaanko välilehtiryhmän ryhmittely?</translation>
+<translation id="4139634748112164403">Välilehdet pysyvät auki tällä laitteella, mutta ryhmä poistetaan pysyvästi</translation>
+<translation id="4431937619879060901">Menetät välittömästi pääsyn välilehtiryhmään "<ph name="GROUP_NAME" />", ja se poistetaan kaikilta laitteiltasi</translation>
+<translation id="4460014764210899310">Poista ryhmittely</translation>
+<translation id="4777866634702576038">Poistetaanko välilehtiryhmä?</translation>
+<translation id="5094423602314093681">Poistetaanko välilehdet ja ryhmä?</translation>
+<translation id="5647702255748985085">Haluatko poistua ryhmästä?</translation>
+<translation id="742664698522525515">Säilytetäänkö ryhmä?</translation>
+<translation id="750886945254958667">Säilytä ryhmä, niin voit lisätä siihen välilehtiä myöhemmin, tai poistu ryhmästä, jos et enää halua käyttää sitä</translation>
+<translation id="8261506727792406068">Poista</translation>
+<translation id="870736955561925754">Suljetaanko välilehti ja poistetaanko ryhmä?</translation>
+<translation id="8804742093141782941">Älä poista</translation>
+<translation id="9169141410816678175">Kaikki menettävät heti pääsyn välilehtiryhmään "<ph name="GROUP_NAME" />", ja se poistetaan kaikilta laitteilta</translation>
+<translation id="9216898458513705996">Välilehdet pysyvät auki tällä laitteella, mutta ryhmä poistetaan kaikilta laitteilta, jotka ovat kirjautuneena tilille <ph name="USER_EMAIL" /></translation>
+<translation id="94870150074703282">Poistetaanko ryhmä?</translation>
+</translationbundle>

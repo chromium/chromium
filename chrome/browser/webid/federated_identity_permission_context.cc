@@ -160,8 +160,7 @@ std::optional<bool> FederatedIdentityPermissionContext::GetIdpSigninStatus(
   return idp_signin_context_->GetSigninStatus(idp_origin);
 }
 
-std::vector<scoped_refptr<content::IdentityRequestAccount>>
-FederatedIdentityPermissionContext::GetAccounts(
+base::Value::List FederatedIdentityPermissionContext::GetAccounts(
     const url::Origin& identity_provider) {
   return idp_signin_context_->GetAccounts(identity_provider);
 }

@@ -16,6 +16,7 @@ def create_license_post_processing(*args: Mapper) -> Callable:
   return __update_metadata
 
 RAW_LICENSE_TO_FORMATTED_DETAILS = {
+    "blessing": ("blessing", LicenseType.UNENCUMBERED, "SPDX-license-identifier-blessing"),
     "BSD": ("BSD", LicenseType.NOTICE, "SPDX-license-identifier-BSD"),
     "BSD-2-Clause": ("BSD_2_CLAUSE", LicenseType.NOTICE, "SPDX-license-identifier-BSD-2-Clause"),
     "BSD 3-Clause": (
@@ -65,6 +66,10 @@ POST_PROCESS_OPERATION = {
         Mapper("License", ['MPLv2'], ["MPL 2.0"])),
     "third_party/apache-portable-runtime/README.chromium": create_license_post_processing(
         Mapper("License", ['Apache-2.0', 'dso', 'Zlib', 'ISC', 'BSD-4-Clause-UC'], ["Apache 2.0"])),
+    "third_party/compiler-rt/README.chromium": create_license_post_processing(
+        Mapper("License",
+               ['NCSA', 'Apache-with-LLVM-Exception', 'MIT'],
+               ["MIT"])),
     "third_party/libc++abi/README.chromium": create_license_post_processing(
         Mapper("License",
                ['NCSA', 'Apache-with-LLVM-Exception', 'MIT'],

@@ -6,6 +6,7 @@
 
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/service_worker_registration_information.h"
 #include "content/public/browser/storage_partition.h"
 
 namespace web_app {
@@ -52,7 +53,8 @@ void ServiceWorkerRegistrationWaiter::OnRegistrationCompleted(
 
 void ServiceWorkerRegistrationWaiter::OnRegistrationStored(
     int64_t registration_id,
-    const GURL& scope) {
+    const GURL& scope,
+    const content::ServiceWorkerRegistrationInformation& service_worker_info) {
   if (content::ServiceWorkerContext::ScopeMatches(scope, url_)) {
     stored_run_loop_.Quit();
   }

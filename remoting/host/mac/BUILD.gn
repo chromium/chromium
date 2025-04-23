@@ -60,6 +60,21 @@ source_set("permission_checking") {
   frameworks = [ "AVFoundation.framework" ]
 }
 
+source_set("trust_util") {
+  sources = [
+    "trust_util.cc",
+    "trust_util.h",
+  ]
+  deps = [
+    "//base",
+    "//remoting/host:remoting_version",
+  ]
+  frameworks = [
+    "Security.framework",
+    "Carbon.framework",
+  ]
+}
+
 source_set("agent_process_broker_constants") {
   sources = [ "agent_process_broker_constants.h" ]
 }
@@ -79,15 +94,32 @@ source_set("agent_process_broker_client") {
   ]
 }
 
-executable("remoting_me2me_host_service") {
+source_set("host_service_main_headers") {
+  sources = [ "host_service_main.h" ]
+  deps = [ "//remoting/host:host_main_headers" ]
+}
+
+source_set("host_service_main") {
   sources = [ "host_service_main.cc" ]
-  configs += [ "//remoting/build/config:version" ]
+  configs += [
+    "//remoting/build/config:host_implementation",
+    "//remoting/build/config:version",
+  ]
   deps = [
     ":constants",
+    ":host_service_main_headers",
     "//base",
     "//remoting/base",
     "//remoting/host:remoting_version",
     "//remoting/host/base",
+  ]
+}
+
+executable("remoting_me2me_host_service") {
+  sources = [ "host_service_entry_point.cc" ]
+  deps = [
+    ":host_service_main_headers",
+    "//remoting/host:remoting_core",
   ]
 }
 
@@ -108,6 +140,7 @@ source_set("agent_process_broker") {
     "//components/named_mojo_ipc_server",
     "//mojo/public/cpp/platform",
     "//remoting/base",
+    "//remoting/host:chromoting_host_services_server",
     "//remoting/host:ipc_constants",
     "//remoting/host:mojo_caller_security_checker",
     "//remoting/host/base",
@@ -115,15 +148,33 @@ source_set("agent_process_broker") {
   ]
 }
 
-executable("remoting_agent_process_broker") {
+source_set("agent_process_broker_main_headers") {
+  sources = [ "agent_process_broker_main.h" ]
+  deps = [ "//remoting/host:host_main_headers" ]
+}
+
+source_set("agent_process_broker_main") {
   sources = [ "agent_process_broker_main.cc" ]
-  configs += [ "//remoting/build/config:version" ]
+  configs += [
+    "//remoting/build/config:host_implementation",
+    "//remoting/build/config:version",
+  ]
   deps = [
     ":agent_process_broker",
+    ":agent_process_broker_main_headers",
     "//base",
     "//mojo/core/embedder",
     "//remoting/base",
     "//remoting/base:logging",
+    "//third_party/webrtc_overrides:webrtc_component",
+  ]
+}
+
+executable("remoting_agent_process_broker") {
+  sources = [ "agent_process_broker_entry_point.cc" ]
+  deps = [
+    ":agent_process_broker_main_headers",
+    "//remoting/host:remoting_core",
   ]
 }
 
@@ -131,6 +182,18 @@ bundle_data("remoting_agent_process_broker_bundle_data") {
   sources = [ "$root_out_dir/remoting_agent_process_broker" ]
   outputs = [ "{{bundle_executable_dir}}/{{source_file_part}}" ]
   public_deps = [ ":remoting_agent_process_broker" ]
+}
+
+bundle_data("remoting_core_bundle_data") {
+  sources = [ "$root_out_dir/libremoting_core.dylib" ]
+  outputs = [ "{{bundle_executable_dir}}/{{source_file_part}}" ]
+  public_deps = [ "//remoting/host:remoting_core" ]
+}
+
+bundle_data("remote_webauthn_bundle_data") {
+  sources = [ "$root_out_dir/remote_webauthn" ]
+  outputs = [ "{{bundle_executable_dir}}/{{source_file_part}}" ]
+  public_deps = [ "//remoting/host/webauthn:remote_webauthn" ]
 }
 
 # remoting_me2me_host-InfoPlist.strings
@@ -150,7 +213,7 @@ bundle_data("remoting_host_resources") {
 
   outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
 
-  public_deps = [ "//remoting/host/installer:credits" ]
+  public_deps = [ "//remoting/host/installer/mac:credits" ]
 }
 
 target("mac_app_bundle", "remoting_me2me_host") {
@@ -169,10 +232,8 @@ target("mac_app_bundle", "remoting_me2me_host") {
   # }
 
   deps = [
-    ":permission_checking",
-    "//remoting/base/crash",
     "//remoting/host:entry_point",
-    "//remoting/host/installer:credits",
+    "//remoting/host/installer/mac:credits",
     "//remoting/resources",
   ]
 
@@ -183,7 +244,9 @@ target("mac_app_bundle", "remoting_me2me_host") {
     ]
   }
   deps += [
+    ":remote_webauthn_bundle_data",
     ":remoting_agent_process_broker_bundle_data",
+    ":remoting_core_bundle_data",
     ":remoting_host_resources",
     ":remoting_me2me_host_service_bundle_data",
     "//remoting/host:remoting_infoplist_strings",
@@ -238,7 +301,6 @@ bundle_data("remoting_native_messaging_host_resources") {
 target("mac_app_bundle", "remoting_native_messaging_host") {
   output_name = "native_messaging_host"
   info_plist = "../setup/native_messaging_host-Info.plist"
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   extra_substitutions = [
     "BUNDLE_ID=$native_messaging_host_bundle_id",
     "VERSION_FULL=$remoting_version_full",
@@ -251,8 +313,8 @@ target("mac_app_bundle", "remoting_native_messaging_host") {
 
   deps = [
     ":remoting_native_messaging_host_resources",
+    "//remoting/host:remoting_core",
     "//remoting/host:remoting_infoplist_strings",
-    "//remoting/host/setup:native_messaging_host_main",
     "//remoting/host/setup:native_messaging_host_main_headers",
   ]
   foreach(locale, remoting_locales_with_underscores) {
@@ -262,13 +324,6 @@ target("mac_app_bundle", "remoting_native_messaging_host") {
     ]
   }
   deps += [ "//remoting/resources:copy_locales" ]
-
-  # The |major|, |build| and |patch| versions are inherited from Chrome.
-  # Since Chrome's |minor| version is always '0', we replace it with a
-  # Chromoting-specific patch version.
-  defines =
-      [ "VERSION=" + "$chrome_version_major" + "." + "$remoting_version_patch" +
-        "." + "$chrome_version_build" + "." + "$chrome_version_patch" ]
 }
 
 source_set("unit_tests") {
@@ -283,6 +338,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/named_mojo_ipc_server:named_mojo_ipc_server",
     "//mojo/public/cpp/platform",
+    "//remoting/host:chromoting_host_services_client",
+    "//remoting/host:chromoting_host_services_server",
     "//remoting/host/mojom",
     "//testing/gmock",
     "//testing/gtest",

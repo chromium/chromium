@@ -132,7 +132,7 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
 
   Microsoft::WRL::ComPtr<ID3D12Device> device_;
   Microsoft::WRL::ComPtr<ID3D12VideoDevice3> video_device_;
-  size_t max_num_ref_frames_ = 0;
+  uint32_t max_num_ref_frames_ = 0;
 
   // The the size and format for the input of the D3D12VideoEncoder. The format
   // may be different to input frame, in which case we do internal conversion.
@@ -182,13 +182,16 @@ struct D3D12PictureBuffer {
 template <size_t maxDpbSize>
 class D3D12VideoEncodeDecodedPictureBuffers {
  public:
-  explicit D3D12VideoEncodeDecodedPictureBuffers(size_t size);
-  ~D3D12VideoEncodeDecodedPictureBuffers();
+  D3D12VideoEncodeDecodedPictureBuffers();
+  virtual ~D3D12VideoEncodeDecodedPictureBuffers();
+
+  size_t size() const { return size_; }
 
   // Initialize the texture array with the given size and format.
   bool InitializeTextureArray(ID3D12Device* device,
                               gfx::Size texture_size,
-                              DXGI_FORMAT format);
+                              DXGI_FORMAT format,
+                              size_t max_num_ref_frames);
 
   // Get the unused buffer for current frame.
   D3D12PictureBuffer GetCurrentFrame() const;
@@ -202,10 +205,11 @@ class D3D12VideoEncodeDecodedPictureBuffers {
 
   // Return the |D3D12_VIDEO_ENCODE_REFERENCE_FRAMES| structure that D3D12 video
   // encode API expects.
-  D3D12_VIDEO_ENCODE_REFERENCE_FRAMES ToD3D12VideoEncodeReferenceFrames();
+  virtual D3D12_VIDEO_ENCODE_REFERENCE_FRAMES
+  ToD3D12VideoEncodeReferenceFrames();
 
  private:
-  size_t size_;
+  size_t size_ = 0;
   absl::InlinedVector<Microsoft::WRL::ComPtr<ID3D12Resource>, maxDpbSize + 1>
       resources_;
   absl::InlinedVector<ID3D12Resource*, maxDpbSize + 1> raw_resources_;

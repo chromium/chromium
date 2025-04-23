@@ -29,14 +29,15 @@
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_migrator.h"
 #include "chrome/browser/extensions/external_component_loader.h"
+#include "chrome/browser/extensions/external_policy_loader.h"
 #include "chrome/browser/extensions/external_pref_loader.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -54,8 +55,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/external_policy_loader.h"
+#include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -391,12 +391,18 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
     // so it can get uninstalled by WebAppUiManager::UninstallAndReplace() once
     // the replacement web app has installed and migrated over user preferences.
     // TODO(crbug.com/1099150): Remove this field after migration is complete.
+    // TODO(crbug.com/409795200): Decide how to handle this on desktop Android.
+    // We can't currently depend on //chrome/browser/web_applications.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     const std::string* web_app_migration_flag =
         extension_dict.FindString(kWebAppMigrationFlag);
     bool is_migrating_to_web_app =
         web_app_migration_flag &&
         web_app::IsPreinstalledAppInstallFeatureEnabled(
             *web_app_migration_flag);
+#else
+    bool is_migrating_to_web_app = false;
+#endif
     bool keep_if_present =
         extension_dict.FindBool(kKeepIfPresent).value_or(false);
     if (keep_if_present || is_migrating_to_web_app) {
@@ -704,10 +710,6 @@ void ExternalProviderImpl::CreateExternalProviders(
   }
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/394876083): Port ExtensionManagement to Android.
-  NOTIMPLEMENTED() << "Policy loaded extensions not yet supported on Android";
-#else
   if (!external_loader.get()) {
     external_loader = base::MakeRefCounted<ExternalPolicyLoader>(
         profile, ExtensionManagementFactory::GetForBrowserContext(profile),
@@ -723,7 +725,6 @@ void ExternalProviderImpl::CreateExternalProviders(
       ManifestLocation::kExternalPolicyDownload, Extension::NO_FLAGS);
   policy_provider->set_allow_updates(true);
   provider_list->push_back(std::move(policy_provider));
-#endif  // BUILDFLAG(IS_ANDROID)
 
   // Load the KioskAppExternalProvider when running in the Chrome App kiosk
   // mode.
@@ -767,10 +768,7 @@ void ExternalProviderImpl::CreateExternalProviders(
     return;
   }
 
-#if !BUILDFLAG(IS_ANDROID)
   // Extensions provided by recommended policies.
-  // TODO(crbug.com/394876083): Port ExtensionManagement to Android.
-  // No NOTIMPLEMENTED() here because we already logged above.
   if (external_recommended_loader.get()) {
     auto recommended_provider = std::make_unique<ExternalProviderImpl>(
         service, external_recommended_loader, profile, crx_location,
@@ -778,7 +776,6 @@ void ExternalProviderImpl::CreateExternalProviders(
     recommended_provider->set_auto_acknowledge(true);
     provider_list->push_back(std::move(recommended_provider));
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // In tests don't install pre-installed apps.
   // It would only slowdown tests and make them flaky.

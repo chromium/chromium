@@ -70,7 +70,10 @@ bool IsMutexPriorityInheritanceEnabled() {
   // groups don't get polluted with clients that cannot support priority
   // inheriting mutexes
   bool feature_enabled =
+#pragma clang diagnostic push  // Can be removed once our min-sdk is >= 28.
+#pragma clang diagnostic ignored "-Wunguarded-availability"
       (pthread_mutexattr_setprotocol != nullptr) &&
+#pragma clang diagnostic pop
       KernelSupportsPriorityInheritanceFutex() &&
       base::FeatureList::IsEnabled(features::kUsePriorityInheritanceMutex);
 
@@ -135,7 +138,10 @@ LockImpl::LockImpl() {
   DCHECK_EQ(rv, 0) << ". " << SystemErrorCodeToString(rv);
 #if PRIORITY_INHERITANCE_LOCKS_POSSIBLE()
   if (PriorityInheritanceAvailable()) {
+#pragma clang diagnostic push  // Can be removed once our min-sdk is >= 28.
+#pragma clang diagnostic ignored "-Wunguarded-availability"
     rv = pthread_mutexattr_setprotocol(&mta, PTHREAD_PRIO_INHERIT);
+#pragma clang diagnostic pop
     DCHECK_EQ(rv, 0) << ". " << SystemErrorCodeToString(rv);
   }
 #endif

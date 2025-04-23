@@ -42,12 +42,14 @@ chrome.test.runTests([
     // displaying the expected icon.
     const buttons = styleSelector.shadowRoot.querySelectorAll('cr-icon-button');
     chrome.test.assertEq(4, buttons.length);
-    await testButton(buttons[0]!, TextStyle.BOLD, 'pdf:text-format-bold');
-    await testButton(buttons[1]!, TextStyle.ITALIC, 'pdf:text-format-italic');
+    await testButton(buttons[0]!, TextStyle.BOLD, 'pdf-ink:text-format-bold');
     await testButton(
-        buttons[2]!, TextStyle.UNDERLINE, 'pdf:text-format-underline');
+        buttons[1]!, TextStyle.ITALIC, 'pdf-ink:text-format-italic');
     await testButton(
-        buttons[3]!, TextStyle.STRIKETHROUGH, 'pdf:text-format-strikethrough');
+        buttons[2]!, TextStyle.UNDERLINE, 'pdf-ink:text-format-underline');
+    await testButton(
+        buttons[3]!, TextStyle.STRIKETHROUGH,
+        'pdf-ink:text-format-strikethrough');
 
     chrome.test.succeed();
   },

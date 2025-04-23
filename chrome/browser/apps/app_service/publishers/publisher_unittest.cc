@@ -32,6 +32,7 @@
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/permission.h"
+#include "extensions/browser/extension_registrar.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -224,7 +225,7 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
   void SetUp() override {
     extensions::ExtensionServiceTestBase::SetUp();
     InitializeExtensionService(ExtensionServiceInitParams());
-    service_->Init();
+    service()->Init();
     ConfigureWebAppProvider();
 #if BUILDFLAG(IS_CHROMEOS)
     ash::LoginState::Initialize();
@@ -592,7 +593,7 @@ TEST_F(PublisherTest, ExtensionAppsOnApps) {
   scoped_refptr<extensions::Extension> store =
       MakeExtensionApp("webstore", "0.0", "http://google.com",
                        std::string(extensions::kWebStoreAppId));
-  service_->AddExtension(store.get());
+  registrar()->AddExtension(store.get());
 
   VerifyApp(AppType::kChromeApp, store->id(), store->name(), Readiness::kReady,
             InstallReason::kDefault, InstallSource::kChromeWebStore, {},
@@ -608,7 +609,7 @@ TEST_F(PublisherTest, ExtensionAppsOnApps) {
   VerifyAppTypeIsInitialized(AppType::kChromeApp);
 
   // Uninstall the Chrome app.
-  service_->UninstallExtension(
+  registrar()->UninstallExtension(
       store->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
   VerifyApp(AppType::kChromeApp, store->id(), store->name(),
             Readiness::kUninstalledByUser, InstallReason::kDefault,
@@ -625,7 +626,7 @@ TEST_F(PublisherTest, ExtensionAppsOnApps) {
             /*allow_window_mode_selection=*/std::nullopt);
 
   // Reinstall the Chrome app.
-  service_->AddExtension(store.get());
+  registrar()->AddExtension(store.get());
   VerifyApp(AppType::kChromeApp, store->id(), store->name(), Readiness::kReady,
             InstallReason::kDefault, InstallSource::kChromeWebStore, {},
             base::Time(), base::Time(), apps::Permissions(),

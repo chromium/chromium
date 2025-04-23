@@ -230,7 +230,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                         };
         mTabSupplier = tabSupplier;
 
-        if (SigninFeatureMap.isEnabled(SigninFeatures.HISTORY_OPT_IN_ENTRY_POINTS)) {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.HISTORY_PAGE_HISTORY_SYNC_PROMO)) {
             mHistorySyncPromoCoordinator =
                     new SigninPromoCoordinator(
                             mActivity,

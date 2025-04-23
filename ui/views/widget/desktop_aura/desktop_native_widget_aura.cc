@@ -852,11 +852,9 @@ void DesktopNativeWidgetAura::InitModalType(ui::mojom::ModalType modal_type) {
   desktop_window_tree_host_->InitModalType(modal_type);
 }
 
-void DesktopNativeWidgetAura::SetColorMode(
+void DesktopNativeWidgetAura::OnWidgetThemeChanged(
     ui::ColorProviderKey::ColorMode color_mode) {
-  // Intentional no-op.
-  // The window frame is drawn by views. The OS does not need to know about
-  // which color mode the window is using.
+  desktop_window_tree_host_->OnWidgetThemeChanged(color_mode);
 }
 
 gfx::Rect DesktopNativeWidgetAura::GetWindowBoundsInScreen() const {

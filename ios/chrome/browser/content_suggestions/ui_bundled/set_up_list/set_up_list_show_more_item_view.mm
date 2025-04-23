@@ -202,11 +202,7 @@ NSAttributedString* Strikethrough(NSString* text) {
     case SetUpListItemType::kAutofill:
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_AUTOFILL_TITLE);
     case SetUpListItemType::kNotifications:
-      return IsIOSTipsNotificationsEnabled()
-                 ? l10n_util::GetNSString(
-                       IDS_IOS_SET_UP_LIST_NOTIFICATIONS_TITLE)
-                 : l10n_util::GetNSString(
-                       IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_TITLE);
+      return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_NOTIFICATIONS_TITLE);
     case SetUpListItemType::kDocking:
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_DOCK_CHROME_TITLE);
     case SetUpListItemType::kAddressBar:
@@ -253,11 +249,10 @@ NSAttributedString* Strikethrough(NSString* text) {
       return l10n_util::GetNSString(
           IDS_IOS_SET_UP_LIST_AUTOFILL_SEE_MORE_DESCRIPTION);
     case SetUpListItemType::kNotifications:
-      return IsIOSTipsNotificationsEnabled()
-                 ? l10n_util::GetNSString(
-                       IDS_IOS_SET_UP_LIST_NOTIFICATIONS_DESCRIPTION)
-                 : l10n_util::GetNSString(
-                       IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_DESCRIPTION);
+      return l10n_util::GetNSString(
+          _data.priceTrackingEnabled
+              ? IDS_IOS_SET_UP_LIST_NOTIFICATIONS_DESCRIPTION
+              : IDS_IOS_SET_UP_LIST_NOTIFICATIONS_SHORT_DESCRIPTION);
     case SetUpListItemType::kDocking:
       return l10n_util::GetNSString(
           IDS_IOS_SET_UP_LIST_DOCK_CHROME_SHORT_DESCRIPTION);

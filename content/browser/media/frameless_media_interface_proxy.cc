@@ -127,13 +127,6 @@ void FramelessMediaInterfaceProxy::CreateFlingingRenderer(
     mojo::PendingRemote<media::mojom::FlingingRendererClientExtension>
         client_extenion,
     mojo::PendingReceiver<media::mojom::Renderer> receiver) {}
-
-void FramelessMediaInterfaceProxy::CreateMediaPlayerRenderer(
-    mojo::PendingRemote<media::mojom::MediaPlayerRendererClientExtension>
-        client_extension_remote,
-    mojo::PendingReceiver<media::mojom::Renderer> receiver,
-    mojo::PendingReceiver<media::mojom::MediaPlayerRendererExtension>
-        renderer_extension_receiver) {}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)

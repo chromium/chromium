@@ -12,6 +12,8 @@
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
+@protocol SnackbarCommands;
+
 // Observes changes to the web state to perform reader mode operations.
 class ReaderModeTabHelper : public web::WebStateObserver,
                             public web::WebStateUserData<ReaderModeTabHelper> {
@@ -21,6 +23,9 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   ReaderModeTabHelper& operator=(const ReaderModeTabHelper&) = delete;
 
   ~ReaderModeTabHelper() override;
+
+  // Sets the snackbar handler.
+  void SetSnackbarHandler(id<SnackbarCommands> snackbar_handler);
 
   // Processes the result of the Reader Mode heuristic trigger that was run on
   // the `url` content.
@@ -38,22 +43,26 @@ class ReaderModeTabHelper : public web::WebStateObserver,
       web::PageLoadCompletionStatus load_completion_status) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
+  // Trigger the heuristic to determine reader mode eligibility.
+  void TriggerReaderModeHeuristic();
+
  private:
   friend class web::WebStateUserData<ReaderModeTabHelper>;
 
-  // Trigger the heuristic to determine reader mode eligibility.
-  void TriggerReaderModeHeuristic();
+  // Determine if the page load is eligible for triggering the reader mode
+  // heuristic.
+  bool CanTriggerReaderModeHeuristic();
 
   // Callback for handling completion of the page distillation.
   void PageDistillationCompleted(ReaderModeHeuristicResult heuristic_result,
                                  base::TimeTicks start_time,
                                  const base::Value* value);
 
+  id<SnackbarCommands> snackbar_handler_;
+  base::TimeDelta heuristic_latency_;
   raw_ptr<web::WebState> web_state_ = nullptr;
   base::OneShotTimer trigger_reader_mode_timer_;
   base::WeakPtrFactory<ReaderModeTabHelper> weak_ptr_factory_{this};
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_TAB_HELPER_H_

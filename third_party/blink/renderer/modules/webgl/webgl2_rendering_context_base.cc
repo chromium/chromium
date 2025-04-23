@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/modules/webgl/webgl2_rendering_context_base.h"
 
 #include <memory>
@@ -457,8 +452,8 @@ void WebGL2RenderingContextBase::getBufferSubData(
   if (!mapped_data)
     return;
 
-  memcpy(destination_data_ptr, mapped_data,
-         static_cast<size_t>(destination_byte_length));
+  UNSAFE_TODO(memcpy(destination_data_ptr, mapped_data,
+                     static_cast<size_t>(destination_byte_length)));
 
   ContextGL()->UnmapBuffer(target);
 }

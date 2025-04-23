@@ -14,6 +14,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/app_constants/constants.h"
 #include "components/prefs/pref_service.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
@@ -84,7 +85,7 @@ void ExtensionCleanupHandler::UninstallExtensions() {
   for (auto it = extensions_to_be_uninstalled_.begin();
        it != extensions_to_be_uninstalled_.end();) {
     std::u16string error;
-    extension_service_->UninstallExtension(
+    extensions::ExtensionRegistrar::Get(profile_)->UninstallExtension(
         *it, extensions::UninstallReason::UNINSTALL_REASON_REINSTALL, &error,
         base::BindOnce(&ExtensionCleanupHandler::OnUninstallDataDeleterFinished,
                        base::Unretained(this), *it));
@@ -127,7 +128,7 @@ void ExtensionCleanupHandler::ReinstallExtensions() {
       ->ReinstallProviderExtensions();
 
   // Reinstall component extensions.
-  extension_service_->component_loader()->AddDefaultComponentExtensions(
+  extensions::ComponentLoader::Get(profile_)->AddDefaultComponentExtensions(
       /*skip_session_components=*/false);
 
   std::move(callback_).Run(std::nullopt);

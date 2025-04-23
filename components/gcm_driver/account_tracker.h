@@ -52,6 +52,8 @@ class AccountTracker : public signin::IdentityManager::Observer {
       const CoreAccountInfo& account_info) override;
   void OnRefreshTokenRemovedForAccount(
       const CoreAccountId& account_id) override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
 
   // Add |account_info| to the lists of accounts tracked by this AccountTracker.
   void StartTrackingAccount(const CoreAccountInfo& account_info);

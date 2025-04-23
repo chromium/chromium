@@ -89,4 +89,13 @@ std::optional<int> GetLineHeight(int context) {
   return std::nullopt;
 }
 
+std::optional<ui::ColorId> GetColorId(int style) {
+  switch (style) {
+    case STYLE_ALERT:
+      return ui::kColorAlertHighSeverity;
+  }
+
+  return std::nullopt;
+}
+
 }  // namespace ash

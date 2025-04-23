@@ -179,7 +179,7 @@ WebMParserClient* WebMVideoClient::OnListStart(int id) {
     if (projection_parsed_ == true) {
       MEDIA_LOG(ERROR, media_log_)
           << "Unexpected multiple Projection elements.";
-      return NULL;
+      return nullptr;
     }
     return &projection_parser_;
   }
@@ -200,7 +200,7 @@ bool WebMVideoClient::OnListEnd(int id) {
 }
 
 bool WebMVideoClient::OnUInt(int id, int64_t val) {
-  int64_t* dst = NULL;
+  int64_t* dst = nullptr;
 
   switch (id) {
     case kWebMIdPixelWidth:

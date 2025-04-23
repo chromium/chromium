@@ -13,8 +13,6 @@ import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
-import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
@@ -23,8 +21,6 @@ import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
-import org.chromium.components.collaboration.CollaborationService;
-import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -116,15 +112,16 @@ public class TabGroupListBottomSheetCoordinator {
                         /* isTabStrip= */ false,
                         R.dimen.default_favicon_corner_radius,
                         TabFavicon::getBitmap);
+
+        boolean isProfileOffTheRecord = profile.isOffTheRecord();
         FaviconResolver faviconResolver =
-                TabGroupListFaviconResolverFactory.build(context, profile, mTabListFaviconProvider);
+                isProfileOffTheRecord
+                        ? TabGroupListFaviconResolverFactory.buildLocal(
+                                context, profile, mTabListFaviconProvider)
+                        : TabGroupListFaviconResolverFactory.build(
+                                context, profile, mTabListFaviconProvider);
         @Nullable TabGroupSyncService tabGroupSyncService =
-                TabGroupSyncServiceFactory.getForProfile(profile);
-
-        CollaborationService collaborationService =
-                CollaborationServiceFactory.getForProfile(profile);
-
-        DataSharingService dataSharingService = DataSharingServiceFactory.getForProfile(profile);
+                isProfileOffTheRecord ? null : TabGroupSyncServiceFactory.getForProfile(profile);
 
         mMediator =
                 new TabGroupListBottomSheetMediator(
@@ -133,8 +130,6 @@ public class TabGroupListBottomSheetCoordinator {
                         tabGroupCreationCallback,
                         faviconResolver,
                         tabGroupSyncService,
-                        dataSharingService,
-                        collaborationService,
                         bottomSheetController,
                         createDelegate(destroyOnHide),
                         showNewGroupRow);

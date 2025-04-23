@@ -113,20 +113,19 @@ void DownloadComplete(
         base::BindOnce(
             std::move(callback),
             base::unexpected<CategorizedError>(
-                {.category_ = ErrorCategory::kService,
-                 .code_ = static_cast<int>(ServiceError::CANCELLED)})));
+                {.category = ErrorCategory::kService,
+                 .code = static_cast<int>(ServiceError::CANCELLED)})));
     return;
   }
 
   if (download_result.error) {
     CHECK(download_result.response.empty());
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       base::unexpected<CategorizedError>(
-                           {.category_ = ErrorCategory::kDownload,
-                            .code_ = download_result.error,
-                            .extra_ = download_result.extra_code1})));
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  base::unexpected<CategorizedError>(
+                                      {.category = ErrorCategory::kDownload,
+                                       .code = download_result.error,
+                                       .extra = download_result.extra_code1})));
     return;
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -153,8 +152,8 @@ void HandleAvailableSpace(
         base::BindOnce(
             std::move(callback),
             base::unexpected<CategorizedError>(
-                {.category_ = ErrorCategory::kDownload,
-                 .code_ = static_cast<int>(CrxDownloaderError::DISK_FULL)})));
+                {.category = ErrorCategory::kDownload,
+                 .code = static_cast<int>(CrxDownloaderError::DISK_FULL)})));
     return;
   }
   scoped_refptr<CrxDownloader> crx_downloader =

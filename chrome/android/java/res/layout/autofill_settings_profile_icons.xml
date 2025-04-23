@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- Layout for icons displayed on the right side of the autofill settings preference entry.
+The first icon indicates the user's local address profile.
+The second is an "edit" icon -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+    <ImageView
+        android:id="@+id/local_profile_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        app:tint="@color/default_icon_color_secondary_tint_list"
+        app:srcCompat="@drawable/ic_cloud_offline_24dp"
+        android:contentDescription="@string/autofill_local_profile_accessibility_label" />
+    <ImageView
+        android:id="@+id/edit_address_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="8dp"
+        android:importantForAccessibility="no"
+    />
+</LinearLayout>

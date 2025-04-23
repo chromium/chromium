@@ -688,6 +688,24 @@ void DesktopSessionProxy::OnKeyboardLayoutChanged(
   }
 }
 
+void DesktopSessionProxy::OnLocalMouseMoveDetected(
+    const webrtc::DesktopVector& new_position) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (client_session_control_) {
+    client_session_control_->OnLocalPointerMoved(new_position,
+                                                 ui::EventType::kMouseMoved);
+  }
+}
+
+void DesktopSessionProxy::OnLocalKeyboardInputDetected(int32_t usb_keycode) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (client_session_control_) {
+    client_session_control_->OnLocalKeyPressed(usb_keycode);
+  }
+}
+
 void DesktopSessionProxy::OnClipboardEvent(
     const protocol::ClipboardEvent& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

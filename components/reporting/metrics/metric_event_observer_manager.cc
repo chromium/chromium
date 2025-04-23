@@ -89,8 +89,12 @@ void MetricEventObserverManager::OnEventObserved(MetricData metric_data) {
   metric_data.set_timestamp_ms(
       base::Time::Now().InMillisecondsSinceUnixEpoch());
   metric_report_queue_->Enqueue(std::move(metric_data));
-  base::UmaHistogramEnumeration(kEventMetricEnqueuedMetricsName, event_type,
-                                MetricEventType_MAX);
+  // Since histogram enumeration expects values to be less than
+  // MetricEventType_MAX, we add 1 to the max value as the max value is the
+  // last item in the MetricEventType.
+  base::UmaHistogramEnumeration(
+      kEventMetricEnqueuedMetricsName, event_type,
+      static_cast<MetricEventType>(MetricEventType_MAX + 1));
 
   if (collector_pool_) {
     std::vector<raw_ptr<CollectorBase, VectorExperimental>>

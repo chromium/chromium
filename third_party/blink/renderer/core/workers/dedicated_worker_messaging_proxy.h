@@ -62,8 +62,6 @@ class CORE_EXPORT DedicatedWorkerMessagingProxy
       const KURL& script_url,
       const FetchClientSettingsObjectSnapshot& outside_settings_object,
       const v8_inspector::V8StackTraceId&,
-      const String& source_code,
-      RejectCoepUnsafeNone reject_coep_unsafe_none,
       const blink::DedicatedWorkerToken& token,
       mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
           dedicated_worker_host,

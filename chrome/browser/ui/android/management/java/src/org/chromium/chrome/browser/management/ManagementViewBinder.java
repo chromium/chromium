@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.management;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** View updater based on properties for ManagementPage. */
+@NullMarked
 class ManagementViewBinder {
     /**
      * Listens to changes in MVC model.

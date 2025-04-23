@@ -22,7 +22,7 @@ build_webui("build") {
     "session_statistics_table.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "browser_proxy.ts",
     "time_util.ts",
     "webxr_internals.ts",

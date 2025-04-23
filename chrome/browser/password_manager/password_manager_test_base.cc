@@ -199,7 +199,7 @@ void PasswordManagerBrowserTestBase::SetUpOnMainThread() {
   verify_result.verified_cert = cert;
   mock_cert_verifier()->AddResultForCert(cert.get(), verify_result, net::OK);
 
-  web_contents_ = GetNewTab(browser());
+  web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
 }
 
 void PasswordManagerBrowserTestBase::ClearWebContentsPtr() {
@@ -217,28 +217,6 @@ void PasswordManagerBrowserTestBase::SetUpCommandLine(
   // Some builders are flaky due to slower loading interacting
   // with deferred commits.
   command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
-}
-
-// static
-content::WebContents* PasswordManagerBrowserTestBase::GetNewTab(
-    Browser* browser,
-    bool open_new_tab) {
-  content::WebContents* preexisting_tab =
-      browser->tab_strip_model()->GetActiveWebContents();
-
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser, GURL("data:text/html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(web_contents);
-  if (!open_new_tab && preexisting_tab) {
-    browser->tab_strip_model()->CloseWebContentsAt(0,
-                                                   TabCloseTypes::CLOSE_NONE);
-  }
-  EXPECT_FALSE(web_contents->IsLoading());
-  return web_contents;
 }
 
 // static

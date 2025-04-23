@@ -147,6 +147,7 @@ android_library("unit_device_javatests") {
     ":lib_java",
     ":page_zoom_utils_java",
     "//base:base_java_test_support",
+    "//base:callback_java",
     "//base:tasks_java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/settings/android:test_support_java",

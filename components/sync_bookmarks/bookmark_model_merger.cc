@@ -528,14 +528,28 @@ BookmarkModelMerger::RemoteTreeNode::BuildTree(
   return node;
 }
 
+// static
+BookmarkModelMerger::RemoteTreeNode
+BookmarkModelMerger::RemoteTreeNode::BuildForTesting(
+    syncer::UpdateResponseData update,
+    std::vector<RemoteTreeNode> children) {
+  RemoteTreeNode node;
+  node.update_ = std::move(update);
+  node.children_ = std::move(children);
+  return node;
+}
+
 BookmarkModelMerger::BookmarkModelMerger(
     UpdateResponseDataList updates,
     BookmarkModelView* bookmark_model,
     favicon::FaviconService* favicon_service,
-    SyncedBookmarkTracker* bookmark_tracker)
+    SyncedBookmarkTracker* bookmark_tracker,
+    syncer::PreviouslySyncingGaiaIdInfoForMetrics
+        previously_syncing_gaia_id_info)
     : bookmark_model_(bookmark_model),
       favicon_service_(favicon_service),
       bookmark_tracker_(bookmark_tracker),
+      previously_syncing_gaia_id_info_(previously_syncing_gaia_id_info),
       remote_updates_size_(updates.size()),
       remote_forest_(BuildRemoteForest(std::move(updates), bookmark_tracker)),
       uuid_to_match_map_(
@@ -559,6 +573,13 @@ BookmarkModelMerger::~BookmarkModelMerger() = default;
 
 void BookmarkModelMerger::Merge() {
   TRACE_EVENT0("sync", "BookmarkModelMerger::Merge");
+
+  if (previously_syncing_gaia_id_info_ !=
+      syncer::PreviouslySyncingGaiaIdInfoForMetrics::kUnspecified) {
+    base::UmaHistogramEnumeration(
+        "Sync.BookmarkModelMerger.PreviouslySyncingGaiaId",
+        previously_syncing_gaia_id_info_);
+  }
 
   // Algorithm description:
   // Match up the roots and recursively do the following:

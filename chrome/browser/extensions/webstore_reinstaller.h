@@ -7,6 +7,9 @@
 
 #include "chrome/browser/extensions/webstore_standalone_installer.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

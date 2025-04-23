@@ -3075,6 +3075,7 @@
       name: "cursor",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       inherited: true,
+      independent: true,
       field_template: "keyword",
       keywords: [
         "auto", "default", "none", "context-menu", "help", "pointer",
@@ -4026,14 +4027,14 @@
     },
     {
       // TODO(crbug.com/343257585): We might need to alter the spec's grammar to accept
-      // normal | <length-percentage>. With normal, we use `1em` for slack size.
-      name: "masonry-slack",
+      // normal | <length-percentage>. With normal, we use `1em` for tolerance size.
+      name: "item-tolerance",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       field_group: "*",
       field_template: "external",
       default_value: "std::nullopt",
       type_name: "std::optional<Length>",
-      converter: "ConvertMasonrySlack",
+      converter: "ConvertItemTolerance",
       typedom_types: ["Length", "Percentage"],
       keywords: ["normal"],
       invalidate: ["layout", "paint"],
@@ -5939,6 +5940,7 @@
       valid_for_marker: true,
       valid_for_page_context: true,
       invalidate: ["reshape"],
+      valid_for_permission_element: true,
     },
     {
       name: "text-underline-offset",
@@ -6685,8 +6687,8 @@
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "*",
       field_template: "keyword",
-      keywords: ["nowrap", "wrap"],
-      default_value: "nowrap",
+      keywords: ["auto", "nowrap", "wrap"],
+      default_value: "auto",
       typedom_types: ["Keyword"],
       invalidate: ["layout", "paint"],
       runtime_flag: "MulticolColumnWrapping",
@@ -8647,6 +8649,24 @@
       name: "position-try",
       longhands: ["position-try-order", "position-try-fallbacks"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+    },
+    {
+      name: "rule-color",
+      longhands: ["column-rule-color", "row-rule-color"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSGapDecoration",
+    },
+    {
+      name: "rule-width",
+      longhands: ["column-rule-width", "row-rule-width"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSGapDecoration",
+    },
+    {
+      name: "rule-style",
+      longhands: ["column-rule-style", "row-rule-style"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSGapDecoration",
     },
     {
       name: "scroll-margin",

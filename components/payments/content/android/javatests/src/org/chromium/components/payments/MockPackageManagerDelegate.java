@@ -14,7 +14,7 @@ import android.content.pm.Signature;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +33,8 @@ public class MockPackageManagerDelegate extends PackageManagerDelegate {
     private final Map<ResolveInfo, CharSequence> mLabels = new HashMap<>();
     private final List<ResolveInfo> mServices = new ArrayList<>();
     private final Map<ApplicationInfo, List<String[]>> mResources = new HashMap<>();
+    // A map of a UID to a list of matching PackageInfo.
+    private final Map<Integer, List<PackageInfo>> mOverridenPackageInfos = new HashMap<>();
 
     private String mInvokedAppPackageName;
 
@@ -40,7 +42,69 @@ public class MockPackageManagerDelegate extends PackageManagerDelegate {
     private Map<String, String> mMockInstallerPackageMap = new HashMap<>();
 
     /**
-     * Simulates an installed payment app with no supported delegations.
+     * An enum that can be used to configure the mock package manager for whether it should return
+     * package info and the signatures in it.
+     */
+    public enum PackageInfoState {
+        NO_PACKAGE_INFO {
+            @Override
+            public PackageInfo buildPackageInfo(String packageName, String signature) {
+                return null;
+            }
+        },
+        NULL_SIGNATURE_LIST, // Use the default implementation that does not set signatures list.
+        EMPTY_SIGNATURE_LIST {
+            @Override
+            public PackageInfo buildPackageInfo(String packageName, String signature) {
+                PackageInfo packageInfo = super.buildPackageInfo(packageName, signature);
+                packageInfo.signatures = new Signature[0];
+                return packageInfo;
+            }
+        },
+        ONE_NULL_SIGNATURE {
+            @Override
+            public PackageInfo buildPackageInfo(String packageName, String signature) {
+                PackageInfo packageInfo = super.buildPackageInfo(packageName, signature);
+                packageInfo.signatures = new Signature[1];
+                return packageInfo;
+            }
+        },
+        ONE_EMPTY_SIGNATURE {
+            @Override
+            public PackageInfo buildPackageInfo(String packageName, String signature) {
+                PackageInfo packageInfo = super.buildPackageInfo(packageName, signature);
+                packageInfo.signatures = new Signature[1];
+                packageInfo.signatures[0] = new Signature("");
+                return packageInfo;
+            }
+        },
+        ONE_VALID_SIGNATURE {
+            @Override
+            public PackageInfo buildPackageInfo(String packageName, String signature) {
+                PackageInfo packageInfo = super.buildPackageInfo(packageName, signature);
+                packageInfo.signatures = new Signature[1];
+                packageInfo.signatures[0] = new Signature(signature);
+                return packageInfo;
+            }
+        };
+
+        /**
+         * Builds a package info for this state.
+         *
+         * @param packageName The name of the Android package for the given Android payment app.
+         * @param signature The signature of the Android payment app.
+         * @return The package info that the mock package manager should return for this state.
+         */
+        public PackageInfo buildPackageInfo(String packageName, String signature) {
+            PackageInfo packageInfo = new PackageInfo();
+            packageInfo.packageName = packageName;
+            packageInfo.versionCode = 10;
+            return packageInfo;
+        }
+    }
+
+    /**
+     * Simulates an installed payment app with no supported delegations and one valid signature.
      *
      * @param label The user visible name of the app.
      * @param packageName The identifying package name.
@@ -48,8 +112,7 @@ public class MockPackageManagerDelegate extends PackageManagerDelegate {
      *     null, then this app will not have metadata. If empty, then the default payment method
      *     name will not be set.
      * @param signature The signature of the app. The SHA256 hash of this signature is called
-     *     "fingerprint" and should be present in the app's web app manifest. If null, then this app
-     *     will not have package info. If empty, then this app will not have any signatures.
+     *     "fingerprint" and should be present in the app's web app manifest.
      */
     public void installPaymentApp(
             CharSequence label,
@@ -61,7 +124,36 @@ public class MockPackageManagerDelegate extends PackageManagerDelegate {
                 packageName,
                 defaultPaymentMethodName,
                 /* supportedDelegations= */ null,
-                signature);
+                signature,
+                PackageInfoState.ONE_VALID_SIGNATURE);
+    }
+
+    /**
+     * Simulates an installed payment app with no supported delegations.
+     *
+     * @param label The user visible name of the app.
+     * @param packageName The identifying package name.
+     * @param defaultPaymentMethodName The name of the default payment method name for this app. If
+     *     null, then this app will not have metadata. If empty, then the default payment method
+     *     name will not be set.
+     * @param signature The signature of the app. The SHA256 hash of this signature is called
+     *     "fingerprint" and should be present in the app's web app manifest. Only used if {@code
+     *     packageInfoState} is {@code PackageInfoState.ONE_VALID_SIGNATURE}.
+     * @param packageInfoState The state of package info and the signature in it.
+     */
+    public void installPaymentApp(
+            CharSequence label,
+            String packageName,
+            String defaultPaymentMethodName,
+            String signature,
+            PackageInfoState packageInfoState) {
+        installPaymentApp(
+                label,
+                packageName,
+                defaultPaymentMethodName,
+                /* supportedDelegations= */ null,
+                signature,
+                packageInfoState);
     }
 
     /**
@@ -75,15 +167,17 @@ public class MockPackageManagerDelegate extends PackageManagerDelegate {
      *     supportedDelegations and defaultPaymentMethodName null, then this app will not have
      *     metadata.
      * @param signature The signature of the app. The SHA256 hash of this signature is called
-     *     "fingerprint" and should be present in the app's web app manifest. If null, then this app
-     *     will not have package info. If empty, then this app will not have any signatures.
+     *     "fingerprint" and should be present in the app's web app manifest. Only used if {@code
+     *     packageInfoState} is {@code PackageInfoState.ONE_VALID_SIGNATURE}.
+     * @param packageInfoState The state of package info and the signature in it.
      */
     public void installPaymentApp(
             CharSequence label,
             String packageName,
             String defaultPaymentMethodName,
             String[] supportedDelegations,
-            String signature) {
+            String signature,
+            PackageInfoState packageInfoState) {
         ResolveInfo paymentApp = new ResolveInfo();
         paymentApp.activityInfo = new ActivityInfo();
         paymentApp.activityInfo.packageName = packageName;
@@ -109,18 +203,7 @@ public class MockPackageManagerDelegate extends PackageManagerDelegate {
         }
         mActivities.add(paymentApp);
 
-        if (signature != null) {
-            PackageInfo packageInfo = new PackageInfo();
-            packageInfo.packageName = packageName;
-            packageInfo.versionCode = 10;
-            if (signature.isEmpty()) {
-                packageInfo.signatures = new Signature[0];
-            } else {
-                packageInfo.signatures = new Signature[1];
-                packageInfo.signatures[0] = new Signature(signature);
-            }
-            mPackages.put(packageName, packageInfo);
-        }
+        mPackages.put(packageName, packageInfoState.buildPackageInfo(packageName, signature));
 
         mLabels.put(paymentApp, label);
     }
@@ -194,8 +277,13 @@ public class MockPackageManagerDelegate extends PackageManagerDelegate {
     }
 
     @Override
-    public PackageInfo getPackageInfoWithSignatures(int uid) {
-        return mPackages.get(mInvokedAppPackageName);
+    public List<PackageInfo> getPackageInfosWithSignatures(int uid) {
+        if (mOverridenPackageInfos.containsKey(uid)) {
+            return mOverridenPackageInfos.get(uid);
+        }
+        // Since most tests cannot control the UID that this method is called with, we default to
+        // just returning PackageInfo for the invoked app.
+        return List.of(mPackages.get(mInvokedAppPackageName));
     }
 
     @Override
@@ -242,5 +330,9 @@ public class MockPackageManagerDelegate extends PackageManagerDelegate {
     public void mockInstallerForPackage(String packageName, @Nullable String installerPackageName) {
         assert packageName != null;
         mMockInstallerPackageMap.put(packageName, installerPackageName);
+    }
+
+    public void overridePackageInfosForUid(int uid, List<PackageInfo> packageInfos) {
+        mOverridenPackageInfos.put(uid, packageInfos);
     }
 }

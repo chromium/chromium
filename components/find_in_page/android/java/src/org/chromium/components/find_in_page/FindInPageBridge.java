@@ -57,8 +57,9 @@ public class FindInPageBridge {
 
     /**
      * Stops the current find operation.
+     *
      * @param clearSelection Whether the selection on the page should be cleared.
-     * */
+     */
     public void stopFinding(boolean clearSelection) {
         assert mNativeFindInPageBridge != 0;
         FindInPageBridgeJni.get()

@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_controller_emitter.h"
@@ -80,15 +81,6 @@ void OmniboxController::StartZeroSuggestPrefetch() {
   TRACE_EVENT0("omnibox", "OmniboxController::StartZeroSuggestPrefetch");
   auto page_classification =
       client_->GetPageClassification(/*is_prefetch=*/true);
-
-  // TODO(crbug.com/406826913): Remove this check from OmniboxController and
-  // fix associated tests.
-  if (!OmniboxFieldTrial::IsZeroSuggestPrefetchingEnabledInContext(
-          page_classification) &&
-      !omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get()
-           .MostVisitedPrefetchingEnabled()) {
-    return;
-  }
 
   GURL current_url = client_->GetURL();
   std::u16string text = base::UTF8ToUTF16(current_url.spec());
@@ -203,8 +195,13 @@ void OmniboxController::SetSuggestionGroupHidden(
 }
 
 void OmniboxController::SetRichSuggestionBitmap(int result_index,
+                                                const GURL& icon_url,
                                                 const SkBitmap& bitmap) {
-  edit_model_->SetPopupRichSuggestionBitmap(result_index, bitmap);
+  if (!icon_url.is_empty()) {
+    edit_model_->SetIconBitmap(icon_url, bitmap);
+  } else {
+    edit_model_->SetPopupRichSuggestionBitmap(result_index, bitmap);
+  }
 }
 
 void OmniboxController::OnSuggestionGroupVisibilityPrefChanged() {

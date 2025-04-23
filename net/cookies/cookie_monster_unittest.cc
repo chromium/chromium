@@ -140,6 +140,7 @@ struct CookieMonsterTestTraits {
   static const int creation_time_granularity_in_ms = 0;
   static const bool supports_cookie_access_semantics = true;
   static const bool supports_partitioned_cookies = true;
+  static const bool dispatches_events_on_no_change_overwrite = true;
 };
 
 INSTANTIATE_TYPED_TEST_SUITE_P(CookieMonster,
@@ -7664,10 +7665,6 @@ TEST_F(CookieMonsterTest, SiteHasCookieInOtherPartition) {
   // method only considers partitioned cookies.
   EXPECT_THAT(cm->SiteHasCookieInOtherPartition(site, partition_key),
               testing::Optional(false));
-
-  // Should return nullopt when the partition key is nullopt.
-  EXPECT_FALSE(
-      cm->SiteHasCookieInOtherPartition(site, /*partition_key=*/std::nullopt));
 }
 
 // Test that domain cookies which shadow origin cookies are excluded when scheme

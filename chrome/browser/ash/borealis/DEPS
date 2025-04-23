@@ -30,6 +30,7 @@ include_rules = [
   "+chrome/browser/sessions",
   "+chrome/browser/ui/views/borealis",
   "+chrome/browser/ui/webui/ash/borealis_installer",
+  "+chrome/browser/ui/webui/ash/borealis_motd",
   "+chrome/common/chrome_features.h",
   "+chrome/grit",
   "+chrome/test/base",

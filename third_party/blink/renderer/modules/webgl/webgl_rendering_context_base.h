@@ -604,7 +604,8 @@ class MODULES_EXPORT WebGLRenderingContextBase : public ScriptWrappable,
 
   void MarkLayerComposited() override;
 
-  sk_sp<SkData> PaintRenderingResultsToDataArray(SourceDrawingBuffer) override;
+  sk_sp<SkData> PaintRenderingResultsToRGBADataArray(
+      SourceDrawingBuffer) override;
 
   unsigned MaxVertexAttribs() const { return max_vertex_attribs_; }
 
@@ -910,8 +911,13 @@ class MODULES_EXPORT WebGLRenderingContextBase : public ScriptWrappable,
 
    private:
     void BubbleToFront(wtf_size_t idx);
+    const wtf_size_t capacity_;
     const CacheType type_;
     Vector<std::unique_ptr<CanvasResourceProvider>> resource_providers_;
+    // The returned CanvasResourceProvider may have a different format from the
+    // one requested (e.g, BGRA vs RGBA). Ensure this doesn't cause cache
+    // misses by recording also the requested format.
+    Vector<viz::SharedImageFormat> requested_formats_;
   };
   LRUCanvasResourceProviderCache generated_image_cache_{
       4, LRUCanvasResourceProviderCache::CacheType::kImage};
@@ -1282,9 +1288,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public ScriptWrappable,
   virtual void GetCurrentUnpackState(TexImageParams& params);
 
   // Upload `image` to the specified texture.
-  void TexImageSkImage(TexImageParams params,
-                       sk_sp<SkImage> image,
-                       bool image_has_flip_y);
+  void TexImageSkImage(TexImageParams params, sk_sp<SkImage> image);
 
   // Call the underlying Tex[Sub]Image{2D|3D} function. Always replace
   // `params.internalformat` with the result from ConvertTexInternalFormat.
@@ -1296,7 +1300,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public ScriptWrappable,
   // using TexImageSkImage.
   void TexImageStaticBitmapImage(TexImageParams params,
                                  StaticBitmapImage* image,
-                                 bool image_has_flip_y,
                                  bool allow_copy_via_gpu);
   template <typename T>
   gfx::Rect GetTextureSourceSize(T* texture_source) {

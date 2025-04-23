@@ -44,7 +44,7 @@ int          p
    opus_val32 r;
    opus_val32 error = ac[0];
 #ifdef FIXED_POINT
-   opus_val32 lpc[LPC_ORDER];
+   opus_val32 lpc[CELT_LPC_ORDER];
 #else
    float *lpc = _lpc;
 #endif
@@ -158,7 +158,17 @@ void celt_fir_c(
       sum[1] = SHL32(EXTEND32(x[i+1]), SIG_SHIFT);
       sum[2] = SHL32(EXTEND32(x[i+2]), SIG_SHIFT);
       sum[3] = SHL32(EXTEND32(x[i+3]), SIG_SHIFT);
-      xcorr_kernel(rnum, x+i-ord, sum, ord, arch);
+#if defined(OPUS_CHECK_ASM) && defined(FIXED_POINT)
+      {
+         opus_val32 sum_c[4];
+         memcpy(sum_c, sum, sizeof(sum_c));
+         xcorr_kernel_c(rnum, x+i-ord, sum_c, ord);
+#endif
+         xcorr_kernel(rnum, x+i-ord, sum, ord, arch);
+#if defined(OPUS_CHECK_ASM) && defined(FIXED_POINT)
+         celt_assert(memcmp(sum, sum_c, sizeof(sum)) == 0);
+      }
+#endif
       y[i  ] = SROUND16(sum[0], SIG_SHIFT);
       y[i+1] = SROUND16(sum[1], SIG_SHIFT);
       y[i+2] = SROUND16(sum[2], SIG_SHIFT);
@@ -222,8 +232,17 @@ void celt_iir(const opus_val32 *_x,
       sum[1]=_x[i+1];
       sum[2]=_x[i+2];
       sum[3]=_x[i+3];
-      xcorr_kernel(rden, y+i, sum, ord, arch);
-
+#if defined(OPUS_CHECK_ASM) && defined(FIXED_POINT)
+      {
+         opus_val32 sum_c[4];
+         memcpy(sum_c, sum, sizeof(sum_c));
+         xcorr_kernel_c(rden, y+i, sum_c, ord);
+#endif
+         xcorr_kernel(rden, y+i, sum, ord, arch);
+#if defined(OPUS_CHECK_ASM) && defined(FIXED_POINT)
+         celt_assert(memcmp(sum, sum_c, sizeof(sum)) == 0);
+      }
+#endif
       /* Patch up the result to compensate for the fact that this is an IIR */
       y[i+ord  ] = -SROUND16(sum[0],SIG_SHIFT);
       _y[i  ] = sum[0];
@@ -258,7 +277,7 @@ void celt_iir(const opus_val32 *_x,
 int _celt_autocorr(
                    const opus_val16 *x,   /*  in: [0...n-1] samples x   */
                    opus_val32       *ac,  /* out: [0...lag-1] ac values */
-                   const opus_val16       *window,
+                   const celt_coef  *window,
                    int          overlap,
                    int          lag,
                    int          n,
@@ -283,8 +302,9 @@ int _celt_autocorr(
          xx[i] = x[i];
       for (i=0;i<overlap;i++)
       {
-         xx[i] = MULT16_16_Q15(x[i],window[i]);
-         xx[n-i-1] = MULT16_16_Q15(x[n-i-1],window[i]);
+         opus_val16 w = COEF2VAL16(window[i]);
+         xx[i] = MULT16_16_Q15(x[i],w);
+         xx[n-i-1] = MULT16_16_Q15(x[n-i-1],w);
       }
       xptr = xx;
    }

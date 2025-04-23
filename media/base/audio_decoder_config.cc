@@ -67,7 +67,7 @@ bool AudioDecoderConfig::IsValidConfig() const {
          channel_layout_ != CHANNEL_LAYOUT_UNSUPPORTED &&
          bytes_per_channel_ > 0 &&
          bytes_per_channel_ <= limits::kMaxBytesPerSample &&
-         samples_per_second_ > 0 &&
+         samples_per_second_ >= limits::kMinSampleRate &&
          samples_per_second_ <= limits::kMaxSampleRate &&
          sample_format_ != kUnknownSampleFormat &&
          seek_preroll_ >= base::TimeDelta() && codec_delay_ >= 0;

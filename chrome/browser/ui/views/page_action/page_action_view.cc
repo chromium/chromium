@@ -19,13 +19,15 @@
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/view_class_properties.h"
 
 namespace page_actions {
 
 PageActionView::PageActionView(actions::ActionItem* action_item,
-                               const PageActionViewParams& params)
+                               const PageActionViewParams& params,
+                               ui::ElementIdentifier element_identifier)
     : IconLabelBubbleView(gfx::FontList(), params.icon_label_bubble_delegate),
       action_item_(action_item->GetAsWeakPtr()),
       icon_size_(params.icon_size),
@@ -33,8 +35,7 @@ PageActionView::PageActionView(actions::ActionItem* action_item,
   CHECK(action_item_->GetActionId().has_value());
   SetUpForAnimation(base::Milliseconds(600));
 
-  SetProperty(views::kElementIdentifierKey,
-              action_item_->GetProperty(views::kElementIdentifierKey));
+  SetProperty(views::kElementIdentifierKey, element_identifier);
 
   if (params.font_list) {
     SetFontList(*params.font_list);
@@ -85,10 +86,11 @@ void PageActionView::OnPageActionModelChanged(
     const PageActionModelInterface& model) {
   SetEnabled(model.GetVisible());
   SetVisible(model.GetVisible());
-  SetText(model.GetText());
+  SetLabel(model.GetText(), model.GetAccessibleName());
   SetTooltipText(model.GetTooltipText());
   UpdateIconImage();
 
+  const bool was_chip_visible = IsChipVisible();
   if (!model.GetVisible()) {
     ResetSlideAnimation(/*show=*/false);
   } else if (!model.GetShouldAnimateChip()) {
@@ -97,6 +99,12 @@ void PageActionView::OnPageActionModelChanged(
     AnimateIn(/*string_id=*/std::nullopt);
   } else {
     AnimateOut();
+  }
+
+  // Announce the chip only if announcements are enabled and the chip was
+  // newly shown.
+  if (model.GetShouldAnnounceChip() && !was_chip_visible && IsChipVisible()) {
+    GetViewAccessibility().AnnounceAlert(label()->GetText());
   }
 }
 

@@ -311,8 +311,8 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   // Notify relevant InterestGroupAuctions of progress in resolving promises in
   // config, as appropriate. Manages `promise_fields_in_auction_config_`.
   void NotifyPromiseResolved(
-      const blink::mojom::AuctionAdConfigAuctionId* auction_id,
-      blink::AuctionConfig* config);
+      const blink::mojom::AuctionAdConfigAuctionId& auction_id,
+      const blink::AuctionConfig& config);
 
   // Looks up the decoder from AdAuctionPageData, if that's available.
   data_decoder::DataDecoder* GetDataDecoder(const url::Origin& origin);

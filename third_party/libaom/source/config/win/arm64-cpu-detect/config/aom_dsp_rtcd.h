@@ -1159,39 +1159,9 @@ int aom_satd_lp_neon(const int16_t *coeff, int length);
 
 void aom_scaled_2d_c(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst, ptrdiff_t dst_stride, const InterpKernel *filter, int x0_q4, int x_step_q4, int y0_q4, int y_step_q4, int w, int h);
 void aom_scaled_2d_neon(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst, ptrdiff_t dst_stride, const InterpKernel *filter, int x0_q4, int x_step_q4, int y0_q4, int y_step_q4, int w, int h);
-void aom_scaled_2d_neon_dotprod(const uint8_t* src,
-                                ptrdiff_t src_stride,
-                                uint8_t* dst,
-                                ptrdiff_t dst_stride,
-                                const InterpKernel* filter,
-                                int x0_q4,
-                                int x_step_q4,
-                                int y0_q4,
-                                int y_step_q4,
-                                int w,
-                                int h);
-void aom_scaled_2d_neon_i8mm(const uint8_t* src,
-                             ptrdiff_t src_stride,
-                             uint8_t* dst,
-                             ptrdiff_t dst_stride,
-                             const InterpKernel* filter,
-                             int x0_q4,
-                             int x_step_q4,
-                             int y0_q4,
-                             int y_step_q4,
-                             int w,
-                             int h);
-RTCD_EXTERN void (*aom_scaled_2d)(const uint8_t* src,
-                                  ptrdiff_t src_stride,
-                                  uint8_t* dst,
-                                  ptrdiff_t dst_stride,
-                                  const InterpKernel* filter,
-                                  int x0_q4,
-                                  int x_step_q4,
-                                  int y0_q4,
-                                  int y_step_q4,
-                                  int w,
-                                  int h);
+void aom_scaled_2d_neon_dotprod(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst, ptrdiff_t dst_stride, const InterpKernel *filter, int x0_q4, int x_step_q4, int y0_q4, int y_step_q4, int w, int h);
+void aom_scaled_2d_neon_i8mm(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst, ptrdiff_t dst_stride, const InterpKernel *filter, int x0_q4, int x_step_q4, int y0_q4, int y_step_q4, int w, int h);
+RTCD_EXTERN void (*aom_scaled_2d)(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst, ptrdiff_t dst_stride, const InterpKernel *filter, int x0_q4, int x_step_q4, int y0_q4, int y_step_q4, int w, int h);
 
 void aom_smooth_h_predictor_16x16_c(uint8_t *dst, ptrdiff_t y_stride, const uint8_t *above, const uint8_t *left);
 void aom_smooth_h_predictor_16x16_neon(uint8_t *dst, ptrdiff_t y_stride, const uint8_t *above, const uint8_t *left);
@@ -1801,12 +1771,8 @@ static void setup_rtcd_internal(void)
     aom_sad_skip_64x64x4d = aom_sad_skip_64x64x4d_neon;
     if (flags & HAS_NEON_DOTPROD) aom_sad_skip_64x64x4d = aom_sad_skip_64x64x4d_neon_dotprod;
     aom_scaled_2d = aom_scaled_2d_neon;
-    if (flags & HAS_NEON_DOTPROD) {
-      aom_scaled_2d = aom_scaled_2d_neon_dotprod;
-    }
-    if (flags & HAS_NEON_I8MM) {
-      aom_scaled_2d = aom_scaled_2d_neon_i8mm;
-    }
+    if (flags & HAS_NEON_DOTPROD) aom_scaled_2d = aom_scaled_2d_neon_dotprod;
+    if (flags & HAS_NEON_I8MM) aom_scaled_2d = aom_scaled_2d_neon_i8mm;
     aom_sse = aom_sse_neon;
     if (flags & HAS_NEON_DOTPROD) aom_sse = aom_sse_neon_dotprod;
     aom_var_2d_u8 = aom_var_2d_u8_neon;

@@ -195,7 +195,7 @@ class MEDIA_EXPORT AudioManagerBase : public AudioManager {
   int num_output_streams_;
 
   // Track output state change listeners.
-  base::ObserverList<AudioDeviceListener>::Unchecked output_listeners_;
+  base::ObserverList<AudioDeviceListener> output_listeners_;
 
   // Contains currently open input streams.
   std::unordered_set<raw_ptr<AudioInputStream, CtnExperimental>> input_streams_;

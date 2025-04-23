@@ -275,7 +275,7 @@ class SelectURLResolutionSuccessCallback final
       }
     }
     std::move(request_->operation_completion_cb)
-        .Run(PrivateAggregation::TerminationStatus::kNoUncaughtException);
+        .Run(PrivateAggregation::TerminationStatus::kNoUncaughtError);
   }
 
  private:
@@ -301,7 +301,7 @@ class SelectURLResolutionFailureCallback final
         .Run(/*success=*/false, ExceptionToString(script_state, v8_value),
              /*index=*/0);
     std::move(request_->operation_completion_cb)
-        .Run(PrivateAggregation::TerminationStatus::kUncaughtException);
+        .Run(PrivateAggregation::TerminationStatus::kUncaughtError);
   }
 
  private:
@@ -324,7 +324,7 @@ class RunResolutionSuccessCallback final
         .Run(/*success=*/true,
              /*error_message=*/g_empty_string);
     std::move(request_->operation_completion_cb)
-        .Run(PrivateAggregation::TerminationStatus::kNoUncaughtException);
+        .Run(PrivateAggregation::TerminationStatus::kNoUncaughtError);
   }
 
  private:
@@ -348,7 +348,7 @@ class RunResolutionFailureCallback final
     std::move(request_->callback)
         .Run(/*success=*/false, ExceptionToString(script_state, v8_value));
     std::move(request_->operation_completion_cb)
-        .Run(PrivateAggregation::TerminationStatus::kUncaughtException);
+        .Run(PrivateAggregation::TerminationStatus::kUncaughtError);
   }
 
  private:
@@ -543,7 +543,7 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
                             kSharedStorageCannotDeserializeDataErrorMessage,
                             /*index=*/0);
     std::move(operation_completion_cb)
-        .Run(PrivateAggregation::TerminationStatus::kNoUncaughtException);
+        .Run(PrivateAggregation::TerminationStatus::kNoUncaughtError);
     return;
   }
 
@@ -560,7 +560,7 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
                             ExceptionToString(script_state, exception),
                             /*index=*/0);
     std::move(operation_completion_cb)
-        .Run(PrivateAggregation::TerminationStatus::kUncaughtException);
+        .Run(PrivateAggregation::TerminationStatus::kUncaughtError);
     return;
   }
 
@@ -569,7 +569,7 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
                             kSharedStorageEmptyScriptResultErrorMessage,
                             /*index=*/0);
     std::move(operation_completion_cb)
-        .Run(PrivateAggregation::TerminationStatus::kNoUncaughtException);
+        .Run(PrivateAggregation::TerminationStatus::kNoUncaughtError);
     return;
   }
 
@@ -627,7 +627,7 @@ void SharedStorageWorkletGlobalScope::RunOperation(
     std::move(callback).Run(/*success=*/false,
                             kSharedStorageCannotDeserializeDataErrorMessage);
     std::move(operation_completion_cb)
-        .Run(PrivateAggregation::TerminationStatus::kNoUncaughtException);
+        .Run(PrivateAggregation::TerminationStatus::kNoUncaughtError);
     return;
   }
 
@@ -642,7 +642,7 @@ void SharedStorageWorkletGlobalScope::RunOperation(
     std::move(callback).Run(/*success=*/false,
                             ExceptionToString(script_state, exception));
     std::move(operation_completion_cb)
-        .Run(PrivateAggregation::TerminationStatus::kUncaughtException);
+        .Run(PrivateAggregation::TerminationStatus::kUncaughtError);
     return;
   }
 
@@ -650,7 +650,7 @@ void SharedStorageWorkletGlobalScope::RunOperation(
     std::move(callback).Run(/*success=*/false,
                             kSharedStorageEmptyScriptResultErrorMessage);
     std::move(operation_completion_cb)
-        .Run(PrivateAggregation::TerminationStatus::kNoUncaughtException);
+        .Run(PrivateAggregation::TerminationStatus::kNoUncaughtError);
     return;
   }
 

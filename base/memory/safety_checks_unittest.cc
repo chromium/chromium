@@ -190,14 +190,16 @@ TEST(MemorySafetyCheckTest, SchedulerLoopQuarantine) {
   auto* ptr1 = new DefaultChecks();
   EXPECT_NE(ptr1, nullptr);
   delete ptr1;
-  EXPECT_FALSE(branch.IsQuarantinedForTesting(ptr1));
+  EXPECT_FALSE(
+      branch.GetInternalBranchForTesting().IsQuarantinedForTesting(ptr1));
 
   auto* ptr2 = new AdvancedChecks();
   EXPECT_NE(ptr2, nullptr);
   delete ptr2;
-  EXPECT_TRUE(branch.IsQuarantinedForTesting(ptr2));
+  EXPECT_TRUE(
+      branch.GetInternalBranchForTesting().IsQuarantinedForTesting(ptr2));
 
-  branch.Purge();
+  branch.GetInternalBranchForTesting().Purge();
 }
 
 TEST(MemorySafetyCheckTest, ZapOnFree) {

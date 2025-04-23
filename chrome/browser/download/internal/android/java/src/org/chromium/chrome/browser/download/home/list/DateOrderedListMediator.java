@@ -4,11 +4,12 @@
 
 package org.chromium.chrome.browser.download.home.list;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Handler;
 
-import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
 import org.chromium.base.Callback;
@@ -16,6 +17,8 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.FaviconProvider;
 import org.chromium.chrome.browser.download.home.JustNowProvider;
@@ -59,6 +62,7 @@ import java.util.Set;
  * A Mediator responsible for converting an OfflineContentProvider to a list of items in downloads
  * home. This includes support for filtering, deleting, etc..
  */
+@NullMarked
 class DateOrderedListMediator implements BackPressHandler {
     /** Helper interface for handling share requests by the UI. */
     @FunctionalInterface
@@ -265,7 +269,7 @@ class DateOrderedListMediator implements BackPressHandler {
      * To be called when this mediator should filter its content based on {@code filter}.
      * @see SearchOfflineItemFilter#onQueryChanged(String)
      */
-    public void onFilterStringChanged(String filter) {
+    public void onFilterStringChanged(@Nullable String filter) {
         try (AnimationDisableClosable closeable = new AnimationDisableClosable()) {
             mSearchFilter.onQueryChanged(filter);
         }
@@ -337,19 +341,19 @@ class DateOrderedListMediator implements BackPressHandler {
     private void onOpenItem(OfflineItem item) {
         OpenParams openParams = new OpenParams(LaunchLocation.DOWNLOAD_HOME);
         openParams.openInIncognito = OtrProfileId.isOffTheRecord(mUiConfig.otrProfileId);
-        mProvider.openItem(openParams, item.id);
+        mProvider.openItem(openParams, assumeNonNull(item.id));
     }
 
     private void onPauseItem(OfflineItem item) {
-        mProvider.pauseDownload(item.id);
+        mProvider.pauseDownload(assumeNonNull(item.id));
     }
 
     private void onResumeItem(OfflineItem item) {
-        mProvider.resumeDownload(item.id);
+        mProvider.resumeDownload(assumeNonNull(item.id));
     }
 
     private void onCancelItem(OfflineItem item) {
-        mProvider.cancelDownload(item.id);
+        mProvider.cancelDownload(assumeNonNull(item.id));
     }
 
     private void onDeleteItem(OfflineItem item) {
@@ -364,7 +368,7 @@ class DateOrderedListMediator implements BackPressHandler {
         mRenameController.rename(
                 item.title,
                 (newName, renameCallback) -> {
-                    mProvider.renameItem(item.id, newName, renameCallback);
+                    mProvider.renameItem(assumeNonNull(item.id), newName, renameCallback);
                 });
     }
 
@@ -383,7 +387,7 @@ class DateOrderedListMediator implements BackPressHandler {
                 delete -> {
                     if (delete) {
                         for (OfflineItem item : itemsToDelete) {
-                            mProvider.removeItem(item.id);
+                            mProvider.removeItem(assumeNonNull(item.id));
                         }
                     } else {
                         mDeleteUndoFilter.removePendingDeletions(itemsToDelete);
@@ -397,7 +401,7 @@ class DateOrderedListMediator implements BackPressHandler {
         final Collection<Pair<OfflineItem, OfflineItemShareInfo>> shareInfo = new ArrayList<>();
         for (OfflineItem item : items) {
             mProvider.getShareInfoForItem(
-                    item.id,
+                    assumeNonNull(item.id),
                     (id, info) -> {
                         shareInfo.add(Pair.create(item, info));
 
@@ -413,7 +417,7 @@ class DateOrderedListMediator implements BackPressHandler {
     private Runnable getVisuals(
             OfflineItem item, int iconWidthPx, int iconHeightPx, VisualsCallback callback) {
         if (!UiUtils.canHaveThumbnails(item) || iconWidthPx == 0 || iconHeightPx == 0) {
-            mHandler.post(() -> callback.onVisualsAvailable(item.id, null));
+            mHandler.post(() -> callback.onVisualsAvailable(assumeNonNull(item.id), null));
             return CallbackUtils.emptyRunnable();
         }
 
@@ -455,7 +459,7 @@ class DateOrderedListMediator implements BackPressHandler {
      * changes between empty and non-empty.
      */
     private static class EmptyStateObserver implements OfflineItemFilterObserver {
-        private Boolean mIsEmpty;
+        private @Nullable Boolean mIsEmpty;
         private final DateOrderedListObserver mDateOrderedListObserver;
         private final OfflineItemFilter mOfflineItemFilter;
 

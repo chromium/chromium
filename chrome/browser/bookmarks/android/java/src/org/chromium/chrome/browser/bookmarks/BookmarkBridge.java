@@ -224,27 +224,28 @@ class BookmarkBridge {
      *     partner bookmarks). Will show empty folder according to the logic in BookmarkClient.
      */
     public List<BookmarkId> getTopLevelFolderIds() {
-        return getTopLevelFolderIds(/* ignoreVisibility= */ false);
+        return getTopLevelFolderIds(/* forceVisibleMask= */ BookmarkNodeMaskBit.NONE);
     }
 
     /**
-     * @param ignoreVisibility Whether the visible while empty logic, found in BookmarkClient, is
-     *     used when gathering nodes. When true, all folders are shown regardless of client defined
-     *     visibility. When false, the client defined visibility rules are used. See
+     * @param forceVisibleMask The bitmask of bookmark nodes for which the visible while empty
+     *     logic, found in BookmarkClient, should be ignored when gathering nodes. When visibility
+     *     is forced, a folder may be shown regardless of client defined visibility. Otherwise,
+     *     client defined visibility rules are used. See
      *     components/bookmarks/browser/bookmark_client.h for more information. When account
-     *     bookmarks are active, only a subset of the local folders are included when this is true.
-     *     This is to avoid overloading the user with a lof of unnecessary local folders (folders
-     *     included are the local Mobile and Reading List folders).
+     *     bookmarks are active, only a subset of the local folders are included even when forcing
+     *     visibility. This is to avoid overloading the user with a lot of unnecessary local folders
+     *     (folders included are the local Mobile and Reading List folders).
      * @return The top level folders, including special folders (managed bookmarks, reading list,
      *     partner bookmarks).
      */
-    public List<BookmarkId> getTopLevelFolderIds(boolean ignoreVisibility) {
+    public List<BookmarkId> getTopLevelFolderIds(@BookmarkNodeMaskBit int forceVisibleMask) {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return new ArrayList<>();
         assert mIsNativeBookmarkModelLoaded;
         List<BookmarkId> result = new ArrayList<>();
         BookmarkBridgeJni.get()
-                .getTopLevelFolderIds(mNativeBookmarkBridge, ignoreVisibility, result);
+                .getTopLevelFolderIds(mNativeBookmarkBridge, forceVisibleMask, result);
         return result;
     }
 
@@ -1080,7 +1081,7 @@ class BookmarkBridge {
 
         void getTopLevelFolderIds(
                 long nativeBookmarkBridge,
-                boolean ignoreVisibility,
+                @BookmarkNodeMaskBit int forceVisibleMask,
                 List<BookmarkId> bookmarksList);
 
         BookmarkId getLocalOrSyncableReadingListFolder(long nativeBookmarkBridge);

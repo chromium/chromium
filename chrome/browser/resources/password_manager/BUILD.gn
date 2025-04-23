@@ -50,7 +50,6 @@ build_webui("build") {
     "checkup_details_section.ts",
     "checkup_list_item.ts",
     "checkup_section.ts",
-    "password_change_details.ts",
     "credential_details/credential_field.ts",
     "credential_details/credential_note.ts",
     "credential_details/passkey_details_card.ts",
@@ -63,11 +62,11 @@ build_webui("build") {
     "dialogs/edit_passkey_dialog.ts",
     "dialogs/edit_password_dialog.ts",
     "dialogs/edit_password_disclaimer_dialog.ts",
-    "dialogs/move_passwords_dialog.ts",
     "dialogs/move_single_password_dialog.ts",
     "dialogs/multi_store_delete_password_dialog.ts",
     "dialogs/password_preview_item.ts",
     "full_data_reset.ts",
+    "password_change_details.ts",
     "password_details_section.ts",
     "password_list_item.ts",
     "password_manager_app.ts",
@@ -92,7 +91,7 @@ build_webui("build") {
     "toolbar.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "focus_config.ts",
     "passkeys_browser_proxy.ts",
     "password_manager.ts",

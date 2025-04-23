@@ -124,6 +124,7 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
  public:
   OmniboxSuggestionRowButton(PressedCallback callback,
                              const gfx::VectorIcon& icon,
+                             const gfx::Image& image,
                              OmniboxPopupViewViews* popup_view,
                              OmniboxPopupSelection selection)
       : MdTextButton(std::move(callback),
@@ -131,6 +132,7 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
                      CONTEXT_OMNIBOX_PRIMARY,
                      /*use_text_color_for_icon=*/false),
         icon_(&icon),
+        image_(image),
         popup_view_(popup_view),
         selection_(selection) {
     SetTriggerableEventFlags(GetTriggerableEventFlags() |
@@ -180,12 +182,17 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     // different (for example, if the NTP colors are customized).
     const auto* const color_provider = GetColorProvider();
     const bool selected = theme_state_ == OmniboxPartState::SELECTED;
-    SetImageModel(views::Button::STATE_NORMAL,
-                  ui::ImageModel::FromVectorIcon(
-                      *icon_,
-                      selected ? kColorOmniboxResultsButtonIconSelected
-                               : kColorOmniboxResultsButtonIcon,
-                      GetLayoutConstant(LOCATION_BAR_ICON_SIZE)));
+    if (!image_.IsEmpty()) {
+      SetImageModel(views::Button::STATE_NORMAL,
+                    ui::ImageModel::FromImage(image_));
+    } else {
+      SetImageModel(views::Button::STATE_NORMAL,
+                    ui::ImageModel::FromVectorIcon(
+                        *icon_,
+                        selected ? kColorOmniboxResultsButtonIconSelected
+                                 : kColorOmniboxResultsButtonIcon,
+                        GetLayoutConstant(LOCATION_BAR_ICON_SIZE)));
+    }
     SetEnabledTextColors(color_provider->GetColor(
         selected ? kColorOmniboxResultsTextSelected : kColorOmniboxText));
     ConfigureInkDropForRefresh2023(
@@ -220,8 +227,16 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     }
   }
 
+  void SetImage(const gfx::Image& image) {
+    if (image_ != image) {
+      image_ = image;
+      OnThemeChanged();
+    }
+  }
+
  private:
   raw_ptr<const gfx::VectorIcon> icon_;
+  gfx::Image image_;
   raw_ptr<OmniboxPopupViewViews> popup_view_;
   OmniboxPartState theme_state_ = OmniboxPartState::NORMAL;
 
@@ -283,7 +298,8 @@ void OmniboxSuggestionButtonRowView::BuildViews() {
     keyword_button_ = AddChildView(std::make_unique<OmniboxSuggestionRowButton>(
         base::BindRepeating(&OmniboxSuggestionButtonRowView::ButtonPressed,
                             base::Unretained(this), selection),
-        vector_icons::kSearchChromeRefreshIcon, popup_view_, selection));
+        vector_icons::kSearchChromeRefreshIcon, gfx::Image(), popup_view_,
+        selection));
   }
 
   // Only create buttons for existent actions.
@@ -295,8 +311,8 @@ void OmniboxSuggestionButtonRowView::BuildViews() {
     auto* button = AddChildView(std::make_unique<OmniboxSuggestionRowButton>(
         base::BindRepeating(&OmniboxSuggestionButtonRowView::ButtonPressed,
                             base::Unretained(this), selection),
-        match().actions[action_index]->GetVectorIcon(), popup_view_,
-        selection));
+        match().actions[action_index]->GetVectorIcon(),
+        match().actions[action_index]->GetIconImage(), popup_view_, selection));
     action_buttons_.push_back(button);
   }
 }
@@ -362,7 +378,11 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
       action_button->SetTooltipText(label_strings.suggestion_contents);
       action_button->GetViewAccessibility().SetName(
           label_strings.accessibility_hint);
-      action_button->SetIcon(action->GetVectorIcon());
+      if (!action->GetIconImage().IsEmpty()) {
+        action_button->SetImage(action->GetIconImage());
+      } else {
+        action_button->SetIcon(action->GetVectorIcon());
+      }
     }
   }
 

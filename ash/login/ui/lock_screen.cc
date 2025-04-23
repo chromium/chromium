@@ -14,7 +14,6 @@
 #include "ash/login/ui/lock_debug_view.h"
 #include "ash/login/ui/login_data_dispatcher.h"
 #include "ash/login/ui/login_detachable_base_model.h"
-#include "ash/public/cpp/lock_screen_widget_factory.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/login_shelf_view.h"
@@ -138,8 +137,24 @@ void LockScreen::Show(ScreenType type) {
     parent = Shell::GetContainer(Shell::GetPrimaryRootWindow(),
                                  kShellWindowId_LockScreenContainer);
   }
-  instance_->widget_ =
-      CreateLockScreenWidget(parent, instance_->MakeContentsView());
+
+  instance_->widget_ = std::make_unique<views::Widget>();
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.delegate = new views::WidgetDelegate();
+  params.delegate->SetOwnedByWidget(
+      views::WidgetDelegate::OwnedByWidgetPassKey());
+  params.delegate->SetContentsView(instance_->MakeContentsView());
+  params.delegate->SetInitiallyFocusedView(params.delegate->GetContentsView());
+
+  params.show_state = ui::mojom::WindowShowState::kFullscreen;
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+  params.parent = parent;
+  params.name = "LockScreenWidget";
+  instance_->widget_->Init(std::move(params));
+  instance_->widget_->SetVisibilityAnimationTransition(
+      views::Widget::ANIMATE_NONE);
   instance_->widget_->SetBounds(
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds());
 

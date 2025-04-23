@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/geometry/skia_geometry_utils.h"
 #include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings_builder.h"
@@ -916,16 +917,25 @@ void GraphicsContext::FillDRRect(const FloatRoundedRect& outer,
                      DarkModeFlags(this, auto_dark_mode, stroke_flags));
 }
 
-void GraphicsContext::FillRectWithRoundedHole(
+void GraphicsContext::FillRectWithContouredHole(
     const gfx::RectF& rect,
-    const FloatRoundedRect& rounded_hole_rect,
+    const ContouredRect& contoured_hole_rect,
     const Color& color,
     const AutoDarkMode& auto_dark_mode) {
   cc::PaintFlags flags(ImmutableState()->FillFlags());
   flags.setColor(color.toSkColor4f());
-  canvas_->drawDRRect(SkRRect::MakeRect(gfx::RectFToSkRect(rect)),
-                      SkRRect(rounded_hole_rect),
-                      DarkModeFlags(this, auto_dark_mode, flags));
+  const DarkModeFlags dark_mode_flags(this, auto_dark_mode, flags);
+  if (contoured_hole_rect.HasRoundCurvature()) {
+    canvas_->drawDRRect(SkRRect::MakeRect(gfx::RectFToSkRect(rect)),
+                        SkRRect(contoured_hole_rect.AsRoundedRect()),
+                        dark_mode_flags);
+  } else {
+    SkPath path;
+    CHECK(Op(SkPath::Rect(gfx::RectFToSkRect(rect)),
+             contoured_hole_rect.GetPath().GetSkPath(), kDifference_SkPathOp,
+             &path));
+    canvas_->drawPath(path, dark_mode_flags);
+  }
 }
 
 void GraphicsContext::FillEllipse(const gfx::RectF& ellipse,

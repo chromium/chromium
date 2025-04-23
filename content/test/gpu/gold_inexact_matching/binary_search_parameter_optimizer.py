@@ -64,7 +64,7 @@ class BinarySearchParameterOptimizer(base_optimizer.BaseParameterOptimizer):
       else:
         logging.info('Found bad parameters %s', parameters)
         known_bad = midpoint
-    print('Found optimal parameters: %s' % parameters)
+    print(f'Found optimal parameters: {parameters}')
 
   def _GetStartingValues(self) -> Tuple[int, int]:
     """Gets the initial good/bad values for the binary search.

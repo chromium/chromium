@@ -4,21 +4,20 @@
 
 package org.chromium.android_webview.safe_mode;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.SafeModeAction;
 import org.chromium.android_webview.common.SafeModeActionIds;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 
 /** A {@link SafeModeAction} that has no effect. */
 @Lifetime.Singleton
+@NullMarked
 public class NoopSafeModeAction implements SafeModeAction {
     private static final String TAG = "WebViewSafeMode";
     // This ID should not be changed or reused.
     private static final String ID = SafeModeActionIds.NOOP;
 
-    @NonNull
     @Override
     public String getId() {
         return ID;

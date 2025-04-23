@@ -10,13 +10,4 @@ void PresentAddToCalendar(UIViewController* presenting_view_controller,
                           web::WebState* web_state,
                           EnhancedCalendarConfiguration* config) {}
 
-// TODO(crbug.com/405195613): Cleanup function when provider migration is
-// complete.
-void PresentAddToCalendar(
-    UIViewController* presenting_view_controller,
-    AddToCalendarIntegrationProvider provider,
-    base::WeakPtr<web::WebState> web_state,
-    std::unique_ptr<optimization_guide::proto::EnhancedCalendarResponse>
-        enhanced_calendar_response) {}
-
 }  // namespace ios::provider

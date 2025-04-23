@@ -14,6 +14,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 
 import androidx.annotation.Px;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.base.ContextUtils;
@@ -121,6 +122,7 @@ public final class AutofillImageFetcherUtils {
      * @param url A FIFE URL to fetch the image.
      * @return {@link GURL} formatted with the required image size.
      */
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static GURL getPixAccountImageUrlWithParams(GURL url) {
         @Px int logoSize = getPixelSize(R.dimen.square_card_icon_side_length);
         StringBuilder output = new StringBuilder(url.getSpec());

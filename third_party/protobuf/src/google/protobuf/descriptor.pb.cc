@@ -2464,7 +2464,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         FileDescriptorSet_class_data_ =
             FileDescriptorSet::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL FileDescriptorSet::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    FileDescriptorSet::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&FileDescriptorSet_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(FileDescriptorSet_class_data_.tc_table);
   return FileDescriptorSet_class_data_.base();
@@ -2798,7 +2800,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         FileDescriptorProto_class_data_ =
             FileDescriptorProto::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL FileDescriptorProto::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    FileDescriptorProto::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&FileDescriptorProto_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(FileDescriptorProto_class_data_.tc_table);
   return FileDescriptorProto_class_data_.base();
@@ -3432,7 +3436,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         DescriptorProto_ExtensionRange_class_data_ =
             DescriptorProto_ExtensionRange::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL DescriptorProto_ExtensionRange::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    DescriptorProto_ExtensionRange::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&DescriptorProto_ExtensionRange_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(DescriptorProto_ExtensionRange_class_data_.tc_table);
   return DescriptorProto_ExtensionRange_class_data_.base();
@@ -3742,7 +3748,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         DescriptorProto_ReservedRange_class_data_ =
             DescriptorProto_ReservedRange::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL DescriptorProto_ReservedRange::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    DescriptorProto_ReservedRange::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&DescriptorProto_ReservedRange_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(DescriptorProto_ReservedRange_class_data_.tc_table);
   return DescriptorProto_ReservedRange_class_data_.base();
@@ -4081,7 +4089,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         DescriptorProto_class_data_ =
             DescriptorProto::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL DescriptorProto::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    DescriptorProto::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&DescriptorProto_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(DescriptorProto_class_data_.tc_table);
   return DescriptorProto_class_data_.base();
@@ -4646,7 +4656,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         ExtensionRangeOptions_Declaration_class_data_ =
             ExtensionRangeOptions_Declaration::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL ExtensionRangeOptions_Declaration::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    ExtensionRangeOptions_Declaration::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&ExtensionRangeOptions_Declaration_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(ExtensionRangeOptions_Declaration_class_data_.tc_table);
   return ExtensionRangeOptions_Declaration_class_data_.base();
@@ -5029,7 +5041,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         ExtensionRangeOptions_class_data_ =
             ExtensionRangeOptions::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL ExtensionRangeOptions::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    ExtensionRangeOptions::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&ExtensionRangeOptions_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(ExtensionRangeOptions_class_data_.tc_table);
   return ExtensionRangeOptions_class_data_.base();
@@ -5435,7 +5449,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         FieldDescriptorProto_class_data_ =
             FieldDescriptorProto::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL FieldDescriptorProto::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    FieldDescriptorProto::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&FieldDescriptorProto_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(FieldDescriptorProto_class_data_.tc_table);
   return FieldDescriptorProto_class_data_.base();
@@ -5973,7 +5989,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         OneofDescriptorProto_class_data_ =
             OneofDescriptorProto::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL OneofDescriptorProto::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    OneofDescriptorProto::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&OneofDescriptorProto_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(OneofDescriptorProto_class_data_.tc_table);
   return OneofDescriptorProto_class_data_.base();
@@ -6263,7 +6281,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         EnumDescriptorProto_EnumReservedRange_class_data_ =
             EnumDescriptorProto_EnumReservedRange::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL EnumDescriptorProto_EnumReservedRange::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    EnumDescriptorProto_EnumReservedRange::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&EnumDescriptorProto_EnumReservedRange_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(EnumDescriptorProto_EnumReservedRange_class_data_.tc_table);
   return EnumDescriptorProto_EnumReservedRange_class_data_.base();
@@ -6572,7 +6592,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         EnumDescriptorProto_class_data_ =
             EnumDescriptorProto::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL EnumDescriptorProto::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    EnumDescriptorProto::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&EnumDescriptorProto_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(EnumDescriptorProto_class_data_.tc_table);
   return EnumDescriptorProto_class_data_.base();
@@ -6975,7 +6997,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         EnumValueDescriptorProto_class_data_ =
             EnumValueDescriptorProto::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL EnumValueDescriptorProto::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    EnumValueDescriptorProto::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&EnumValueDescriptorProto_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(EnumValueDescriptorProto_class_data_.tc_table);
   return EnumValueDescriptorProto_class_data_.base();
@@ -7322,7 +7346,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         ServiceDescriptorProto_class_data_ =
             ServiceDescriptorProto::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL ServiceDescriptorProto::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    ServiceDescriptorProto::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&ServiceDescriptorProto_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(ServiceDescriptorProto_class_data_.tc_table);
   return ServiceDescriptorProto_class_data_.base();
@@ -7679,7 +7705,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         MethodDescriptorProto_class_data_ =
             MethodDescriptorProto::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL MethodDescriptorProto::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    MethodDescriptorProto::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&MethodDescriptorProto_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(MethodDescriptorProto_class_data_.tc_table);
   return MethodDescriptorProto_class_data_.base();
@@ -8142,7 +8170,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         FileOptions_class_data_ =
             FileOptions::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL FileOptions::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    FileOptions::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&FileOptions_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(FileOptions_class_data_.tc_table);
   return FileOptions_class_data_.base();
@@ -8948,7 +8978,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         MessageOptions_class_data_ =
             MessageOptions::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL MessageOptions::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    MessageOptions::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&MessageOptions_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(MessageOptions_class_data_.tc_table);
   return MessageOptions_class_data_.base();
@@ -9349,7 +9381,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         FieldOptions_EditionDefault_class_data_ =
             FieldOptions_EditionDefault::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL FieldOptions_EditionDefault::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    FieldOptions_EditionDefault::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&FieldOptions_EditionDefault_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(FieldOptions_EditionDefault_class_data_.tc_table);
   return FieldOptions_EditionDefault_class_data_.base();
@@ -9642,7 +9676,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         FieldOptions_FeatureSupport_class_data_ =
             FieldOptions_FeatureSupport::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL FieldOptions_FeatureSupport::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    FieldOptions_FeatureSupport::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&FieldOptions_FeatureSupport_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(FieldOptions_FeatureSupport_class_data_.tc_table);
   return FieldOptions_FeatureSupport_class_data_.base();
@@ -10026,7 +10062,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         FieldOptions_class_data_ =
             FieldOptions::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL FieldOptions::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    FieldOptions::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&FieldOptions_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(FieldOptions_class_data_.tc_table);
   return FieldOptions_class_data_.base();
@@ -10625,7 +10663,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         OneofOptions_class_data_ =
             OneofOptions::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL OneofOptions::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    OneofOptions::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&OneofOptions_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(OneofOptions_class_data_.tc_table);
   return OneofOptions_class_data_.base();
@@ -10971,7 +11011,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         EnumOptions_class_data_ =
             EnumOptions::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL EnumOptions::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    EnumOptions::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&EnumOptions_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(EnumOptions_class_data_.tc_table);
   return EnumOptions_class_data_.base();
@@ -11379,7 +11421,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         EnumValueOptions_class_data_ =
             EnumValueOptions::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL EnumValueOptions::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    EnumValueOptions::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&EnumValueOptions_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(EnumValueOptions_class_data_.tc_table);
   return EnumValueOptions_class_data_.base();
@@ -11796,7 +11840,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         ServiceOptions_class_data_ =
             ServiceOptions::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL ServiceOptions::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    ServiceOptions::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&ServiceOptions_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(ServiceOptions_class_data_.tc_table);
   return ServiceOptions_class_data_.base();
@@ -12168,7 +12214,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         MethodOptions_class_data_ =
             MethodOptions::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL MethodOptions::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    MethodOptions::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&MethodOptions_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(MethodOptions_class_data_.tc_table);
   return MethodOptions_class_data_.base();
@@ -12539,7 +12587,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         UninterpretedOption_NamePart_class_data_ =
             UninterpretedOption_NamePart::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL UninterpretedOption_NamePart::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    UninterpretedOption_NamePart::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&UninterpretedOption_NamePart_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(UninterpretedOption_NamePart_class_data_.tc_table);
   return UninterpretedOption_NamePart_class_data_.base();
@@ -12854,7 +12904,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         UninterpretedOption_class_data_ =
             UninterpretedOption::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL UninterpretedOption::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    UninterpretedOption::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&UninterpretedOption_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(UninterpretedOption_class_data_.tc_table);
   return UninterpretedOption_class_data_.base();
@@ -13296,7 +13348,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         FeatureSet_class_data_ =
             FeatureSet::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL FeatureSet::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    FeatureSet::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&FeatureSet_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(FeatureSet_class_data_.tc_table);
   return FeatureSet_class_data_.base();
@@ -13715,7 +13769,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         FeatureSetDefaults_FeatureSetEditionDefault_class_data_ =
             FeatureSetDefaults_FeatureSetEditionDefault::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL FeatureSetDefaults_FeatureSetEditionDefault::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    FeatureSetDefaults_FeatureSetEditionDefault::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&FeatureSetDefaults_FeatureSetEditionDefault_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(FeatureSetDefaults_FeatureSetEditionDefault_class_data_.tc_table);
   return FeatureSetDefaults_FeatureSetEditionDefault_class_data_.base();
@@ -14070,7 +14126,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         FeatureSetDefaults_class_data_ =
             FeatureSetDefaults::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL FeatureSetDefaults::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    FeatureSetDefaults::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&FeatureSetDefaults_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(FeatureSetDefaults_class_data_.tc_table);
   return FeatureSetDefaults_class_data_.base();
@@ -14418,7 +14476,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         SourceCodeInfo_Location_class_data_ =
             SourceCodeInfo_Location::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL SourceCodeInfo_Location::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    SourceCodeInfo_Location::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&SourceCodeInfo_Location_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(SourceCodeInfo_Location_class_data_.tc_table);
   return SourceCodeInfo_Location_class_data_.base();
@@ -14796,7 +14856,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         SourceCodeInfo_class_data_ =
             SourceCodeInfo::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL SourceCodeInfo::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    SourceCodeInfo::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&SourceCodeInfo_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(SourceCodeInfo_class_data_.tc_table);
   return SourceCodeInfo_class_data_.base();
@@ -15085,7 +15147,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         GeneratedCodeInfo_Annotation_class_data_ =
             GeneratedCodeInfo_Annotation::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GeneratedCodeInfo_Annotation::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    GeneratedCodeInfo_Annotation::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&GeneratedCodeInfo_Annotation_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(GeneratedCodeInfo_Annotation_class_data_.tc_table);
   return GeneratedCodeInfo_Annotation_class_data_.base();
@@ -15452,7 +15516,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         GeneratedCodeInfo_class_data_ =
             GeneratedCodeInfo::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GeneratedCodeInfo::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    GeneratedCodeInfo::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&GeneratedCodeInfo_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(GeneratedCodeInfo_class_data_.tc_table);
   return GeneratedCodeInfo_class_data_.base();

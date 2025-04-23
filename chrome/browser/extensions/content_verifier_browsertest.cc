@@ -1182,6 +1182,56 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
   EXPECT_TRUE(reasons.empty());
 }
 
+// Test that navigating to an extension resource with a range header does not
+// disable the extension.
+// Regression test for https://crbug.com/405286894.
+IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
+                       RemainsEnabledOnNavigateToPathWithRangeHeader) {
+  // Load an extension with a large file.
+  const Extension* extension = InstallExtensionFromWebstore(
+      test_data_dir_.AppendASCII("content_verifier/long_file.crx"), 1);
+  ASSERT_TRUE(extension);
+  const ExtensionId kExtensionId = extension->id();
+
+  static constexpr char kFetchFileContent[] = R"(
+    (async () => {
+      const fileURL = chrome.runtime.getURL('page.html');
+      const headers = { Range: `bytes=%s` };
+      try {
+        const response = await fetch(fileURL, { headers });
+        const fileContent = await response.text();
+        chrome.test.sendScriptResult(fileContent);
+      } catch(err) {
+        chrome.test.sendScriptResult(`ERROR: ${err}`);
+      }
+    })();
+  )";
+
+  // Fetch the first 20 bytes of `page.html`. The script should run to
+  // completion since the extension should not be corrupted.
+  auto value = BackgroundScriptExecutor::ExecuteScript(
+      profile(), kExtensionId, base::StringPrintf(kFetchFileContent, "0-19"),
+      BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+  ASSERT_TRUE(value.is_string());
+  EXPECT_EQ(std::string(20, 'a'), value.GetString());
+
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  DisableReasonSet reasons = prefs->GetDisableReasons(kExtensionId);
+  EXPECT_TRUE(reasons.empty());
+
+  // Fetch using multiple ranges. This should fail since this is currently not
+  // supported by the FileURLLoader.
+  value = BackgroundScriptExecutor::ExecuteScript(
+      profile(), kExtensionId, base::StringPrintf(kFetchFileContent, "2-5,7-9"),
+      BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+  ASSERT_TRUE(value.is_string());
+  EXPECT_EQ("ERROR: TypeError: Failed to fetch", value.GetString());
+
+  // The fetch should fail but the extension shouldn't be disabled/corrupted.
+  reasons = prefs->GetDisableReasons(kExtensionId);
+  EXPECT_TRUE(reasons.empty());
+}
+
 class ContentVerifierPolicyTest : public ContentVerifierTest {
  public:
   // We need to do this work here because the force-install policy values are

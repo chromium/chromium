@@ -9,7 +9,10 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
+#include "chrome/browser/predictors/loading_predictor.h"
+#include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace contextual_cueing {
@@ -37,6 +40,8 @@ ContextualCueingServiceFactory::ContextualCueingServiceFactory()
   DependsOn(page_content_annotations::PageContentExtractionServiceFactory::
                 GetInstance());
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+  DependsOn(predictors::LoadingPredictorFactory::GetInstance());
+  DependsOn(TemplateURLServiceFactory::GetInstance());
 }
 
 ContextualCueingServiceFactory::~ContextualCueingServiceFactory() = default;
@@ -49,11 +54,13 @@ ContextualCueingServiceFactory::BuildServiceInstanceForBrowserContext(
           contextual_cueing::kGlicZeroStateSuggestions)) {
     return nullptr;
   }
+  Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<ContextualCueingService>(
       page_content_annotations::PageContentExtractionServiceFactory::
-          GetForProfile(Profile::FromBrowserContext(context)),
-      OptimizationGuideKeyedServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(context)));
+          GetForProfile(profile),
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
+      predictors::LoadingPredictorFactory::GetForProfile(profile),
+      profile->GetPrefs(), TemplateURLServiceFactory::GetForProfile(profile));
 }
 
 bool ContextualCueingServiceFactory::ServiceIsCreatedWithBrowserContext()

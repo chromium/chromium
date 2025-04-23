@@ -235,7 +235,6 @@ class SystemMediaControlsLinuxTest : public testing::Test,
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<base::RunLoop> service_wait_loop_;
   std::unique_ptr<base::RunLoop> response_wait_loop_;
-  std::unique_ptr<SystemMediaControlsLinux> service_;
   scoped_refptr<dbus::MockBus> mock_bus_;
   scoped_refptr<dbus::MockExportedObject> mock_exported_object_;
 
@@ -243,6 +242,11 @@ class SystemMediaControlsLinuxTest : public testing::Test,
       player_interface_exported_methods_;
   base::flat_map<std::string, dbus::ExportedObject::MethodCallCallback>
       properties_interface_exported_methods_;
+
+  // `service_` field is last, because it contains `raw_ptr` to
+  // `dbus::ExportedObject` in the maps above.  Destroying the `service_` field
+  // first means that the `raw_ptr` doesn't become temporarily dangling.
+  std::unique_ptr<SystemMediaControlsLinux> service_;
 };
 
 TEST_F(SystemMediaControlsLinuxTest, ObserverNotifiedOfServiceReadyWhenAdded) {

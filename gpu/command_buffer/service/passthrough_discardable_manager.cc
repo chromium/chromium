@@ -4,6 +4,8 @@
 
 #include "gpu/command_buffer/service/passthrough_discardable_manager.h"
 
+#include <inttypes.h>
+
 #include "base/not_fatal_until.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_dump_manager.h"

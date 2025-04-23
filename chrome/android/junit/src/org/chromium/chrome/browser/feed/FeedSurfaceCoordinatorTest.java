@@ -22,6 +22,7 @@ import android.app.Activity;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.view.MotionEvent;
+import android.view.View;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -103,7 +104,8 @@ import java.util.Locale;
 @DisableFeatures({
     ChromeFeatureList.WEB_FEED_SORT,
     ChromeFeatureList.WEB_FEED_ONBOARDING,
-    ChromeFeatureList.FEED_CONTAINMENT
+    ChromeFeatureList.FEED_CONTAINMENT,
+    ChromeFeatureList.FEED_HEADER_REMOVAL
 })
 @EnableFeatures({ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP})
 public class FeedSurfaceCoordinatorTest {
@@ -447,16 +449,6 @@ public class FeedSurfaceCoordinatorTest {
     }
 
     @Test
-    public void testFeedHeaderPosition_scrollableContainerDelegate() {
-        when(mScrollableContainerDelegate.getTopPositionRelativeToContainerView(any()))
-                .thenReturn(-1);
-        assertEquals(-1, mCoordinator.getFeedHeaderPosition());
-
-        mCoordinator.clearScrollableContainerDelegateForTesting();
-        assertEquals(Integer.MAX_VALUE, mCoordinator.getFeedHeaderPosition());
-    }
-
-    @Test
     @DisableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
     public void testTabStripHeightChangeCallback() {
         ArgumentCaptor<Callback<Integer>> captor = ArgumentCaptor.forClass(Callback.class);
@@ -491,6 +483,20 @@ public class FeedSurfaceCoordinatorTest {
                 mCoordinator.getRecyclerView().getClipToPadding());
         assertEquals(
                 "Padding should be reset.", 0, mCoordinator.getRecyclerView().getPaddingBottom());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.FEED_HEADER_REMOVAL + ":treatment/label")
+    public void testFeedHeaderShownWithLabelOnly() {
+        assertEquals(View.VISIBLE, mCoordinator.getHeaderViewForTesting().getVisibility());
+        assertEquals(0, mCoordinator.getHeaderPosition());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.FEED_HEADER_REMOVAL + ":treatment/none")
+    public void testFeedHeaderHidden() {
+        assertEquals(View.GONE, mCoordinator.getHeaderViewForTesting().getVisibility());
+        assertEquals(1, mCoordinator.getHeaderPosition());
     }
 
     private boolean hasStreamBound() {

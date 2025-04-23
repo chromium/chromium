@@ -143,7 +143,9 @@ class KioskAppUpdateServiceTest
     update_service_->Init(app_->id());
   }
 
-  void FireAppUpdateAvailable() { update_service_->OnAppUpdateAvailable(app_); }
+  void FireAppUpdateAvailable() {
+    update_service_->OnAppUpdateAvailable(*app_);
+  }
 
   void FireUpdatedNeedReboot() {
     update_engine::StatusResult status;

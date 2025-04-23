@@ -22,12 +22,12 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -36,8 +36,12 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManagerThumbnailProvider;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.MultiThumbnailCardProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
+import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.XrUtils;
 import org.chromium.url.GURL;
@@ -57,7 +61,12 @@ public class StripDragShadowView extends FrameLayout {
             };
 
     // Constants
-    @VisibleForTesting protected static final int WIDTH_DP = 264;
+    @VisibleForTesting
+    protected static final int WIDTH_DP = (int) StripLayoutUtils.MAX_TAB_WIDTH_DP;
+
+    @VisibleForTesting
+    protected static final int HEIGHT_DP = (int) StripLayoutUtils.MAX_TAB_WIDTH_DP;
+
     private static final int WIDTH_ON_XR_DP = 528;
     private static final long ANIM_EXPAND_MS = 200L;
 
@@ -68,7 +77,6 @@ public class StripDragShadowView extends FrameLayout {
     private TabThumbnailView mThumbnailView;
 
     // Internal State
-    private Boolean mIncognito;
     private int mSourceWidthPx;
     private int mSourceHeightPx;
     private int mWidthPx;
@@ -78,8 +86,8 @@ public class StripDragShadowView extends FrameLayout {
 
     // External Dependencies
     private BrowserControlsStateProvider mBrowserControlStateProvider;
-    private Supplier<TabContentManager> mTabContentManagerSupplier;
     private Supplier<LayerTitleCache> mLayerTitleCacheSupplier;
+    private TabModelSelector mTabModelSelector;
     private ShadowUpdateHost mShadowUpdateHost;
 
     // Thumbnail Providers
@@ -89,8 +97,6 @@ public class StripDragShadowView extends FrameLayout {
     // Current Drag State
     private Tab mTab;
     private TabObserver mFaviconUpdateTabObserver;
-    private ThumbnailProvider mThumbnailProvider;
-    private Runnable mTitleUpdateRunnable;
 
     public interface ShadowUpdateHost {
         /**
@@ -104,10 +110,6 @@ public class StripDragShadowView extends FrameLayout {
         super(context, attrs);
 
         Resources resources = context.getResources();
-        mWidthPx =
-                (int)
-                        (resources.getDisplayMetrics().density
-                                * (XrUtils.isXrDevice() ? WIDTH_ON_XR_DP : WIDTH_DP));
         mSourceHeightPx =
                 resources.getDimensionPixelSize(R.dimen.tab_grid_card_header_height)
                         + (2 * resources.getDimensionPixelSize(R.dimen.tab_grid_card_margin));
@@ -130,6 +132,7 @@ public class StripDragShadowView extends FrameLayout {
      * @param multiThumbnailCardProvider Provider for group thumbnails.
      * @param tabContentManagerSupplier Supplier for the {@link TabContentManager}.
      * @param layerTitleCacheSupplier Supplier for the {@link LayerTitleCache}.
+     * @param tabModelSelector The {@link TabModelSelector} to use.
      * @param shadowUpdateHost The host to push updates to.
      */
     public void initialize(
@@ -137,15 +140,16 @@ public class StripDragShadowView extends FrameLayout {
             MultiThumbnailCardProvider multiThumbnailCardProvider,
             Supplier<TabContentManager> tabContentManagerSupplier,
             Supplier<LayerTitleCache> layerTitleCacheSupplier,
+            TabModelSelector tabModelSelector,
             ShadowUpdateHost shadowUpdateHost) {
         mBrowserControlStateProvider = browserControlsStateProvider;
-        mTabContentManagerSupplier = tabContentManagerSupplier;
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
+        mTabModelSelector = tabModelSelector;
         mShadowUpdateHost = shadowUpdateHost;
 
         mMultiThumbnailCardProvider = multiThumbnailCardProvider;
         mSingleThumbnailCardProvider =
-                new TabContentManagerThumbnailProvider(mTabContentManagerSupplier.get());
+                new TabContentManagerThumbnailProvider(tabContentManagerSupplier.get());
 
         mCardView.getBackground().mutate();
         mTitleView.setTextAppearance(R.style.TextAppearance_TextMedium_Primary);
@@ -160,20 +164,6 @@ public class StripDragShadowView extends FrameLayout {
                 getResources().getDimensionPixelSize(R.dimen.tab_grid_card_favicon_padding_start);
         layoutParams.setMarginEnd(padding);
         mTitleView.setLayoutParams(layoutParams);
-
-        mFaviconUpdateTabObserver =
-                new EmptyTabObserver() {
-                    @Override
-                    public void onFaviconUpdated(Tab tab, Bitmap icon, GURL iconUrl) {
-                        if (icon != null) {
-                            mFaviconView.setImageBitmap(icon);
-                        } else {
-                            mFaviconView.setImageBitmap(
-                                    mLayerTitleCacheSupplier.get().getOriginalFavicon(tab));
-                        }
-                        mShadowUpdateHost.requestUpdate();
-                    }
-                };
     }
 
     /**
@@ -183,10 +173,30 @@ public class StripDragShadowView extends FrameLayout {
      * @param sourceWidthPx Width of the source strip tab container in px.
      */
     public void prepareForTabDrag(Tab tab, int sourceWidthPx) {
-        mThumbnailProvider = mSingleThumbnailCardProvider;
-        mTitleUpdateRunnable = this::updateTabTitleAndFavicon;
+        Context context = getContext();
+        boolean isIncognito = tab.isIncognitoBranded();
+
+        // Background color
+        mCardView.setBackgroundTintList(
+                ColorStateList.valueOf(
+                        TabUiThemeUtil.getTabStripSelectedTabColor(context, isIncognito)));
+
+        // Title text
+        LayerTitleCache layerTitleCache = mLayerTitleCacheSupplier.get();
+        String defaultTitle = context.getString(R.string.tab_loading_default_title);
+        mTitleView.setText(layerTitleCache.getUpdatedTitle(tab, defaultTitle));
+        mTitleView.setTextColor(TabUiThemeUtil.getTabTextColor(context, isIncognito));
+
+        // Tab favicon
+        boolean fetchFaviconFromHistory = tab.isNativePage() || tab.getWebContents() == null;
+        mFaviconView.setImageBitmap(layerTitleCache.getOriginalFavicon(tab));
+        if (fetchFaviconFromHistory) {
+            layerTitleCache.fetchFaviconWithCallback(tab, this::onFaviconFetch);
+        }
+
+        mFaviconUpdateTabObserver = getFaviconUpdateTabObserver();
         tab.addObserver(mFaviconUpdateTabObserver);
-        prepareForDrag(tab, sourceWidthPx);
+        prepareForDrag(mSingleThumbnailCardProvider, tab, sourceWidthPx);
     }
 
     /**
@@ -196,44 +206,53 @@ public class StripDragShadowView extends FrameLayout {
      * @param sourceWidthPx Width of the source group indicator in px.
      */
     public void prepareForGroupDrag(Tab tab, int sourceWidthPx) {
-        mThumbnailProvider = mMultiThumbnailCardProvider;
-        mTitleUpdateRunnable = this::updateGroupTitleAndColor;
-        prepareForDrag(tab, sourceWidthPx);
+        Context context = getContext();
+        boolean isIncognito = tab.isIncognitoBranded();
+        TabGroupModelFilter modelFilter =
+                mTabModelSelector
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(isIncognito);
+
+        // Background color
+        @TabGroupColorId int colorId = modelFilter.getTabGroupColorWithFallback(tab.getRootId());
+        @ColorInt
+        int groupColor =
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
+                        context, colorId, isIncognito);
+        mCardView.setBackgroundTintList(ColorStateList.valueOf(groupColor));
+        mMultiThumbnailCardProvider.setMiniThumbnailPlaceholderColor(
+                TabUiThemeUtil.getMiniThumbnailPlaceholderColorForGroup(
+                        context, isIncognito, groupColor));
+
+        // Group title text
+        LayerTitleCache layerTitleCache = mLayerTitleCacheSupplier.get();
+        String titleText =
+                layerTitleCache.getUpdatedGroupTitle(
+                        tab.getTabGroupId(),
+                        StripLayoutUtils.getGroupTitleText(context, modelFilter, tab),
+                        isIncognito);
+        mTitleView.setText(titleText);
+        mTitleView.setTextColor(
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemTextColor(
+                        context, colorId, isIncognito));
+
+        // Clear the tab favicon if needed
+        mFaviconView.setImageBitmap(null);
+
+        prepareForDrag(mMultiThumbnailCardProvider, tab, sourceWidthPx);
     }
 
-    private void prepareForDrag(Tab tab, int sourceWidthPx) {
+    private void prepareForDrag(ThumbnailProvider thumbnailProvider, Tab tab, int sourceWidthPx) {
         mTab = tab;
         mSourceWidthPx = sourceWidthPx;
 
-        update();
-    }
-
-    /** Clear state on tab drag end. */
-    public void clear() {
-        mTab.removeObserver(mFaviconUpdateTabObserver);
-        mTab = null;
-        mThumbnailProvider = null;
-        mTitleUpdateRunnable = null;
-    }
-
-    /** Run the expand animation. */
-    public void expand() {
-        if (mRunningAnimator != null && mRunningAnimator.isRunning()) mRunningAnimator.end();
-
-        setProgress(0.f);
-        mRunningAnimator = ObjectAnimator.ofFloat(this, PROGRESS, 1.f);
-        mRunningAnimator.setInterpolator(Interpolators.EMPHASIZED);
-        mRunningAnimator.setDuration(ANIM_EXPAND_MS);
-        mRunningAnimator.start();
-    }
-
-    private void update() {
         // TODO(crbug.com/40287709): Unify the shared code for creating the GTS-style card.
         // Set to final size. Even though the size will be animated, we need to initially set to the
         // final size, so that we allocate the appropriate amount of space when
         // #onProvideShadowMetrics is called on drag start.
-        mHeightPx =
-                TabUtils.deriveGridCardHeight(mWidthPx, getContext(), mBrowserControlStateProvider);
+        Size cardSize = getCardSize();
+        mWidthPx = cardSize.getWidth();
+        mHeightPx = cardSize.getHeight();
 
         ViewGroup.LayoutParams layoutParams = getLayoutParams();
         layoutParams.width = mWidthPx;
@@ -242,10 +261,9 @@ public class StripDragShadowView extends FrameLayout {
         this.layout(0, 0, mWidthPx, mHeightPx);
 
         // Request the thumbnail.
-        Size cardSize = new Size(mWidthPx, mHeightPx);
         Size thumbnailSize = TabUtils.deriveThumbnailSize(cardSize, getContext());
-        mThumbnailProvider.getTabThumbnailWithCallback(
-                mTab.getId(),
+        thumbnailProvider.getTabThumbnailWithCallback(
+                tab.getId(),
                 thumbnailSize,
                 /* isSelected= */ false,
                 result -> {
@@ -257,64 +275,26 @@ public class StripDragShadowView extends FrameLayout {
                     }
                     mShadowUpdateHost.requestUpdate();
                 });
-
-        // Update title.
-        mTitleUpdateRunnable.run();
-
-        // Update incognito state.
-        setIncognito(mTab.isIncognito());
+        mThumbnailView.updateThumbnailPlaceholder(
+                tab.isIncognitoBranded(), /* isSelected= */ false);
     }
 
-    private void updateTabTitleAndFavicon() {
-        LayerTitleCache layerTitleCache = mLayerTitleCacheSupplier.get();
-
-        mTitleView.setText(
-                layerTitleCache.getUpdatedTitle(
-                        mTab, getContext().getString(R.string.tab_loading_default_title)));
-
-        boolean fetchFaviconFromHistory = mTab.isNativePage() || mTab.getWebContents() == null;
-        mFaviconView.setImageBitmap(layerTitleCache.getOriginalFavicon(mTab));
-        if (fetchFaviconFromHistory) {
-            layerTitleCache.fetchFaviconWithCallback(
-                    mTab,
-                    (image, iconUrl) -> {
-                        if (image != null) {
-                            mFaviconView.setImageBitmap(image);
-                            mShadowUpdateHost.requestUpdate();
-                        }
-                    });
-        }
+    /** Clear state on tab drag end. */
+    public void clear() {
+        mTab.removeObserver(mFaviconUpdateTabObserver);
+        mTab = null;
+        mFaviconUpdateTabObserver = null;
     }
 
-    private void updateGroupTitleAndColor() {
-        // TODO(crbug.com/383124686): Implement.
-    }
+    /** Run the expand animation. */
+    public void expand() {
+        if (mRunningAnimator != null && mRunningAnimator.isRunning()) mRunningAnimator.end();
 
-    private void setIncognito(boolean incognito) {
-        if (mIncognito == null || mIncognito != incognito) {
-            mIncognito = incognito;
-
-            mCardView.setBackgroundTintList(
-                    ColorStateList.valueOf(
-                            TabUiThemeUtil.getTabStripContainerColor(
-                                    getContext(),
-                                    mIncognito,
-                                    /* foreground= */ true,
-                                    /* isPlaceholder= */ false,
-                                    /* isHovered= */ false)));
-
-            @ColorInt
-            int textColor =
-                    AppCompatResources.getColorStateList(
-                                    getContext(),
-                                    mIncognito
-                                            ? R.color.compositor_tab_title_bar_text_incognito
-                                            : R.color.compositor_tab_title_bar_text)
-                            .getDefaultColor();
-            mTitleView.setTextColor(textColor);
-
-            mThumbnailView.updateThumbnailPlaceholder(mIncognito, false);
-        }
+        setProgress(0.f);
+        mRunningAnimator = ObjectAnimator.ofFloat(this, PROGRESS, 1.f);
+        mRunningAnimator.setInterpolator(Interpolators.EMPHASIZED);
+        mRunningAnimator.setDuration(ANIM_EXPAND_MS);
+        mRunningAnimator.start();
     }
 
     private void setProgress(float progress) {
@@ -335,6 +315,50 @@ public class StripDragShadowView extends FrameLayout {
     /** Linear interpolate from start value to stop value by amount [0..1] */
     private float lerp(float start, float stop, float amount) {
         return start + ((stop - start) * amount);
+    }
+
+    private Size getCardSize() {
+        Context context = getContext();
+        float density = context.getResources().getDisplayMetrics().density;
+
+        // XR uses a separate target width.
+        if (XrUtils.isXrDevice()) {
+            int width = (int) (density * WIDTH_ON_XR_DP);
+            int height =
+                    TabUtils.deriveGridCardHeight(width, context, mBrowserControlStateProvider);
+            return new Size(width, height);
+        }
+
+        // Otherwise, use the default max width and max height to determine the size.
+        int width = (int) (density * WIDTH_DP);
+        int height = TabUtils.deriveGridCardHeight(width, context, mBrowserControlStateProvider);
+        if (height > HEIGHT_DP) {
+            height = (int) (density * HEIGHT_DP);
+            width = TabUtils.deriveGridCardWidth(height, context, mBrowserControlStateProvider);
+        }
+        return new Size(width, height);
+    }
+
+    private void onFaviconFetch(Bitmap image, GURL iconUrl) {
+        if (image == null) return;
+
+        mFaviconView.setImageBitmap(image);
+        mShadowUpdateHost.requestUpdate();
+    }
+
+    private TabObserver getFaviconUpdateTabObserver() {
+        return new EmptyTabObserver() {
+            @Override
+            public void onFaviconUpdated(Tab tab, Bitmap icon, GURL iconUrl) {
+                if (icon != null) {
+                    mFaviconView.setImageBitmap(icon);
+                } else {
+                    mFaviconView.setImageBitmap(
+                            mLayerTitleCacheSupplier.get().getOriginalFavicon(tab));
+                }
+                mShadowUpdateHost.requestUpdate();
+            }
+        };
     }
 
     protected Tab getTabForTesting() {

@@ -19,23 +19,22 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_ASCII_FAST_PATH_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_ASCII_FAST_PATH_H_
 
 #include <stdint.h>
+
 #include <limits>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
+#include "base/types/zip.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
@@ -92,37 +91,35 @@ struct ASCIIStringAttributes {
 // does not leave early if it is not the case.
 template <typename CharacterType>
 ALWAYS_INLINE ASCIIStringAttributes
-CharacterAttributes(const CharacterType* characters, size_t length) {
-  DCHECK_GT(length, 0u);
+CharacterAttributes(base::span<const CharacterType> chars) {
+  DCHECK_GT(chars.size(), 0u);
 
   // Performance note: This loop will not vectorize properly in -Oz. Ensure
   // the calling code is built with -O2.
   CharacterType all_char_bits = 0;
   bool contains_upper_case = false;
-  for (size_t i = 0; i < length; i++) {
-    all_char_bits |= characters[i];
-    contains_upper_case |= IsASCIIUpper(characters[i]);
+  for (CharacterType ch : chars) {
+    all_char_bits |= ch;
+    contains_upper_case |= IsASCIIUpper(ch);
   }
 
   return ASCIIStringAttributes(IsASCII(all_char_bits), !contains_upper_case);
 }
 
 template <typename CharacterType>
-ALWAYS_INLINE bool IsLowerASCII(const CharacterType* characters,
-                                size_t length) {
+ALWAYS_INLINE bool IsLowerASCII(base::span<const CharacterType> chars) {
   bool contains_upper_case = false;
-  for (wtf_size_t i = 0; i < length; i++) {
-    contains_upper_case |= IsASCIIUpper(characters[i]);
+  for (CharacterType ch : chars) {
+    contains_upper_case |= IsASCIIUpper(ch);
   }
   return !contains_upper_case;
 }
 
 template <typename CharacterType>
-ALWAYS_INLINE bool IsUpperASCII(const CharacterType* characters,
-                                size_t length) {
+ALWAYS_INLINE bool IsUpperASCII(base::span<const CharacterType> chars) {
   bool contains_lower_case = false;
-  for (wtf_size_t i = 0; i < length; i++) {
-    contains_lower_case |= IsASCIILower(characters[i]);
+  for (CharacterType ch : chars) {
+    contains_lower_case |= IsASCIILower(ch);
   }
   return !contains_lower_case;
 }
@@ -130,8 +127,8 @@ ALWAYS_INLINE bool IsUpperASCII(const CharacterType* characters,
 class LowerConverter {
  public:
   template <typename CharType>
-  ALWAYS_INLINE static bool IsCorrectCase(CharType* characters, size_t length) {
-    return IsLowerASCII(characters, length);
+  ALWAYS_INLINE static bool IsCorrectCase(base::span<const CharType> chars) {
+    return IsLowerASCII(chars);
   }
 
   template <typename CharType>
@@ -143,8 +140,8 @@ class LowerConverter {
 class UpperConverter {
  public:
   template <typename CharType>
-  ALWAYS_INLINE static bool IsCorrectCase(CharType* characters, size_t length) {
-    return IsUpperASCII(characters, length);
+  ALWAYS_INLINE static bool IsCorrectCase(base::span<const CharType> chars) {
+    return IsUpperASCII(chars);
   }
 
   template <typename CharType>
@@ -159,34 +156,20 @@ ALWAYS_INLINE typename Allocator::ResultStringType ConvertASCIICase(
     Converter&& converter,
     Allocator&& allocator) {
   CHECK_LE(string.length(), std::numeric_limits<wtf_size_t>::max());
-
-  // First scan the string for uppercase and non-ASCII characters:
-  wtf_size_t length = string.length();
-  if (string.Is8Bit()) {
-    if (converter.IsCorrectCase(string.Characters8(), length)) {
+  return VisitCharacters(string, [&](auto chars) {
+    // First scan the string for the desired case.
+    if (converter.IsCorrectCase(chars)) {
       return allocator.CoerceOriginal(string);
     }
 
-    base::span<LChar> data8;
-    auto new_impl = allocator.Alloc(length, data8);
+    base::span<typename decltype(chars)::value_type> data;
+    auto new_impl = allocator.Alloc(string.length(), data);
 
-    for (wtf_size_t i = 0; i < length; ++i) {
-      data8[i] = converter.Convert(string.Characters8()[i]);
+    for (auto [dest, src] : base::zip(data, chars)) {
+      dest = converter.Convert(src);
     }
     return new_impl;
-  }
-
-  if (converter.IsCorrectCase(string.Characters16(), length)) {
-    return allocator.CoerceOriginal(string);
-  }
-
-  base::span<UChar> data16;
-  auto new_impl = allocator.Alloc(length, data16);
-
-  for (wtf_size_t i = 0; i < length; ++i) {
-    data16[i] = converter.Convert(string.Characters16()[i]);
-  }
-  return new_impl;
+  });
 }
 
 }  // namespace WTF

@@ -1270,7 +1270,7 @@ void AwProxyingURLLoaderFactory::GetCookieHeader(
 
   cookie_manager_->GetCookieList(
       request.url, options,
-      net::CookiePartitionKeyCollection::FromOptional(
+      net::CookiePartitionKeyCollection(
           GetPartitionKey(isolation_info, request)),
       base::BindOnce(
           [](PrivacySetting privacy_setting, base::TimeTicks start,

@@ -7,10 +7,11 @@ package org.chromium.chrome.browser.password_check.helper;
 import android.content.Context;
 import android.graphics.Bitmap;
 
-import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_check.CompromisedCredential;
 import org.chromium.chrome.browser.password_check.R;
 import org.chromium.components.favicon.IconType;
@@ -18,6 +19,7 @@ import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.url.GURL;
 
 /** Helper used to fetch or create an appropriate icon for a compromised credential. */
+@NullMarked
 public class PasswordCheckIconHelper {
     /** Data object containing all data required to set an icon or construct a fallback. */
     public static class FaviconOrFallback {

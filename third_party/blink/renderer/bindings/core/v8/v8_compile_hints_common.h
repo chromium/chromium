@@ -16,16 +16,19 @@ class KURL;
 namespace v8_compile_hints {
 
 enum class MagicCommentMode {
-  kNever = 0,
-  kWhenProducingCodeCache = 1,
-  kAlways = 2
+  kNone = 0,
+  kOnlyTopLevel = 1,
+  kTopLevelAndFunctions = 2,
 };
 
 inline MagicCommentMode GetMagicCommentMode(
     ExecutionContext* execution_context) {
-  // TODO(42203853): Clean this up once compile hints have stabilized. This will
-  // change once the per-function compile hints prototype is added.
-  return MagicCommentMode::kAlways;
+  if (RuntimeEnabledFeatures::
+          JavaScriptCompileHintsPerFunctionMagicRuntimeEnabled(
+              execution_context)) {
+    return MagicCommentMode::kTopLevelAndFunctions;
+  }
+  return MagicCommentMode::kOnlyTopLevel;
 }
 
 static constexpr int kBloomFilterKeySize = 16;

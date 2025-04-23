@@ -46,6 +46,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_point_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_dompointinit_unrestricteddouble.h"
+#include "third_party/blink/renderer/core/canvas_interventions/canvas_interventions_enums.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"  // IWYU pragma: keep (https://github.com/clangd/clangd/issues/2044)
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
@@ -75,10 +76,11 @@ void CanvasPath::closePath() {
   }
   // If the current path is a zero lengthed path (ex: moveTo p1 and lineTo p1),
   // then closePath is no op.
-  if (path_.BoundingRect().height() == 0 && path_.BoundingRect().width() == 0 &&
+  if (path_builder_.BoundingRect().height() == 0 &&
+      path_builder_.BoundingRect().width() == 0 &&
       (IsLine() && line_builder_.BoundingRect().height() == 0 &&
        line_builder_.BoundingRect().width() == 0)) [[unlikely]] {
-    const auto p = path_.CurrentPoint();
+    const auto p = path_builder_.CurrentPoint();
     Clear();
     if (p) {
       moveTo(p->x(), p->y());
@@ -92,12 +94,12 @@ void CanvasPath::closePath() {
   if (IsArc()) {
     // Only the first close does something.
     if (!arc_builder_.IsClosed()) {
-      path_.Clear();
+      path_builder_.Reset();
       arc_builder_.Close();
     }
   } else {
     UpdatePathFromLineOrArcIfNecessaryForMutation();
-    path_.CloseSubpath();
+    path_builder_.Close();
   }
 }
 
@@ -119,7 +121,7 @@ void CanvasPath::moveTo(double double_x, double double_y) {
     line_builder_.MoveTo(point);
   } else {
     UpdatePathFromLineOrArcIfNecessaryForMutation();
-    path_.MoveTo(point);
+    path_builder_.MoveTo(point);
   }
 }
 
@@ -144,15 +146,15 @@ void CanvasPath::lineTo(double double_x, double double_y) {
   }
 
   if (line_builder_.CanCreateLineTo()) {
-    // `path_` may contain the move to, reset it so that if `path_` is needed
-    // it will be updated.
-    path_.Clear();
+    // `path_builder_` may contain the move to, reset it so that if
+    // `path_builder_` is needed it will be updated.
+    path_builder_.Reset();
     line_builder_.LineTo(p1);
     DCHECK(IsLine());
     return;
   }
   UpdatePathFromLineOrArcIfNecessaryForMutation();
-  path_.AddLineTo(p1);
+  path_builder_.LineTo(p1);
 }
 
 void CanvasPath::quadraticCurveTo(double double_cpx,
@@ -182,11 +184,11 @@ void CanvasPath::quadraticCurveTo(double double_cpx,
     cp = GetTransform().MapPoint(cp);
   }
 
-  if (!path_.CurrentPoint()) [[unlikely]] {
-    path_.MoveTo(gfx::PointF(cpx, cpy));
+  if (!path_builder_.CurrentPoint()) [[unlikely]] {
+    path_builder_.MoveTo(gfx::PointF(cpx, cpy));
   }
 
-  path_.AddQuadCurveTo(cp, p1);
+  path_builder_.QuadTo(cp, p1);
 }
 
 void CanvasPath::bezierCurveTo(double double_cp1x,
@@ -222,11 +224,11 @@ void CanvasPath::bezierCurveTo(double double_cp1x,
     cp1 = GetTransform().MapPoint(cp1);
     cp2 = GetTransform().MapPoint(cp2);
   }
-  if (!path_.CurrentPoint()) [[unlikely]] {
-    path_.MoveTo(gfx::PointF(cp1x, cp1y));
+  if (!path_builder_.CurrentPoint()) [[unlikely]] {
+    path_builder_.MoveTo(gfx::PointF(cp1x, cp1y));
   }
 
-  path_.AddBezierCurveTo(cp1, cp2, p1);
+  path_builder_.CubicTo(cp1, cp2, p1);
 }
 
 void CanvasPath::arcTo(double double_x1,
@@ -266,13 +268,13 @@ void CanvasPath::arcTo(double double_x1,
     p2 = GetTransform().MapPoint(p2);
   }
 
-  const auto current_point = path_.CurrentPoint();
+  const auto current_point = path_builder_.CurrentPoint();
   if (!current_point) [[unlikely]] {
-    path_.MoveTo(p1);
+    path_builder_.MoveTo(p1);
   } else if (p1 == *current_point || p1 == p2 || !r) [[unlikely]] {
     lineTo(x1, y1);
   } else {
-    path_.AddArcTo(p1, p2, r);
+    path_builder_.ArcTo(p1, p2, r);
   }
 }
 
@@ -478,7 +480,7 @@ void CanvasPath::arc(double double_x,
         CanvasOps::kArc, double_x, double_y, double_radius, double_start_angle,
         double_end_angle, anticlockwise);
   }
-  SetTriggerForCanvasIntervention();
+  AddTriggersForCanvasIntervention(CanvasOperationType::kArc);
 
   if (!radius || start_angle == end_angle) [[unlikely]] {
     // The arc is empty but we still need to draw the connecting line.
@@ -499,7 +501,8 @@ void CanvasPath::arc(double double_x,
     return;
   }
 
-  path_.AddArc(gfx::PointF(x, y), radius, start_angle, end_angle);
+  path_builder_.AddEllipse(gfx::PointF(x, y), radius, radius, start_angle,
+                           end_angle);
 }
 
 void CanvasPath::ellipse(double double_x,
@@ -563,9 +566,9 @@ void CanvasPath::ellipse(double double_x,
     return;
   }
 
-  SetTriggerForCanvasIntervention();
-  path_.AddEllipse(gfx::PointF(x, y), radius_x, radius_y, rotation, start_angle,
-                   adjusted_end_angle);
+  AddTriggersForCanvasIntervention(CanvasOperationType::kEllipse);
+  path_builder_.AddEllipse(gfx::PointF(x, y), radius_x, radius_y, rotation,
+                           start_angle, adjusted_end_angle);
 }
 
 void CanvasPath::rect(double double_x,
@@ -595,11 +598,7 @@ void CanvasPath::rect(double double_x,
         CanvasOps::kRect, double_x, double_y, double_width, double_height);
   }
 
-  // TODO(crbug.com/378688986): this should clean up when converting CanvasPath
-  // to PathBuilder.
-  path_ = PathBuilder(path_)
-              .AddRect(gfx::PointF(x, y), gfx::PointF(x + width, y + height))
-              .Finalize();
+  path_builder_.AddRect(gfx::PointF(x, y), gfx::PointF(x + width, y + height));
 }
 
 void CanvasPath::roundRect(
@@ -683,11 +682,8 @@ void CanvasPath::roundRect(
     // AddRoundRect does not handle flat rects, correctly.  But since there are
     // no rounded corners on a flat rect, we can just use AddRect.
 
-    // TODO(crbug.com/378688986): this should clean up when converting
-    // CanvasPath to PathBuilder.
-    path_ = PathBuilder(path_)
-                .AddRect(gfx::PointF(x, y), gfx::PointF(x + width, y + height))
-                .Finalize();
+    path_builder_.AddRect(gfx::PointF(x, y),
+                          gfx::PointF(x + width, y + height));
     return;
   }
 
@@ -736,15 +732,11 @@ void CanvasPath::roundRect(
 
   gfx::RectF rect(x, y, width, height);
 
-  // TODO(crbug.com/378688986): this should clean up when converting CanvasPath
-  // to PathBuilder.
-  path_ = PathBuilder(path_)
-              .AddRoundedRect(
-                  FloatRoundedRect(rect, corner_radii[0], corner_radii[1],
-                                   corner_radii[2], corner_radii[3]),
-                  clockwise)
-              .MoveTo(gfx::PointF(x, y))
-              .Finalize();
+  path_builder_
+      .AddRoundedRect(FloatRoundedRect(rect, corner_radii[0], corner_radii[1],
+                                       corner_radii[2], corner_radii[3]),
+                      clockwise)
+      .MoveTo(gfx::PointF(x, y));
 }
 
 void CanvasPath::roundRect(
@@ -766,7 +758,7 @@ gfx::RectF CanvasPath::BoundingRect() const {
   } else if (IsArc()) {
     return arc_builder_.BoundingRect();
   }
-  return path_.BoundingRect();
+  return path_builder_.BoundingRect();
 }
 
 void CanvasPath::Trace(Visitor* visitor) const {
@@ -788,13 +780,14 @@ ALWAYS_INLINE gfx::RectF CanvasPath::ArcBuilder::BoundingRect() const {
       gfx::PointF(arc_.x + arc_.radius, arc_.y + arc_.radius));
 }
 
-ALWAYS_INLINE void CanvasPath::ArcBuilder::UpdatePath(Path& path) const {
+ALWAYS_INLINE void CanvasPath::ArcBuilder::UpdatePath(
+    PathBuilder& path_builder) const {
   DCHECK_NE(state_, State::kEmpty);
-  path.AddArc(gfx::PointF(arc_.x, arc_.y), arc_.radius,
-              arc_.start_angle_radians,
-              arc_.start_angle_radians + arc_.sweep_angle_radians);
+  path_builder.AddEllipse(gfx::PointF(arc_.x, arc_.y), arc_.radius, arc_.radius,
+                          arc_.start_angle_radians,
+                          arc_.start_angle_radians + arc_.sweep_angle_radians);
   if (state_ == State::kClosed) {
-    path.CloseSubpath();
+    path_builder.Close();
   }
 }
 
@@ -802,16 +795,16 @@ void CanvasPath::UpdatePathFromLineOrArcIfNecessary() const {
   if (!DoesPathNeedUpdatingFromLineOrArc()) {
     return;
   }
-  DCHECK(path_.IsEmpty());
+  DCHECK(path_builder_.IsEmpty());
   if (!line_builder_.IsEmpty()) {
     // There is a starting point, but possibly no ending point.
-    path_.MoveTo(line_builder_.starting_point());
+    path_builder_.MoveTo(line_builder_.starting_point());
     if (IsLine()) {
-      path_.AddLineTo(line_builder_.ending_point());
+      path_builder_.LineTo(line_builder_.ending_point());
     }
   } else {
     DCHECK(!arc_builder_.IsEmpty());
-    arc_builder_.UpdatePath(path_);
+    arc_builder_.UpdatePath(path_builder_);
   }
 }
 

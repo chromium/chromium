@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.mandatory_reauth;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.autofill.PaymentsUiClosedReason;
 
 /** This component allows showing the Mandatory Reauth opt-in prompt in a bottom sheet. */
+@NullMarked
 interface MandatoryReauthOptInBottomSheetComponent {
     /** The delegate is used to relay the bottom sheet events to the native side. */
     interface Delegate {

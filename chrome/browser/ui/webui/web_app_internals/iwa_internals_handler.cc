@@ -327,8 +327,23 @@ void IwaInternalsHandler::InstallIsolatedWebAppFromBundleUrl(
     ::mojom::InstallFromBundleUrlParamsPtr params,
     Handler::InstallIsolatedWebAppFromBundleUrlCallback callback) {
   if (!WebAppProvider::GetForWebApps(profile())) {
-    std::move(callback).Run(::mojom::InstallIsolatedWebAppResult::NewError(
-        "WebAppProvider not supported for current profile."));
+    SendError(std::move(callback),
+              "WebAppProvider not supported for current profile.");
+    return;
+  }
+  if (!params->update_info) {
+    SendError(std::move(callback),
+             "Update info is required for this operation.");
+    return;
+  }
+  if (!params->update_info->update_manifest_url.is_valid()) {
+    SendError(std::move(callback),
+              "Update manifest URL is not a valid GURL.");
+    return;
+  }
+  if (params->update_info->update_channel.empty()) {
+    SendError(std::move(callback),
+              "Update channel is required for this operation.");
     return;
   }
   ScopedTempWebBundleFile::Create(
@@ -748,6 +763,12 @@ void IwaInternalsHandler::OnInstalledIsolatedWebAppInDevModeFromWebBundle(
                       "channel.");
                 }
 
+                GURL update_manifest_url = update_info->update_manifest_url;
+                if (!update_manifest_url.is_valid()) {
+                  return ::mojom::InstallIsolatedWebAppResult::NewError(
+                      "Something went wrong while setting the update "
+                      "manifest url.");
+                }
                 web_app->SetIsolationData(
                     web_app::IsolationData::Builder(*web_app->isolation_data())
                         .SetUpdateManifestUrl(update_info->update_manifest_url)

@@ -38,7 +38,7 @@ using testing::SaveArg;
 
 constexpr DataType kTestDataType = AUTOFILL;
 constexpr char kCacheGuid[] = "SomeCacheGuid";
-constexpr GaiaId::Literal kAccountId("SomeAccountId");
+constexpr GaiaId::Literal kDefaultGaiaId("SomeGaiaId");
 
 constexpr char kStartFailuresHistogram[] = "Sync.DataTypeStartFailures2";
 constexpr char kRunFailuresHistogram[] = "Sync.DataTypeRunFailures2";
@@ -58,7 +58,7 @@ class TestDataTypeController : public DataTypeController {
 
 ConfigureContext MakeConfigureContext() {
   ConfigureContext context;
-  context.authenticated_account_id = CoreAccountId::FromGaiaId(kAccountId);
+  context.authenticated_gaia_id = kDefaultGaiaId;
   context.cache_guid = kCacheGuid;
   return context;
 }
@@ -479,7 +479,7 @@ TEST(DataTypeControllerWithMultiDelegateTest, ToggleSyncMode) {
           &delegate_for_transport_mode));
 
   ConfigureContext context;
-  context.authenticated_account_id = CoreAccountId::FromGaiaId(kAccountId);
+  context.authenticated_gaia_id = kDefaultGaiaId;
   context.cache_guid = kCacheGuid;
 
   DataTypeControllerDelegate::StartCallback start_callback;

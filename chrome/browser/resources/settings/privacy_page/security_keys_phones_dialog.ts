@@ -43,8 +43,8 @@ export class SecurityKeysPhonesDialog extends PolymerElement {
     };
   }
 
-  name: string;
-  publicKey: string;
+  declare name: string;
+  declare publicKey: string;
   private browserProxy_: SecurityKeysPhonesBrowserProxy =
       SecurityKeysPhonesBrowserProxyImpl.getInstance();
 

@@ -5,11 +5,8 @@
 #ifndef CHROME_BROWSER_AI_AI_CONTEXT_BOUND_OBJECT_H_
 #define CHROME_BROWSER_AI_AI_CONTEXT_BOUND_OBJECT_H_
 
-#include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ref.h"
-#include "base/supports_user_data.h"
-#include "content/public/browser/document_user_data.h"
-#include "content/public/browser/render_frame_host.h"
+#include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
 class AIContextBoundObjectSet;
 
@@ -28,6 +25,9 @@ class AIContextBoundObject {
   virtual ~AIContextBoundObject();
 
   void RemoveFromSet();
+
+  // Sets the priority of the underlying session.
+  virtual void SetPriority(on_device_model::mojom::Priority priority) {}
 
  private:
   // The `AIContextBoundObject` will be owned by the `AIContextBoundObjectSet`,

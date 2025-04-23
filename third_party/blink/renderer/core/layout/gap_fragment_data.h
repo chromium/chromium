@@ -5,9 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GAP_FRAGMENT_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GAP_FRAGMENT_DATA_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/grid_enums.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -33,6 +35,15 @@ class GapIntersection {
   GapIntersection(LayoutUnit inline_offset, LayoutUnit block_offset)
       : inline_offset(inline_offset), block_offset(block_offset) {}
 
+  GapIntersection(LayoutUnit inline_offset,
+                  LayoutUnit block_offset,
+                  bool is_at_edge_of_container)
+      : inline_offset(inline_offset),
+        block_offset(block_offset),
+        is_at_edge_of_container(is_at_edge_of_container) {}
+
+  WTF::String ToString(bool verbose = false) const;
+
   LayoutUnit inline_offset;
   LayoutUnit block_offset;
 
@@ -47,23 +58,20 @@ class GapIntersection {
 using GapIntersectionList = Vector<GapIntersection>;
 
 // Gap locations are used for painting gap decorations.
-struct GapGeometry : public GarbageCollected<GapGeometry> {
+class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
+ public:
   enum ContainerType {
     kGrid,
     kFlex,
   };
 
- public:
   explicit GapGeometry(ContainerType container_type)
       : container_type_(container_type) {}
 
   void Trace(Visitor* visitor) const {}
 
   void SetGapIntersections(GridTrackSizingDirection track_direction,
-                           Vector<GapIntersectionList>&& intersection_list) {
-    track_direction == kForColumns ? column_intersections_ = intersection_list
-                                   : row_intersections_ = intersection_list;
-  }
+                           Vector<GapIntersectionList>&& intersection_list);
 
   // Marks the intersection point at [main_index][inner_index] in the specified
   // `track_direction` (kColumns or kRows) as blocked in the given
@@ -73,20 +81,10 @@ struct GapGeometry : public GarbageCollected<GapGeometry> {
   void MarkGapIntersectionBlocked(GridTrackSizingDirection track_direction,
                                   BlockedGapDirection blocked_direction,
                                   wtf_size_t main_index,
-                                  wtf_size_t inner_index) {
-    auto& intersections = track_direction == kForColumns ? column_intersections_
-                                                         : row_intersections_;
-
-    blocked_direction == BlockedGapDirection::kBefore
-        ? intersections[main_index][inner_index].is_blocked_before = true
-        : intersections[main_index][inner_index].is_blocked_after = true;
-  }
+                                  wtf_size_t inner_index);
 
   const Vector<GapIntersectionList>& GetGapIntersections(
-      GridTrackSizingDirection track_direction) const {
-    return track_direction == kForColumns ? column_intersections_
-                                          : row_intersections_;
-  }
+      GridTrackSizingDirection track_direction) const;
 
   ContainerType GetContainerType() const { return container_type_; }
 
@@ -95,6 +93,9 @@ struct GapGeometry : public GarbageCollected<GapGeometry> {
 
   void SetBlockGapSize(LayoutUnit size) { block_gap_size_ = size; }
   LayoutUnit GetBlockGapSize() const { return block_gap_size_; }
+
+  WTF::String IntersectionsToString(GridTrackSizingDirection track_direction,
+                                    bool verbose = false) const;
 
  private:
   // TODO(samomekarajr): Potential optimization. This can be a single

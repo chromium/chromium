@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.commerce.core.PriceBucket;
+import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfo;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -55,16 +56,20 @@ public class PriceHistoryBottomSheetContentMediator {
     }
 
     public void requestShowContent(Callback<Boolean> contentReadyCallback) {
-        ShoppingServiceFactory.getForProfile(mTabSupplier.get().getProfile())
-                .getPriceInsightsInfoForUrl(
-                        mTabSupplier.get().getUrl(),
-                        (url, info) -> {
-                            boolean hasPriceInsightInfo = isValidPriceInsightsInfo(info);
-                            if (hasPriceInsightInfo) {
-                                updatePriceInsightsInfo(info);
-                            }
-                            contentReadyCallback.onResult(hasPriceInsightInfo);
-                        });
+        ShoppingService shoppingService =
+                ShoppingServiceFactory.getForProfile(mTabSupplier.get().getProfile());
+        if (shoppingService == null || !shoppingService.isPriceInsightsEligible()) {
+            contentReadyCallback.onResult(false);
+        }
+        shoppingService.getPriceInsightsInfoForUrl(
+                mTabSupplier.get().getUrl(),
+                (url, info) -> {
+                    boolean hasPriceInsightInfo = isValidPriceInsightsInfo(info);
+                    if (hasPriceInsightInfo) {
+                        updatePriceInsightsInfo(info);
+                    }
+                    contentReadyCallback.onResult(hasPriceInsightInfo);
+                });
     }
 
     private boolean isValidPriceInsightsInfo(PriceInsightsInfo info) {

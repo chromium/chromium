@@ -88,6 +88,16 @@ void KeepAliveURLLoaderService::FactoryContext::
   attribution_context = AttributionSuitableContext::Create(rfh);
 }
 
+void KeepAliveURLLoaderService::FactoryContext::
+    OnBeforeKeepAliveURLLoaderCreated(
+        const network::ResourceRequest& resource_request) {
+  if (auto* rfh = static_cast<RenderFrameHostImpl*>(
+          weak_document_ptr.AsRenderFrameHostIfValid());
+      rfh) {
+    rfh->OnKeepAliveRequestCreated(resource_request);
+  }
+}
+
 void KeepAliveURLLoaderService::FactoryContext::UpdateFactory(
     scoped_refptr<network::SharedURLLoaderFactory> new_factory) {
   factory = new_factory;
@@ -181,6 +191,10 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactoriesBase {
       return nullptr;
     }
 
+    // Notifies RenderFrameHostImpl (if any) that a fetch keepalive request is
+    // created.
+    context->OnBeforeKeepAliveURLLoaderCreated(resource_request);
+
     // Passes in the pending remote of `client` from a renderer so that `loader`
     // can forward response back to the renderer.
     CHECK(context->policy_container_host);
@@ -193,7 +207,7 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactoriesBase {
         context->policy_container_host, context->weak_document_ptr,
         context->ukm_source_id, service_->browser_context_,
         base::BindRepeating(&KeepAliveURLLoaderFactoriesBase::CreateThrottles,
-                            base::Unretained(this), resource_request),
+                            base::Unretained(this)),
         base::PassKey<KeepAliveURLLoaderService>(),
         KeepAliveAttributionRequestHelper::CreateIfNeeded(
             resource_request.attribution_reporting_eligibility,
@@ -221,8 +235,7 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactoriesBase {
   }
 
  private:
-  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> CreateThrottles(
-      const network::ResourceRequest& resource_request) {
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> CreateThrottles() {
     if (service_->url_loader_throttles_getter_for_testing_) {
       return service_->url_loader_throttles_getter_for_testing_
           .Run();  // IN-TEST
@@ -235,13 +248,7 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactoriesBase {
     // in https://crrev.com/c/2552723/3 suggests that running them again in
     // browser is fine.
     return CreateContentBrowserURLLoaderThrottlesForKeepAlive(
-        resource_request, service_->browser_context_,
-        // The renderer might be gone at any point when a throttle is running in
-        // the KeepAliveURLLoader.
-        /*wc_getter=*/base::BindRepeating([]() -> WebContents* {
-          return nullptr;
-        }),
-        FrameTreeNodeId());
+        service_->browser_context_, FrameTreeNodeId());
   }
 
   void OnLoaderDisconnected() {

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 
-#include "chrome/browser/ui/tabs/split_tab_id.h"
+#include "components/tabs/public/split_tab_id.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 TabSlotView::TabSlotView() = default;

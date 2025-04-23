@@ -50,8 +50,6 @@ class DecryptingRendererTest : public testing::Test {
     EXPECT_CALL(decryptor_, CancelDecrypt(_)).Times(AnyNumber());
     EXPECT_CALL(media_resource_, GetAllStreams())
         .WillRepeatedly(Invoke(this, &DecryptingRendererTest::GetAllStreams));
-    EXPECT_CALL(media_resource_, GetType())
-        .WillRepeatedly(Return(MediaResource::Type::kStream));
   }
 
   ~DecryptingRendererTest() override {

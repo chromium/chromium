@@ -11,6 +11,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/wm/core/transient_window_observer.h"
 
@@ -58,7 +59,7 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
       int divider_position,
       bool is_dragging);
 
-  views::Widget* divider_widget() { return divider_widget_; }
+  views::Widget* divider_widget() { return divider_widget_.get(); }
 
   int divider_position() const { return divider_position_; }
 
@@ -223,7 +224,7 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   // screen to the other, containing a small white drag bar in the middle. As
   // the user presses on it and drag it to left or right, the left and right
   // window will be resized accordingly.
-  raw_ptr<views::Widget> divider_widget_ = nullptr;
+  std::unique_ptr<views::Widget> divider_widget_ = nullptr;
 
   // The contents view of the `divider_widget_`.
   raw_ptr<SplitViewDividerView> divider_view_ = nullptr;
@@ -258,6 +259,9 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
 
   // True *while* a resize event is being processed.
   bool processing_resize_event_ = false;
+
+  // Divider widget's delegate.
+  std::unique_ptr<views::WidgetDelegate> widget_delegate_;
 
   display::ScopedDisplayObserver display_observer_{this};
 };

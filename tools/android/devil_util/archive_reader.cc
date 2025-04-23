@@ -192,7 +192,9 @@ bool ArchiveReader::ExtractArchiveStreaming(char* input_buffer,
     ReadCurMemberContentLength(&input_buffer, &input_buffer_size);
     ReadCurMemberContent(&input_buffer, &input_buffer_size);
     if (cur_member_content_length_pos_ == kContentLengthSize &&
-        cur_member_content_length_ == cur_member_content_pos_) {
+        cur_member_content_pos_ == cur_member_content_length_ &&
+        cur_member_path_length_pos_ == kPathLengthSize &&
+        cur_member_path_pos_ == cur_member_path_length_) {
       // We have finished reading the current member.
       cur_member_ofstream_.close();
       start_new_member_ = true;

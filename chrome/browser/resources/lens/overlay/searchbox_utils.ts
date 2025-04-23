@@ -22,14 +22,3 @@ export function handleEscapeSearchbox(
     element.suppressGhostLoader = true;
   }
 }
-
-export function onSearchboxKeydown(
-    element: LensSidePanelAppElement|LensOverlayAppElement,
-    searchbox: SearchboxElement) {
-  // If a user inputs text into the searchbox, there is a possibility we
-  // query zero suggest again and the ghost loader should not be suppressed.
-  if (!searchbox.isInputEmpty()) {
-    element.suppressGhostLoader = false;
-    element.showErrorState = false;
-  }
-}

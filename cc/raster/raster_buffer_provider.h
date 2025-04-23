@@ -52,12 +52,6 @@ class CC_EXPORT RasterBufferProvider {
       bool depends_on_hardware_accelerated_jpeg_candidates,
       bool depends_on_hardware_accelerated_webp_candidates) = 0;
 
-  // Returns the format to use for the tiles.
-  virtual viz::SharedImageFormat GetFormat() const = 0;
-
-  // Determines if the resource is premultiplied.
-  virtual bool IsResourcePremultiplied() const = 0;
-
   // Determine if the RasterBufferProvider can handle partial raster into
   // the Resource provided in AcquireBufferForRaster.
   virtual bool CanPartialRasterIntoProvidedResource() const = 0;

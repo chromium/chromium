@@ -32,7 +32,7 @@ class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
   static scoped_refptr<TransportContext> ForTests(TransportRole role);
 
   TransportContext(std::unique_ptr<PortAllocatorFactory> port_allocator_factory,
-                   rtc::SocketFactory* socket_factory,
+                   webrtc::SocketFactory* socket_factory,
                    std::unique_ptr<IceConfigFetcher> ice_config_fetcher,
                    TransportRole role);
 
@@ -56,7 +56,7 @@ class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
   PortAllocatorFactory* port_allocator_factory() {
     return port_allocator_factory_.get();
   }
-  rtc::SocketFactory* socket_factory() const { return socket_factory_; }
+  webrtc::SocketFactory* socket_factory() const { return socket_factory_; }
   TransportRole role() const { return role_; }
 
   // Returns the suggested bandwidth cap for TURN relay connections, or 0 if
@@ -72,7 +72,7 @@ class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
   void OnIceConfig(std::optional<IceConfig> ice_config);
 
   std::unique_ptr<PortAllocatorFactory> port_allocator_factory_;
-  raw_ptr<rtc::SocketFactory> socket_factory_;
+  raw_ptr<webrtc::SocketFactory> socket_factory_;
   TransportRole role_;
 
   IceConfig ice_config_;

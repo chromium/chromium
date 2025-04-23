@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 // The rules for parsing content-types were borrowed from Firefox:
 // http://lxr.mozilla.org/mozilla/source/netwerk/base/src/nsURLHelper.cpp#834
 
 #include "net/http/http_util.h"
 
 #include <algorithm>
+#include <array>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -304,11 +300,11 @@ bool HttpUtil::ParseRetryAfterHeader(const std::string& retry_after_string,
 
 // static
 std::string HttpUtil::TimeFormatHTTP(base::Time time) {
-  static constexpr char kWeekdayName[7][4] = {"Sun", "Mon", "Tue", "Wed",
-                                              "Thu", "Fri", "Sat"};
-  static constexpr char kMonthName[12][4] = {"Jan", "Feb", "Mar", "Apr",
-                                             "May", "Jun", "Jul", "Aug",
-                                             "Sep", "Oct", "Nov", "Dec"};
+  static constexpr std::array<char[4], 7> kWeekdayName = {
+      "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+  static constexpr std::array<char[4], 12> kMonthName = {
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
   base::Time::Exploded exploded;
   time.UTCExplode(&exploded);
   return base::StringPrintf(
@@ -459,10 +455,25 @@ void HttpUtil::TrimLWS(std::string::const_iterator* begin,
 
 // static
 std::string_view HttpUtil::TrimLWS(std::string_view string) {
-  const char* begin = string.data();
-  const char* end = string.data() + string.size();
-  TrimLWSImplementation(&begin, &end);
-  return std::string_view(begin, end - begin);
+  size_t begin_offset = 0;
+  size_t end_offset = string.size();
+  TrimLWS(string, begin_offset, end_offset);
+  return string.substr(begin_offset, end_offset - begin_offset);
+}
+
+// static
+void HttpUtil::TrimLWS(std::string_view string,
+                       size_t& begin_offset,
+                       size_t& end_offset) {
+  // Leading whitespace
+  while (begin_offset < end_offset && HttpUtil::IsLWS(string[begin_offset])) {
+    ++begin_offset;
+  }
+
+  // Trailing whitespace
+  while (begin_offset < end_offset && HttpUtil::IsLWS(string[end_offset - 1])) {
+    --end_offset;
+  }
 }
 
 bool HttpUtil::IsTokenChar(char c) {
@@ -690,14 +701,13 @@ std::string HttpUtil::AssembleRawHeaders(std::string_view input) {
   // line's field-value.
 
   // TODO(ericroman): is this too permissive? (delimits on [\r\n]+)
-  base::CStringTokenizer lines(input.data(), input.data() + input.size(),
-                               "\r\n");
+  base::StringViewTokenizer lines(input, "\r\n");
 
   // This variable is true when the previous line was continuable.
   bool prev_line_continuable = false;
 
   while (lines.GetNext()) {
-    std::string_view line = lines.token_piece();
+    std::string_view line = lines.token();
 
     if (prev_line_continuable && IsLWS(line[0])) {
       // Join continuation; reduce the leading LWS to a single SP.
@@ -898,39 +908,51 @@ int HttpUtil::MapStatusCodeForHistogram(int code) {
 //                     of token, separators, and quoted-string>
 //
 
-HttpUtil::HeadersIterator::HeadersIterator(
-    std::string::const_iterator headers_begin,
-    std::string::const_iterator headers_end,
-    const std::string& line_delimiter)
-    : lines_(headers_begin, headers_end, line_delimiter) {
-}
+HttpUtil::HeadersIterator::HeadersIterator(std::string_view headers,
+                                           const std::string& line_delimiter)
+    : headers_(headers),
+      // It's important to use `headers_` here rather than `headers`, since
+      // subtracting two string_view::iterators from each other is not
+      // guaranteed to work, if they're from different string_views, even if one
+      // is a copy of the other. Note that StringViewTokenizer uses iterators to
+      // the passed in string_view, rather than a copying it.
+      lines_(headers_, line_delimiter) {}
 
 HttpUtil::HeadersIterator::~HeadersIterator() = default;
 
 bool HttpUtil::HeadersIterator::GetNext() {
   while (lines_.GetNext()) {
-    name_begin_ = lines_.token_begin();
-    values_end_ = lines_.token_end();
+    // Since `tokenizer_` was constructed using `headers_`, this is subtracting
+    // iterators for the exact same string_view, rather than to two copies of
+    // the same string_view, so is safe.
+    name_begin_ = lines_.token_begin() - headers_.begin();
+    values_end_ = lines_.token_end() - headers_.begin();
 
-    std::string::const_iterator colon(std::find(name_begin_, values_end_, ':'));
-    if (colon == values_end_)
+    // Colon index, relative to start of line.
+    size_t colon = lines_.token().find(':');
+    if (colon == std::string_view::npos) {
       continue;  // skip malformed header
+    }
+    // Adjust colon to be relative to start of headers.
+    colon += name_begin_;
 
     name_end_ = colon;
 
     // If the name starts with LWS, it is an invalid line.
     // Leading LWS implies a line continuation, and these should have
     // already been joined by AssembleRawHeaders().
-    if (name_begin_ == name_end_ || IsLWS(*name_begin_))
+    if (name_begin_ == name_end_ || IsLWS(headers_[name_begin_])) {
       continue;
+    }
 
-    TrimLWS(&name_begin_, &name_end_);
-    DCHECK(name_begin_ < name_end_);
-    if (!IsToken(base::MakeStringPiece(name_begin_, name_end_)))
+    TrimLWS(headers_, name_begin_, name_end_);
+    CHECK_LT(name_begin_, name_end_);
+    if (!IsToken(headers_.substr(name_begin_, name_end_ - name_begin_))) {
       continue;  // skip malformed header
+    }
 
     values_begin_ = colon + 1;
-    TrimLWS(&values_begin_, &values_end_);
+    TrimLWS(headers_, values_begin_, values_end_);
 
     // if we got a header name, then we are done.
     return true;
@@ -938,32 +960,24 @@ bool HttpUtil::HeadersIterator::GetNext() {
   return false;
 }
 
-bool HttpUtil::HeadersIterator::AdvanceTo(const char* name) {
-  DCHECK(name != nullptr);
-  DCHECK_EQ(0, base::ToLowerASCII(name).compare(name))
-      << "the header name must be in all lower case";
-
-  while (GetNext()) {
-    if (base::EqualsCaseInsensitiveASCII(
-            base::MakeStringPiece(name_begin_, name_end_), name)) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
 HttpUtil::ValuesIterator::ValuesIterator(std::string_view values,
                                          char delimiter,
                                          bool ignore_empty_values)
-    : values_(values, std::string(1, delimiter)),
-      ignore_empty_values_(ignore_empty_values) {
-  values_.set_quote_chars("\"");
+    : values_(values),
+      ignore_empty_values_(ignore_empty_values),
+      // It's important to use `values_` here rather than `value`, since
+      // subtracting two string_view::iterators from each other is not
+      // guaranteed to work, if they're from different string_views, even if one
+      // is a copy of the other. Note that StringViewTokenizer uses iterators to
+      // the passed in string_view, rather than a copying it.
+      tokenizer_(values_, std::string(1, delimiter)) {
+  tokenizer_.set_quote_chars("\"");
   // Could set this unconditionally, since code below has to check for empty
   // values after trimming, anyways, but may provide a minor performance
   // improvement.
-  if (!ignore_empty_values_)
-    values_.set_options(base::StringTokenizer::RETURN_EMPTY_TOKENS);
+  if (!ignore_empty_values_) {
+    tokenizer_.set_options(base::StringTokenizer::RETURN_EMPTY_TOKENS);
+  }
 }
 
 HttpUtil::ValuesIterator::ValuesIterator(const ValuesIterator& other) = default;
@@ -971,10 +985,15 @@ HttpUtil::ValuesIterator::ValuesIterator(const ValuesIterator& other) = default;
 HttpUtil::ValuesIterator::~ValuesIterator() = default;
 
 bool HttpUtil::ValuesIterator::GetNext() {
-  while (values_.GetNext()) {
-    value_ = TrimLWS(values_.token());
+  while (tokenizer_.GetNext()) {
+    // Since `tokenizer_` was constructed using `values_`, this is subtracting
+    // iterators for the exact same string_view, rather than to two copies of
+    // the same string_view, so is safe.
+    value_begin_ = tokenizer_.token_begin() - values_.begin();
+    value_end_ = tokenizer_.token_end() - values_.begin();
+    TrimLWS(values_, value_begin_, value_end_);
 
-    if (!ignore_empty_values_ || !value_.empty()) {
+    if (!ignore_empty_values_ || value_begin_ != value_end_) {
       return true;
     }
   }

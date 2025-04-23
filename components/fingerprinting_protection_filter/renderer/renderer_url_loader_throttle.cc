@@ -5,17 +5,20 @@
 #include "components/fingerprinting_protection_filter/renderer/renderer_url_loader_throttle.h"
 
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/optional_ref.h"
+#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/fingerprinting_protection_filter/renderer/renderer_agent.h"
 #include "components/subresource_filter/content/shared/renderer/filter_utils.h"
 #include "components/subresource_filter/core/common/document_subresource_filter.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"
 #include "net/base/net_errors.h"
@@ -87,7 +90,11 @@ RendererURLLoaderThrottle::~RendererURLLoaderThrottle() = default;
 bool RendererURLLoaderThrottle::WillIgnoreRequest(
     const GURL& url,
     network::mojom::RequestDestination request_destination) {
-  return !url.SchemeIsHTTPOrHTTPS() || net::IsLocalhost(url) ||
+  bool should_exclude_localhost =
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          variations::switches::kEnableBenchmarking) &&
+      net::IsLocalhost(url);
+  return !url.SchemeIsHTTPOrHTTPS() || should_exclude_localhost ||
          (request_destination !=
               network::mojom::RequestDestination::kWebBundle &&
           request_destination != network::mojom::RequestDestination::kScript);

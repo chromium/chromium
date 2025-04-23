@@ -48,7 +48,7 @@ GpuMemoryBufferImplDXGI::CreateFromHandle(
   DCHECK(handle.dxgi_handle().IsValid());
   return base::WrapUnique(new GpuMemoryBufferImplDXGI(
       handle.id, size, format, std::move(callback),
-      std::move(handle.dxgi_handle()), gpu_memory_buffer_manager,
+      std::move(handle).dxgi_handle(), gpu_memory_buffer_manager,
       std::move(pool), premapped_memory));
 }
 
@@ -98,8 +98,7 @@ base::OnceClosure GpuMemoryBufferImplDXGI::AllocateForTesting(
   DCHECK(SUCCEEDED(hr));
 
   gfx::GpuMemoryBufferId kBufferId(1);
-  handle->type = gfx::DXGI_SHARED_HANDLE;
-  handle->set_dxgi_handle(
+  *handle = gfx::GpuMemoryBufferHandle(
       gfx::DXGIHandle(base::win::ScopedHandle(texture_handle)));
   handle->id = kBufferId;
   return base::DoNothing();
@@ -266,13 +265,25 @@ gfx::GpuMemoryBufferType GpuMemoryBufferImplDXGI::GetType() const {
 }
 
 gfx::GpuMemoryBufferHandle GpuMemoryBufferImplDXGI::CloneHandle() const {
-  gfx::GpuMemoryBufferHandle handle;
-  handle.type = gfx::DXGI_SHARED_HANDLE;
+  gfx::GpuMemoryBufferHandle handle(dxgi_handle_.Clone());
   handle.id = id_;
   handle.offset = 0;
   handle.stride = stride(0);
-  handle.set_dxgi_handle(dxgi_handle_.Clone());
 
+  return handle;
+}
+
+void GpuMemoryBufferImplDXGI::SetUsePreMappedMemory(bool use_premapped_memory) {
+  use_premapped_memory_ = use_premapped_memory;
+}
+
+gfx::GpuMemoryBufferHandle GpuMemoryBufferImplDXGI::CloneHandleWithRegion(
+    base::UnsafeSharedMemoryRegion region) const {
+  gfx::GpuMemoryBufferHandle handle(
+      dxgi_handle_.CloneWithRegion(std::move(region)));
+  handle.id = id_;
+  handle.offset = 0;
+  handle.stride = stride(0);
   return handle;
 }
 
@@ -282,10 +293,6 @@ HANDLE GpuMemoryBufferImplDXGI::GetHandle() const {
 
 const gfx::DXGIHandleToken& GpuMemoryBufferImplDXGI::GetToken() const {
   return dxgi_handle_.token();
-}
-
-void GpuMemoryBufferImplDXGI::SetUsePreMappedMemory(bool use_premapped_memory) {
-  use_premapped_memory_ = use_premapped_memory;
 }
 
 GpuMemoryBufferImplDXGI::GpuMemoryBufferImplDXGI(

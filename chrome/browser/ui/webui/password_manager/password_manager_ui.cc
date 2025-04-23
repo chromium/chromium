@@ -37,7 +37,6 @@
 #include "components/grit/components_scaled_resources.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
@@ -619,9 +618,6 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
                     chrome::kPasswordManagerImportLearnMoreURL);
 
   source->AddBoolean("canAddShortcut", web_app::AreWebAppsEnabled(profile));
-
-  source->AddBoolean("isBatchUploadDesktopEnabled",
-                     switches::IsBatchUploadDesktopEnabled());
 
   source->AddBoolean(
       "passkeyUpgradeSettingsToggleVisible",

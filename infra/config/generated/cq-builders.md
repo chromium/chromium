@@ -186,11 +186,6 @@ builder.
   * [`//build/android/.+`](https://cs.chromium.org/chromium/src/build/android/)
   * [`//build/config/android/.+`](https://cs.chromium.org/chromium/src/build/config/android/)
 
-* [android-cronet-arm64-gn2bp-dbg](https://ci.chromium.org/p/chromium/builders/try/android-cronet-arm64-gn2bp-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-cronet-arm64-gn2bp-dbg""))
-
-  Location filters:
-  * [`//components/cronet/gn2bp/.+`](https://cs.chromium.org/chromium/src/components/cronet/gn2bp/)
-
 * [android-cronet-x64-dbg-15-tests](https://ci.chromium.org/p/chromium/builders/try/android-cronet-x64-dbg-15-tests) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-cronet-x64-dbg-15-tests""))
 
   Location filters:

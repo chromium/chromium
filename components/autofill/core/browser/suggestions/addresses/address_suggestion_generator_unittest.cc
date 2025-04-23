@@ -438,6 +438,8 @@ TEST_F(AddressSuggestionGeneratorTest,
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
   profile1.usage_history().set_use_date(AutofillClock::Now() - base::Days(200));
+  profile1.usage_history().set_modification_date(AutofillClock::Now() -
+                                                 base::Days(200));
   address_data().AddProfile(profile1);
 
   AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
@@ -446,6 +448,8 @@ TEST_F(AddressSuggestionGeneratorTest,
                        "456 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
   profile2.usage_history().set_use_date(AutofillClock::Now() - base::Days(20));
+  profile2.usage_history().set_modification_date(AutofillClock::Now() -
+                                                 base::Days(20));
   address_data().AddProfile(profile2);
 
   // Query with empty string only returns profile2.
@@ -639,8 +643,10 @@ TEST_F(AddressSuggestionGeneratorTest,
   AutofillProfile profile_1 = test::GetFullProfile();
   AutofillProfile profile_2 = test::GetFullProfile2();
   profile_1.usage_history().set_use_count(10);
+  profile_1.usage_history().set_modification_date(kDisusedTime);
   profile_1.usage_history().set_use_date(kDisusedTime);
   profile_2.usage_history().set_use_count(1);
+  profile_2.usage_history().set_modification_date(kDisusedTime);
   profile_2.usage_history().set_use_date(kDisusedTime);
   address_data().AddProfile(profile_1);
   address_data().AddProfile(profile_2);
@@ -653,6 +659,46 @@ TEST_F(AddressSuggestionGeneratorTest,
   ASSERT_EQ(profiles_to_suggest.size(), 1u);
   EXPECT_EQ(profiles_to_suggest.front().guid(), profile_1.guid());
   histogram_tester.ExpectUniqueSample(kAddressesSuppressedHistogramName, 1, 1);
+}
+
+// Tests that disused profiles stop being disused
+TEST_F(AddressSuggestionGeneratorTest,
+       GetProfilesToSuggest_DisusedProfiles_ResetWhenUpdatingProfiles) {
+  base::Time kDisusedTime =
+      base::Time::Now() - kDisusedDataModelTimeDelta - base::Days(1);
+
+  AutofillProfile profile_1 = test::GetFullProfile();
+  AutofillProfile profile_2 = test::GetFullProfile2();
+  profile_1.usage_history().set_modification_date(kDisusedTime);
+  profile_1.usage_history().set_use_date(base::Time::Now());
+  profile_2.usage_history().set_modification_date(kDisusedTime);
+  profile_2.usage_history().set_use_date(kDisusedTime);
+  address_data().AddProfile(profile_1);
+  address_data().AddProfile(profile_2);
+
+  // Expect to get one hidden profile because `profile_2` is disused.
+  ASSERT_EQ(
+      GetProfilesToSuggestForTest(address_data(), NAME_FULL, u"",
+                                  /*field_is_autofilled=*/false, {NAME_FULL})
+          .size(),
+      1u);
+
+  // Simulate that `profile_2` was somehow updated (could be either through the
+  // settings page or through accepting an update prompt).
+  profile_2.SetRawInfo(NAME_FULL, u"Modified Name");
+  // This is needed because `TestAddressDataManager::UpdateProfile()` doesn't
+  // simulate date modifications. In reality this is done by simply calling
+  // `AddressDataManager::UpdateProfile()`.
+  profile_2.usage_history().set_modification_date(base::Time::Now());
+  address_data().UpdateProfile(profile_2);
+
+  // Expect now to see both profiles since the modification of `profile_2` means
+  // that it is a relevant profile.
+  EXPECT_EQ(
+      GetProfilesToSuggestForTest(address_data(), NAME_FULL, u"",
+                                  /*field_is_autofilled=*/false, {NAME_FULL})
+          .size(),
+      2u);
 }
 
 TEST_F(AddressSuggestionGeneratorTest, CreateSuggestionsFromProfiles) {
@@ -792,10 +838,14 @@ TEST_F(AddressSuggestionGeneratorTest, TestAddressSuggestion_HomeAndWorkIcons) {
       SuggestionType::kAddressEntry, NAME_FIRST,
       /*trigger_field_max_length=*/0);
 
-  EXPECT_THAT(suggestions,
-              ElementsAre(EqualsSuggestion(Suggestion::Icon::kAccount),
-                          EqualsSuggestion(Suggestion::Icon::kHome),
-                          EqualsSuggestion(Suggestion::Icon::kWork)));
+  raw_ptr<const base::Feature> kIphFeature =
+      &feature_engagement::kIPHAutofillHomeWorkProfileSuggestionFeature;
+  EXPECT_THAT(
+      suggestions,
+      ElementsAre(
+          AllOf(HasIcon(Suggestion::Icon::kAccount), HasNoIphFeature()),
+          AllOf(HasIcon(Suggestion::Icon::kHome), HasIphFeature(kIphFeature)),
+          AllOf(HasIcon(Suggestion::Icon::kWork), HasIphFeature(kIphFeature))));
 
   suggestions = CreateSuggestionsFromProfilesForTest(
       {profile_default, profile_home, profile_work}, {NAME_FIRST, NAME_LAST},
@@ -803,10 +853,8 @@ TEST_F(AddressSuggestionGeneratorTest, TestAddressSuggestion_HomeAndWorkIcons) {
       /*trigger_field_max_length=*/0);
 
   // If trigger field is email address, don't show home and work icons.
-  EXPECT_THAT(suggestions,
-              ElementsAre(EqualsSuggestion(Suggestion::Icon::kEmail),
-                          EqualsSuggestion(Suggestion::Icon::kEmail),
-                          EqualsSuggestion(Suggestion::Icon::kEmail)));
+  EXPECT_THAT(suggestions, Each(AllOf(HasIcon(Suggestion::Icon::kEmail),
+                                      HasNoIphFeature())));
 }
 
 // Tests that Home/Work icons are not used if the H&W feature is disabled.
@@ -831,10 +879,8 @@ TEST_F(AddressSuggestionGeneratorTest,
       /*trigger_field_max_length=*/0);
 
   // Default icons are expected.
-  EXPECT_THAT(suggestions,
-              ElementsAre(EqualsSuggestion(Suggestion::Icon::kAccount),
-                          EqualsSuggestion(Suggestion::Icon::kAccount),
-                          EqualsSuggestion(Suggestion::Icon::kAccount)));
+  EXPECT_THAT(suggestions, Each(AllOf(HasIcon(Suggestion::Icon::kAccount),
+                                      HasNoIphFeature())));
 }
 
 #if !BUILDFLAG(IS_IOS)

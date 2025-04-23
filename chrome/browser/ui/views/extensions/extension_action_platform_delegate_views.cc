@@ -84,7 +84,7 @@ void ExtensionActionPlatformDelegateViews::ShowPopup(
   // performs the flipping in RTL cases.
   views::BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_RIGHT;
 
-  ExtensionPopup::ShowPopup(std::move(host),
+  ExtensionPopup::ShowPopup(controller_->browser(), std::move(host),
                             GetDelegateViews()->GetReferenceButtonForPopup(),
                             arrow, show_action, std::move(callback));
 }

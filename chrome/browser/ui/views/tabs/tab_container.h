@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTAINER_H_
 
 #include <memory>
+#include <vector>
 
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -104,6 +105,9 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
   virtual void UpdateTabGroupVisuals(tab_groups::TabGroupId group_id) = 0;
   virtual void NotifyTabstripBubbleOpened() = 0;
   virtual void NotifyTabstripBubbleClosed() = 0;
+
+  virtual void OnSplitCreated(const std::vector<int>& indices) = 0;
+  virtual void OnSplitRemoved(const std::vector<int>& indices) = 0;
 
   virtual std::optional<int> GetModelIndexOf(
       const TabSlotView* slot_view) const = 0;

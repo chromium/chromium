@@ -66,8 +66,8 @@ void GetPageRanges(JNIEnv* env,
 // static
 std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
     Delegate* delegate,
-    ProcessBehavior process_behavior) {
-  DCHECK_EQ(process_behavior, ProcessBehavior::kOopDisabled);
+    OutOfProcessBehavior out_of_process_behavior) {
+  DCHECK_EQ(out_of_process_behavior, OutOfProcessBehavior::kDisabled);
   return std::make_unique<PrintingContextAndroid>(delegate);
 }
 
@@ -89,7 +89,7 @@ void PrintingContextAndroid::SetPendingPrint(
 }
 
 PrintingContextAndroid::PrintingContextAndroid(Delegate* delegate)
-    : PrintingContext(delegate, ProcessBehavior::kOopDisabled) {
+    : PrintingContext(delegate, OutOfProcessBehavior::kDisabled) {
   // The constructor is run in the IO thread.
 }
 

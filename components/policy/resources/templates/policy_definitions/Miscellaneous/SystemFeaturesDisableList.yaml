@@ -1,9 +1,9 @@
 caption: Configure the camera, browser settings, os settings, scanning, web store,
-  canvas, explore, crosh, gallery, terminal and recorder features to be disabled
+  canvas, explore, crosh, gallery, terminal, recorder, print jobs, key_shortcuts, gmail, google_docs, google_slides, google_sheets, google_drive, google_keep, google_calendar, google_chat, youtube, google_maps, calculator and text_editor features to be disabled
 desc: |-
   Allows you to set a list of <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> features to be disabled.
 
-        Disabling any of these features means that the user can't access it from the UI and will see it as "disabled by admin". The user experience of disabled features is decided by <ph name="SYSTEM_FEATURES_DISABLE_MODE">SystemFeaturesDisableMode</ph>
+        Disabling any of these features means that the user can't access it from the UI. In user sessions, the disabled features are hidden in the UI. The user experience of disabled features in Managed Guest Sessions (MGS) is decided by <ph name="SYSTEM_FEATURES_DISABLE_MODE">SystemFeaturesDisableMode</ph>; by default the users will see them as "disabled by admin".
 
         If the policy is left not set, all <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> features will be enabled by default and the user can use any of them.
 

@@ -181,16 +181,6 @@ class SiteSettingsHandler
   // Revokes all of the File System Access permissions for a given origin.
   void HandleRevokeFileSystemGrants(const base::Value::List& args);
 
-  // Returns all persistent smart card reader grants.
-  void HandleGetSmartCardReaderGrants(const base::Value::List& args);
-
-  // Revokes all of the current smart card reader grants - both persistent and
-  // ephemeral.
-  void HandleRevokeAllSmartCardReaderGrants(const base::Value::List& args);
-
-  // Revokes a particular reader grant.
-  void HandleRevokeSmartCardReaderGrant(const base::Value::List& args);
-
   // Gets and sets a list of ContentSettingTypes for an origin.
   // TODO(crbug.com/40528601): Investigate replacing the
   // '*CategoryPermissionForPattern' equivalents below with these methods.

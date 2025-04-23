@@ -787,7 +787,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // Returns true if marked dirty for layout
   bool UpdateLastSuccessfulPositionFallbacksAndAnchorScrollShift();
 
-  void RevisitStyleSheetForInspector(StyleSheetContents* contents);
+  void RevisitStyleSheetForInspector(StyleSheetContents* contents,
+                                     const RuleFeatureSet* features) const;
 
  private:
   void UpdateCounters(const Element& element,
@@ -817,10 +818,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void MarkUserStyleDirty();
 
   Document& GetDocument() const { return *document_; }
-
-  void RevisitStyleRulesForInspector(
-      const RuleFeatureSet& features,
-      const HeapVector<Member<StyleRuleBase>>& rules);
 
   bool MediaQueryAffectingValueChanged(const ActiveStyleSheetVector&,
                                        MediaValueChange);

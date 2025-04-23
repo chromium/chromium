@@ -120,13 +120,13 @@ class ApkWebAppService : public KeyedService,
 
   // Starts installation of a web app with the given `web_app_info`. Will first
   // load an icon from the ARC app with the given `package_name`. Does nothing
-  // if ARC is not started, or if Lacros is enabled and not connected.
+  // if ARC is not started.
   void MaybeInstallWebApp(const std::string& package_name,
                           arc::mojom::WebAppInfoPtr web_app_info);
 
   // Removes the ARC install source from the web app with the given
   // `web_app_id`. If there are no other sources left, the web app will be
-  // uninstalled. Does nothing if Lacros is enabled and not connected.
+  // uninstalled.
   void MaybeUninstallWebApp(const webapps::AppId& web_app_id);
 
   // Uninstalls the ARC package with the given `package_name`. Does nothing if

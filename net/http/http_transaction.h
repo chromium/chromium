@@ -29,7 +29,6 @@ struct TransportInfo;
 struct LoadTimingInfo;
 struct LoadTimingInternalInfo;
 class NetLogWithSource;
-class QuicServerInfo;
 class SSLPrivateKey;
 class X509Certificate;
 
@@ -38,10 +37,6 @@ class X509Certificate;
 // answered.  Cookies are assumed to be managed by the caller.
 class NET_EXPORT_PRIVATE HttpTransaction {
  public:
-  // If |*defer| is set to true, the transaction will wait until
-  // ResumeNetworkStart is called before establishing a connection.
-  using BeforeNetworkStartCallback = base::OnceCallback<void(bool* defer)>;
-
   // Called each time a connection is obtained, before any data is sent.
   //
   // |info| describes the newly-obtained connection.
@@ -165,10 +160,6 @@ class NET_EXPORT_PRIVATE HttpTransaction {
   // Returns the load state for this transaction.
   virtual LoadState GetLoadState() const = 0;
 
-  // SetQuicServerInfo sets a object which reads and writes public information
-  // about a QUIC server.
-  virtual void SetQuicServerInfo(QuicServerInfo* quic_server_info) = 0;
-
   // Populates all of load timing, except for request start times and receive
   // headers time.
   // |load_timing_info| must have all null times when called.  Returns false and
@@ -198,10 +189,6 @@ class NET_EXPORT_PRIVATE HttpTransaction {
   virtual void SetWebSocketHandshakeStreamCreateHelper(
       WebSocketHandshakeStreamBase::CreateHelper* create_helper) = 0;
 
-  // Sets the callback to receive notification just before network use.
-  virtual void SetBeforeNetworkStartCallback(
-      BeforeNetworkStartCallback callback) = 0;
-
   // Sets the callback to receive a notification upon connection.
   virtual void SetConnectedCallback(const ConnectedCallback& callback) = 0;
 
@@ -217,9 +204,6 @@ class NET_EXPORT_PRIVATE HttpTransaction {
 
   virtual void SetIsSharedDictionaryReadAllowedCallback(
       base::RepeatingCallback<bool()> callback) = 0;
-
-  // Resumes the transaction after being deferred.
-  virtual int ResumeNetworkStart() = 0;
 
   virtual ConnectionAttempts GetConnectionAttempts() const = 0;
 

@@ -884,7 +884,6 @@ class OverlayTest : public testing::Test {
       AggregatedRenderPass* render_pass,
       const gfx::Rect& rect) {
     bool needs_blending = false;
-    bool premultiplied_alpha = false;
     bool force_anti_aliasing_off = false;
     bool nearest_neighbor = false;
     bool is_overlay_candidate = true;
@@ -899,8 +898,7 @@ class OverlayTest : public testing::Test {
     auto* overlay_quad = render_pass->CreateAndAppendDrawQuad<TileDrawQuad>();
     overlay_quad->SetNew(shared_quad_state, rect, rect, needs_blending,
                          resource_id, gfx::RectF(0, 0, 1, 1), rect.size(),
-                         premultiplied_alpha, nearest_neighbor,
-                         force_anti_aliasing_off);
+                         nearest_neighbor, force_anti_aliasing_off);
 
     return overlay_quad;
   }

@@ -177,7 +177,7 @@ bool D3D11VideoDecoder::InitializeAcceleratedDecoder(
     accelerated_video_decoder_ = std::make_unique<AV1Decoder>(
         std::make_unique<D3D11AV1Accelerator>(
             this, media_log_.get(),
-            gpu_workarounds_.use_current_picture_for_av1_invalid_ref),
+            gpu_workarounds_.use_first_valid_ref_for_av1_invalid_ref),
         profile_, config.color_space_info());
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   } else if (config.codec() == VideoCodec::kHEVC) {

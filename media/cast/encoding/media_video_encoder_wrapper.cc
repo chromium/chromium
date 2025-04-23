@@ -186,6 +186,12 @@ MediaVideoEncoderWrapper::MediaVideoEncoderWrapper(
   options_.bitrate = Bitrate::ConstantBitrate(
       base::checked_cast<uint32_t>(video_config.start_bitrate));
 
+  // NOTE: the H264 encoder can produce either AVC or annexb formatted frames.
+  // Annexb is better supported by Cast receivers.
+  if (codec_ == media::VideoCodec::kH264) {
+    options_.avc.produce_annexb = true;
+  }
+
   // NOTE: since we don't actually know the frame size until the first
   // frame, the encoder will not get created until the first call to
   // `EncodeVideoFrame`. However, it is ready to start receiving frames.

@@ -59,13 +59,13 @@ export class ViewerTextBottomToolbarElement extends
   protected getAlignmentIcon_(): string {
     switch (this.currentAlignment_) {
       case TextAlignment.LEFT:
-        return 'pdf:text-align-left';
+        return 'pdf-ink:text-align-left';
       case TextAlignment.CENTER:
-        return 'pdf:text-align-center';
+        return 'pdf-ink:text-align-center';
       case TextAlignment.RIGHT:
-        return 'pdf:text-align-right';
+        return 'pdf-ink:text-align-right';
       case TextAlignment.JUSTIFY:
-        return 'pdf:text-align-justify';
+        return 'pdf-ink:text-align-justify';
       default:
         assertNotReached();
     }

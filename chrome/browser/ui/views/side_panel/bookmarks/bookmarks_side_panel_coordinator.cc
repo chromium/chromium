@@ -31,10 +31,7 @@ BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_BookmarksSidePanelUI,
                         SidePanelWebUIViewT)
 END_METADATA
 
-BookmarksSidePanelCoordinator::BookmarksSidePanelCoordinator(Browser* browser)
-    : BrowserUserData<BookmarksSidePanelCoordinator>(*browser) {}
-
-BookmarksSidePanelCoordinator::~BookmarksSidePanelCoordinator() = default;
+BookmarksSidePanelCoordinator::BookmarksSidePanelCoordinator() = default;
 
 void BookmarksSidePanelCoordinator::CreateAndRegisterEntry(
     SidePanelRegistry* global_registry) {
@@ -53,7 +50,8 @@ BookmarksSidePanelCoordinator::CreateBookmarksWebView(
           scope, base::RepeatingClosure(), base::RepeatingClosure(),
           std::make_unique<WebUIContentsWrapperT<BookmarksSidePanelUI>>(
               GURL(chrome::kChromeUIBookmarksSidePanelURL),
-              GetBrowser().profile(), IDS_BOOKMARK_MANAGER_TITLE,
+              scope.GetBrowserWindowInterface().GetProfile(),
+              IDS_BOOKMARK_MANAGER_TITLE,
               /*esc_closes_ui=*/false));
   bookmarks_web_view->SetProperty(views::kElementIdentifierKey,
                                   kBookmarkSidePanelWebViewElementId);
@@ -61,5 +59,3 @@ BookmarksSidePanelCoordinator::CreateBookmarksWebView(
       bookmarks_web_view.get()->contents_wrapper()->web_contents());
   return bookmarks_web_view;
 }
-
-BROWSER_USER_DATA_KEY_IMPL(BookmarksSidePanelCoordinator);

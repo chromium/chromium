@@ -24,6 +24,7 @@
 #include "chrome/credential_provider/test/gls_runner_test_base.h"
 #include "chrome/credential_provider/test/test_credential.h"
 #include "content/public/common/content_switches.h"
+#include "extensions/common/switches.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -193,7 +194,7 @@ TEST_P(GcpGaiaCredentialGlsTest, GetUserGlsCommandLine) {
       command_line.GetSwitchValueASCII(kGcpwEndpointPathSwitch);
 
   EXPECT_TRUE(command_line.HasSwitch(kGcpwSigninSwitch));
-  EXPECT_TRUE(command_line.HasSwitch(switches::kDisableExtensions));
+  EXPECT_TRUE(command_line.HasSwitch(extensions::switches::kDisableExtensions));
   // If domain list has more than one domain, they shouldn't exist in the
   // command line.
   if (email_domains.find(L",") != std::wstring::npos) {

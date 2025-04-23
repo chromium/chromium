@@ -9,7 +9,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check_is_test.h"
-#include "base/containers/to_vector.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/uuid.h"
@@ -40,19 +40,21 @@ std::optional<PermanentFolderType> GetIfPermanentFolderType(
 
 base::flat_map<BookmarkParentFolder::PermanentFolderType,
                std::unique_ptr<PermanentFolderOrderingTracker>>
-CreatePermanentFolderToTrackerMap(bookmarks::BookmarkModel* model) {
+CreatePermanentFolderToTrackerMap(
+    bookmarks::BookmarkModel* model,
+    PermanentFolderOrderingTracker::Delegate* delegate) {
   base::flat_map<BookmarkParentFolder::PermanentFolderType,
                  std::unique_ptr<PermanentFolderOrderingTracker>>
       permanent_folder_to_tracker;
   permanent_folder_to_tracker[PermanentFolderType::kBookmarkBarNode] =
       std::make_unique<PermanentFolderOrderingTracker>(
-          model, BookmarkNode::BOOKMARK_BAR);
+          model, BookmarkNode::BOOKMARK_BAR, delegate);
   permanent_folder_to_tracker[PermanentFolderType::kOtherNode] =
       std::make_unique<PermanentFolderOrderingTracker>(
-          model, BookmarkNode::OTHER_NODE);
+          model, BookmarkNode::OTHER_NODE, delegate);
   permanent_folder_to_tracker[PermanentFolderType::kMobileNode] =
-      std::make_unique<PermanentFolderOrderingTracker>(model,
-                                                       BookmarkNode::MOBILE);
+      std::make_unique<PermanentFolderOrderingTracker>(
+          model, BookmarkNode::MOBILE, delegate);
   return permanent_folder_to_tracker;
 }
 
@@ -96,7 +98,8 @@ BookmarkMergedSurfaceService::BookmarkMergedSurfaceService(
     bookmarks::ManagedBookmarkService* managed_bookmark_service)
     : model_(model),
       managed_bookmark_service_(managed_bookmark_service),
-      permanent_folder_to_tracker_(CreatePermanentFolderToTrackerMap(model)),
+      permanent_folder_to_tracker_(
+          CreatePermanentFolderToTrackerMap(model, /*delegate=*/this)),
       dummy_empty_node_(/*id=*/0, base::Uuid::GenerateRandomV4(), GURL()) {
   CHECK(model_);
 
@@ -119,6 +122,18 @@ void BookmarkMergedSurfaceService::Load(const base::FilePath& profile_path) {
       profile_path.Append(kMergedSurfaceOrderingFileName),
       base::BindOnce(&BookmarkMergedSurfaceService::OnLoadOrderingComplete,
                      base::Unretained(this)));
+
+  storage_ = std::make_unique<BookmarkMergedSurfaceOrderingStorage>(
+      /*service=*/this, profile_path.Append(kMergedSurfaceOrderingFileName));
+}
+
+void BookmarkMergedSurfaceService::TrackedOrderingChanged() {
+  CHECK(loaded());
+  if (!storage_) {
+    CHECK_IS_TEST();
+    return;
+  }
+  storage_->ScheduleSave();
 }
 
 void BookmarkMergedSurfaceService::OnLoadOrderingComplete(
@@ -287,7 +302,8 @@ void BookmarkMergedSurfaceService::Move(const bookmarks::BookmarkNode* node,
   // like to move their bookmark to a different storage.
   CHECK(browser);
   ShowBookmarkAccountStorageMoveDialog(
-      browser, node, new_parent.as_non_permanent_folder(), index);
+      browser, node, new_parent.as_non_permanent_folder(), index,
+      BookmarkAccountStorageMoveDialogType::kDownloadOrUpload);
 }
 
 void BookmarkMergedSurfaceService::LoadForTesting(
@@ -528,9 +544,10 @@ void BookmarkMergedSurfaceService::BookmarkNodeRemoved(
     BookmarkParentFolder parent_folder =
         BookmarkParentFolder::FromFolderNode(node);
     base::flat_set<const BookmarkNode*> removed_nodes =
-        base::MakeFlatSet<const BookmarkNode*>(base::ToVector(
+        base::MakeFlatSet<const BookmarkNode*>(
             node->children(),
-            [](const auto& bookmark_node) { return bookmark_node.get(); }));
+            /*comp=*/{},
+            [](const auto& bookmark_node) { return bookmark_node.get(); });
     for (auto& observer : observers_) {
       observer.BookmarkNodesRemoved(parent_folder, removed_nodes);
     }

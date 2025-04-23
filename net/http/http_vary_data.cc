@@ -2,15 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/http/http_vary_data.h"
 
-#include <stdlib.h>
-
+#include <array>
 #include <string_view>
 
 #include "base/pickle.h"
@@ -47,7 +41,7 @@ bool HttpVaryData::Init(const HttpRequestInfo& request_info,
     if (*request_header == "*") {
       // What's in request_digest_ will never be looked at, but make it
       // deterministic so we don't serialize out uninitialized memory content.
-      memset(&request_digest_, 0, sizeof(request_digest_));
+      request_digest_.a.fill(0u);
       return is_valid_ = true;
     }
     AddField(request_info, *request_header, &ctx);
@@ -63,9 +57,10 @@ bool HttpVaryData::Init(const HttpRequestInfo& request_info,
 
 bool HttpVaryData::InitFromPickle(base::PickleIterator* iter) {
   is_valid_ = false;
-  const char* data;
-  if (iter->ReadBytes(&data, sizeof(request_digest_))) {
-    memcpy(&request_digest_, data, sizeof(request_digest_));
+  std::optional<base::span<const uint8_t>> bytes =
+      iter->ReadBytes(sizeof(request_digest_));
+  if (bytes) {
+    base::span(request_digest_.a).copy_from(*bytes);
     return is_valid_ = true;
   }
   return false;
@@ -73,7 +68,7 @@ bool HttpVaryData::InitFromPickle(base::PickleIterator* iter) {
 
 void HttpVaryData::Persist(base::Pickle* pickle) const {
   DCHECK(is_valid());
-  pickle->WriteBytes(&request_digest_, sizeof(request_digest_));
+  pickle->WriteBytes(request_digest_.a);
 }
 
 bool HttpVaryData::MatchesRequest(
@@ -89,8 +84,7 @@ bool HttpVaryData::MatchesRequest(
     // by a build before crbug.com/469675 was fixed.
     return false;
   }
-  return memcmp(&new_vary_data.request_digest_, &request_digest_,
-                sizeof(request_digest_)) == 0;
+  return new_vary_data.request_digest_.a == request_digest_.a;
 }
 
 // static

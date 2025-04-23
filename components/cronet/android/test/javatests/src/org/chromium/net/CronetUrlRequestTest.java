@@ -236,10 +236,8 @@ public class CronetUrlRequestTest {
                         name = CronetLibraryLoader.INITIALIZE_BUILD_INFO_ON_STARTUP,
                         value = false)
             })
-    public void testSimpleRequestMustNotCreateApkInfoOrDeviceInfoWhenFlagDisabled()
-            throws Exception {
+    public void testSimpleRequestMustNotCreateDeviceInfoWhenFlagDisabled() throws Exception {
         testBindToDefaultNetworkSucceeds();
-        assertThat(ApkInfo.isInitializedForTesting()).isFalse();
         assertThat(DeviceInfo.isInitializedForTesting()).isFalse();
     }
 

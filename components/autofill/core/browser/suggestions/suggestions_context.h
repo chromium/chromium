@@ -41,10 +41,10 @@ struct SuggestionsContext {
   bool should_show_mixed_content_warning = false;
   FillingProduct filling_product = FillingProduct::kNone;
   SuppressReason suppress_reason = SuppressReason::kNotSuppressed;
-  // Indicates whether generating autofill suggestions (Meaning Address and
-  // Credit Card suggestions shown on Autofill's default popup UI) should be
-  // avoided. This can happen in multiple scenarios (e.g. During manual
-  // fallbacks for plus addresses or if the form is a mixed content form).
+  // Indicates whether generating Autofill and AutofillAI suggestions
+  // should be avoided. This can happen in multiple scenarios (e.g. during
+  // manual fallbacks for plus addresses, due to unrecognized autocomplete
+  // attribute, or if the form is a mixed content form).
   bool do_not_generate_autofill_suggestions = false;
   // Indicates whether fetching the list of plus addresses is required to
   // generate the overall list of suggestions.

@@ -13,6 +13,7 @@
 #include "ui/gfx/vector_icon_types.h"
 
 class Profile;
+class ScopedWindowCallToAction;
 
 // Enum for logging the price insights icon label. Each label we ever use
 // should have a separate enum even if they are semantically similar (e.g.
@@ -85,6 +86,8 @@ class PriceInsightsIconView : public PageActionIconView {
   // Boolean that tracks whether we should extend the duration for which the
   // label is shown when it animates in.
   bool should_extend_label_shown_duration_ = false;
+
+  std::unique_ptr<ScopedWindowCallToAction> scoped_window_call_to_action_ptr_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_COMMERCE_PRICE_INSIGHTS_ICON_VIEW_H_

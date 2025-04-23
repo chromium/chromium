@@ -35,15 +35,19 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
      * @param bookmarkModel The backend that holds the truth of what the bookmark state looks like.
      * @param bookmarkUiPrefs Stores the display prefs for bookmarks.
      * @param shoppingService Supports queries about shopping data.
+     * @param rootFolderForceVisibleMask The bitmask used to force visibility of root folder nodes.
      */
     public ImprovedBookmarkQueryHandler(
             BookmarkModel bookmarkModel,
             BookmarkUiPrefs bookmarkUiPrefs,
-            ShoppingService shoppingService) {
+            ShoppingService shoppingService,
+            @BookmarkNodeMaskBit int rootFolderForceVisibleMask) {
         mBookmarkModel = bookmarkModel;
         mBookmarkUiPrefs = bookmarkUiPrefs;
         mShoppingService = shoppingService;
-        mBasicBookmarkQueryHandler = new BasicBookmarkQueryHandler(bookmarkModel, mBookmarkUiPrefs);
+        mBasicBookmarkQueryHandler =
+                new BasicBookmarkQueryHandler(
+                        bookmarkModel, mBookmarkUiPrefs, rootFolderForceVisibleMask);
     }
 
     @Override

@@ -49,6 +49,7 @@ class MojoJSInProcessFuzzer
 REGISTER_BINARY_PROTO_IN_PROCESS_FUZZER(MojoJSInProcessFuzzer)
 
 void MojoJSInProcessFuzzer::SetUpOnMainThread() {
+  InProcessFuzzer::SetUpOnMainThread();
   base::FilePath exe_path;
   CHECK(base::PathService::Get(base::DIR_EXE, &exe_path));
   embedded_https_test_server().ServeFilesFromDirectory(exe_path);

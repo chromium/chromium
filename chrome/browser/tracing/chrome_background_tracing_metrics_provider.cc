@@ -17,6 +17,7 @@
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/version_utils.h"
 #include "components/tracing/common/background_tracing_utils.h"
+#include "components/tracing/common/tracing_scenarios_config.h"
 #include "services/tracing/public/cpp/trace_startup_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -40,7 +41,7 @@ ChromeBackgroundTracingMetricsProvider::
 
 void ChromeBackgroundTracingMetricsProvider::DoInit() {
   tracing::TraceStartupConfig::GetInstance().SetBackgroundStartupTracingEnabled(
-      tracing::ShouldTraceStartup());
+      tracing::kStartupFieldTracing.Get());
   SetupFieldTracingFromFieldTrial();
 
 #if BUILDFLAG(IS_WIN)

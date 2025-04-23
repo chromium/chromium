@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <iterator>
 
 #include "build/branding_buildflags.h"
@@ -209,12 +210,13 @@ inline constexpr char kDefaultCharset[] = "intl.charset_default";
 
 // If these change, the corresponding enums in the extension API
 // experimental.fontSettings.json must also change.
-inline constexpr const char* const kWebKitScriptsForFontFamilyMaps[] = {
+inline constexpr auto kWebKitScriptsForFontFamilyMaps =
+    std::to_array<const char*>({
 #define EXPAND_SCRIPT_FONT(x, script_name) script_name,
 #include "chrome/common/pref_font_script_names-inl.h"
-    ALL_FONT_SCRIPTS("unused param")
+        ALL_FONT_SCRIPTS("unused param")
 #undef EXPAND_SCRIPT_FONT
-};
+    });
 
 inline constexpr size_t kWebKitScriptsForFontFamilyMapsLength =
     std::size(kWebKitScriptsForFontFamilyMaps);
@@ -1318,6 +1320,10 @@ inline constexpr char kShowHomeButton[] = "browser.show_home_button";
 // toolbar.
 inline constexpr char kShowForwardButton[] = "browser.show_forward_button";
 
+// A boolean pref set to true if the Split Tab button should be pinned to the
+// toolbar.
+inline constexpr char kPinSplitTabButton[] = "browser.pin_split_tab_button";
+
 // A boolean pref set to true if Gemini integration be enabled. This is managed
 // by enterprise policy.
 inline constexpr char kGeminiSettings[] = "browser.gemini_settings";
@@ -1818,6 +1824,10 @@ inline constexpr char kUsageStatsEnabled[] = "usage_stats_reporting.enabled";
 // Maps from app ids to origin + Service Worker registration ID.
 inline constexpr char kPushMessagingAppIdentifierMap[] =
     "gcm.push_messaging_application_id_map";
+
+// List of push messaging unsubscribed entries.
+inline constexpr char kPushMessagingUnsubscribedEntriesList[] =
+    "gcm.push_messaging_unsubscribed_entries_list";
 
 // A string like "com.chrome.macosx" that should be used as the GCM category
 // when an app_id is sent as a subtype instead of as a category.
@@ -3163,9 +3173,9 @@ inline constexpr char kRelaunchWindow[] = "browser.relaunch_window";
 
 #if !BUILDFLAG(IS_ANDROID)
 // Pref name for the policy controlling the maximum age of a build before
-// forcing a quick relaunch.
-inline constexpr char kRelaunchSupersededReleaseAge[] =
-    "browser.relaunch_superseded_release_age";
+// forcing a fast relaunch.
+inline constexpr char kRelaunchFastIfOutdated[] =
+    "browser.relaunch_fast_if_outdated";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -3506,9 +3516,7 @@ inline constexpr char kRecoveryComponentNeedsElevation[] =
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 // Policy that indicates how to handle animated images.
 inline constexpr char kAnimationPolicy[] = "settings.a11y.animation_policy";
-#endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Boolean that indicates whether Chrome enterprise extension request is enabled
 // or not.
 inline constexpr char kCloudExtensionRequestEnabled[] =
@@ -3540,13 +3548,11 @@ inline constexpr char kCreatePasskeysInICloudKeychain[] =
 inline constexpr char kCWSInfoTimestamp[] = "extensions.cws_info_timestamp";
 inline constexpr char kCWSInfoFetchErrorTimestamp[] =
     "extensions.cws_info_fetch_error_timestamp";
-#endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 // A bool value for running GarbageCollectStoragePartitionCommand.
 inline constexpr char kShouldGarbageCollectStoragePartitions[] =
     "storage_partitions.should_garbage_collect";
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 inline constexpr char kAllowDinosaurEasterEgg[] = "allow_dinosaur_easter_egg";
 
@@ -4205,7 +4211,7 @@ inline constexpr char kEnterpriseCustomLabelForBrowser[] =
 inline constexpr char kEnterpriseCustomLabelForProfile[] =
     "enterprise_label.custom_value.for_profile";
 
-// IntegerValue of the custom label preset of a managed profile.
+// Integer value of the custom label preset of a managed profile.
 inline constexpr char kEnterpriseProfileBadgeToolbarSettings[] =
     "enterprise.profile_badging.toolbar_settings";
 

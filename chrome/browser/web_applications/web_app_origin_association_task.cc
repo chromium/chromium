@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/web_app_origin_association_task.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/containers/flat_set.h"
@@ -63,7 +64,7 @@ void WebAppOriginAssociationManager::Task::FetchAssociationFile(
 }
 
 void WebAppOriginAssociationManager::Task::OnAssociationFileFetched(
-    std::unique_ptr<std::string> file_content) {
+    std::optional<std::string> file_content) {
   if (!file_content || file_content->empty()) {
     MaybeStartNextScopeExtension();
     return;

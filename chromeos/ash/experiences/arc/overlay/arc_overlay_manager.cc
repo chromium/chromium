@@ -29,11 +29,11 @@ std::optional<std::string> GetOverlayTokenForArcWindow(aura::Window* window) {
   // If the client_surface_id doesn't have a particular prefix, it is not an
   // overlay candidate.
   std::string client_surface_id = shell_root_surface->GetClientSurfaceId();
-  if (!base::StartsWith(client_surface_id, kBillingIdPrefix)) {
-    return {};
+  auto remainder = base::RemovePrefix(client_surface_id, kBillingIdPrefix);
+  if (!remainder) {
+    return std::nullopt;
   }
-
-  return client_surface_id.substr(strlen(kBillingIdPrefix));
+  return std::string(*remainder);
 }
 
 }  // namespace

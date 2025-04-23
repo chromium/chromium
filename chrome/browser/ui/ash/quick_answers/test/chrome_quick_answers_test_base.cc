@@ -11,8 +11,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_ui_controller.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/components/quick_answers/test/fake_quick_answers_state.h"
@@ -134,6 +136,9 @@ std::unique_ptr<QuickAnswersControllerImpl>
 ChromeQuickAnswersTestBase::CreateQuickAnswersControllerImpl(
     chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller) {
   return std::make_unique<QuickAnswersControllerImpl>(
+      TestingBrowserProcess::GetGlobal()
+          ->GetFeatures()
+          ->application_locale_storage(),
       read_write_cards_ui_controller);
 }
 

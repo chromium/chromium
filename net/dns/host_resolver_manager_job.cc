@@ -176,11 +176,6 @@ HostResolverManager::Job::Job(
   net_log_.BeginEvent(NetLogEventType::HOST_RESOLVER_MANAGER_JOB, [&] {
     return NetLogJobCreationParams(source_net_log.source());
   });
-
-  if (resolver_->IsHappyEyeballsV3Enabled()) {
-    dns_task_results_manager_ = std::make_unique<DnsTaskResultsManager>(
-        this, key_.host, key_.query_types, net_log_);
-  }
 }
 
 HostResolverManager::Job::~Job() {
@@ -499,6 +494,11 @@ base::Value::Dict HostResolverManager::Job::NetLogJobCreationParams(
     query_types_list.Append(kDnsQueryTypes.at(query_type));
   }
   dict.Set("dns_query_types", std::move(query_types_list));
+  base::Value::List tasks_list;
+  for (TaskType task : tasks_) {
+    tasks_list.Append(static_cast<int>(task));
+  }
+  dict.Set("tasks", std::move(tasks_list));
   dict.Set("secure_dns_mode", base::strict_cast<int>(key_.secure_dns_mode));
   dict.Set("network_anonymization_key",
            key_.network_anonymization_key.ToDebugString());
@@ -717,6 +717,10 @@ void HostResolverManager::Job::StartDnsTask(bool secure) {
       key_.query_types, &*key_.resolve_context, secure, key_.secure_dns_mode,
       this, net_log_, tick_clock_, !tasks_.empty() /* fallback_available */,
       https_svcb_options_);
+  if (resolver_->IsHappyEyeballsV3Enabled()) {
+    dns_task_results_manager_ = std::make_unique<DnsTaskResultsManager>(
+        this, key_.host, key_.query_types, net_log_);
+  }
   dns_task_->StartNextTransaction();
   // Schedule a second transaction, if needed. DoH queries can bypass the
   // dispatcher and start all of their transactions immediately.

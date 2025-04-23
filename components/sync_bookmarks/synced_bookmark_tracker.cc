@@ -361,6 +361,11 @@ bool SyncedBookmarkTracker::HasLocalChanges() const {
   return false;
 }
 
+size_t SyncedBookmarkTracker::GetUnsyncedDataCount() const {
+  return std::ranges::count_if(GetAllEntities(),
+                               &SyncedBookmarkTrackerEntity::IsUnsynced);
+}
+
 std::vector<const SyncedBookmarkTrackerEntity*>
 SyncedBookmarkTracker::GetAllEntities() const {
   std::vector<const SyncedBookmarkTrackerEntity*> entities;

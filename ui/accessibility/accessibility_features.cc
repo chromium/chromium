@@ -114,7 +114,7 @@ bool IsAccessibilityLanguageDetectionEnabled() {
 
 BASE_FEATURE(kExtensionManifestV3NetworkSpeechSynthesis,
              "ExtensionManifestV3NetworkSpeechSynthesis",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsExtensionManifestV3NetworkSpeechSynthesisEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kExtensionManifestV3NetworkSpeechSynthesis);
@@ -147,6 +147,14 @@ BASE_FEATURE(kAXRandomizedStressTests,
              base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsAXRandomizedStressTestsEnabled() {
   return base::FeatureList::IsEnabled(::features::kAXRandomizedStressTests);
+}
+
+BASE_FEATURE(kAccessibilityOnScreenMode,
+             "AccessibilityOnScreenAXMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAccessibilityOnScreenAXModeEnabled() {
+  return base::FeatureList::IsEnabled(::features::kAccessibilityOnScreenMode);
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -300,6 +308,14 @@ bool IsAccessibilityManifestV3EnabledForEnhancedNetworkTts() {
       ::features::kAccessibilityManifestV3EnhancedNetworkTts);
 }
 
+BASE_FEATURE(kAccessibilityManifestV3AccessibilityCommon,
+             "AccessibilityManifestV3AccessibilityCommon",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityManifestV3EnabledForAccessibilityCommon() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityManifestV3AccessibilityCommon);
+}
+
 BASE_FEATURE(kAccessibilityManifestV3SelectToSpeak,
              "AccessibilityManifestV3SelectToSpeak",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -317,14 +333,6 @@ bool IsAccessibilityManifestV3EnabledForSwitchAccess() {
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-BASE_FEATURE(kAccessibilityOnScreenMode,
-             "AccessibilityOnScreenAXMode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsAccessibilityOnScreenAXModeEnabled() {
-  return base::FeatureList::IsEnabled(::features::kAccessibilityOnScreenMode);
-}
 
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kAXTreeFixing, "AXTreeFixing", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -443,7 +451,7 @@ bool IsMacAccessibilityAPIMigrationEnabled() {
 
 BASE_FEATURE(kMacAccessibilityOptimizeChildrenChanged,
              "MacAccessibilityOptimizeChildrenChanged",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsMacAccessibilityOptimizeChildrenChangedEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kMacAccessibilityOptimizeChildrenChanged);

@@ -82,6 +82,11 @@ NSString* const kGroup2Name = @"2group";
 // Displays the tab cell context menu by long pressing at the tab cell at
 // `tab_cell_index`.
 void DisplayContextMenuForTabCellAtIndex(int tab_cell_index) {
+  // It happens that on certain bots, the grey_longPress action doesn't return
+  // an error for EarlGrey, but the context menu doesn't open accordingly.
+  // Waiting has been seen as fixing this.
+  base::PlatformThread::Sleep(base::Seconds(1));
+
   [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(tab_cell_index)]
       performAction:grey_longPress()];
 }
@@ -89,6 +94,11 @@ void DisplayContextMenuForTabCellAtIndex(int tab_cell_index) {
 // Displays the group cell context menu by long pressing at the group cell at
 // `group_cell_index`.
 void DisplayContextMenuForGroupCellAtIndex(int group_cell_index) {
+  // It happens that on certain bots, the grey_longPress action doesn't return
+  // an error for EarlGrey, but the context menu doesn't open accordingly.
+  // Waiting has been seen as fixing this.
+  base::PlatformThread::Sleep(base::Seconds(1));
+
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(group_cell_index)]
       performAction:grey_longPress()];
 }
@@ -757,15 +767,7 @@ UIViewController* TopPresentedViewController() {
   [self testMovingBetweenGroupsUsingGridContextMenuInGrid:/*incognito*/ NO];
 }
 
-// TODO(crbug.com/377475535): Deflake and re-enable.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testMovingBetweenGroupsUsingGridContextMenuInIncognitoGrid \
-  DISABLED_testMovingBetweenGroupsUsingGridContextMenuInIncognitoGrid
-#else
-#define MAYBE_testMovingBetweenGroupsUsingGridContextMenuInIncognitoGrid \
-  testMovingBetweenGroupsUsingGridContextMenuInIncognitoGrid
-#endif
-- (void)MAYBE_testMovingBetweenGroupsUsingGridContextMenuInIncognitoGrid {
+- (void)testMovingBetweenGroupsUsingGridContextMenuInIncognitoGrid {
   if (@available(iOS 17, *)) {
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");

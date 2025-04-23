@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0">
+    <title>Test Page</title>
+    <style>
+      body {
+        /* Make page scrollable. */
+        width: 300vh;
+        height: 300vh;
+      }
+      range {
+        width: 400px;
+      }
+      #offscreenRange {
+        position: absolute;
+        left: 8px;
+        top: 200vh;
+      }
+      #dragLogger {
+        width: 300px;
+        height: 300px;
+        background-color: thistle;
+        position: absolute;
+        left: 500px;
+        top: 300px;
+      }
+    </style>
+  </head>
+  <body>
+    <input id="range" type="range" min="0" max="100" value="0">
+    <div id="dragLogger"></div>
+    <input id="offscreenRange" type="range" min="0" max="100" value="0">
+    <script>
+      let event_log = [];
+      let log_handler =
+          e => event_log.push(`${e.type}[${e.clientX},${e.clientY}]`);
+
+      const el = document.getElementById('dragLogger');
+      el.addEventListener('mousedown', log_handler);
+      el.addEventListener('mousemove', log_handler);
+      el.addEventListener('mouseup', log_handler);
+    </script>
+  </body>
+</html>

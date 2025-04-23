@@ -155,7 +155,7 @@ class NET_EXPORT IOBufferWithSize : public IOBuffer {
 class NET_EXPORT VectorIOBuffer : public IOBuffer {
  public:
   explicit VectorIOBuffer(std::vector<uint8_t> vector);
-  explicit VectorIOBuffer(base::span<uint8_t> span);
+  explicit VectorIOBuffer(base::span<const uint8_t> span);
 
  private:
   ~VectorIOBuffer() override;

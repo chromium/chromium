@@ -59,7 +59,6 @@ void PasswordManualFallbackMetricsRecorder::OnDidFillSuggestion(
       classified_as_target_filling_password
           ? classified_as_target_filling_suggestion_state_
           : not_classified_as_target_filling_suggestion_state_;
-  CHECK_NE(state, SuggestionState::kNotShown);
   state = SuggestionState::kFilled;
 }
 
@@ -80,7 +79,6 @@ void PasswordManualFallbackMetricsRecorder::ContextMenuEntryAccepted(
       classified_as_target_filling_password
           ? classified_as_target_filling_context_menu_state_
           : not_classified_as_target_filling_context_menu_state_;
-  CHECK_NE(state, ContextMenuEntryState::kNotShown);
   state = ContextMenuEntryState::kAccepted;
 }
 

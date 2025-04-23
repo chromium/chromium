@@ -33,7 +33,7 @@ class RTC_EXPORT IceConnection {
     STATE_WRITE_TIMEOUT = 3,     // we have had a large number of ping failures
   };
 
-  explicit IceConnection(const cricket::Connection* connection);
+  explicit IceConnection(const webrtc::Connection* connection);
 
   IceConnection(const IceConnection&) = default;
 
@@ -42,9 +42,9 @@ class RTC_EXPORT IceConnection {
   // The connection ID.
   uint32_t id() const { return id_; }
   // The local candidate for this connection.
-  const cricket::Candidate& local_candidate() const { return local_candidate_; }
+  const webrtc::Candidate& local_candidate() const { return local_candidate_; }
   // The remote candidate for this connection.
-  const cricket::Candidate& remote_candidate() const {
+  const webrtc::Candidate& remote_candidate() const {
     return remote_candidate_;
   }
 
@@ -68,7 +68,7 @@ class RTC_EXPORT IceConnection {
   // The number of pings sent.
   int num_pings_sent() const { return num_pings_sent_; }
   // Samples of round trip times.
-  const rtc::ArrayView<const RttSample> rtt_samples() const {
+  const webrtc::ArrayView<const RttSample> rtt_samples() const {
     return rtt_samples_;
   }
 
@@ -80,8 +80,8 @@ class RTC_EXPORT IceConnection {
 
  private:
   uint32_t id_;
-  cricket::Candidate local_candidate_;
-  cricket::Candidate remote_candidate_;
+  webrtc::Candidate local_candidate_;
+  webrtc::Candidate remote_candidate_;
 
   // Connection state information.
 

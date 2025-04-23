@@ -199,7 +199,8 @@ public final class UrlFormatter {
      * @param schemeDisplay Specifies how to display the scheme.
      * @return The formatted URL.
      */
-    public static String formatUrlForSecurityDisplay(GURL url, @SchemeDisplay int schemeDisplay) {
+    public static String formatUrlForSecurityDisplay(
+            @Nullable GURL url, @SchemeDisplay int schemeDisplay) {
         if (url == null) return "";
         return UrlFormatterJni.get().formatUrlForSecurityDisplay(url, schemeDisplay);
     }

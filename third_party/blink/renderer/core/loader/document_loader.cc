@@ -3163,6 +3163,10 @@ void DocumentLoader::CommitNavigation() {
 
   DCHECK(frame_->DomWindow());
 
+  if (navigation_timing_info->alpn_negotiated_protocol == "h3") {
+    CountUse(WebFeature::kHttp3);
+  }
+
   // TODO(crbug.com/1476866): We should check for protocols and not emit
   // performance timeline entries for file protocol navigations.
   DOMWindowPerformance::performance(*frame_->DomWindow())
@@ -3273,16 +3277,6 @@ void DocumentLoader::CreateParserPostCommit() {
       window->GetOriginTrialContext()->AddFeature(
           mojom::blink::OriginTrialFeature::kTouchEventFeatureDetection);
     }
-
-#if BUILDFLAG(IS_CHROMEOS)
-    // TODO(crbug.com/371971653): Remove the force enabling of
-    // getAllScreensMedia once the feature is moved to stable in runtime enabled
-    // features.
-    if (window->GetExecutionContext()->IsIsolatedContext()) {
-      window->GetOriginTrialContext()->AddFeature(
-          mojom::blink::OriginTrialFeature::kGetAllScreensMedia);
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
     // Enable any origin trials that have been force enabled for this commit.
     window->GetOriginTrialContext()->AddForceEnabledTrials(
@@ -3556,6 +3550,18 @@ void DocumentLoader::RecordUseCountersForCommit() {
 
   if (response_.HttpHeaderField(http_names::kSecSessionRegistration)) {
     CountUse(WebFeature::kDeviceBoundSessionRegistered);
+  }
+
+  switch (response_.DeviceBoundSessionUsage()) {
+    case network::mojom::DeviceBoundSessionUsage::kDeferred:
+      CountUse(WebFeature::kDeviceBoundSessionRequestDeferral);
+      [[fallthrough]];
+    case network::mojom::DeviceBoundSessionUsage::kInScopeNotDeferred:
+      CountUse(WebFeature::kDeviceBoundSessionRequestInScope);
+      break;
+    case network::mojom::DeviceBoundSessionUsage::kNoUsage:
+    case network::mojom::DeviceBoundSessionUsage::kUnknown:
+      break;
   }
 }
 

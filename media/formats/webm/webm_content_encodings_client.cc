@@ -43,7 +43,7 @@ WebMParserClient* WebMContentEncodingsClient::OnListStart(int id) {
     DCHECK(cur_content_encoding_.get());
     if (content_encryption_encountered_) {
       MEDIA_LOG(ERROR, media_log_) << "Unexpected multiple ContentEncryption.";
-      return NULL;
+      return nullptr;
     }
     content_encryption_encountered_ = true;
     return this;
@@ -55,7 +55,7 @@ WebMParserClient* WebMContentEncodingsClient::OnListStart(int id) {
   }
 
   MEDIA_LOG(ERROR, media_log_) << "Unsupported element " << id;
-  return NULL;
+  return nullptr;
 }
 
 // Mandatory occurrence restriction is checked in this function. Multiple

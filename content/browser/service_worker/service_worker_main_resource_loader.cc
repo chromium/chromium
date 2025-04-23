@@ -253,7 +253,6 @@ void ServiceWorkerMainResourceLoader::StartRequest(
 
   RaceNetworkRequestMode race_network_request_mode =
       RaceNetworkRequestMode::kDefault;
-  std::optional<blink::ServiceWorkerRouterRaceSource> race_source;
   // Check if registered static router rules match the request.
   if (active_worker->router_evaluator()) {
     CHECK(active_worker->router_evaluator()->IsValid());
@@ -328,9 +327,9 @@ void ServiceWorkerMainResourceLoader::StartRequest(
           }
           return;
         }
-        case network::mojom::ServiceWorkerRouterSourceType::kRace:
+        case network::mojom::ServiceWorkerRouterSourceType::
+            kRaceNetworkAndFetchEvent:
           race_network_request_mode = RaceNetworkRequestMode::kForced;
-          race_source = sources[0].race_source;
           break;
         case network::mojom::ServiceWorkerRouterSourceType::kFetchEvent:
           race_network_request_mode = RaceNetworkRequestMode::kSkipped;
@@ -364,6 +363,10 @@ void ServiceWorkerMainResourceLoader::StartRequest(
                   },
                   active_worker));
           return;
+        case network::mojom::ServiceWorkerRouterSourceType::
+            kRaceNetworkAndCache:
+          // TODO(crbug.com/370844790): implement race network and cache
+          break;
       }
     }
   }
@@ -384,8 +387,6 @@ void ServiceWorkerMainResourceLoader::StartRequest(
   }
 
   if (race_network_request_mode == RaceNetworkRequestMode::kForced) {
-    CHECK_EQ(race_source->target, blink::ServiceWorkerRouterRaceSource::
-                                      TargetEnum::kNetworkAndFetchHandler);
     if (base::FeatureList::IsEnabled(
             features::
                 kServiceWorkerStaticRouterRaceNetworkRequestPerformanceImprovement)) {
@@ -944,7 +945,8 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
   if (auto* route_info = response_head_->service_worker_router_info.get()) {
     if (route_info->matched_source_type &&
         *route_info->matched_source_type ==
-            network::mojom::ServiceWorkerRouterSourceType::kRace) {
+            network::mojom::ServiceWorkerRouterSourceType::
+                kRaceNetworkAndFetchEvent) {
       route_info->actual_source_type =
           network::mojom::ServiceWorkerRouterSourceType::kFetchEvent;
     } else {
@@ -1221,7 +1223,8 @@ void ServiceWorkerMainResourceLoader::SetCommitResponsibility(
   if (response_head_ && response_head_->service_worker_router_info &&
       response_head_->service_worker_router_info->matched_source_type &&
       *response_head_->service_worker_router_info->matched_source_type ==
-          network::mojom::ServiceWorkerRouterSourceType::kRace &&
+          network::mojom::ServiceWorkerRouterSourceType::
+              kRaceNetworkAndFetchEvent &&
       fetch_response_from == FetchResponseFrom::kWithoutServiceWorker) {
     response_head_->service_worker_router_info->actual_source_type =
         network::mojom::ServiceWorkerRouterSourceType::kNetwork;

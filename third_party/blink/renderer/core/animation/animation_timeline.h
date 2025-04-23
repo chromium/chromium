@@ -151,6 +151,9 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
     return std::nullopt;
   }
 
+  void AddAnimationForTriggering(Animation* animation);
+  void RemoveAnimationForTriggering(Animation* animation);
+
  protected:
   virtual PhaseAndTime CurrentPhaseAndTime() = 0;
 
@@ -169,10 +172,19 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   HeapHashSet<Member<Animation>> animations_needing_update_;
   // All animations attached to this timeline.
   HeapHashSet<WeakMember<Animation>> animations_;
+  // Animations whose triggers take action on them based on the state of this
+  // timeline.
+  HeapHashSet<WeakMember<Animation>> animations_for_triggering_;
 
   scoped_refptr<cc::AnimationTimeline> compositor_timeline_;
 
   std::optional<PhaseAndTime> last_current_phase_and_time_;
+
+  // Whether or not to update the trigger at the next opportunity to do so.
+  // This could because the |last_current_phase_and_time_| changed or because a
+  // new animation which triggers on this timeline has been added since the last
+  // opportunity for an update.
+  bool update_triggers_;
 };
 
 }  // namespace blink

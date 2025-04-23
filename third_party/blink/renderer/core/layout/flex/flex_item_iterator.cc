@@ -9,7 +9,7 @@
 
 namespace blink {
 
-FlexItemIterator::FlexItemIterator(const HeapVector<FlexLine>& flex_lines,
+FlexItemIterator::FlexItemIterator(const FlexLineVector& flex_lines,
                                    const BlockBreakToken* break_token,
                                    bool is_column)
     : flex_lines_(flex_lines),

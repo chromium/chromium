@@ -113,8 +113,7 @@ TEST_F(ExtensionInstallerTest, Install_InvalidUnpackedDir) {
   RunThreads();
 
   EXPECT_TRUE(executed_);
-  EXPECT_EQ(static_cast<int>(InstallError::GENERIC_ERROR),
-            result_.result.code_);
+  EXPECT_EQ(static_cast<int>(InstallError::GENERIC_ERROR), result_.result.code);
 }
 
 TEST_F(ExtensionInstallerTest, Install_BasicInstallOperation_Error) {
@@ -146,8 +145,7 @@ TEST_F(ExtensionInstallerTest, Install_BasicInstallOperation_Error) {
   RunThreads();
 
   EXPECT_TRUE(executed_);
-  EXPECT_EQ(static_cast<int>(InstallError::GENERIC_ERROR),
-            result_.result.code_);
+  EXPECT_EQ(static_cast<int>(InstallError::GENERIC_ERROR), result_.result.code);
 }
 
 TEST_F(ExtensionInstallerTest, Install_BasicInstallOperation_Success) {
@@ -178,7 +176,7 @@ TEST_F(ExtensionInstallerTest, Install_BasicInstallOperation_Success) {
   RunThreads();
 
   EXPECT_TRUE(executed_);
-  EXPECT_EQ(static_cast<int>(InstallError::NONE), result_.result.code_);
+  EXPECT_EQ(static_cast<int>(InstallError::NONE), result_.result.code);
 }
 
 }  // namespace

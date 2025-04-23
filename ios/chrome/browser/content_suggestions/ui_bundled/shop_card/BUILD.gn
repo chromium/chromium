@@ -8,12 +8,12 @@ source_set("shop_card") {
     "shop_card_item.mm",
     "shop_card_mediator.h",
     "shop_card_mediator.mm",
-    "shop_card_prefs.h",
-    "shop_card_prefs.mm",
     "shop_card_view.h",
     "shop_card_view.mm",
   ]
   deps = [
+    ":constants",
+    ":prefs",
     ":price_tracking_shop_card",
     ":shop_card_data",
     "//base",
@@ -30,9 +30,14 @@ source_set("shop_card") {
     "//components/prefs:prefs",
     "//components/prefs/ios:ios",
     "//components/url_formatter",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:metrics",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/impression_limits:impression_limits",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/impression_limits:observer_bridge",
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:public",
     "//ios/chrome/browser/favicon/model:model",
+    "//ios/chrome/browser/ntp/ui_bundled:ui_bundled",
     "//ios/chrome/browser/price_notifications/ui_bundled/cells:cells",
     "//ios/chrome/browser/shared/model/application_context:application_context",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
@@ -44,6 +49,7 @@ source_set("shop_card") {
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/favicon:favicon_constants",
     "//ios/chrome/common/ui/util:util",
+    "//ui/base",
     "//url:url",
   ]
 }
@@ -55,6 +61,7 @@ source_set("shop_card_data") {
   ]
   deps = [
     "//base:base",
+    "//components/commerce/core:commerce_types",
     "//url:url",
   ]
 }
@@ -64,7 +71,40 @@ source_set("price_tracking_shop_card") {
     "shop_card_price_tracking_view.h",
     "shop_card_price_tracking_view.mm",
   ]
-  deps = [ "//ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption:tab_resumption" ]
+  deps = [
+    ":shop_card_data",
+    "//base",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption:tab_resumption",
+    "//ios/chrome/browser/price_notifications/ui_bundled/cells:cells",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util:util",
+    "//ios/chrome/common/ui/colors:colors",
+    "//ios/chrome/common/ui/util:util",
+    "//ui/base",
+    "//url:url",
+  ]
+}
+
+source_set("prefs") {
+  sources = [
+    "shop_card_prefs.h",
+    "shop_card_prefs.mm",
+  ]
+  deps = [
+    "//components/prefs:prefs",
+    "//components/prefs/ios:ios",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "shop_card_constants.h",
+    "shop_card_constants.mm",
+  ]
+  deps = []
 }
 
 source_set("unit_tests") {
@@ -76,11 +116,17 @@ source_set("unit_tests") {
   deps = [
     ":shop_card",
     "//components/bookmarks/browser:browser",
+    "//components/commerce/core:feature_list",
     "//components/commerce/core:shopping_service_test_support",
     "//components/image_fetcher/core:core",
     "//components/power_bookmarks/core:core",
     "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/impression_limits:impression_limits",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card:prefs",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card:shop_card_data",
     "//ios/chrome/browser/favicon/model:model",
+    "//ios/chrome/browser/history/model:model",
+    "//ios/chrome/browser/ntp_tiles/model/tab_resumption:tab_resumption_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test:test",

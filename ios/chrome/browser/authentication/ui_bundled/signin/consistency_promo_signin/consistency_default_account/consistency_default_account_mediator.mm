@@ -16,6 +16,7 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_consumer.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -149,7 +150,12 @@ NSString* GetPromoLabelString(
     case signin_metrics::AccessPoint::kGlicLaunchButton:
     case signin_metrics::AccessPoint::kHistoryPage:
     case signin_metrics::AccessPoint::kCollaborationJoinTabGroup:
-    case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPill:
+    case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup:
+    case signin_metrics::AccessPoint::kWidget:
+    case signin_metrics::AccessPoint::kCollaborationLeaveOrDeleteTabGroup:
+    case signin_metrics::AccessPoint::
+        kHistorySyncOptinExpansionPillOnInactivity:
+    case signin_metrics::AccessPoint::kHistorySyncEducationalTip:
       // Nothing prevents instantiating ConsistencyDefaultAccountViewController
       // with an arbitrary entry point, API-wise. In doubt, no label is a good,
       // generic default that fits all entry points.
@@ -174,12 +180,15 @@ NSString* GetPromoLabelString(
 @implementation ConsistencyDefaultAccountMediator {
   raw_ptr<signin::IdentityManager> _identityManager;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
+  // Used to customize content on screen.
+  SigninContextStyle _contextStyle;
 }
 
 - (instancetype)
     initWithIdentityManager:(signin::IdentityManager*)identityManager
       accountManagerService:(ChromeAccountManagerService*)accountManagerService
                 syncService:(syncer::SyncService*)syncService
+               contextStyle:(SigninContextStyle)contextStyle
                 accessPoint:(signin_metrics::AccessPoint)accessPoint {
   if ((self = [super init])) {
     CHECK(identityManager);
@@ -189,6 +198,7 @@ NSString* GetPromoLabelString(
     _identityManager = identityManager;
     _accountManagerService = accountManagerService;
     _syncService = syncService;
+    _contextStyle = contextStyle;
     _accessPoint = accessPoint;
 
     _identityManagerObserver =
@@ -226,11 +236,23 @@ NSString* GetPromoLabelString(
       disabledTypes.Put(type);
     }
   }
+
   NSString* labelText = GetPromoLabelString(
       _accessPoint,
       _syncService->HasDisableReason(
           syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY),
       disabledTypes);
+  switch (_contextStyle) {
+    case SigninContextStyle::kCollaborationJoinTabGroup:
+      NOTREACHED() << "kCollaborationShareTabGroup style should be presented "
+                      "in a full screen signin screen.";
+    case SigninContextStyle::kCollaborationShareTabGroup:
+      labelText = l10n_util::GetNSString(
+          IDS_IOS_SIGNIN_GROUP_COLLABORATION_HALF_SHEET_SUBTITLE);
+      break;
+    case SigninContextStyle::kDefault:
+      break;
+  }
   [_consumer setLabelText:labelText];
 
   NSString* skipButtonText =
@@ -283,10 +305,6 @@ NSString* GetPromoLabelString(
                                         managed:isManaged];
 }
 
-- (void)handleIdentityListChanged {
-  [self selectSelectedIdentity];
-}
-
 - (void)handleIdentityUpdated:(id<SystemIdentity>)identity {
   if ([self.selectedIdentity isEqual:identity]) {
     [self updateSelectedIdentityUI];
@@ -317,7 +335,7 @@ NSString* GetPromoLabelString(
 #pragma mark -  IdentityManagerObserver
 
 - (void)onAccountsOnDeviceChanged {
-  [self handleIdentityListChanged];
+  [self selectSelectedIdentity];
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {

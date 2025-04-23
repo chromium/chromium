@@ -13,8 +13,11 @@
 
 namespace features {
 // Please keep features in alphabetical order.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kAlwaysUpdateKAnon);
+
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDetectInconsistentPageImpl);
 
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableBandAClickiness);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableBandAKAnonEnforcement);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableBandAPrivateAggregation);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableBandASampleDebugReports);

@@ -12,8 +12,10 @@ namespace blink {
 namespace {
 
 template<typename CharacterType>
-CSSPrimitiveValue::UnitType cssPrimitiveValueUnitFromTrie(
-    const CharacterType* data, unsigned length) {
+CSSPrimitiveValue::UnitType CssPrimitiveValueUnitFromTrie(
+    base::span<const CharacterType> chars) {
+  const CharacterType* data = chars.data();
+  unsigned length = static_cast<unsigned>(chars.size());
   DCHECK(data);
   DCHECK(length);
   {% macro trie_return_expression(unit_name) %}CSSPrimitiveValue::UnitType::{{unit_name}}{% endmacro %}
@@ -24,13 +26,13 @@ CSSPrimitiveValue::UnitType cssPrimitiveValueUnitFromTrie(
 } // namespace
 
 CSSPrimitiveValue::UnitType CSSPrimitiveValue::StringToUnitType(
-    const LChar* characters8, unsigned length) {
-  return cssPrimitiveValueUnitFromTrie(characters8, length);
+    base::span<const LChar> chars) {
+  return CssPrimitiveValueUnitFromTrie(chars);
 }
 
 CSSPrimitiveValue::UnitType CSSPrimitiveValue::StringToUnitType(
-    const UChar* characters16, unsigned length) {
-  return cssPrimitiveValueUnitFromTrie(characters16, length);
+    base::span<const UChar> chars) {
+  return CssPrimitiveValueUnitFromTrie(chars);
 }
 
 } // namespace blink

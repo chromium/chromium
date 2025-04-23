@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/enterprise/data_protection/print_utils.h"
 
 #include <cstring>
 #include <optional>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "chrome/browser/profiles/profile.h"
@@ -122,7 +118,7 @@ void PrintIfAllowedByPolicy(
     std::move(on_verdict).Run(/*allowed=*/true);
     return;
   }
-  std::memcpy(region.mapping.memory(), print_data->data(), print_data->size());
+  region.mapping.GetMemoryAsSpan<uint8_t>().copy_prefix_from(*print_data);
   scanning_data.page = std::move(region.region);
 
   auto on_scan_result = base::BindOnce(

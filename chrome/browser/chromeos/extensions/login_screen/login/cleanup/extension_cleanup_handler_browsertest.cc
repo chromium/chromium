@@ -17,8 +17,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/component_loader.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/extensions/policy_test_utils.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/common/chrome_paths.h"
@@ -29,7 +27,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_system.h"
+#include "extensions/browser/pending_extension_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -173,12 +171,10 @@ class ExtensionCleanupHandlerTest : public policy::DevicePolicyCrosBrowserTest {
   }
 
   void WaitForComponentExtensionsInstall() {
-    extensions::ExtensionService* extension_service =
-        extensions::ExtensionSystem::Get(GetActiveUserProfile())
-            ->extension_service();
+    auto* component_loader =
+        extensions::ComponentLoader::Get(GetActiveUserProfile());
     std::vector<std::string> registered_component_extensions =
-        extension_service->component_loader()
-            ->GetRegisteredComponentExtensionsIds();
+        component_loader->GetRegisteredComponentExtensionsIds();
     std::unordered_set<
         std::unique_ptr<extensions::TestExtensionRegistryObserver>>
         extension_observers;

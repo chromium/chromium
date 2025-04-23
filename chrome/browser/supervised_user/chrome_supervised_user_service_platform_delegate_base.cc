@@ -8,6 +8,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
@@ -105,4 +106,9 @@ void ChromeSupervisedUserServicePlatformDelegateBase::
       // Incognito usage is expected, so don't output any more detailed metrics.
       break;
   }
+}
+
+bool ChromeSupervisedUserServicePlatformDelegateBase::ShouldCloseIncognitoTabs()
+    const {
+  return !IncognitoModePrefs::IsIncognitoAllowed(&profile_.get());
 }

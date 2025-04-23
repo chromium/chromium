@@ -72,4 +72,6 @@ void AccessibilityStateProvider::ProvideSystemProfileMetrics(
   MaybeAddAccessibilityModeFlags(mode, ui::AXMode::kPDFPrinting, state);
   MaybeAddAccessibilityModeFlags(mode, ui::AXMode::kPDFOcr, state);
   MaybeAddAccessibilityModeFlags(mode, ui::AXMode::kAnnotateMainNode, state);
+  // ui::AXMode::kFromPlatform is unconditionally filtered out and is therefore
+  // never present in `mode`.
 }

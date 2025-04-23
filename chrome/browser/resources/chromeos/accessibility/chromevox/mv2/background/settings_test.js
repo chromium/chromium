@@ -10,7 +10,7 @@ GEN_INCLUDE(['../testing/mock_feedback.js', '../testing/fake_objects.js']);
 /**
  * Test fixture involving settings pages.
  */
-ChromeVoxSettingsPagesTest = class extends ChromeVoxE2ETest {
+ChromeVoxMV2SettingsPagesTest = class extends ChromeVoxE2ETest {
   /** @override */
   testGenCppIncludes() {
     super.testGenCppIncludes();
@@ -30,7 +30,7 @@ ChromeVoxSettingsPagesTest = class extends ChromeVoxE2ETest {
 };
 
 AX_TEST_F(
-    'ChromeVoxSettingsPagesTest', 'TtsRateCommandOnSettingsPage',
+    'ChromeVoxMV2SettingsPagesTest', 'TtsRateCommandOnSettingsPage',
     async function() {
       const realTts = ChromeVox.tts;
       const mockFeedback = this.createMockFeedback();

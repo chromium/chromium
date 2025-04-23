@@ -18,7 +18,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
 #include "third_party/blink/renderer/platform/fonts/font_test_utilities.h"
 #include "third_party/blink/renderer/platform/fonts/font_variant_emoji.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_inline_headers.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_run.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_test_info.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
@@ -1051,9 +1051,9 @@ TEST_P(GlyphDataRangeTest, Data) {
 
   const auto& run = TestInfo(result)->RunInfoForTesting(data.run_index);
   auto glyphs = run.FindGlyphDataRange(data.start_offset, data.end_offset);
-  unsigned start_glyph = std::distance(run.glyph_data_.begin(), glyphs.begin);
+  unsigned start_glyph = std::distance(run.glyph_data_.begin(), glyphs.begin());
   EXPECT_EQ(data.start_glyph, start_glyph);
-  unsigned end_glyph = std::distance(run.glyph_data_.begin(), glyphs.end);
+  unsigned end_glyph = std::distance(run.glyph_data_.begin(), glyphs.end());
   EXPECT_EQ(data.end_glyph, end_glyph);
 }
 

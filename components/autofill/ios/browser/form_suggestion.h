@@ -33,7 +33,9 @@ enum class SuggestionFeatureForIPH {
   // Denoting IPH for the external account profile suggestion.
   kAutofillExternalAccountProfile = 1,
   // Denoting IPH for the plus address create suggestion.
-  kPlusAddressCreation = 2
+  kPlusAddressCreation = 2,
+  // Denoting IPH for the home and work address suggestion.
+  kHomeWorkAddressSuggestion = 3
 };
 
 // Enum class used to determine the icon for the suggestion.

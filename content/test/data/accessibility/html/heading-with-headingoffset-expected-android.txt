@@ -1,0 +1,70 @@
+android.webkit.WebView focusable focused
+++android.view.View tooltip_text='container headingoffset=1'
+++++android.widget.TextView role_description='heading 2' heading
+++++android.widget.TextView role_description='heading 3' heading
+++++android.widget.TextView role_description='heading 4' heading
+++++android.view.View tooltip_text='container headingoffset=2'
+++++++android.widget.TextView role_description='heading 4' heading
+++++++android.widget.TextView role_description='heading 5' heading
+++++++android.view.View tooltip_text='container headingreset'
+++++++++android.widget.TextView role_description='heading 1' heading
+++++++android.app.Dialog role_description='dialog' focusable interesting name='container dialog'
+++android.view.View tooltip_text='container headingoffset=8'
+++++android.widget.TextView role_description='heading' heading
+++++android.widget.TextView role_description='heading' heading
+++++android.widget.TextView role_description='heading' heading
+++++android.widget.TextView role_description='heading' heading
+++++android.widget.TextView role_description='heading' heading
+++++android.widget.TextView role_description='heading' heading
+++++android.view.View tooltip_text='container headingreset'
+++++++android.widget.TextView role_description='heading 1' heading
+++++android.app.Dialog role_description='dialog' focusable interesting name='container dialog'
+++android.view.View tooltip_text='container headingoffset=-3'
+++++android.widget.TextView role_description='heading 1' heading
+++++android.widget.TextView role_description='heading 2' heading
+++++android.widget.TextView role_description='heading 3' heading
+++++android.widget.TextView role_description='heading 4' heading
+++++android.widget.TextView role_description='heading 5' heading
+++++android.widget.TextView role_description='heading 6' heading
+++++android.view.View tooltip_text='container headingreset'
+++++++android.widget.TextView role_description='heading 1' heading
+++++android.app.Dialog role_description='dialog' focusable interesting name='container dialog'
+++android.view.View tooltip_text='container shadowroot headingoffset=1'
+++++android.widget.TextView role_description='heading 2' heading
+++++android.widget.TextView role_description='heading 2' heading
+++android.view.View tooltip_text='container shadowroot slotted headingoffset=1'
+++++android.widget.TextView role_description='heading 2' heading
+++++android.widget.TextView role_description='heading 3' heading
+++++android.widget.TextView role_description='heading 3' heading
+++++android.widget.TextView role_description='heading 2' heading
+++android.view.View tooltip_text='container shadowroot slotted with container headingoffset=1'
+++++android.widget.TextView role_description='heading 2' heading
+++++android.view.View tooltip_text='container inside shadowroot headingoffset=1'
+++++++android.widget.TextView role_description='heading 4' heading
+++++++android.widget.TextView role_description='heading 6' heading
+++++++android.widget.TextView role_description='heading 4' heading
+++android.view.View tooltip_text='container shadowroot slot with attr headingoffset=1'
+++++android.widget.TextView role_description='heading 2' heading
+++++android.widget.TextView role_description='heading 4' heading
+++android.widget.TextView role_description='heading 2' heading
+++android.widget.TextView role_description='heading 3' heading
+++android.widget.TextView role_description='heading 3' heading
+++android.widget.TextView role_description='heading 4' heading
+++android.widget.TextView role_description='heading 2' heading
+++android.widget.TextView role_description='heading 3' heading
+++android.widget.TextView role_description='heading 3' heading
+++android.widget.TextView role_description='heading 4' heading
+++android.widget.TextView role_description='heading' heading
+++android.widget.TextView role_description='heading' heading
+++android.widget.TextView role_description='heading 1' heading
+++android.widget.TextView role_description='heading 2' heading
+++android.view.View tooltip_text='container with no attr'
+++++android.widget.TextView role_description='heading 2' heading
+++++android.widget.TextView role_description='heading 3' heading
+++++android.widget.TextView role_description='heading 2' heading
+++++android.widget.TextView role_description='heading 3' heading
+++++android.widget.TextView role_description='heading 1' heading
+++++android.widget.TextView role_description='heading 2' heading
+++android.view.View tooltip_text='many nested + and - values'
+++++android.widget.TextView role_description='heading 5' heading
+++android.widget.TextView role_description='heading 3' heading

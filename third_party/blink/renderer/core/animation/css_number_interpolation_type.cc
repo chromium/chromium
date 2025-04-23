@@ -85,7 +85,7 @@ InterpolationValue CSSNumberInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSNumberInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState&,
     ConversionCheckers&) const {
   auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value);
   if (!primitive_value || !primitive_value->IsNumber()) {
@@ -103,6 +103,17 @@ CSSNumberInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
     return nullptr;
   }
   return CreateNumberValue(*underlying_number);
+}
+
+InterpolationValue
+CSSNumberInterpolationType::MaybeConvertCustomPropertyUnderlyingValue(
+    const CSSValue& value) const {
+  if (const auto* number_value = DynamicTo<CSSNumericLiteralValue>(value)) {
+    if (number_value->IsNumber()) {
+      return CreateNumberValue(number_value->GetDoubleValue());
+    }
+  }
+  return nullptr;
 }
 
 void CSSNumberInterpolationType::ApplyStandardPropertyValue(

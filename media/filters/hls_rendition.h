@@ -68,8 +68,12 @@ class MEDIA_EXPORT HlsRendition {
   virtual void Stop() = 0;
 
   // Update playlist because we've adapted to a network or resolution change.
-  virtual void UpdatePlaylist(scoped_refptr<hls::MediaPlaylist> playlist,
-                              std::optional<GURL> new_playlist_uri) = 0;
+  // These are separate, since it's possible to update one without the other.
+  virtual void UpdatePlaylist(scoped_refptr<hls::MediaPlaylist> playlist) = 0;
+  virtual void UpdatePlaylistURI(const GURL& playlist_uri) = 0;
+
+  // Gets the active media playlist URI for this rendition.
+  virtual const GURL& MediaPlaylistUri() const = 0;
 
   static std::unique_ptr<HlsRendition> CreateRendition(
       ManifestDemuxerEngineHost* engine_host,

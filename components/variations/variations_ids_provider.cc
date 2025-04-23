@@ -536,8 +536,6 @@ VariationsIdsProvider::GetAllVariationIds() {
   // The entropy source value is used for retrospective A/A tests to validate
   // that there's no existing bias between two randomized groups of clients for
   // a later A/B study.
-  base::UmaHistogramBoolean("Variations.Headers.HasLowEntropySourceValue",
-                            low_entropy_source_value_.has_value());
   if (low_entropy_source_value_.has_value()) {
     int source_value = low_entropy_source_value_.value() +
                        kLowEntropySourceVariationIdRangeMin;

@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "components/media_effects/test/fake_audio_system_info.h"

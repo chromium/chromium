@@ -239,7 +239,7 @@ struct FrameChunk {
     DCHECK(video_frame_buffer);
   }
 
-  const rtc::scoped_refptr<webrtc::VideoFrameBuffer> video_frame_buffer;
+  const webrtc::scoped_refptr<webrtc::VideoFrameBuffer> video_frame_buffer;
   // TODO(b/241349739): timestamp and timestamp_us should be unified as one
   // base::TimeDelta.
   const uint32_t timestamp;
@@ -1229,7 +1229,7 @@ void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk) {
     // not support MediaFoundation; 2. The video track gets disabled so black
     // frames are sent.
     scoped_refptr<media::VideoFrame> frame;
-    rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer =
+    webrtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer =
         frame_chunk.video_frame_buffer;
     // For black frames their handling will depend on the current
     // |use_native_input_| state. As a result we don't toggle
@@ -1713,7 +1713,7 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
     failed_timestamp_match_ = true;
     submitted_frames_.clear();
     const int64_t current_time_ms =
-        rtc::TimeMicros() / base::Time::kMicrosecondsPerMillisecond;
+        webrtc::TimeMicros() / base::Time::kMicrosecondsPerMillisecond;
     // RTP timestamp can wrap around. Get the lower 32 bits.
     rtp_timestamp = static_cast<uint32_t>(current_time_ms * 90);
     capture_timestamp_ms = current_time_ms;
@@ -1726,7 +1726,7 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
 #if BUILDFLAG(RTC_USE_H265)
   if (ps_tracker_.get()) {
     H265ParameterSetsTracker::FixedBitstream fixed =
-        ps_tracker_->MaybeFixBitstream(rtc::MakeArrayView(
+        ps_tracker_->MaybeFixBitstream(webrtc::MakeArrayView(
             output_mapping->front(), metadata.payload_size_bytes));
     if (fixed.action == H265ParameterSetsTracker::PacketAction::kInsert) {
       image.SetEncodedData(fixed.bitstream);
@@ -1736,7 +1736,7 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
   }
 #endif  // BUILDFLAG(RTC_USE_H265)
   if (!fixed_bitstream) {
-    image.SetEncodedData(rtc::make_ref_counted<EncodedDataWrapper>(
+    image.SetEncodedData(webrtc::make_ref_counted<EncodedDataWrapper>(
         std::move(output_mapping), metadata.payload_size_bytes,
         base::BindPostTaskToCurrentDefault(base::BindOnce(
             &EncodedBufferReferenceHolder::BitstreamBufferAvailable,
@@ -2125,7 +2125,7 @@ RTCVideoEncoder::Impl::CreateI420SharedMemoryFrameByLibyuv(
   // Do a strided copy and scale (if necessary) the input frame to match
   // the input requirements for the encoder.
   // TODO(magjed): Downscale with an image pyramid instead.
-  rtc::scoped_refptr<webrtc::I420BufferInterface> i420_buffer =
+  webrtc::scoped_refptr<webrtc::I420BufferInterface> i420_buffer =
       frame_buffer.ToI420();
   if (libyuv::I420Scale(
           i420_buffer->DataY(), i420_buffer->StrideY(), i420_buffer->DataU(),
@@ -2202,7 +2202,7 @@ RTCVideoEncoder::Impl::CreateNV12SharedImageFrame(
   }
 
   TRACE_EVENT_BEGIN0("webrtc", "CreateNV12SharedImageFrame-ToI420");
-  rtc::scoped_refptr<webrtc::I420BufferInterface> i420_buffer =
+  webrtc::scoped_refptr<webrtc::I420BufferInterface> i420_buffer =
       frame_buffer.ToI420();
   CHECK(i420_buffer);
   TRACE_EVENT_END0("webrtc", "CreateNV12SharedImageFrame-ToI420");
@@ -2271,7 +2271,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
       base::Microseconds(frame_chunk.timestamp_us);
 
   scoped_refptr<media::VideoFrame> frame;
-  rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer =
+  webrtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer =
       frame_chunk.video_frame_buffer;
   // TODO: set timestamp.
   if (NeedConvertToMemoryFrame(*frame_buffer)) {
@@ -2325,7 +2325,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
   }
 
   scoped_refptr<media::VideoFrame> frame;
-  rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer =
+  webrtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer =
       frame_chunk.video_frame_buffer;
   if (frame_buffer->type() != webrtc::VideoFrameBuffer::Type::kNative) {
     // If we get a non-native frame it's because the video track is disabled

@@ -521,12 +521,33 @@ bool StructTraits<media::mojom::VideoFrameDataView,
           media::VideoFrame::Rows(i, format, coded_size.height());
       base::CheckedNumeric<size_t> min_plane_size = base::CheckMul(
           base::strict_cast<size_t>(planes[i].stride), plane_height);
-      const size_t plane_pixel_width =
-          media::VideoFrame::RowBytes(i, format, coded_size.width());
       if (!min_plane_size.IsValid<uint64_t>() ||
-          min_plane_size.ValueOrDie<uint64_t>() > planes[i].size ||
-          base::strict_cast<size_t>(planes[i].stride) < plane_pixel_width) {
-        DLOG(ERROR) << "Invalid plane stride/size at index " << i;
+          min_plane_size.ValueOrDie<uint64_t>() > planes[i].size) {
+        DLOG(ERROR) << "Invalid plane size at index " << i;
+        return false;
+      }
+
+      size_t plane_pixel_width =
+          media::VideoFrame::RowBytes(i, format, coded_size.width());
+      // If this is a tiled, protected 10bpp MTK format, then
+      // VideoFrame::RowBytes() produces the wrong stride. This fixes
+      // |plane_pixel_width| for that picture type.
+      if (metadata.protected_video && metadata.needs_detiling &&
+          format == media::PIXEL_FORMAT_P010LE) {
+        constexpr int kMT2TBppNumerator = 5;
+        constexpr int kMT2TBppDenominator = 4;
+        base::CheckedNumeric<size_t> stride = coded_size.width();
+        stride *= kMT2TBppNumerator;
+        stride /= kMT2TBppDenominator;
+        if (!stride.IsValid()) {
+          DLOG(ERROR) << "Failed to compute MT2T stride at index " << i;
+          return false;
+        }
+        plane_pixel_width = stride.ValueOrDie<size_t>();
+      }
+
+      if (base::strict_cast<size_t>(planes[i].stride) < plane_pixel_width) {
+        DLOG(ERROR) << "Invalid plane stride at index " << i;
         return false;
       }
 

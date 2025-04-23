@@ -1066,7 +1066,7 @@ IN_PROC_BROWSER_TEST_F(PKPModelClientTest, PKPBypass) {
   verify_result.verified_cert = cert;
   // Public key hash which does not match the value in the static pin.
   net::HashValue hash(net::HASH_VALUE_SHA256);
-  std::fill(hash.begin(), hash.end(), 1);
+  std::ranges::fill(hash.span(), 1);
   verify_result.public_key_hashes.push_back(hash);
 
   mock_cert_verifier()->AddResultForCert(cert, verify_result, net::OK);
@@ -1091,7 +1091,7 @@ IN_PROC_BROWSER_TEST_F(PKPModelClientTest, PKPEnforced) {
   verify_result.verified_cert = cert;
   // Public key hash which does not match the value in the static pin.
   net::HashValue hash(net::HASH_VALUE_SHA256);
-  std::fill(hash.begin(), hash.end(), 1);
+  std::ranges::fill(hash.span(), 1);
   verify_result.public_key_hashes.push_back(hash);
 
   mock_cert_verifier()->AddResultForCert(cert, verify_result, net::OK);

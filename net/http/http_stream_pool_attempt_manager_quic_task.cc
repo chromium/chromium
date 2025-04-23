@@ -9,11 +9,13 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "base/values.h"
 #include "net/base/connection_endpoint_metadata.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
+#include "net/base/tracing.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/http/http_network_session.h"
@@ -34,9 +36,12 @@ HttpStreamPool::AttemptManager::QuicTask::QuicTask(
     quic::ParsedQuicVersion quic_version)
     : manager_(manager),
       quic_version_(quic_version),
-      net_log_(NetLogWithSource::Make(
-          manager->net_log().net_log(),
-          NetLogSourceType::HTTP_STREAM_POOL_QUIC_TASK)) {
+      net_log_(
+          NetLogWithSource::Make(manager->net_log().net_log(),
+                                 NetLogSourceType::HTTP_STREAM_POOL_QUIC_TASK)),
+      track_(base::trace_event::GetNextGlobalTraceId()),
+      flow_(perfetto::Flow::ProcessScoped(
+          base::trace_event::GetNextGlobalTraceId())) {
   CHECK(manager_);
   CHECK(service_endpoint_request());
   CHECK(service_endpoint_request()->EndpointsCryptoReady());
@@ -64,6 +69,10 @@ void HttpStreamPool::AttemptManager::QuicTask::MaybeAttempt() {
     // TODO(crbug.com/346835898): Support multiple attempts.
     return;
   }
+
+  TRACE_EVENT_INSTANT("net.stream", "QuicAttemptStart", manager_->track_,
+                      flow_);
+  TRACE_EVENT_BEGIN("net.stream", "QuicAttempt", track_, flow_);
 
   std::optional<QuicEndpoint> quic_endpoint = GetQuicEndpointToAttempt();
   net_log_.AddEvent(
@@ -119,9 +128,9 @@ void HttpStreamPool::AttemptManager::QuicTask::MaybeAttempt() {
       /*use_dns_aliases=*/true, std::move(dns_aliases),
       manager_->CalculateMultiplexedSessionCreationInitiator());
 
-  if (GetStreamAttemptDelayBehavior() ==
-      StreamAttemptDelayBehavior::kStartTimerOnFirstQuicAttempt) {
-    manager_->MaybeRunStreamAttemptDelayTimer();
+  if (GetTcpBasedAttemptDelayBehavior() ==
+      TcpBasedAttemptDelayBehavior::kStartTimerOnFirstQuicAttempt) {
+    manager_->MaybeRunTcpBasedAttemptDelayTimer();
   }
 
   int rv = session_attempt_->Start(base::BindOnce(
@@ -217,6 +226,9 @@ HttpStreamPool::AttemptManager::QuicTask::GetPreferredIPEndPoint(
 
 void HttpStreamPool::AttemptManager::QuicTask::OnSessionAttemptComplete(
     int rv) {
+  TRACE_EVENT_END("net.stream", track_, "result", rv);
+  TRACE_EVENT_INSTANT("net.stream", "QuicAttemptEnd", manager_->track_, flow_);
+
   if (rv == OK) {
     QuicChromiumClientSession* session =
         quic_session_pool()->FindExistingSession(GetKey().session_key(),

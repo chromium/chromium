@@ -182,19 +182,6 @@ std::vector<std::string> GenerateUpgradeProps(
     }
   }
 
-  if (upgrade_params.enable_priority_app_lmk_delay &&
-      !upgrade_params.priority_app_lmk_delay_list.empty()) {
-    result.push_back(base::StringPrintf(
-        "%s.arc.lmk.enable_priority_app_delay=%d", prefix.c_str(),
-        upgrade_params.enable_priority_app_lmk_delay));
-    result.push_back(
-        base::StringPrintf("%s.arc.lmk.priority_apps=%s", prefix.c_str(),
-                           upgrade_params.priority_app_lmk_delay_list.c_str()));
-    result.push_back(base::StringPrintf(
-        "%s.arc.lmk.priority_app_delay_duration_sec=%d", prefix.c_str(),
-        upgrade_params.priority_app_lmk_delay_second));
-  }
-
   if (upgrade_params.enable_lmk_perceptible_min_state_update) {
     result.push_back(base::StringPrintf(
         "%s.arc.lmk.perceptible_min_state_update=1", prefix.c_str()));

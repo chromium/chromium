@@ -7,10 +7,12 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/test/supervised_user/supervision_mixin.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace supervised_user {
 namespace {
 
 class AllIncognitoBrowsersClosedWaiter : public BrowserListObserver {
@@ -40,16 +42,13 @@ class AllIncognitoBrowsersClosedWaiter : public BrowserListObserver {
 };
 
 class SupervisedUserIncognitoBrowserTest
-    : public MixinBasedInProcessBrowserTest,
-      public ::testing::WithParamInterface<
-          supervised_user::SupervisionMixin::SignInMode> {
+    : public MixinBasedInProcessBrowserTest {
  protected:
-  supervised_user::SupervisionMixin supervision_mixin{
+  SupervisionMixin supervision_mixin{
       mixin_host_,
       this,
       embedded_test_server(),
-      {.sign_in_mode =
-           supervised_user::SupervisionMixin::SignInMode::kSignedOut}};
+      {.sign_in_mode = SupervisionMixin::SignInMode::kSignedOut}};
 };
 
 // ChromeOS Ash does not support the browser being signed out on a supervised
@@ -66,8 +65,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIncognitoBrowserTest,
   CHECK_EQ(browser_list->GetIncognitoBrowserCount(), 1u);
 
   // Sign in as a regular user.
-  supervision_mixin.SignIn(
-      supervised_user::SupervisionMixin::SignInMode::kRegular);
+  supervision_mixin.SignIn(SupervisionMixin::SignInMode::kRegular);
 
   // Check the incognito window remains open.
   base::RunLoop().RunUntilIdle();
@@ -87,12 +85,42 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIncognitoBrowserTest,
   AllIncognitoBrowsersClosedWaiter incognito_closed_waiter;
 
   // Sign in as a supervised user.
-  supervision_mixin.SignIn(
-      supervised_user::SupervisionMixin::SignInMode::kSupervised);
+  supervision_mixin.SignIn(SupervisionMixin::SignInMode::kSupervised);
 
   // Check the incognito window remains open.
   incognito_closed_waiter.Wait();
+  ASSERT_EQ(browser_list->GetIncognitoBrowserCount(), 0u);
 }
+
+IN_PROC_BROWSER_TEST_F(SupervisedUserIncognitoBrowserTest,
+                       BrowserContentFiltersCloseIncognito) {
+  BrowserList* browser_list = BrowserList::GetInstance();
+
+  // Create a new incognito window (this is allowed as the user is not signed
+  // in).
+  CHECK_EQ(browser_list->GetIncognitoBrowserCount(), 0u);
+  CreateIncognitoBrowser();
+  CHECK_EQ(browser_list->GetIncognitoBrowserCount(), 1u);
+
+  AllIncognitoBrowsersClosedWaiter incognito_closed_waiter;
+
+  // This filtering is account-agnostic (Family Link users do not have
+  // entrypoint here).
+  EnableBrowserContentFilters(*browser()->profile()->GetPrefs());
+
+  // Check the incognito window remains open.
+  incognito_closed_waiter.Wait();
+  ASSERT_EQ(browser_list->GetIncognitoBrowserCount(), 0u);
+  // CreateIncognitoBrowser() would crash here.
+
+  // This filtering is account-agnostic (Family Link users do not have
+  // entrypoint here).
+  DisableBrowserContentFilters(*browser()->profile()->GetPrefs());
+  CreateIncognitoBrowser();
+  CHECK_EQ(browser_list->GetIncognitoBrowserCount(), 1u);
+}
+
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
+}  // namespace supervised_user

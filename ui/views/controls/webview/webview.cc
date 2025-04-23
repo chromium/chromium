@@ -201,6 +201,11 @@ base::CallbackListSubscription WebView::AddWebContentsAttachedCallback(
   return web_contents_attached_callbacks_.Add(callback);
 }
 
+base::CallbackListSubscription WebView::AddWebContentsFocusedCallback(
+    WebContentsFocusedCallback callback) {
+  return web_contents_focused_callbacks_.Add(callback);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // WebView, View overrides:
 
@@ -407,6 +412,7 @@ void WebView::DidToggleFullscreenModeForTab(bool entered_fullscreen,
 void WebView::OnWebContentsFocused(
     content::RenderWidgetHost* render_widget_host) {
   RequestFocus();
+  web_contents_focused_callbacks_.Notify(this);
 }
 
 void WebView::AXTreeIDForMainFrameHasChanged() {

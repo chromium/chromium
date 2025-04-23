@@ -105,7 +105,7 @@ void SharingHubBubbleViewImpl::Init() {
 
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
   scroll_view_->ClipHeightTo(0, kActionButtonHeight * kMaximumButtons);
-  scroll_view_->SetBackgroundThemeColorId(ui::kColorMenuBackground);
+  scroll_view_->SetBackgroundColor(ui::kColorMenuBackground);
 
   PopulateScrollView(controller_->GetFirstPartyActions());
 }

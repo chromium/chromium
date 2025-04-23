@@ -6,14 +6,14 @@ Version: v1.71.0-dev
 Revision: ff8d12a129eedc58f9602c9fa9d1c01a2a270d62
 Security Critical: yes
 Shipped: yes
-CPEPrefix: cpe:/a:grpc:grpc:1.49
+CPEPrefix: cpe:/a:grpc:grpc:1.71
 
 Please note that that the use of gRPC is not generally allowed within Chromium.
 Before integrating with this library, consult with the security team.
 See go/chrome-grpc-advice for more details.
 
 Steps to upgrade to a new version of GRPC, all relative to //third_party/grpc:
-1. Update revision and version information in this file. Version file can be
+1. Update revision, version and CPEPrefix in this file. The version can be
    found in the root BUILD file in gRPC repo.
 2. Run third_party/grpc/update.sh.
 3. Update the BUILD.gn file. ./generate_gn.sh is a script that tries to

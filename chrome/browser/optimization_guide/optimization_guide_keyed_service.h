@@ -26,6 +26,7 @@
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -39,6 +40,10 @@ class BrowserContext;
 namespace download {
 class BackgroundDownloadService;
 }  // namespace download
+
+namespace on_device_internals {
+class PageHandler;
+}
 
 namespace optimization_guide {
 class ChromeHintsManager;
@@ -105,6 +110,10 @@ class OptimizationGuideKeyedService
 #if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 #endif
+
+  // Allow models to be subscribed via the broker.
+  void BindModelBroker(
+      mojo::PendingReceiver<optimization_guide::mojom::ModelBroker> receiver);
 
   // optimization_guide::OptimizationGuideDecider implementation:
   void RegisterOptimizationTypes(
@@ -238,7 +247,7 @@ class OptimizationGuideKeyedService
   friend class ChromeBrowserMainExtraPartsOptimizationGuide;
   friend class ChromeBrowsingDataRemoverDelegate;
   friend class HintsFetcherBrowserTest;
-  friend class OnDeviceInternalsPageHandler;
+  friend class on_device_internals::PageHandler;
   friend class OptimizationGuideInternalsUI;
   friend class OptimizationGuideMessageHandler;
   friend class OptimizationGuideWebContentsObserver;

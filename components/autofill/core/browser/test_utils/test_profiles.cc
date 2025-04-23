@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/test_utils/test_profiles.h"
 
 #include "base/feature_list.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/common/autofill_features.h"
 

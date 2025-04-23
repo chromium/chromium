@@ -576,6 +576,7 @@ class CloudPolicyClientTest : public testing::Test {
                         service_.CaptureQueryParams(&query_params_),
                         service_.CaptureTimeout(&timeout_),
                         service_.CaptureRequest(&job_request_),
+                        service_.CaptureSendsCookies(&sends_cookies_),
                         service_.SendJobOKAsync(response)));
   }
 
@@ -623,6 +624,7 @@ class CloudPolicyClientTest : public testing::Test {
   std::string job_payload_;
   std::string client_id_;
   std::string policy_type_;
+  bool sends_cookies_;
   StrictMock<MockJobCreationHandler> job_creation_handler_;
   FakeDeviceManagementService service_{&job_creation_handler_};
   StrictMock<MockDeviceDMTokenCallbackObserver>
@@ -2356,7 +2358,8 @@ TEST_F(CloudPolicyClientTest, UploadChromeProfile) {
       std::make_unique<em::ChromeProfileReportRequest>();
   chrome_profile_report->mutable_os_report()->set_name(kOsName);
   base::test::TestFuture<CloudPolicyClient::Result> result_future;
-  client_->UploadChromeProfileReport(std::move(chrome_profile_report),
+  client_->UploadChromeProfileReport(/*use_cookies=*/false,
+                                     std::move(chrome_profile_report),
                                      result_future.GetCallback());
 
   const CloudPolicyClient::Result result = result_future.Get();
@@ -2365,6 +2368,37 @@ TEST_F(CloudPolicyClientTest, UploadChromeProfile) {
       DeviceManagementService::JobConfiguration::TYPE_CHROME_PROFILE_REPORT,
       job_type_);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
+  EXPECT_FALSE(sends_cookies_);
+  EXPECT_EQ(job_request_.SerializePartialAsString(),
+            device_managment_request.SerializePartialAsString());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
+}
+
+TEST_F(CloudPolicyClientTest, UploadChromeProfileWithCookies) {
+  RegisterClient();
+
+  em::DeviceManagementRequest device_managment_request;
+  device_managment_request.mutable_chrome_profile_report_request()
+      ->mutable_os_report()
+      ->set_name(kOsName);
+
+  ExpectAndCaptureJob(GetEmptyResponse());
+
+  auto chrome_profile_report =
+      std::make_unique<em::ChromeProfileReportRequest>();
+  chrome_profile_report->mutable_os_report()->set_name(kOsName);
+  base::test::TestFuture<CloudPolicyClient::Result> result_future;
+  client_->UploadChromeProfileReport(/*use_cookies=*/true,
+                                     std::move(chrome_profile_report),
+                                     result_future.GetCallback());
+
+  const CloudPolicyClient::Result result = result_future.Get();
+  EXPECT_TRUE(result.IsSuccess());
+  EXPECT_EQ(
+      DeviceManagementService::JobConfiguration::TYPE_CHROME_PROFILE_REPORT,
+      job_type_);
+  EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
+  EXPECT_TRUE(sends_cookies_);
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             device_managment_request.SerializePartialAsString());
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
@@ -2374,7 +2408,8 @@ TEST_F(CloudPolicyClientTest, UploadChromeProfileNotRegistered) {
   base::test::TestFuture<CloudPolicyClient::Result> result_future;
   auto chrome_profile_report =
       std::make_unique<em::ChromeProfileReportRequest>();
-  client_->UploadChromeProfileReport(std::move(chrome_profile_report),
+  client_->UploadChromeProfileReport(/*use_cookies=*/false,
+                                     std::move(chrome_profile_report),
                                      result_future.GetCallback());
 
   const CloudPolicyClient::Result result = result_future.Get();

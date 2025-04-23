@@ -26,8 +26,7 @@ class CollaborationServiceAndroid : public base::SupportsUserData::Data,
                       const base::android::JavaParamRef<jobject>& j_caller);
   void StartJoinFlow(JNIEnv* env,
                      jlong delegate,
-                     const base::android::JavaParamRef<jobject>& j_url,
-                     jint entry);
+                     const base::android::JavaParamRef<jobject>& j_url);
   void StartShareOrManageFlow(
       JNIEnv* env,
       jlong delegate,

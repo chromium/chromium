@@ -76,8 +76,3 @@ Internal Notes
 - Internal buffer will collect a chunk (N lines) from the file on each
   iteration
 - Due to the nature of the data, LogSources only support REGEX watchdogs
-
-Helpful Links
--------------
-
-- Latest design doc: go/cfm-lacros-feedback

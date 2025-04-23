@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/views/page_action/page_action_metrics_recorder.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
+#include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/actions/action_id.h"
@@ -16,11 +18,12 @@ namespace page_actions {
 using PassKey = base::PassKey<PageActionController>;
 
 PageActionController::PageActionController(
-    const PageActionControllerPropertiesMap& controller_properties,
     PinnedToolbarActionsModel* pinned_actions_model,
-    PageActionModelFactory* page_action_model_factory)
-    : controller_properties_(controller_properties),
-      page_action_model_factory_(page_action_model_factory) {
+    PageActionModelFactory* page_action_model_factory,
+    PageActionMetricsRecorderFactory* page_action_metrics_recorder_factory)
+    : page_action_model_factory_(page_action_model_factory),
+      page_action_metrics_recorder_factory_(
+          page_action_metrics_recorder_factory) {
   if (pinned_actions_model) {
     pinned_actions_observation_.Observe(pinned_actions_model);
   }
@@ -30,7 +33,8 @@ PageActionController::~PageActionController() = default;
 
 void PageActionController::Initialize(
     tabs::TabInterface& tab_interface,
-    const std::vector<actions::ActionId>& action_ids) {
+    const std::vector<actions::ActionId>& action_ids,
+    const PageActionPropertiesProviderInterface& properties_provider) {
   tab_activated_callback_subscription_ =
       tab_interface.RegisterDidActivate(base::BindRepeating(
           &PageActionController::OnTabActivated, base::Unretained(this)));
@@ -39,6 +43,12 @@ void PageActionController::Initialize(
           &PageActionController::OnTabWillDeactivate, base::Unretained(this)));
   for (actions::ActionId id : action_ids) {
     Register(id, tab_interface.IsActivated());
+
+    std::unique_ptr<PageActionMetricsRecorderInterface> metrics_recorder =
+        CreateMetricsRecorder(tab_interface,
+                              properties_provider.GetProperties(id),
+                              FindPageActionModel(id));
+    metrics_recorders_.push_back(std::move(metrics_recorder));
   }
   if (pinned_actions_observation_.GetSource()) {
     PinnedActionsModelChanged();
@@ -65,13 +75,13 @@ void PageActionController::Hide(actions::ActionId action_id) {
 void PageActionController::ShowSuggestionChip(actions::ActionId action_id,
                                               SuggestionChipConfig config) {
   PageActionModelInterface& model = FindPageActionModel(action_id);
-  model.SetShouldAnimateChip(PassKey(), config.should_animate);
-  model.SetShowSuggestionChip(PassKey(), /*show_suggestion_chip=*/true);
+  model.SetSuggestionChipConfig(PassKey(), config);
+  model.SetShowSuggestionChip(PassKey(), /*show=*/true);
 }
 
 void PageActionController::HideSuggestionChip(actions::ActionId action_id) {
-  FindPageActionModel(action_id).SetShowSuggestionChip(
-      PassKey(), /*show_suggestion_chip=*/false);
+  FindPageActionModel(action_id).SetShowSuggestionChip(PassKey(),
+                                                       /*show=*/false);
 }
 
 void PageActionController::ActionItemChanged(
@@ -102,6 +112,19 @@ void PageActionController::OverrideText(actions::ActionId action_id,
 void PageActionController::ClearOverrideText(actions::ActionId action_id) {
   FindPageActionModel(action_id).SetOverrideText(
       PassKey(), /*override_text=*/std::nullopt);
+}
+
+void PageActionController::OverrideAccessibleName(
+    actions::ActionId action_id,
+    const std::u16string& override_accessible_name) {
+  FindPageActionModel(action_id).SetOverrideAccessibleName(
+      PassKey(), /*override_accessible_name=*/override_accessible_name);
+}
+
+void PageActionController::ClearOverrideAccessibleName(
+    actions::ActionId action_id) {
+  FindPageActionModel(action_id).SetOverrideAccessibleName(
+      PassKey(), /*override_accessible_name=*/std::nullopt);
 }
 
 void PageActionController::OverrideImage(actions::ActionId action_id,
@@ -180,6 +203,26 @@ std::unique_ptr<PageActionModelInterface> PageActionController::CreateModel(
   } else {
     return std::make_unique<PageActionModel>();
   }
+}
+
+std::unique_ptr<PageActionMetricsRecorderInterface>
+PageActionController::CreateMetricsRecorder(
+    tabs::TabInterface& tab_interface,
+    const PageActionProperties& properties,
+    PageActionModelInterface& model) {
+  if (page_action_metrics_recorder_factory_ != nullptr) {
+    return page_action_metrics_recorder_factory_->Create(tab_interface,
+                                                         properties, model);
+  } else {
+    return std::make_unique<PageActionMetricsRecorder>(tab_interface,
+                                                       properties, model);
+  }
+}
+
+std::ostream& operator<<(std::ostream& os, const SuggestionChipConfig& config) {
+  os << "{ should_animate: " << config.should_animate
+     << ", should_announce_chip: " << config.should_announce_chip << " }";
+  return os;
 }
 
 }  // namespace page_actions

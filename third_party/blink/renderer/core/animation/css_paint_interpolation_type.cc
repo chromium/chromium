@@ -131,10 +131,10 @@ InterpolationValue CSSPaintInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSPaintInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers&) const {
   InterpolableValue* interpolable_color =
-      CSSColorInterpolationType::MaybeCreateInterpolableColor(value, state);
+      CSSColorInterpolationType::MaybeCreateInterpolableColor(value, &state);
   if (!interpolable_color)
     return nullptr;
   return InterpolationValue(interpolable_color);

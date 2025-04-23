@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/functional/callback_helpers.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -98,7 +99,13 @@ class IbanManagerTest : public testing::Test,
         .WillByDefault(testing::Return(false));
   }
 
-  bool IsNewFopDisplayEnabled() const { return GetParam(); }
+  bool IsNewFopDisplayEnabled() const {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    return false;
+#else
+    return GetParam();
+#endif
+  }
 
   void TearDown() override {
     ui::ResourceBundle::CleanupSharedInstance();

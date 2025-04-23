@@ -150,6 +150,12 @@ FillInPrivateAggregationRequest(
     const PrivateAggregationTimings& timings,
     bool is_winner);
 
+// Returns true if `request` should only be kept (i.e. not dropped) if this is
+// the chosen execution for the "reserved.once" event type. Note that this is
+// used for both "reserved.once" and aggregate error reporting.
+CONTENT_EXPORT bool ShouldKeepRequestOnlyIfReservedOnceRep(
+    const auction_worklet::mojom::PrivateAggregationRequest& request);
+
 // Returns true if `request` is a for-event contribution with "reserved.once"
 // event type.
 CONTENT_EXPORT bool IsPrivateAggregationRequestReservedOnce(
@@ -177,6 +183,13 @@ CONTENT_EXPORT bool IsValidFilteringId(std::optional<uint64_t> filtering_id);
 CONTENT_EXPORT std::optional<std::string> ValidatePrivateAggregationRequests(
     const std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>&
         pa_requests);
+
+// Returns the equivalent error event, converted to the type for use in the
+// Private Aggregation layer. Returns nullopt iff nullopt is passed in.
+CONTENT_EXPORT std::optional<blink::mojom::PrivateAggregationErrorEvent>
+ConvertErrorEventToPAggType(
+    std::optional<auction_worklet::mojom::ReservedErrorEventType>
+        reserved_error_event);
 
 }  // namespace content
 

@@ -35,9 +35,11 @@
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/text_fragment_paint_info.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
+#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
@@ -127,37 +129,47 @@ PhysicalDirection GetDisclosureOrientation(const ComputedStyle& style,
   return is_open ? direction_mode.BlockEnd() : direction_mode.InlineEnd();
 }
 
-Path CreatePath(base::span<const gfx::PointF, 4> path) {
-  Path result;
-  result.MoveTo(path[0]);
-  for (size_t i = 1; i < 4; ++i) {
-    result.AddLineTo(path[i]);
+base::span<const gfx::PointF, 3> GetDisclosurePathPoints(
+    PhysicalDirection direction) {
+  static constexpr gfx::PointF kLeftPoints[3] = {
+      {1.0f, 0.0f}, {0.14f, 0.5f}, {1.0f, 1.0f}};
+  static constexpr gfx::PointF kRightPoints[3] = {
+      {0.0f, 0.0f}, {0.86f, 0.5f}, {0.0f, 1.0f}};
+  static constexpr gfx::PointF kUpPoints[3] = {
+      {0.0f, 0.93f}, {0.5f, 0.07f}, {1.0f, 0.93f}};
+  static constexpr gfx::PointF kDownPoints[3] = {
+      {0.0f, 0.07f}, {0.5f, 0.93f}, {1.0f, 0.07f}};
+
+  switch (direction) {
+    case PhysicalDirection::kLeft:
+      return kLeftPoints;
+    case PhysicalDirection::kRight:
+      return kRightPoints;
+    case PhysicalDirection::kUp:
+      return kUpPoints;
+    case PhysicalDirection::kDown:
+      return kDownPoints;
   }
-  return result;
 }
 
-Path GetCanonicalDisclosurePath(const ComputedStyle& style, bool is_open) {
-  constexpr gfx::PointF kLeftPoints[4] = {
-      {1.0f, 0.0f}, {0.14f, 0.5f}, {1.0f, 1.0f}, {1.0f, 0.0f}};
-  constexpr gfx::PointF kRightPoints[4] = {
-      {0.0f, 0.0f}, {0.86f, 0.5f}, {0.0f, 1.0f}, {0.0f, 0.0f}};
-  constexpr gfx::PointF kUpPoints[4] = {
-      {0.0f, 0.93f}, {0.5f, 0.07f}, {1.0f, 0.93f}, {0.0f, 0.93f}};
-  constexpr gfx::PointF kDownPoints[4] = {
-      {0.0f, 0.07f}, {0.5f, 0.93f}, {1.0f, 0.07f}, {0.0f, 0.07f}};
+Path GetCanonicalDisclosurePath(const ComputedStyle& style,
+                                const gfx::RectF& bounding_box,
+                                bool is_open) {
+  auto points =
+      GetDisclosurePathPoints(GetDisclosureOrientation(style, is_open));
+  auto map_unit_point = [&bounding_box](const gfx::PointF& p) {
+    return gfx::ScalePoint(p, bounding_box.size().width(),
+                           bounding_box.size().height()) +
+           bounding_box.OffsetFromOrigin();
+  };
 
-  switch (GetDisclosureOrientation(style, is_open)) {
-    case PhysicalDirection::kLeft:
-      return CreatePath(kLeftPoints);
-    case PhysicalDirection::kRight:
-      return CreatePath(kRightPoints);
-    case PhysicalDirection::kUp:
-      return CreatePath(kUpPoints);
-    case PhysicalDirection::kDown:
-      return CreatePath(kDownPoints);
+  PathBuilder result;
+  result.MoveTo(map_unit_point(points[0]));
+  for (size_t i = 1; i < points.size(); ++i) {
+    result.LineTo(map_unit_point(points[i]));
   }
-
-  return Path();
+  result.Close();
+  return result.Finalize();
 }
 
 }  // namespace
@@ -202,11 +214,8 @@ void TextFragmentPainter::PaintSymbol(const LayoutObject* layout_object,
     context.FillRect(snapped_rect, color, auto_dark_mode);
   } else if (type == keywords::kDisclosureOpen ||
              type == keywords::kDisclosureClosed) {
-    Path path =
-        GetCanonicalDisclosurePath(style, type == keywords::kDisclosureOpen);
-    path.Transform(AffineTransform::MakeScaleNonUniform(marker_rect.Width(),
-                                                        marker_rect.Height()));
-    path.Translate(gfx::Vector2dF(marker_rect.X(), marker_rect.Y()));
+    const Path path = GetCanonicalDisclosurePath(
+        style, gfx::RectF(marker_rect), type == keywords::kDisclosureOpen);
     context.FillPath(path, auto_dark_mode);
   } else {
     NOTREACHED();
@@ -488,21 +497,26 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   HighlightPainter::Case highlight_case = highlight_painter.PaintCase();
   switch (highlight_case) {
     case HighlightPainter::kNoHighlights:
+    case HighlightPainter::kFastSpellingGrammar: {
       // Fast path: just paint the text, including its decorations.
+      // Shadows must paint before decorations, but painting shadows in their
+      // own pass is less efficient, so only do it when decorations are present.
+      bool paint_shadows_first =
+          text_style.shadow && style.HasAppliedTextDecorations();
+      if (paint_shadows_first) {
+        highlight_painter.PaintOriginatingShadow(text_style, node_id);
+      }
       decoration_painter.Begin(text_item, TextDecorationPainter::kOriginating);
       decoration_painter.PaintExceptLineThrough(fragment_paint_info);
-      text_painter.Paint(fragment_paint_info, text_style, node_id,
-                         auto_dark_mode);
+      text_painter.Paint(
+          fragment_paint_info, text_style, node_id, auto_dark_mode,
+          paint_shadows_first ? TextPainter::kTextProperOnly
+                              : TextPainter::kBothShadowsAndTextProper);
       decoration_painter.PaintOnlyLineThrough();
-      break;
-    case HighlightPainter::kFastSpellingGrammar:
-      decoration_painter.Begin(text_item, TextDecorationPainter::kOriginating);
-      decoration_painter.PaintExceptLineThrough(fragment_paint_info);
-      text_painter.Paint(fragment_paint_info, text_style, node_id,
-                         auto_dark_mode);
-      decoration_painter.PaintOnlyLineThrough();
-      highlight_painter.FastPaintSpellingGrammarDecorations();
-      break;
+      if (highlight_case == HighlightPainter::kFastSpellingGrammar) {
+        highlight_painter.FastPaintSpellingGrammarDecorations();
+      }
+    } break;
     case HighlightPainter::kFastSelection:
       highlight_painter.Selection()->PaintSuppressingTextProperWhereSelected(
           text_painter, fragment_paint_info, text_style, node_id,

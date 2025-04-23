@@ -7,6 +7,7 @@
 // third_party/webrtc/rtc_base/logging.h since it defines some of the same
 // macros as Chromium does and we'll run into conflicts.
 
+#include <atomic>
 #include <cstddef>
 #include <cstring>
 #include <ios>

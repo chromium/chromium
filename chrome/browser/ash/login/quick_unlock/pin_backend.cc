@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/base64.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -295,10 +296,11 @@ void PinBackend::SetWithContext(const AccountId& account_id,
     return;
   }
   QuickUnlockStorage* storage = GetPrefsBackend(account_id);
-  CHECK(storage);
-  // There may be a pref value if resetting PIN and the device now supports
-  // cryptohome-based PIN.
-  storage->pin_storage_prefs()->RemovePin();
+  if (!storage) {
+    // There may be a pref value if resetting PIN and the device now supports
+    // cryptohome-based PIN.
+    storage->pin_storage_prefs()->RemovePin();
+  }
   cryptohome_backend_->SetPin(
       std::move(user_context), pin, std::nullopt,
       base::BindOnce(&PinBackend::OnAuthOperation, token, std::move(did_set)));
@@ -613,6 +615,9 @@ void PinBackend::PinAutosubmitBackfill(const AccountId& account_id,
   if (PrefService(account_id)
           ->GetUserPrefValue(::prefs::kPinUnlockAutosubmitEnabled) != nullptr)
     return;
+
+  // Track when this operation is being performed.
+  base::debug::DumpWithoutCrashing();
 
   // Disabled if not allowed by policy. Since 'kPinUnlockAutosubmitEnabled'
   // is enabled by default, it is only false when recommended/mandatory by

@@ -6,6 +6,8 @@
 
 #include <libxml/xmlreader.h>
 
+#include <string>
+#include <string_view>
 #include <vector>
 
 #include "third_party/libxml/chromium/libxml_utils.h"
@@ -65,7 +67,7 @@ XmlReader::~XmlReader() {
     xmlFreeTextReader(reader_);
 }
 
-bool XmlReader::Load(const std::string& input) {
+bool XmlReader::Load(std::string_view input) {
   const int kParseOptions = XML_PARSE_NONET;  // forbid network access
   // TODO(evanm): Verify it's OK to pass nullptr for the URL and encoding.
   // The libxml code allows for these, but it's unclear what effect is has.

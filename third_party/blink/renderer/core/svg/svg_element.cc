@@ -22,11 +22,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 
 #include "base/auto_reset.h"
@@ -612,7 +607,7 @@ namespace {
 
 bool ProbablyUrlFunction(const AtomicString& value) {
   return value.length() > 5 && value.Is8Bit() &&
-         memcmp(value.Characters8(), "url(", 4) == 0;
+         base::as_string_view(value.Span8()).starts_with("url(");
 }
 
 bool UseCSSURIValueCacheForProperty(CSSPropertyID property_id) {

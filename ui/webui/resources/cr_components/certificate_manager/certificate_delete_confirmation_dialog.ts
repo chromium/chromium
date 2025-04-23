@@ -47,8 +47,8 @@ export class CertificateDeleteConfirmationDialogElement extends
     };
   }
 
-  model: CertificateSubnode;
-  certificateType: CertificateType;
+  declare model: CertificateSubnode;
+  declare certificateType: CertificateType;
 
   private getTitleText_(): string {
     const getString = (localizedMessageId: string) =>

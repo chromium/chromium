@@ -13,6 +13,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/bookmarks/browser/bookmark_model.h"
+#import "components/collaboration/public/collaboration_flow_entry_point.h"
+#import "components/collaboration/public/collaboration_flow_type.h"
 #import "components/collaboration/public/collaboration_service.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
@@ -25,6 +27,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_popup_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_utils.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator.h"
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service.h"
@@ -51,6 +54,7 @@
 #import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_presentation_delegate.h"
 #import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_table_view_controller.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
@@ -135,6 +139,10 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
+
+using collaboration::CollaborationServiceShareOrManageEntryPoint;
+using collaboration::FlowType;
+using collaboration::IOSCollaborationControllerDelegate;
 
 namespace {
 
@@ -386,7 +394,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   } else if (completion) {
     completion();
   }
-  [_historySyncPopupCoordinator interruptAnimated:NO];
+  [self stopHistorySyncPopupCoordinator];
 }
 
 - (void)setActiveMode:(TabGridMode)mode {
@@ -807,7 +815,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 // Shows the "share" or "manage" screen for the `group`. The choice is
 // automatically made based on whether the group is already shared or not.
-- (void)showShareOrManageForGroup:(base::WeakPtr<const TabGroup>)group {
+- (void)showShareOrManageForGroup:(base::WeakPtr<const TabGroup>)group
+                       entryPoint:(CollaborationServiceShareOrManageEntryPoint)
+                                      entryPoint {
   Browser* browser = self.regularBrowser;
   collaboration::CollaborationService* collaborationService =
       collaboration::CollaborationServiceFactory::GetForProfile(
@@ -818,12 +828,13 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     return;
   }
 
-  std::unique_ptr<collaboration::CollaborationControllerDelegate> delegate =
-      std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
-          browser, self.baseViewController);
+  std::unique_ptr<IOSCollaborationControllerDelegate> delegate =
+      std::make_unique<IOSCollaborationControllerDelegate>(
+          browser, self.baseViewController,
+          TabGroupServiceFactory::GetForProfile(browser->GetProfile()),
+          FlowType::kShareOrManage);
   collaborationService->StartShareOrManageFlow(
-      std::move(delegate), tabGroup->tab_group_id(),
-      collaboration::CollaborationServiceShareOrManageEntryPoint::kUnknown);
+      std::move(delegate), tabGroup->tab_group_id(), entryPoint);
 }
 
 #pragma mark - ChromeCoordinator
@@ -1149,8 +1160,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.historyCoordinator stop];
   self.historyCoordinator = nil;
 
-  [_historySyncPopupCoordinator interruptAnimated:NO];
-  _historySyncPopupCoordinator = nil;
+  [self stopHistorySyncPopupCoordinator];
 
   [_bookmarksCoordinator stop];
   _bookmarksCoordinator = nil;
@@ -1407,6 +1417,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                      showUserEmail:!dedicatedSignInDone
                  signOutIfDeclined:dedicatedSignInDone
                         isOptional:NO
+                      contextStyle:SigninContextStyle::kDefault
                        accessPoint:signin_metrics::AccessPoint::kRecentTabs];
     _historySyncPopupCoordinator.delegate = self;
     [_historySyncPopupCoordinator start];
@@ -1619,11 +1630,15 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)manageTabGroup:(base::WeakPtr<const TabGroup>)group {
-  [self showShareOrManageForGroup:group];
+  [self showShareOrManageForGroup:group
+                       entryPoint:CollaborationServiceShareOrManageEntryPoint::
+                                      kiOSTabGridManage];
 }
 
 - (void)shareTabGroup:(base::WeakPtr<const TabGroup>)group {
-  [self showShareOrManageForGroup:group];
+  [self showShareOrManageForGroup:group
+                       entryPoint:CollaborationServiceShareOrManageEntryPoint::
+                                      kiOSTabGridShare];
 }
 
 - (void)showRecentActivityForTabGroup:(base::WeakPtr<const TabGroup>)tabGroup {

@@ -880,7 +880,7 @@ void RuleSet::AddViewTransitionRule(StyleRuleViewTransition* rule) {
 }
 
 void RuleSet::AddChildRules(StyleRule* parent_rule,
-                            const HeapVector<Member<StyleRuleBase>>& rules,
+                            base::span<const Member<StyleRuleBase>> rules,
                             const MediaQueryEvaluator& medium,
                             AddRuleFlags add_rule_flags,
                             const ContainerQuery* container_query,

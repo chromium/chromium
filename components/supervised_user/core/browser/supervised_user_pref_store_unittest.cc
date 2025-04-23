@@ -57,8 +57,11 @@ SupervisedUserPrefStoreFixture::~SupervisedUserPrefStoreFixture() {
 
 void SupervisedUserPrefStoreFixture::OnPrefValueChanged(std::string_view key) {
   const base::Value* value = nullptr;
-  ASSERT_TRUE(pref_store_->GetValue(key, &value));
-  changed_prefs_.SetByDottedPath(key, value->Clone());
+  if (pref_store_->GetValue(key, &value)) {
+    ASSERT_TRUE(changed_prefs_.SetByDottedPath(key, value->Clone()) != nullptr);
+  } else {
+    ASSERT_TRUE(changed_prefs_.RemoveByDottedPath(key));
+  }
 }
 
 void SupervisedUserPrefStoreFixture::OnInitializationCompleted(bool succeeded) {
@@ -185,6 +188,49 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
               Optional(true));
 
 #endif
+}
+
+TEST_F(SupervisedUserPrefStoreTest, IsEmptyAfterDeactivation) {
+  SupervisedUserPrefStoreFixture fixture(&service_);
+  EXPECT_FALSE(fixture.initialization_completed());
+
+  // Prefs should not change yet when the service is ready, but not
+  // activated yet.
+  pref_store_->SetInitializationCompleted();
+  EXPECT_TRUE(fixture.initialization_completed());
+  EXPECT_EQ(0u, fixture.changed_prefs()->size());
+
+  service_.SetActive(true);
+  EXPECT_NE(0u, fixture.changed_prefs()->size())
+      << "Expected default values to be set.";
+
+  service_.SetActive(false);
+  EXPECT_EQ(0u, fixture.changed_prefs()->size())
+      << "Expected all prefs, including defaults, to be cleared.";
+}
+
+TEST_F(SupervisedUserPrefStoreTest, LocalOverridesAreClearedAfterDeactivation) {
+  SupervisedUserPrefStoreFixture fixture(&service_);
+  EXPECT_FALSE(fixture.initialization_completed());
+
+  // Prefs should not change yet when the service is ready, but not
+  // activated yet.
+  pref_store_->SetInitializationCompleted();
+  EXPECT_TRUE(fixture.initialization_completed());
+  EXPECT_EQ(0u, fixture.changed_prefs()->size());
+
+  service_.SetActive(true);
+  service_.SetLocalSetting(supervised_user::kSafeSitesEnabled,
+                           base::Value(true));
+  EXPECT_NE(0u, fixture.changed_prefs()->size())
+      << "Expected default values to be set.";
+  EXPECT_EQ(fixture.changed_prefs()->FindBoolByDottedPath(
+                prefs::kSupervisedUserSafeSites),
+            base::Value(true));
+
+  service_.SetActive(false);
+  EXPECT_EQ(0u, fixture.changed_prefs()->size())
+      << "Expected all prefs, including defaults, to be cleared.";
 }
 
 TEST_F(SupervisedUserPrefStoreTest, ActivateSettingsBeforeInitialization) {

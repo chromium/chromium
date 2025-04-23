@@ -5,6 +5,8 @@ include_rules = [
   "+ios/chrome/browser/screen",
   "+ios/chrome/browser/first_run",
   "+ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_constants.h",
+  "+ios/chrome/browser/ntp/model/new_tab_page_util.h",
+  "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h",
   "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
   "+ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_feature.h",
 

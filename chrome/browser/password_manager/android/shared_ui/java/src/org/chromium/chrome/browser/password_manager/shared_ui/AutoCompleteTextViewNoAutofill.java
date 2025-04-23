@@ -9,11 +9,14 @@ import android.util.AttributeSet;
 import android.view.ViewStructure;
 import android.widget.AutoCompleteTextView;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * A wrapper class around {@link AutoCompleteTextView} to stop Android Autofill from showing the
  * save password prompt. This is achieved by overriding the {@code onProvideAutofillStructure}
  * method.
  */
+@NullMarked
 public class AutoCompleteTextViewNoAutofill extends AutoCompleteTextView {
     public AutoCompleteTextViewNoAutofill(Context context, AttributeSet attrs) {
         super(context, attrs);

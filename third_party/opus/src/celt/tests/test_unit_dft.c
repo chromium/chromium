@@ -176,5 +176,6 @@ int main(int argc,char ** argv)
         test1d(480,1,arch);
 #endif
     }
+    RESTORE_STACK;
     return ret;
 }

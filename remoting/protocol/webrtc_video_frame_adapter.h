@@ -44,7 +44,7 @@ class WebrtcVideoFrameAdapter : public webrtc::VideoFrameBuffer {
   Type type() const override;
   int width() const override;
   int height() const override;
-  rtc::scoped_refptr<webrtc::I420BufferInterface> ToI420() override;
+  webrtc::scoped_refptr<webrtc::I420BufferInterface> ToI420() override;
 
  private:
   std::unique_ptr<webrtc::DesktopFrame> frame_;

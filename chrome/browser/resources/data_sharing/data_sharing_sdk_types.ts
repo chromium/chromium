@@ -175,6 +175,7 @@ export declare interface DataSharingSdkGroupData {
   displayName?: string;
   accessToken?: string;
   consistencyToken?: string;
+  serializedCollaborationGroupMetadata?: string;
 }
 export declare type DataSharingMemberRole =
     | 'unknown' | 'member' | 'owner' | 'invitee' | 'former_member';
@@ -195,6 +196,7 @@ export declare interface DataSharingSdkGroupMember {
 }
 export declare interface CreateGroupParams {
   displayName: string;
+  serializedCollaborationGroupMetadata?: string;
 }
 export declare interface CreateGroupResult {
   groupData: DataSharingSdkGroupData;
@@ -280,6 +282,7 @@ export declare interface RunInviteFlowParams {
   translatedMessages: TranslationMap;
   learnMoreUrlMap: {[type in LearnMoreUrlType]?: () => string};
   logger?: Logger;
+  serializedCollaborationGroupMetadata?: string;
 }
 export declare interface RunManageFlowParams extends DataSharingSdkGroupId {
   parent: HTMLElement;

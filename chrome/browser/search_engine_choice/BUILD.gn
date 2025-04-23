@@ -31,7 +31,11 @@ source_set("search_engine_choice") {
 }
 
 source_set("impl") {
-  sources = [ "search_engine_choice_service_factory.cc" ]
+  sources = [
+    "search_engine_choice_service_client.cc",
+    "search_engine_choice_service_client.h",
+    "search_engine_choice_service_factory.cc",
+  ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 

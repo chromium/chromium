@@ -12,7 +12,7 @@ build_webui("build") {
     "result_text.ts",
     "textarea.ts",
   ]
-  non_web_component_files = [
+  ts_files = [
     "animations/animator.ts",
     "animations/app_animator.ts",
     "animations/textarea_animator.ts",

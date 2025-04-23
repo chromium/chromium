@@ -193,6 +193,21 @@ bool GetStatusForSigninPolicy() {
   return self;
 }
 
+- (void)disconnect {
+  [_allowChromeSigninPreference stop];
+  _allowChromeSigninPreference = nil;
+  [_sendDataUsageWifiOnlyPreference stop];
+  _sendDataUsageWifiOnlyPreference = nil;
+  [_anonymizedDataCollectionPreference stop];
+  _anonymizedDataCollectionPreference = nil;
+  [_improveSearchSuggestionsPreference stop];
+  _improveSearchSuggestionsPreference = nil;
+  [_sendDataUsagePreference stop];
+  _sendDataUsagePreference = nil;
+  [_trackPricesOnTabsPreference stop];
+  _trackPricesOnTabsPreference = nil;
+}
+
 - (TableViewItem*)allowChromeSigninItem {
   // Supervised users cannot manually enable/disable sign-in.
   if (![self isSubjectToParentalControls] &&
@@ -461,20 +476,7 @@ bool GetStatusForSigninPolicy() {
   ItemType type = static_cast<ItemType>(item.type);
   switch (type) {
     case AllowChromeSigninItemType: {
-      if (self.hasPrimaryIdentity) {
-        __weak GoogleServicesSettingsMediator* weakSelf = self;
-        [self.commandHandler
-            showSignOutFromTargetRect:targetRect
-                           completion:^(BOOL success) {
-                             weakSelf.allowChromeSigninPreference.value =
-                                 success ? value : !value;
-                             [weakSelf
-                                 updateNonPersonalizedSectionWithNotification:
-                                     YES];
-                           }];
-      } else {
-        self.allowChromeSigninPreference.value = value;
-      }
+      [self handleUpdateIsSigninAllowedValue:value targetRect:targetRect];
       break;
     }
     case ImproveChromeItemType:
@@ -516,4 +518,18 @@ bool GetStatusForSigninPolicy() {
              self.identityManager) == signin::Tribool::kTrue;
 }
 
+- (void)handleUpdateIsSigninAllowedValue:(BOOL)value
+                              targetRect:(CGRect)targetRect {
+  if (self.hasPrimaryIdentity) {
+    void (^completion)(BOOL, SceneState*) =
+        ^(BOOL success, SceneState* scene_state) {
+          GetApplicationContext()->GetLocalState()->SetBoolean(
+              prefs::kSigninAllowedOnDevice, success ? value : !value);
+        };
+    [self.commandHandler showSignOutFromTargetRect:targetRect
+                                        completion:completion];
+  } else {
+    self.allowChromeSigninPreference.value = value;
+  }
+}
 @end

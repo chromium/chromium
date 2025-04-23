@@ -87,6 +87,11 @@ bool SetSSLChainAndKey(SSL* ssl,
                        X509Certificate* cert,
                        EVP_PKEY* pkey,
                        const SSL_PRIVATE_KEY_METHOD* custom_key);
+bool SetSSLChainAndKey(
+    SSL* ssl,
+    base::span<const bssl::UniquePtr<CRYPTO_BUFFER>> cert_chain,
+    EVP_PKEY* pkey,
+    const SSL_PRIVATE_KEY_METHOD* custom_key);
 
 }  // namespace net
 

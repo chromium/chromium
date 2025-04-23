@@ -26,8 +26,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -44,6 +45,7 @@ public class PageSummaryButtonControllerUnitTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private AiAssistantService mAiAssistantService;
     @Mock private Tab mTab;
+    @Mock private Tracker mTracker;
 
     @Test
     public void testButtonData() {
@@ -53,7 +55,11 @@ public class PageSummaryButtonControllerUnitTest {
                 activity -> {
                     PageSummaryButtonController controller =
                             new PageSummaryButtonController(
-                                    activity, mModalDialogManager, () -> mTab, mAiAssistantService);
+                                    activity,
+                                    mModalDialogManager,
+                                    () -> mTab,
+                                    mAiAssistantService,
+                                    () -> mTracker);
 
                     ButtonData buttonData = controller.get(mTab);
 
@@ -74,7 +80,11 @@ public class PageSummaryButtonControllerUnitTest {
                 activity -> {
                     PageSummaryButtonController controller =
                             new PageSummaryButtonController(
-                                    activity, mModalDialogManager, () -> mTab, mAiAssistantService);
+                                    activity,
+                                    mModalDialogManager,
+                                    () -> mTab,
+                                    mAiAssistantService,
+                                    () -> mTracker);
 
                     ButtonData buttonData = controller.get(mTab);
 
@@ -89,7 +99,11 @@ public class PageSummaryButtonControllerUnitTest {
                 activity -> {
                     PageSummaryButtonController controller =
                             new PageSummaryButtonController(
-                                    activity, mModalDialogManager, () -> mTab, mAiAssistantService);
+                                    activity,
+                                    mModalDialogManager,
+                                    () -> mTab,
+                                    mAiAssistantService,
+                                    () -> mTracker);
 
                     ButtonData buttonData = controller.get(mTab);
 

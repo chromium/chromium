@@ -52,8 +52,6 @@ std::unique_ptr<OverlayResponse> CreateDialogResponse(
 
 #pragma mark - JavaScriptConfirmDialogRequest
 
-OVERLAY_USER_DATA_SETUP_IMPL(JavaScriptConfirmDialogRequest);
-
 JavaScriptConfirmDialogRequest::JavaScriptConfirmDialogRequest(
     web::WebState* web_state,
     const GURL& url,
@@ -87,8 +85,6 @@ void JavaScriptConfirmDialogRequest::CreateAuxiliaryData(
 }
 
 #pragma mark - JavaScriptConfirmDialogResponse
-
-OVERLAY_USER_DATA_SETUP_IMPL(JavaScriptConfirmDialogResponse);
 
 JavaScriptConfirmDialogResponse::JavaScriptConfirmDialogResponse(Action action)
     : action_(action) {}

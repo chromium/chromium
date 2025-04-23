@@ -7,18 +7,29 @@
 
 #include <optional>
 
+#include "ash/constants/ash_paths.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/path_service.h"
 #include "base/types/expected.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_downloader.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 
 namespace web_app {
 
-// Cache is enabled only for MGS and for kiosk sessions and only when the
-// feature flag is enabled.
+// Cache is enabled only for Managed Guest Session (MGS) and for kiosk sessions
+// and only when the feature flag is enabled.
 bool IsIwaBundleCacheEnabled();
+
+base::FilePath GetCacheBundleDirectory(
+    const base::FilePath& main_cache_dir,
+    const web_package::SignedWebBundleId& web_bundle_id);
+
+base::FilePath GetManagedGuestSessionBundleCacheDirectory(
+    const base::FilePath& base =
+        base::PathService::CheckedGet(ash::DIR_DEVICE_LOCAL_ACCOUNT_IWA_CACHE));
 
 // This class should be used only when `IsIwaBundleCacheEnabled()` returns true.
 // This is checked in the constructor. This class can be created multiple times
@@ -60,6 +71,7 @@ class IwaCacheClient {
 
   // Copies bundle file to the cache, so next time the installation can be done
   // from the cache.
+  // TODO(crbug.com/411116232): use AppLock to prevent race conditions.
   void CopyBundleToCache(
       const base::FilePath& copy_from_bundle_path,
       const web_package::SignedWebBundleId& web_bundle_id,
@@ -68,8 +80,6 @@ class IwaCacheClient {
           base::expected<CopyBundleToCacheSuccess, CopyBundleToCacheError>)>
           callback);
 
-  // TODO(crbug.com/388728794, crbug.com/388729037): clear cache for uninstalled
-  // IWAs.
   // TODO(crbug.com/392069400): clean cache for old IWA versions.
 
   void SetCacheDirForTesting(const base::FilePath& cache_dir);

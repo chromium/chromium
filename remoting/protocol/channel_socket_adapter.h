@@ -14,12 +14,12 @@
 #include "net/base/net_errors.h"
 #include "remoting/protocol/p2p_datagram_socket.h"
 // TODO(zhihuang):Replace #include by forward declaration once proper
-// inheritance is defined for cricket::IceTransportInternal and
-// cricket::P2PTransportChannel.
+// inheritance is defined for webrtc::IceTransportInternal and
+// webrtc::P2PTransportChannel.
 #include "third_party/webrtc/p2p/base/ice_transport_internal.h"
 // TODO(johan): Replace #include by forward declaration once proper
-// inheritance is defined for rtc::PacketTransportInterface and
-// cricket::TransportChannel.
+// inheritance is defined for webrtc::PacketTransportInterface and
+// webrtc::TransportChannel.
 #include "third_party/webrtc/p2p/base/packet_transport_internal.h"
 #include "third_party/webrtc/rtc_base/async_packet_socket.h"
 #include "third_party/webrtc/rtc_base/socket_address.h"
@@ -28,7 +28,7 @@
 namespace remoting::protocol {
 
 // TransportChannelSocketAdapter implements P2PDatagramSocket interface on
-// top of cricket::IceTransportInternal. It is used by IceTransport to provide
+// top of webrtc::IceTransportInternal. It is used by IceTransport to provide
 // P2PDatagramSocket interface for channels.
 class TransportChannelSocketAdapter : public P2PDatagramSocket,
                                       public sigslot::has_slots<> {
@@ -36,7 +36,7 @@ class TransportChannelSocketAdapter : public P2PDatagramSocket,
   // Doesn't take ownership of |ice_transport|. |ice_transport| must outlive
   // this adapter.
   explicit TransportChannelSocketAdapter(
-      cricket::IceTransportInternal* ice_transport);
+      webrtc::IceTransportInternal* ice_transport);
 
   TransportChannelSocketAdapter(const TransportChannelSocketAdapter&) = delete;
   TransportChannelSocketAdapter& operator=(
@@ -63,12 +63,12 @@ class TransportChannelSocketAdapter : public P2PDatagramSocket,
            const net::CompletionRepeatingCallback& callback) override;
 
  private:
-  void OnNewPacket(rtc::PacketTransportInternal* transport,
-                   const rtc::ReceivedPacket& packet);
-  void OnWritableState(rtc::PacketTransportInternal* transport);
-  void OnChannelDestroyed(cricket::IceTransportInternal* ice_transport);
+  void OnNewPacket(webrtc::PacketTransportInternal* transport,
+                   const webrtc::ReceivedIpPacket& packet);
+  void OnWritableState(webrtc::PacketTransportInternal* transport);
+  void OnChannelDestroyed(webrtc::IceTransportInternal* ice_transport);
 
-  raw_ptr<cricket::IceTransportInternal> channel_;
+  raw_ptr<webrtc::IceTransportInternal> channel_;
 
   base::OnceClosure destruction_callback_;
 

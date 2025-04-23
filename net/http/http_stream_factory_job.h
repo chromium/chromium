@@ -160,6 +160,7 @@ class HttpStreamFactory::Job
       quic::ParsedQuicVersion quic_version,
       bool is_websocket,
       bool enable_ip_based_pooling,
+      std::optional<ConnectionManagementConfig> management_config,
       NetLog* net_log);
 
   Job(const Job&) = delete;
@@ -485,6 +486,9 @@ class HttpStreamFactory::Job
 
   std::unique_ptr<SpdySessionPool::SpdySessionRequest> spdy_session_request_;
 
+  // Keeps track of the connection management config.
+  std::optional<ConnectionManagementConfig> management_config_;
+
   base::WeakPtrFactory<Job> ptr_factory_{this};
 };
 
@@ -509,7 +513,8 @@ class HttpStreamFactory::JobFactory {
       bool enable_ip_based_pooling,
       NetLog* net_log,
       NextProto alternative_protocol,
-      quic::ParsedQuicVersion quic_version);
+      quic::ParsedQuicVersion quic_version,
+      std::optional<ConnectionManagementConfig> management_config);
 };
 
 }  // namespace net

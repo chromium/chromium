@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Google Inc.
+ * Copyright 2019 Google LLC.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,14 +18,15 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
+#include "third_party/private-join-and-compute/src/crypto/big_num.h"
 #include "third_party/private-join-and-compute/src/crypto/openssl.inc"
 #include "third_party/private-join-and-compute/src/util/status.inc"
 
 namespace private_join_and_compute {
 
-class BigNum;
 class ECGroup;
 
 // Wrapper class for openssl EC_POINT.
@@ -61,6 +62,10 @@ class PRIVATE_COMPUTE_EXPORT ECPoint {
   // Returns an ECPoint whose value is (this + point).
   // Returns an INTERNAL error code if it fails.
   StatusOr<ECPoint> Add(const ECPoint& point) const;
+
+  // Returns the affine coordinates of this point.
+  StatusOr<std::pair<BigNum::BignumPtr, BigNum::BignumPtr>>
+  GetAffineCoordinates() const;
 
   // Returns an ECPoint whose value is (- this), the additive inverse of this.
   // Returns an INTERNAL error code if it fails.

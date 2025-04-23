@@ -25,14 +25,20 @@ found in the LICENSE file.
     <!-- Update check -->
     <org.chromium.chrome.browser.safety_hub.SafetyHubExpandablePreference
         android:key="update_check"
-        android:title="@string/safety_check_updates_title" />
+        android:title="@string/safety_check_updates_title"/>
     <!-- Account-level passwords -->
     <org.chromium.chrome.browser.safety_hub.SafetyHubExpandablePreference
         android:key="passwords_account"
-        android:title="@string/safety_check_passwords_safe" />
+        android:title="@string/safety_check_passwords_safe"
+        app:isPreferenceVisible="false"/>
     <!-- Local-level passwords -->
     <org.chromium.chrome.browser.safety_hub.SafetyHubExpandablePreference
         android:key="passwords_local"
+        android:title="@string/safety_hub_local_passwords_checking_title"
+        app:isPreferenceVisible="false" />
+    <!-- Unified passwords -->
+    <org.chromium.chrome.browser.safety_hub.SafetyHubExpandablePreference
+        android:key="passwords_unified"
         android:title="@string/safety_hub_local_passwords_checking_title"
         app:isPreferenceVisible="false" />
     <!-- Safe Browsing -->

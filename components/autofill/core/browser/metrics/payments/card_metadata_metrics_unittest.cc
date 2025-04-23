@@ -221,10 +221,10 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
       form(), form().fields().back().global_id());
   DidShowAutofillSuggestions(form(), /*field_index=*/form().fields().size() - 1,
                              SuggestionType::kCreditCardEntry);
-  autofill_manager().FillOrPreviewCreditCardForm(
+  autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form(),
       form().fields().back().global_id(),
-      *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
+      personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       AutofillTriggerSource::kPopup);
 
   // Verify that:
@@ -271,10 +271,10 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
       0);
 
   // Select the suggestion again.
-  autofill_manager().FillOrPreviewCreditCardForm(
+  autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form(),
       form().fields().back().global_id(),
-      *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
+      personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       AutofillTriggerSource::kPopup);
 
   EXPECT_THAT(
@@ -330,10 +330,10 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
                              SuggestionType::kCreditCardEntry);
   EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
       .WillOnce(base::test::RunOnceCallback<1>(card()));
-  autofill_manager().FillOrPreviewCreditCardForm(
+  autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form(),
       form().fields().back().global_id(),
-      *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
+      personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       AutofillTriggerSource::kPopup);
 
   // Verify that:
@@ -381,10 +381,10 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
   // Fill the suggestion again.
   EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
       .WillOnce(base::test::RunOnceCallback<1>(card()));
-  autofill_manager().FillOrPreviewCreditCardForm(
+  autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form(),
       form().fields().back().global_id(),
-      *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
+      personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       AutofillTriggerSource::kPopup);
 
   EXPECT_THAT(
@@ -422,10 +422,10 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSubmitMetrics) {
       form(), form().fields().back().global_id());
   EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
       .WillOnce(base::test::RunOnceCallback<1>(card()));
-  autofill_manager().FillOrPreviewCreditCardForm(
+  autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form(),
       form().fields().back().global_id(),
-      *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
+      personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       AutofillTriggerSource::kPopup);
   SubmitForm(form());
 
@@ -539,10 +539,10 @@ TEST_P(CardMetadataLatencyMetricsTest, LogMetrics) {
   DidShowAutofillSuggestions(form(), /*field_index=*/form().fields().size() - 1,
                              SuggestionType::kCreditCardEntry);
   task_environment_.FastForwardBy(base::Seconds(2));
-  autofill_manager().FillOrPreviewCreditCardForm(
+  autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form(),
       form().fields().front().global_id(),
-      *personal_data().payments_data_manager().GetCreditCardByGUID(
+      personal_data().payments_data_manager().GetCreditCardByGUID(
           kTestMaskedCardId),
       AutofillTriggerSource::kPopup);
 
@@ -627,9 +627,9 @@ class CardBenefitFormEventMetricsTest
   // Simulate selecting a card from a list of suggestions.
   void ShowSuggestionsAndSelectCard(const CreditCard* card) {
     ShowCardSuggestions();
-    autofill_manager().FillOrPreviewCreditCardForm(
+    autofill_manager().FillOrPreviewForm(
         mojom::ActionPersistence::kFill, form(),
-        form().fields()[credit_card_number_field_index()].global_id(), *card,
+        form().fields()[credit_card_number_field_index()].global_id(), card,
         AutofillTriggerSource::kPopup);
   }
 
@@ -639,9 +639,9 @@ class CardBenefitFormEventMetricsTest
     EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
         .WillOnce(base::test::RunOnceCallback<1>(*card));
     ShowCardSuggestions();
-    autofill_manager().FillOrPreviewCreditCardForm(
+    autofill_manager().FillOrPreviewForm(
         mojom::ActionPersistence::kFill, form(),
-        form().fields()[credit_card_number_field_index()].global_id(), *card,
+        form().fields()[credit_card_number_field_index()].global_id(), card,
         AutofillTriggerSource::kPopup);
   }
 

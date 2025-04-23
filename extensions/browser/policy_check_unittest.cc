@@ -109,13 +109,9 @@ TEST_F(PolicyCheckTest, PolicyFailure) {
   PolicyCheck policy_check(browser_context(), extension_);
   runner_.Run(&policy_check);
   EXPECT_TRUE(runner_.called());
-// TODO(crbug.com/394876083): Enable the management policy on android and
-// remove the if-def.
-#if !BUILDFLAG(IS_ANDROID)
   EXPECT_THAT(runner_.errors(), testing::UnorderedElementsAre(
                                     PreloadCheck::Error::kDisallowedByPolicy));
   EXPECT_EQ(kDummyPolicyError, policy_check.GetErrorMessage());
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace extensions

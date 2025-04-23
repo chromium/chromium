@@ -11,12 +11,14 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
 
 /**
  * Class handling the communication with the C++ part of the password check feature. It forwards
  * messages to and from its C++ counterpart.
  */
+@NullMarked
 class PasswordCheckBridge {
     private long mNativePasswordCheckBridge;
     private final PasswordCheckObserver mPasswordCheckObserver;

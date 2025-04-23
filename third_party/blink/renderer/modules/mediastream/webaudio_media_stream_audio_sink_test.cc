@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/mediastream/webaudio_media_stream_audio_sink.h"
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 
 #include "base/test/bind.h"
@@ -88,8 +84,9 @@ TEST_F(WebAudioMediaStreamAudioSinkTest, VerifyDataFlow) {
   // Create a source AudioBus with channel data filled with non-zero values.
   const std::unique_ptr<media::AudioBus> source_bus =
       media::AudioBus::Create(source_params_);
-  std::fill(source_bus->channel(0),
-            source_bus->channel(0) + source_bus->frames(), 0.5f);
+  std::ranges::for_each(source_bus->AllChannels(), [](const auto& channel) {
+    std::ranges::fill(channel, 0.5f);
+  });
 
   // Deliver data to |source_provider_|.
   base::TimeTicks estimated_capture_time = base::TimeTicks::Now();

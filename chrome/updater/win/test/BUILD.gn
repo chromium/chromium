@@ -10,10 +10,7 @@ import("//testing/test.gni")
 source_set("test_strings") {
   testonly = true
 
-  sources = [
-    "test_strings.cc",
-    "test_strings.h",
-  ]
+  sources = [ "test_strings.h" ]
 }
 
 source_set("test_common") {

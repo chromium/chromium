@@ -223,6 +223,7 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
       std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
       base::span<const lens::PageContent> underlying_page_contents,
       lens::MimeType primary_content_type,
+      std::optional<uint32_t> pdf_current_page,
       float ui_scale_factor,
       base::TimeTicks invocation_time) override;
 

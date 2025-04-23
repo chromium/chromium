@@ -20,7 +20,7 @@ gfx::ImageSkia Generator(const gfx::Size& size,
                          ui::ColorVariant color,
                          const ui::ColorProvider* color_provider) {
   auto text_image = std::make_unique<TextImage>(size, symbol);
-  text_image->set_color(color.ConvertToSkColor(color_provider));
+  text_image->set_color(color.ResolveToSkColor(color_provider));
   return gfx::ImageSkia(std::move(text_image), size);
 }
 

@@ -61,12 +61,11 @@ InterpolationValue CSSFontWeightInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSFontWeightInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
-  DCHECK(state);
   FontSelectionValue inherited_font_weight =
-      state->ParentStyle()->GetFontWeight();
-  if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+      state.ParentStyle()->GetFontWeight();
+  if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     CSSValueID keyword = identifier_value->GetValueID();
     if (keyword == CSSValueID::kBolder || keyword == CSSValueID::kLighter) {
       conversion_checkers.push_back(
@@ -77,9 +76,7 @@ InterpolationValue CSSFontWeightInterpolationType::MaybeConvertValue(
   // TODO(40946458): Should do a proper interpolation here instead of converting
   // relative units first.
   return CreateFontWeightValue(StyleBuilderConverterBase::ConvertFontWeight(
-      state ? state->CssToLengthConversionData()
-            : CSSToLengthConversionData(/*element=*/nullptr),
-      value, inherited_font_weight));
+      state.CssToLengthConversionData(), value, inherited_font_weight));
 }
 
 InterpolationValue

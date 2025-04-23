@@ -57,8 +57,11 @@
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
 #endif
 
-namespace {
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/host/guest_util.h"
+#endif
 
+namespace {
 constexpr UrlIdentity::TypeSet allowed_types = {
     UrlIdentity::Type::kDefault, UrlIdentity::Type::kIsolatedWebApp,
     UrlIdentity::Type::kFile, UrlIdentity::Type::kChromeExtension};
@@ -77,6 +80,62 @@ std::u16string GetApplicationTitle(content::WebContents* web_contents) {
       content_origin, allowed_types, options);
   return url_identity.name;
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_GLIC)
+bool IsGlicWebUI(content::WebContents* web_contents) {
+  return glic::IsGlicWebUI(web_contents);
+}
+#else
+bool IsGlicWebUI(content::WebContents* web_contents) {
+  return false;
+}
+#endif
+
+// If bypassing the media selection dialog is allowed for this request, this
+// returns the `DesktopMediaId` to use. Returns a null ID otherwise.
+content::DesktopMediaID GetMediaForSelectionDialogBypass(
+    const HostContentSettingsMap& content_settings,
+    content::WebContents* web_contents,
+    const content::MediaStreamRequest& request) {
+  // Only bypass for chrome:// URLs.
+  if (web_contents->GetLastCommittedURL().scheme() !=
+      content::kChromeUIScheme) {
+    return content::DesktopMediaID();
+  }
+
+  const GURL& origin_url = web_contents->GetLastCommittedURL();
+  // Special behavior for chrome://glic: skip tab capture dialog.
+  if (request.video_type ==
+          blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB &&
+      IsGlicWebUI(web_contents)) {
+    content::DesktopMediaID media_id(
+        content::DesktopMediaID::TYPE_WEB_CONTENTS,
+        content::DesktopMediaID::kNullId,
+        content::WebContentsMediaCaptureId(
+            web_contents->GetPrimaryMainFrame()
+                ->GetProcess()
+                ->GetDeprecatedID(),
+            web_contents->GetPrimaryMainFrame()->GetRoutingID()));
+    media_id.audio_share =
+        request.audio_type != blink::mojom::MediaStreamType::NO_SERVICE;
+    return media_id;
+  } else if (request.video_type == blink::mojom::MediaStreamType::NO_SERVICE &&
+             request.audio_type != blink::mojom::MediaStreamType::NO_SERVICE &&
+             !request.exclude_system_audio &&
+             content_settings.GetContentSetting(
+                 origin_url, origin_url,
+                 ContentSettingsType::DISPLAY_MEDIA_SYSTEM_AUDIO) ==
+                 ContentSetting::CONTENT_SETTING_ALLOW) {
+    return content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
+                                   content::DesktopMediaID::kNullId,
+                                   /*audio_share=*/true);
+  }
+  return content::DesktopMediaID();
+}
+
+#endif
 
 }  // namespace
 
@@ -229,47 +288,33 @@ void DisplayMediaAccessHandler::HandleRequest(
     }
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  // The DISPLAY_MEDIA_SYSTEM_AUDIO setting is not supported on Android.
-  const ContentSetting content_setting_value =
-      ContentSetting::CONTENT_SETTING_BLOCK;
-#else
+  // The DISPLAY_MEDIA_SYSTEM_AUDIO / DISPLAY_VIDEO_CAPTURE_THIS_TAB settings
+  // are not supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
   HostContentSettingsMap* content_settings =
       HostContentSettingsMapFactory::GetForProfile(
           web_contents->GetBrowserContext());
   CHECK(content_settings);
-  const GURL& origin_url = web_contents->GetLastCommittedURL();
-  ContentSetting content_setting_value = content_settings->GetContentSetting(
-      origin_url, origin_url, ContentSettingsType::DISPLAY_MEDIA_SYSTEM_AUDIO);
-#endif  // BUILDFLAG(IS_ANDROID)
-  if (content_setting_value == ContentSetting::CONTENT_SETTING_BLOCK) {
-    // Except for the case when DISPLAY_MEDIA_SYSTEM_AUDIO is allowed, all
-    // request should contain video stream.
-    if (request.video_type == blink::mojom::MediaStreamType::NO_SERVICE) {
-      std::move(callback).Run(
-          blink::mojom::StreamDevicesSet(),
-          blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
-          /*ui=*/nullptr);
-      return;
-    }
-    ShowMediaSelectionDialog(web_contents, request, std::move(callback));
-  } else if (content_setting_value == ContentSetting::CONTENT_SETTING_ALLOW) {
-    if (request.video_type != blink::mojom::MediaStreamType::NO_SERVICE) {
-      ShowMediaSelectionDialog(web_contents, request, std::move(callback));
-      return;
-    }
-    // To bypass the media selection dialog, the system audio must be included.
-    if (request.exclude_system_audio) {
-      std::move(callback).Run(
-          blink::mojom::StreamDevicesSet(),
-          blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
-          /*ui=*/nullptr);
-      return;
-    }
-    BypassMediaSelectionDialog(web_contents, request, std::move(callback));
-  } else {
-    NOTREACHED();
+  content::DesktopMediaID media_id = GetMediaForSelectionDialogBypass(
+      *content_settings, web_contents, request);
+  if (!media_id.is_null()) {
+    BypassMediaSelectionDialog(web_contents, request, media_id,
+                               std::move(callback));
+    return;
   }
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  // Except for the case when DISPLAY_MEDIA_SYSTEM_AUDIO is allowed, all
+  // requests should contain video stream.
+  if (request.video_type == blink::mojom::MediaStreamType::NO_SERVICE) {
+    std::move(callback).Run(
+        blink::mojom::StreamDevicesSet(),
+        blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
+        /*ui=*/nullptr);
+    return;
+  }
+
+  ShowMediaSelectionDialog(web_contents, request, std::move(callback));
 }
 
 void DisplayMediaAccessHandler::UpdateMediaRequestState(
@@ -328,6 +373,7 @@ void DisplayMediaAccessHandler::ShowMediaSelectionDialog(
 void DisplayMediaAccessHandler::BypassMediaSelectionDialog(
     content::WebContents* web_contents,
     const content::MediaStreamRequest& request,
+    const content::DesktopMediaID& media_id,
     content::MediaResponseCallback callback) {
   if (web_contents->GetLastCommittedURL().scheme() !=
       content::kChromeUIScheme) {
@@ -337,10 +383,6 @@ void DisplayMediaAccessHandler::BypassMediaSelectionDialog(
         /*ui=*/nullptr);
     return;
   }
-
-  content::DesktopMediaID media_id(content::DesktopMediaID::TYPE_SCREEN,
-                                   content::DesktopMediaID::kNullId,
-                                   /*audio_share=*/true);
   blink::mojom::StreamDevicesSet stream_devices_set;
   stream_devices_set.stream_devices.emplace_back(
       blink::mojom::StreamDevices::New());

@@ -4,6 +4,9 @@
 
 package org.chromium.content_shell;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
@@ -24,14 +27,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.embedder_support.view.ContentViewRenderView;
 import org.chromium.content_public.browser.ActionModeCallback;
@@ -46,6 +50,7 @@ import org.chromium.ui.base.WindowAndroid;
 
 /** Container for the various UI components that make up a shell window. */
 @JNINamespace("content")
+@NullMarked
 public class Shell extends LinearLayout {
 
     private static final long COMPLETED_PROGRESS_TIMEOUT_MS = 200;
@@ -75,14 +80,14 @@ public class Shell extends LinearLayout {
     private ClipDrawable mProgressDrawable;
 
     private long mNativeShell;
-    private ContentViewRenderView mContentViewRenderView;
-    private WindowAndroid mWindow;
-    private ShellViewAndroidDelegate mViewAndroidDelegate;
+    private @Nullable ContentViewRenderView mContentViewRenderView;
+    private @Nullable WindowAndroid mWindow;
+    private @Nullable ShellViewAndroidDelegate mViewAndroidDelegate;
 
     private boolean mLoading;
     private boolean mIsFullscreen;
 
-    private Callback<Boolean> mOverlayModeChangedCallbackForTesting;
+    private @Nullable Callback<Boolean> mOverlayModeChangedCallbackForTesting;
 
     /** Constructor for inflating via XML. */
     public Shell(Context context, AttributeSet attrs) {
@@ -90,7 +95,7 @@ public class Shell extends LinearLayout {
     }
 
     /** Set the SurfaceView being rendered to as soon as it is available. */
-    public void setContentViewRenderView(ContentViewRenderView contentViewRenderView) {
+    public void setContentViewRenderView(@Nullable ContentViewRenderView contentViewRenderView) {
         FrameLayout contentViewHolder = (FrameLayout) findViewById(R.id.contentview_holder);
         if (contentViewRenderView == null) {
             if (mContentViewRenderView != null) {
@@ -126,6 +131,7 @@ public class Shell extends LinearLayout {
         ShellJni.get().closeShell(mNativeShell);
     }
 
+    @SuppressWarnings("NullAway")
     @CalledByNative
     private void onNativeDestroyed() {
         mWindow = null;
@@ -172,7 +178,7 @@ public class Shell extends LinearLayout {
                         }
                         loadUrl(mUrlTextView.getText().toString());
                         setKeyboardVisibilityForUrl(false);
-                        getContentView().requestFocus();
+                        assumeNonNull(getContentView()).requestFocus();
                         return true;
                     }
                 });
@@ -194,7 +200,7 @@ public class Shell extends LinearLayout {
                     @Override
                     public boolean onKey(View v, int keyCode, KeyEvent event) {
                         if (keyCode == KeyEvent.KEYCODE_BACK) {
-                            getContentView().requestFocus();
+                            assumeNonNull(getContentView()).requestFocus();
                             return true;
                         }
                         return false;
@@ -225,8 +231,8 @@ public class Shell extends LinearLayout {
      * @param url The url to be sanitized.
      * @return The sanitized URL.
      */
-    public static String sanitizeUrl(String url) {
-        if (url == null) return null;
+    private static String sanitizeUrl(String url) {
+        assert url != null;
         if (url.startsWith("www.") || url.indexOf(":") == -1) url = "http://" + url;
         return url;
     }
@@ -297,7 +303,7 @@ public class Shell extends LinearLayout {
         }
     }
 
-    public ShellViewAndroidDelegate getViewAndroidDelegate() {
+    public @Nullable ShellViewAndroidDelegate getViewAndroidDelegate() {
         return mViewAndroidDelegate;
     }
 
@@ -307,6 +313,7 @@ public class Shell extends LinearLayout {
      * @param webContents A {@link WebContents} object.
      */
     @SuppressWarnings("unused")
+    @Initializer
     @CalledByNative
     private void initFromNativeTabContents(WebContents webContents) {
         Context context = getContext();
@@ -319,7 +326,7 @@ public class Shell extends LinearLayout {
         mWebContents = webContents;
         SelectionPopupController.fromWebContents(webContents)
                 .setActionModeCallback(defaultActionCallback());
-        mNavigationController = mWebContents.getNavigationController();
+        mNavigationController = assertNonNull(mWebContents.getNavigationController());
         if (getParent() != null) mWebContents.updateWebContentsVisibility(Visibility.VISIBLE);
         mUrlTextView.setText(mWebContents.getVisibleUrl().getSpec());
         ((FrameLayout) findViewById(R.id.contentview_holder))
@@ -329,7 +336,7 @@ public class Shell extends LinearLayout {
                                 FrameLayout.LayoutParams.MATCH_PARENT,
                                 FrameLayout.LayoutParams.MATCH_PARENT));
         cv.requestFocus();
-        mContentViewRenderView.setCurrentWebContents(mWebContents);
+        assumeNonNull(mContentViewRenderView).setCurrentWebContents(mWebContents);
     }
 
     /**
@@ -381,7 +388,7 @@ public class Shell extends LinearLayout {
 
     @CalledByNative
     public void setOverlayMode(boolean useOverlayMode) {
-        mContentViewRenderView.setOverlayVideoMode(useOverlayMode);
+        assumeNonNull(mContentViewRenderView).setOverlayVideoMode(useOverlayMode);
         if (mOverlayModeChangedCallbackForTesting != null) {
             mOverlayModeChangedCallbackForTesting.onResult(useOverlayMode);
         }
@@ -410,7 +417,7 @@ public class Shell extends LinearLayout {
     /**
      * @return The {@link View} currently shown by this Shell.
      */
-    public View getContentView() {
+    public @Nullable View getContentView() {
         ViewAndroidDelegate viewDelegate = mWebContents.getViewAndroidDelegate();
         return viewDelegate != null ? viewDelegate.getContainerView() : null;
     }

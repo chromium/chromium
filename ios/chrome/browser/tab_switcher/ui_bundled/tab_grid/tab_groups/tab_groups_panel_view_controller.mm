@@ -555,9 +555,7 @@ NSString* TabGroupCellAccessibilityIdentifier(NSUInteger index) {
   NSUInteger numberOfTabs = itemData.numberOfTabs;
   cell.faviconsGrid.numberOfTabs = numberOfTabs;
 
-  UIViewController* facePile =
-      [_itemDataSource facePileViewControllerForItem:item];
-  [cell setFacePileViewController:facePile parentViewController:self];
+  cell.facePile = [_itemDataSource facePileViewForItem:item];
 
   [_itemDataSource fetchFaviconsForCell:cell];
 }

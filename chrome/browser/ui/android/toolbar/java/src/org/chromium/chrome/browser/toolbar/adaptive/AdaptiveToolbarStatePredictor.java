@@ -147,7 +147,9 @@ public class AdaptiveToolbarStatePredictor {
             @AdaptiveToolbarButtonVariant int defaultSegment,
             @AdaptiveToolbarButtonVariant int segmentationResult) {
         if (!toolbarToggle) return AdaptiveToolbarButtonVariant.UNKNOWN;
-        if (isValidSegment(manualOverride)) return manualOverride;
+        if (mBehavior.canShowManualOverride(manualOverride) && isValidSegment(manualOverride)) {
+            return manualOverride;
+        }
 
         return isValidSegment(segmentationResult) ? segmentationResult : defaultSegment;
     }

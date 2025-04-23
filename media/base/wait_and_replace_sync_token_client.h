@@ -20,6 +20,10 @@ class MEDIA_EXPORT WaitAndReplaceSyncTokenClient
     : public VideoFrame::SyncTokenClient {
  public:
   explicit WaitAndReplaceSyncTokenClient(gpu::InterfaceBase* ib);
+  WaitAndReplaceSyncTokenClient(
+      gpu::InterfaceBase* ib,
+      std::unique_ptr<gpu::RasterScopedAccess> ri_access);
+  ~WaitAndReplaceSyncTokenClient() override;
 
   WaitAndReplaceSyncTokenClient(const WaitAndReplaceSyncTokenClient&) = delete;
   WaitAndReplaceSyncTokenClient& operator=(
@@ -30,6 +34,7 @@ class MEDIA_EXPORT WaitAndReplaceSyncTokenClient
 
  private:
   raw_ptr<gpu::InterfaceBase> ib_;
+  std::unique_ptr<gpu::RasterScopedAccess> ri_access_;
 };
 
 }  // namespace media

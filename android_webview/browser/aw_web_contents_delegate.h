@@ -91,6 +91,26 @@ class AwWebContentsDelegate
   bool ShouldAllowPartialParamMismatchOfPrerender2(
       content::NavigationHandle& navigation_handle) override;
 
+  // Determines whether the context menu is modal or non-modal.
+
+  // A modal context menu is a type of menu that blocks user interaction with
+  // the underlying UI until the menu is dismissed. Typically displayed as a
+  // dialog or a fullscreen overlay, forcing the user to make a decision within
+  // the context of the menu.
+
+  // A non-modal context menu does not block interaction with the underlying UI.
+  // usually displayed as a popup or dropdown, allowing users to dismiss
+  // them implicitly by interacting with other UI elements.
+
+  // Modal context menus are used when it's critical that the user makes a
+  // selection or acknowledges something before continuing. Non-modal context
+  // menus are used when the menu options  are less critical and the user should
+  // be able to access them without being locked out of other interactions.
+
+  // Android WebView hyperlink context menu currently displays the menu as a
+  // dialog on small screen devices and as a dropdown on larger screen devices.
+  bool isModalContextMenu() const;
+
   scoped_refptr<content::FileSelectListener> TakeFileSelectListener();
 
  private:

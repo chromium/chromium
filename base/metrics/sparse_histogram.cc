@@ -28,10 +28,11 @@ typedef HistogramBase::Count32 Count32;
 // static
 HistogramBase* SparseHistogram::FactoryGet(std::string_view name,
                                            int32_t flags) {
-  HistogramBase* histogram = StatisticsRecorder::FindHistogram(name);
+  uint64_t name_hash = HashMetricName(name);
+  HistogramBase* histogram = StatisticsRecorder::FindHistogram(name_hash, name);
   if (!histogram) {
-    bool should_record =
-        StatisticsRecorder::ShouldRecordHistogram(HashMetricNameAs32Bits(name));
+    bool should_record = StatisticsRecorder::ShouldRecordHistogram(
+        ParseMetricHashTo32Bits(name_hash));
     if (!should_record) {
       return DummyHistogram::GetInstance();
     }
@@ -42,6 +43,8 @@ HistogramBase* SparseHistogram::FactoryGet(std::string_view name,
     std::unique_ptr<HistogramBase> tentative_histogram;
     PersistentHistogramAllocator* allocator = GlobalHistogramAllocator::Get();
     if (allocator) {
+      // TODO(crbug.com/394149163): AllocateHistogram ends up calling
+      // HashMetricName. We already have the hash, so we could pass it in.
       tentative_histogram = allocator->AllocateHistogram(
           SPARSE_HISTOGRAM, name, 0, 0, nullptr, flags, &histogram_ref);
     }
@@ -51,6 +54,8 @@ HistogramBase* SparseHistogram::FactoryGet(std::string_view name,
     if (!tentative_histogram) {
       DCHECK(!histogram_ref);  // Should never have been set.
       flags &= ~HistogramBase::kIsPersistent;
+      // TODO(crbug.com/394149163): SparseHistogram constructor ends up calling
+      // HashMetricName. We already have the hash, so we could pass it in.
       tentative_histogram.reset(new SparseHistogram(GetPermanentName(name)));
       tentative_histogram->SetFlags(flags);
     }
@@ -79,7 +84,7 @@ HistogramBase* SparseHistogram::FactoryGet(std::string_view name,
     // Note: Theoretically the below line could be re-entrant if something has
     // gone very wrong, but crashing w/ an infinite recursion seems OK then.
     UmaHistogramSparse("Histogram.MismatchedConstructionArguments",
-                       static_cast<Sample32>(HashMetricName(name)));
+                       static_cast<Sample32>(name_hash));
     DLOG(ERROR) << "Histogram " << name << " has a mismatched type";
     return DummyHistogram::GetInstance();
   }

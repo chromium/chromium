@@ -154,9 +154,12 @@ void SortFolders(NodeVector* vector);
 // all their descendant folders, except for those included in `obstructions`
 // which are excluded, as well as their descendants. The returned list is
 // sorted depth-first, then alphabetically.
-NodeVector VisibleNonDescendantNodes(const NodeSet& obstructions,
-                                     const bookmarks::BookmarkModel* model,
-                                     BookmarkStorageType type);
+// `search_terms` can be used to filter results.
+NodeVector VisibleNonDescendantNodes(
+    const NodeSet& obstructions,
+    const bookmarks::BookmarkModel* model,
+    BookmarkStorageType type,
+    const std::vector<std::u16string>& search_terms = {});
 
 // Whether `vector1` contains only elements of `vector2` in the same order.
 BOOL IsSubvectorOfNodes(const NodeVector& vector1, const NodeVector& vector2);

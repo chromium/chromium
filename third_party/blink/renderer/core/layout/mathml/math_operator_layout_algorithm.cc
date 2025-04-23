@@ -54,6 +54,7 @@ const LayoutResult* MathOperatorLayoutAlgorithm::Layout() {
   // https://w3c.github.io/mathml-core/#layout-of-operators
   LayoutUnit operator_target_size;
   LayoutUnit target_stretch_ascent, target_stretch_descent;
+  LayoutUnit axis = MathAxisHeight(Style());
   auto* element = DynamicTo<MathMLOperatorElement>(Node().GetDOMNode());
   if (element->HasBooleanProperty(MathMLOperatorElement::kStretchy)) {
     // "If the operator has the stretchy property:"
@@ -64,7 +65,6 @@ const LayoutResult* MathOperatorLayoutAlgorithm::Layout() {
       }
     } else {
       // "Otherwise, the stretch axis of the operator is block."
-      LayoutUnit axis = MathAxisHeight(Style());
       if (auto target_stretch_block_sizes =
               GetConstraintSpace().TargetStretchBlockSizes()) {
         target_stretch_ascent = target_stretch_block_sizes->ascent;
@@ -164,16 +164,28 @@ const LayoutResult* MathOperatorLayoutAlgorithm::Layout() {
 
   LayoutUnit ascent = BorderScrollbarPadding().block_start + operator_ascent;
   LayoutUnit descent = operator_descent + BorderScrollbarPadding().block_end;
-  if (element->HasBooleanProperty(MathMLOperatorElement::kStretchy) &&
-      element->IsVertical()) {
+
+  LayoutUnit delta;
+  if (element->IsVertical() &&
+      element->HasBooleanProperty(MathMLOperatorElement::kStretchy)) {
     // "The stretchy glyph is shifted towards the line-under by a value Δ so
     // that its center aligns with the center of the target"
-    LayoutUnit delta = ((operator_ascent - operator_descent) -
-                        (target_stretch_ascent - target_stretch_descent)) /
-                       2;
-    ascent -= delta;
-    descent += delta;
+    delta = ((operator_ascent - operator_descent) -
+             (target_stretch_ascent - target_stretch_descent)) /
+            2;
+  } else if (element->HasBooleanProperty(MathMLOperatorElement::kLargeOp) &&
+             element->HasBooleanProperty(MathMLOperatorElement::kSymmetric)) {
+    // "If the operator has the [largeop and] symmetric properties, then
+    // Δ = [(ascent of stretchy glyph − descent of stretchy glyph)
+    // − 2 * AxisHeight] / 2."
+    delta = ((operator_ascent - operator_descent) - (2 * axis)) / 2;
+  } else {
+    // "Otherwise, Δ = 0."
+    // This also accounts for inline stretch axis stretchy operators.
   }
+  ascent -= delta;
+  descent += delta;
+
   LayoutUnit intrinsic_block_size = ascent + descent;
   LayoutUnit block_size = ComputeBlockSizeForFragment(
       GetConstraintSpace(), Node(), BorderPadding(), intrinsic_block_size,

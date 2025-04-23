@@ -4,6 +4,9 @@
 
 #include "components/autofill/core/browser/strike_databases/payments/virtual_card_enrollment_strike_database.h"
 
+#include "base/feature_list.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
+
 namespace autofill {
 
 bool VirtualCardEnrollmentStrikeDatabase::IsLastOffer(
@@ -17,6 +20,15 @@ std::optional<base::TimeDelta>
 VirtualCardEnrollmentStrikeDatabase::GetRequiredDelaySinceLastStrike() const {
   return std::optional<base::TimeDelta>(
       base::Days(kEnrollmentEnforcedDelayInDays));
+}
+
+std::optional<base::TimeDelta>
+VirtualCardEnrollmentStrikeDatabase::GetExpiryTimeDelta() const {
+  return base::FeatureList::IsEnabled(
+             features::kAutofillVcnEnrollStrikeExpiryTime)
+             ? std::optional<base::TimeDelta>(base::Days(
+                   features::kAutofillVcnEnrollStrikeExpiryTimeDays.Get()))
+             : SimpleAutofillStrikeDatabase::GetExpiryTimeDelta();
 }
 
 }  // namespace autofill

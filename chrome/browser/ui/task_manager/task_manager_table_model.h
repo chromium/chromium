@@ -98,7 +98,11 @@ class TaskManagerTableModel : public TaskManagerObserver,
   void SetObserver(ui::TableModelObserver* observer) override;
   int CompareValues(size_t row1, size_t row2, int column_id) override;
   std::u16string GetAXNameForHeader(
-      const std::vector<std::u16string>& visible_column_titles) override;
+      const std::vector<std::u16string>& visible_column_titles,
+      const std::vector<std::u16string>& visible_column_sortable) override;
+  std::u16string GetAXNameForHeaderCell(
+      const std::u16string& visible_column_title,
+      const std::u16string& visible_column_sortable) override;
   std::u16string GetAXNameForRow(
       size_t row,
       const std::vector<int>& visible_column_ids) override;
@@ -126,7 +130,8 @@ class TaskManagerTableModel : public TaskManagerObserver,
   void ActivateTask(size_t row_index);
 
   // Kills the process on which the task at |row_index| is running.
-  void KillTask(size_t row_index);
+  // Returns true if the process terminates.
+  bool KillTask(size_t row_index);
 
   // Based on the given |visibility| and the |column_id|, a particular refresh
   // type will be enabled or disabled.

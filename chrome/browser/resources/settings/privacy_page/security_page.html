@@ -66,10 +66,6 @@
         padding-inline-start: 20px;
       }
 
-      #learnMoreLabelContainerOld {
-        pointer-events: auto;
-      }
-
       #learnMoreLabelContainer {
         padding-bottom: 12px;
         pointer-events: auto;
@@ -85,8 +81,7 @@
             name="[[safeBrowsingSettingEnum_.ENHANCED]]"
             pref="[[prefs.generated.safe_browsing]]"
             label="$i18n{safeBrowsingEnhanced}"
-            sub-label="[[getSafeBrowsingEnhancedSubLabel_(
-                        enableEsbAiStringUpdate_)]]"
+            sub-label="$i18n{safeBrowsingEnhancedDescUpdated}"
             indicator-aria-label="$i18n{controlledSettingPolicy}"
             expand-aria-label="$i18n{safeBrowsingEnhancedExpandA11yLabel}"
             on-expand-clicked="onEnhancedProtectionExpandButtonClicked_"
@@ -127,15 +122,6 @@
                       $i18n{safeBrowsingEnhancedWhenOnBulFour}
                     </div>
                   </li>
-                  <template is="dom-if" if="[[!enablePasswordLeakToggleMove_]]">
-                    <li id="whenOnBulFive">
-                      <cr-icon icon="settings20:vpn-key-new" aria-hidden="true">
-                      </cr-icon>
-                      <div class="secondary">
-                        $i18n{safeBrowsingEnhancedWhenOnBulFive}
-                      </div>
-                    </li>
-                  </template>
                 </ul>
               </div>
               <div class="column">
@@ -162,27 +148,17 @@
                     </div>
                   </li>
                 </ul>
-                <template is="dom-if" if="[[!enablePasswordLeakToggleMove_]]">
-                  <div id="learnMoreLabelContainerOld"
-                      class="cr-secondary-text">
-                    $i18nRaw{safeBrowsingEnhancedLearnMoreLabel}
-                  </div>
-                </template>
               </div>
             </div>
-            <template is="dom-if" if="[[enablePasswordLeakToggleMove_]]">
-              <div id="learnMoreLabelContainer">
-                <div class="cr-secondary-text">
-                  $i18nRaw{safeBrowsingEnhancedLearnMoreLabel}
-                </div>
+            <div id="learnMoreLabelContainer">
+              <div class="cr-secondary-text">
+                $i18nRaw{safeBrowsingEnhancedLearnMoreLabel}
               </div>
-            </template>
+            </div>
           </div>
         </settings-collapse-radio-button>
         <settings-collapse-radio-button id="safeBrowsingStandard"
-            no-collapse="[[computeSafeBrowsingStandardNoCollapse_(
-                            hideExtendedReportingRadioButton_,
-                            enablePasswordLeakToggleMove_)]]"
+            no-collapse="[[hideExtendedReportingRadioButton_]]"
             name="[[safeBrowsingSettingEnum_.STANDARD]]"
             pref="[[prefs.generated.safe_browsing]]"
             label="$i18n{safeBrowsingStandard}"
@@ -202,15 +178,6 @@
                 on-change="onSafeBrowsingExtendedReportingChange_"
                 disabled="[[getDisabledExtendedSafeBrowsing_(
                               prefs.generated.safe_browsing.*)]]">
-              </settings-toggle-button>
-            </template>
-            <template is="dom-if" if="[[!enablePasswordLeakToggleMove_]]">
-              <settings-toggle-button id="passwordsLeakToggleOld"
-                  label="$i18n{passwordsLeakDetectionLabel}"
-                  pref="{{prefs.generated.password_leak_detection}}"
-                  sub-label="[[getPasswordsLeakToggleSubLabel_(
-                                prefs.profile.password_manager_leak_detection.*,
-                                prefs.generated.password_leak_detection.*)]]">
               </settings-toggle-button>
             </template>
           </div>
@@ -266,15 +233,13 @@
     <div class="cr-row first">
       <h2 class="cr-title-text">$i18n{advancedPageTitle}</h2>
     </div>
-    <template is="dom-if" if="[[enablePasswordLeakToggleMove_]]">
-      <settings-toggle-button id="passwordsLeakToggle"
+    <settings-toggle-button id="passwordsLeakToggle"
           label="$i18n{passwordsLeakDetectionLabel}"
           pref="{{prefs.generated.password_leak_detection}}"
           sub-label="[[getPasswordsLeakToggleSubLabel_(
                         prefs.profile.password_manager_leak_detection.*,
                         prefs.generated.password_leak_detection.*)]]">
-      </settings-toggle-button>
-    </template>
+    </settings-toggle-button>
     <template is="dom-if" if="[[!enableHttpsFirstModeNewSettings_]]" restamp>
       <settings-toggle-button id="httpsOnlyModeToggle"
           pref="{{prefs.generated.https_first_mode_enabled}}"
@@ -290,9 +255,7 @@
     </template>
     <template is="dom-if" if="[[enableHttpsFirstModeNewSettings_]]" restamp>
       <template is="dom-if" if="[[showSecureDnsSetting_]]">
-        <settings-secure-dns prefs="{{prefs}}"
-            class$="[[computeSecureDnsSettingClass_(
-                      enablePasswordLeakToggleMove_)]]"
+        <settings-secure-dns prefs="{{prefs}}" class="hr"
             id="secureDnsSettingNew">
         </settings-secure-dns>
       </template>

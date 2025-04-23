@@ -18,13 +18,14 @@ class DraggingTabsSession final : public TabDragWithScrollManager {
  public:
   // `drag_data` is a copy of the drag configuration for the full session.
   // `attached_context` is the context in which the tabs are being dragged.
-  // `mouse_offset` is the desired x offset from the leading edge of the first
-  // tab to the cursor. `initial_move` should be true if the drag session is
-  // beginning, and the tabs have not been moved from their initial positions.
+  // `offset_to_width_ratio_` is the desired x offset into the source
+  // TabSlotView (e.g. 0.5 if the drag started in the center of the tab).
+  // `initial_move` should be true if the drag session is beginning, and
+  // the tabs have not been moved from their initial positions.
   // `point_in_screen` is the initial cursor screen position.
   explicit DraggingTabsSession(DragSessionData drag_data,
                                TabDragContext* attached_context,
-                               int mouse_offset,
+                               float offset_to_width_ratio_,
                                bool initial_move,
                                gfx::Point point_in_screen);
   ~DraggingTabsSession() final;

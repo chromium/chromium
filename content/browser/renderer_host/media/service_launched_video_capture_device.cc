@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/token.h"
+#include "base/trace_event/trace_event.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 
 namespace content {

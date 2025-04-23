@@ -8,7 +8,7 @@
 
 #include "base/notimplemented.h"
 #include "chrome/browser/ui/tabs/tab_collection.h"
-#include "chrome/browser/ui/tabs/tab_model.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace tabs {
 
@@ -22,10 +22,10 @@ bool TabCollectionStorage::ContainsTab(const TabInterface* tab) const {
   return GetIndexOfTab(tab).has_value();
 }
 
-TabModel* TabCollectionStorage::GetTabAtIndex(size_t index) const {
+TabInterface* TabCollectionStorage::GetTabAtIndex(size_t index) const {
   CHECK(index < GetChildrenCount() && index >= 0);
-  const std::unique_ptr<tabs::TabModel>* tab =
-      std::get_if<std::unique_ptr<tabs::TabModel>>(&children_[index]);
+  const std::unique_ptr<tabs::TabInterface>* tab =
+      std::get_if<std::unique_ptr<tabs::TabInterface>>(&children_[index]);
   CHECK(tab);
   return tab->get();
 }
@@ -36,46 +36,47 @@ bool TabCollectionStorage::ContainsCollection(
   return GetIndexOfCollection(tab_collection).has_value();
 }
 
-TabModel* TabCollectionStorage::AddTab(std::unique_ptr<TabModel> tab_model,
-                                       size_t index) {
+TabInterface* TabCollectionStorage::AddTab(std::unique_ptr<TabInterface> tab,
+                                           size_t index) {
   CHECK(index <= GetChildrenCount() && index >= 0);
-  CHECK(tab_model);
+  CHECK(tab);
 
-  TabModel* tab_model_ptr = tab_model.get();
-  children_.insert(children_.begin() + index, std::move(tab_model));
+  TabInterface* tab_ptr = tab.get();
+  children_.insert(children_.begin() + index, std::move(tab));
   owning_collection_->OnTabAddedToTree();
-  return tab_model_ptr;
+  return tab_ptr;
 }
 
-void TabCollectionStorage::MoveTab(TabModel* tab_model, size_t dst_index) {
-  CHECK(tab_model);
+void TabCollectionStorage::MoveTab(TabInterface* tab, size_t dst_index) {
+  CHECK(tab);
   CHECK(dst_index < GetChildrenCount() && dst_index >= 0);
-  std::unique_ptr<TabModel> tab_model_to_move = RemoveTab(tab_model);
-  CHECK(tab_model_to_move);
-  AddTab(std::move(tab_model_to_move), dst_index);
+  std::unique_ptr<TabInterface> tab_to_move = RemoveTab(tab);
+  CHECK(tab_to_move);
+  AddTab(std::move(tab_to_move), dst_index);
 }
 
-std::unique_ptr<TabModel> TabCollectionStorage::RemoveTab(TabModel* tab_model) {
-  CHECK(tab_model);
+std::unique_ptr<TabInterface> TabCollectionStorage::RemoveTab(
+    TabInterface* tab) {
+  CHECK(tab);
   for (size_t i = 0; i < children_.size(); ++i) {
-    if (std::holds_alternative<std::unique_ptr<TabModel>>(children_[i])) {
-      std::unique_ptr<TabModel>& stored_tab_model =
-          std::get<std::unique_ptr<TabModel>>(children_[i]);
-      if (stored_tab_model.get() == tab_model) {
-        auto removed_tab_model = std::move(stored_tab_model);
+    if (std::holds_alternative<std::unique_ptr<TabInterface>>(children_[i])) {
+      std::unique_ptr<TabInterface>& stored_tab =
+          std::get<std::unique_ptr<TabInterface>>(children_[i]);
+      if (stored_tab.get() == tab) {
+        auto removed_tab = std::move(stored_tab);
         children_.erase(children_.begin() + i);
         owning_collection_->OnTabRemovedFromTree();
-        return removed_tab_model;
+        return removed_tab;
       }
     }
   }
   NOTREACHED();
 }
 
-void TabCollectionStorage::CloseTab(TabModel* tab) {
+void TabCollectionStorage::CloseTab(TabInterface* tab) {
   CHECK(tab);
-  std::unique_ptr<TabModel> removed_tab_model = RemoveTab(tab);
-  removed_tab_model.reset();
+  std::unique_ptr<TabInterface> removed_tab = RemoveTab(tab);
+  removed_tab.reset();
 }
 
 TabCollection* TabCollectionStorage::AddCollection(
@@ -132,8 +133,8 @@ std::optional<size_t> TabCollectionStorage::GetIndexOfTab(
   CHECK(tab);
   const auto it = std::find_if(
       children_.begin(), children_.end(), [tab](const auto& child) {
-        return std::holds_alternative<std::unique_ptr<TabModel>>(child) &&
-               std::get<std::unique_ptr<TabModel>>(child).get() == tab;
+        return std::holds_alternative<std::unique_ptr<TabInterface>>(child) &&
+               std::get<std::unique_ptr<TabInterface>>(child).get() == tab;
       });
   return it == children_.end() ? std::nullopt
                                : std::optional<size_t>(it - children_.begin());

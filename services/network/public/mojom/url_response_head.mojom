@@ -7,21 +7,22 @@ module network.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/alternate_protocol_usage.mojom";
-import "services/network/public/mojom/cors.mojom";
-import "services/network/public/mojom/encoded_body_length.mojom";
 import "services/network/public/mojom/attribution.mojom";
+import "services/network/public/mojom/cors.mojom";
+import "services/network/public/mojom/device_bound_sessions.mojom";
+import "services/network/public/mojom/encoded_body_length.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/http_request_headers.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/load_timing_info.mojom";
-import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/load_timing_internal_info.mojom";
-import "services/network/public/mojom/source_type.mojom";
+import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_types.mojom";
 import "services/network/public/mojom/parsed_headers.mojom";
 import "services/network/public/mojom/parsed_request_cookie.mojom";
 import "services/network/public/mojom/service_worker_router_info.mojom";
+import "services/network/public/mojom/source_type.mojom";
 import "services/proxy_resolver/public/mojom/proxy_resolver.mojom";
 import "url/mojom/url.mojom";
 
@@ -316,4 +317,8 @@ struct URLResponseHead {
   // This is only non-empty if `client_size_content_decoding_enabled` was set to
   // true on the request?
   array<SourceType> client_side_content_decoding_types;
+
+  // Whether the request is in the scope of a device bound session.
+  DeviceBoundSessionUsage device_bound_session_usage =
+      DeviceBoundSessionUsage.kUnknown;
 };

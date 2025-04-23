@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <vector>
 
 #include "media/base/video_bitrate_allocation.h"
@@ -42,9 +43,9 @@ class AV1VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
     // https://github.com/intel/libva-utils/blob/master/encode/av1encode.c
     // TODO: we may want to tune these parameters.
     uint8_t cdef_y_pri_strength[8] = {9, 12, 0, 6, 2, 4, 1, 2};
-    uint8_t cdef_y_sec_strength[8] = {0, 2, 0, 0, 0, 1, 0, 1};
-    uint8_t cdef_uv_pri_strength[8] = {9, 12, 0, 6, 2, 4, 1, 2};
-    uint8_t cdef_uv_sec_strength[8] = {0, 2, 0, 0, 0, 1, 0, 1};
+    std::array<uint8_t, 8> cdef_y_sec_strength = {0, 2, 0, 0, 0, 1, 0, 1};
+    std::array<uint8_t, 8> cdef_uv_pri_strength = {9, 12, 0, 6, 2, 4, 1, 2};
+    std::array<uint8_t, 8> cdef_uv_sec_strength = {0, 2, 0, 0, 0, 1, 0, 1};
   };
 
   AV1VaapiVideoEncoderDelegate(scoped_refptr<VaapiWrapper> vaapi_wrapper,

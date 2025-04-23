@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.wallet;
 
 import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -14,6 +15,7 @@ import org.chromium.url.GURL;
 import java.util.List;
 
 /** Controls the whole flow of boarding pass detection. */
+@NullMarked
 public class BoardingPassController {
     private static final String TAG = "BoardingPassCtrl";
 

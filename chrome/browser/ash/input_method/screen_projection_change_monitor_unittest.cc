@@ -8,7 +8,10 @@
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/cast_config/cast_config_controller_media_router.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "ui/display/manager/display_manager.h"
 
 namespace ash::input_method {
@@ -19,7 +22,10 @@ using base::test::TestFuture;
 using ScreenProjectionChangeMonitorTest = AshTestBase;
 
 TEST_F(ScreenProjectionChangeMonitorTest, MirroringChangeTriggersCallback) {
-  CastConfigControllerMediaRouter cast_config;
+  CastConfigControllerMediaRouter cast_config(
+      TestingBrowserProcess::GetGlobal()
+          ->GetFeatures()
+          ->application_locale_storage());
   TestFuture<bool> monitor_future;
   ScreenProjectionChangeMonitor monitor(monitor_future.GetRepeatingCallback());
 
@@ -36,7 +42,10 @@ TEST_F(ScreenProjectionChangeMonitorTest, MirroringChangeTriggersCallback) {
 }
 
 TEST_F(ScreenProjectionChangeMonitorTest, ScreenSharingChangeTriggersCallback) {
-  CastConfigControllerMediaRouter cast_config;
+  CastConfigControllerMediaRouter cast_config(
+      TestingBrowserProcess::GetGlobal()
+          ->GetFeatures()
+          ->application_locale_storage());
   TestFuture<bool> monitor_future;
   ScreenProjectionChangeMonitor monitor(monitor_future.GetRepeatingCallback());
 
@@ -49,7 +58,10 @@ TEST_F(ScreenProjectionChangeMonitorTest, ScreenSharingChangeTriggersCallback) {
 }
 
 TEST_F(ScreenProjectionChangeMonitorTest, NoChangeDoesNotTriggerCallback) {
-  CastConfigControllerMediaRouter cast_config;
+  CastConfigControllerMediaRouter cast_config(
+      TestingBrowserProcess::GetGlobal()
+          ->GetFeatures()
+          ->application_locale_storage());
   TestFuture<bool> monitor_future;
   ScreenProjectionChangeMonitor monitor(monitor_future.GetRepeatingCallback());
 

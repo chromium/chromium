@@ -197,7 +197,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="PerformanceMonitor.AverageCPU8.Total{UsageScenario}"
-    units="1/100 %" expires_after="2025-08-17">
+    units="1/100 %" expires_after="2025-10-19">
   <owner>fdoray@chromium.org</owner>
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -209,7 +209,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PerformanceMonitor.AverageCPU8.{ProcessName}" units="1/100 %"
-    expires_after="2025-08-17">
+    expires_after="2025-10-19">
   <owner>fdoray@chromium.org</owner>
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -349,7 +349,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Power.AdaptiveChargingDelayDelta.{AdaptiveChargingState}.{OnTimeStatus}"
-    units="minutes" expires_after="2025-07-13">
+    units="minutes" expires_after="2025-10-19">
   <owner>dbasehore@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -493,7 +493,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.AmbientLightOnResume" units="lux"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>bkersten@chromium.org</owner>
   <owner>slangley@chromium.org</owner>
   <summary>
@@ -503,7 +503,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.AvgCpuLoad.{ProcessType}" units="%"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>eseckler@chromium.org</owner>
   <owner>khokhlov@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -527,22 +527,21 @@ chromium-metrics-reviews@google.com.
   <owner>mqg@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
-    The level of the backlight as a percentage when the privacy screen is in
-    {PrivacyScreenState} state and the device is powered by {PowerSource}.
-    Sampled every 30 seconds. Chrome OS only.
+    The level of the backlight as a percentage {PrivacyScreenState} when the
+    device is {PowerSource}. Sampled every 30 seconds. Chrome OS only.
   </summary>
   <token key="PrivacyScreenState">
-    <variant name=""
-        summary="All Chrome OS, irrespective of whether privacy screens are
-                 present, or privacy screen state."/>
+    <variant name="" summary=""/>
     <variant name="PrivacyScreenDisabled"
-        summary="Chrome OS with privacy screens only."/>
+        summary="with privacy screens disabled for ChromeOS devices with
+                 privacy screens only"/>
     <variant name="PrivacyScreenEnabled"
-        summary="Chrome OS with privacy screens only."/>
+        summary="with privacy screens enabled for ChromeOS devices with
+                 privacy screens only"/>
   </token>
   <token key="PowerSource">
-    <variant name="OnAC"/>
-    <variant name="OnBattery"/>
+    <variant name="OnAC" summary="on AC"/>
+    <variant name="OnBattery" summary="powered by battery"/>
   </token>
 </histogram>
 
@@ -699,7 +698,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Power.BatteryDischargeRateMilliwatts6{UsageScenario}{IntervalType}{BatterySaverMode}"
-    units="milliwatts" expires_after="2025-08-17">
+    units="milliwatts" expires_after="2025-10-19">
   <owner>etiennep@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
@@ -726,7 +725,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Power.BatteryDischargeRatePreciseMilliwatts{UsageScenario}{IntervalType}{BatterySaverMode}"
-    units="milliwatts" expires_after="2025-08-17">
+    units="milliwatts" expires_after="2025-10-19">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -755,7 +754,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Power.BatteryDischargeRateRelative5{UsageScenario}{IntervalType}{BatterySaverMode}"
-    units="hundredth of percent" expires_after="2025-08-17">
+    units="hundredth of percent" expires_after="2025-10-19">
   <owner>etiennep@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
@@ -845,7 +844,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatteryLife.{BatteryCapacityType}" units="minute"
-    expires_after="2025-08-03">
+    expires_after="2025-10-05">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -912,7 +911,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.ConnectedChargingPorts"
-    enum="PowerConnectedChargingPorts" expires_after="2025-04-10">
+    enum="PowerConnectedChargingPorts" expires_after="2026-04-10">
   <owner>bleung@chromium.org</owner>
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
@@ -974,7 +973,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.CpuTimeSecondsPerThreadType.{ProcessType}"
-    enum="CpuTimeMetricsThreadType" expires_after="2025-08-10">
+    enum="CpuTimeMetricsThreadType" expires_after="2025-10-12">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -1017,7 +1016,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.DarkResumeWakeDurationMs" units="ms"
-    expires_after="2025-04-10">
+    expires_after="2026-04-10">
   <owner>mka@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1030,7 +1029,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.DarkResumeWakeDurationMs.Other" units="ms"
-    expires_after="2025-04-10">
+    expires_after="2026-04-10">
   <owner>mka@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1043,7 +1042,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.DarkResumeWakeDurationMs.WiFi.Disconnect" units="ms"
-    expires_after="2025-04-10">
+    expires_after="2026-04-10">
   <owner>mka@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1056,7 +1055,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.DarkResumeWakeDurationMs.WiFi.Pattern" units="ms"
-    expires_after="2025-04-10">
+    expires_after="2026-04-10">
   <owner>mka@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1069,7 +1068,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.DarkResumeWakeDurationMs.WiFi.SSID" units="ms"
-    expires_after="2025-04-10">
+    expires_after="2026-04-10">
   <owner>mka@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1306,9 +1305,11 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(InputScenarioSuffix) -->
 
   <token key="InputScenario">
-    <variant name="_NoInput" summary="the user is not typing"/>
+    <variant name="_NoInput" summary="the user is not providing input"/>
+    <variant name="_Scroll" summary="the user scrolled"/>
+    <variant name="_Tap" summary="the user tapped but not scrolled"/>
     <variant name="_Typing"
-        summary="the user was typing for some part of the 30s interval"/>
+        summary="The user typed be neither tapped nor scrolled"/>
     <variant name="_UnknownInputScenario"
         summary="input state could not be detected"/>
   </token>
@@ -1680,7 +1681,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.PowerSupplyMaxPower" units="W"
-    expires_after="2025-04-10">
+    expires_after="2026-04-10">
   <owner>bleung@chromium.org</owner>
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
@@ -1695,7 +1696,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.PowerSupplyMaxVoltage" units="V"
-    expires_after="2025-04-10">
+    expires_after="2026-04-10">
   <owner>bleung@chromium.org</owner>
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
@@ -1778,7 +1779,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Power.SuspendDelay" units="seconds" expires_after="2025-08-10">
+<histogram name="Power.SuspendDelay" units="seconds" expires_after="2025-10-12">
   <owner>niwa@chromium.org</owner>
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>

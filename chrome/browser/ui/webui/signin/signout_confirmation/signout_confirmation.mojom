@@ -29,6 +29,10 @@ struct SignoutConfirmationData {
   string accept_button_label;
   string cancel_button_label;
   array<ExtensionInfo> account_extensions;
+
+  // If the user has unsynced data that is pending sync at the time the signout
+  // confirmation dialog was opened.
+  bool has_unsynced_data;
 };
 
 // Called from TS side of chrome://signout-confirmation (Renderer -> Browser)

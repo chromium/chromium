@@ -335,7 +335,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // |backdrop_filter_on_effect_node_dirty_| will be cleared.
   void UpdateCompositorFilterOperationsForBackdropFilter(
       CompositorFilterOperations& operations,
-      gfx::RRectF& backdrop_filter_bounds);
+      SkPath& backdrop_filter_bounds);
   void SetBackdropFilterOnEffectNodeDirty() {
     backdrop_filter_on_effect_node_dirty_ = true;
   }
@@ -369,7 +369,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   gfx::RectF FilterReferenceBox() const;
   std::optional<gfx::SizeF> FilterViewport() const;
   gfx::RectF BackdropFilterReferenceBox() const;
-  gfx::RRectF BackdropFilterBounds() const;
+  SkPath BackdropFilterBounds() const;
 
   void UpdateFilterReferenceBox();
   void UpdateFilters(StyleDifference,

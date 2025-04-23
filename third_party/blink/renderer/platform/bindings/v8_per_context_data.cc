@@ -132,6 +132,13 @@ v8::Local<v8::Function> V8PerContextData::ConstructorForTypeSlowCase(
       DCHECK(parent->parent_class);
       DCHECK(!parent->parent_class
                   ->is_skipped_in_interface_object_prototype_chain);
+
+      // We still need to initialize the interface object for the parent being
+      // skipped to ensure that the object is initialized properly. It will
+      // also populate the cache with the parent interface object, making the
+      // next call a cache hit.
+      std::ignore = ConstructorForType(parent);
+
       parent = parent->parent_class;
     }
     parent_interface_object = ConstructorForType(parent);

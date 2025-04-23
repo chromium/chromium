@@ -7,10 +7,11 @@
 #import "base/functional/bind.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_response.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_response_info.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_response_support.h"
 #import "ios/chrome/browser/overlays/model/test/fake_overlay_request_callback_installer.h"
-#import "ios/chrome/browser/overlays/model/test/overlay_test_macros.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator+subclassing.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
@@ -19,8 +20,8 @@
 
 namespace {
 // ConfigType and InfoType used in tests.
-DEFINE_TEST_OVERLAY_REQUEST_CONFIG(FakeConfig);
-DEFINE_TEST_OVERLAY_RESPONSE_INFO(DispatchInfo);
+DEFINE_STATELESS_OVERLAY_REQUEST_CONFIG(FakeConfig);
+DEFINE_STATELESS_OVERLAY_RESPONSE_INFO(DispatchInfo);
 }  // namespace
 
 // OverlayRequestMediator subclass used in tests.

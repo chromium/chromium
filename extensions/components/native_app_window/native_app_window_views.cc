@@ -46,11 +46,7 @@ void NativeAppWindowViews::Init(
       create_params.GetContentMaximumSize(gfx::Insets()));
   Observe(app_window_->web_contents());
 
-  // TODO(pbos): See if this can retain SetOwnedByWidget(true) and get deleted
-  // through WidgetDelegate::DeleteDelegate(). It's not clear to me how this
-  // ends up destructed, but the below preserves a previous DialogDelegate
-  // override that did not end with a direct `delete this;`.
-  SetOwnedByWidget(false);
+  // TODO(pbos): It's not clear to me how this ends up destructed.
   RegisterDeleteDelegateCallback(RegisterDeleteCallbackPassKey(),
                                  base::BindOnce(
                                      [](NativeAppWindowViews* dialog) {

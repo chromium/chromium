@@ -8,14 +8,15 @@
 #include <string>
 
 #include "chrome/browser/apps/platform_apps/audio_focus_web_contents_observer.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 
 namespace extensions {
@@ -32,10 +33,8 @@ void ChromeExtensionHostDelegate::OnExtensionHostCreated(
 
 void ChromeExtensionHostDelegate::OnMainFrameCreatedForBackgroundPage(
     ExtensionHost* host) {
-  ExtensionService* service =
-      ExtensionSystem::Get(host->browser_context())->extension_service();
-  if (service)
-    service->DidCreateMainFrameForBackgroundPage(host);
+  ExtensionRegistrar::Get(host->browser_context())
+      ->DidCreateMainFrameForBackgroundPage(host);
 }
 
 void ChromeExtensionHostDelegate::CreateTab(

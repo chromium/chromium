@@ -21,6 +21,7 @@
 #include "content/public/browser/web_contents_observer.h"
 
 class Browser;
+class PrefService;
 
 // Key-value mapping type for survey's product specific bits data.
 typedef std::map<std::string, bool> SurveyBitsData;
@@ -96,7 +97,7 @@ class HatsServiceDesktop : public HatsService {
     kNoLastSurveyTooRecent = 5,
     kNoBelowProbabilityLimit = 6,
     kNoTriggerStringMismatch = 7,
-    kNoNotRegularBrowser = 8,
+    kNoWrongBrowserType = 8,
     kNoIncognitoDisabled = 9,
     kNoCookiesBlocked = 10,            // Unused.
     kNoThirdPartyCookiesBlocked = 11,  // Unused.
@@ -182,11 +183,18 @@ class HatsServiceDesktop : public HatsService {
  private:
   FRIEND_TEST_ALL_PREFIXES(HatsServiceProbabilityOne, SingleHatsNextDialog);
 
+  PrefService* GetPrefsForHatsMetadata() const;
+
   // Remove |task| from the set of |pending_tasks_|.
   void RemoveTask(const DelayedSurveyTask& task);
 
   // Returns true is the survey trigger specified should be shown.
   bool ShouldShowSurvey(const std::string& trigger) const;
+
+  // Returns true is the requested browser type matches the actual browser type.
+  bool IsRightBrowserType(
+      Browser* browser,
+      hats::SurveyConfig::RequestedBrowserType requested_browser_type) const;
 
   void LaunchSurveyForBrowser(
       Browser* browser,

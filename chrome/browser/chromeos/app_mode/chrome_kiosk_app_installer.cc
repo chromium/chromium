@@ -22,13 +22,13 @@
 #include "base/syslog_logging.h"
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_external_loader_broker.h"
 #include "chrome/browser/chromeos/app_mode/startup_app_launcher_update_checker.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
-#include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/pending_extension_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/file_util.h"
@@ -254,8 +254,7 @@ void ChromeKioskAppInstaller::OnExtensionUpdateCheckFinished(
     // Reload the primary app to make sure any reference to the previous version
     // of the shared module, extension, etc will be cleaned up and the new
     // version will be loaded.
-    extensions::ExtensionSystem::Get(&profile_.get())
-        ->extension_service()
+    extensions::ExtensionRegistrar::Get(&profile_.get())
         ->ReloadExtension(primary_app_id());
 
     SYSLOG(INFO) << "Reloaded extension with id " << primary_app_id();

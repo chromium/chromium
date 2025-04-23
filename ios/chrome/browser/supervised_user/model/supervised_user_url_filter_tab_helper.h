@@ -29,8 +29,6 @@ class SupervisedUserURLFilterTabHelper
       delete;
   SupervisedUserURLFilterTabHelper& operator=(
       const SupervisedUserURLFilterTabHelper&) = delete;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_SUPERVISED_USER_URL_FILTER_TAB_HELPER_H_

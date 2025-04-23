@@ -7,18 +7,31 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol ApplicationCommands;
+class AuthenticationService;
 class Browser;
 @class ContentSuggestionsMetricsRecorder;
 @protocol NewTabPageActionsDelegate;
 class ImpressionLimitService;
 class OptimizationGuideService;
 class PrefService;
+@protocol PriceTrackedItemsCommands;
+class PushNotificationService;
+@protocol SnackbarCommands;
 @protocol TabResumptionHelperDelegate;
 @class TabResumptionItem;
 
 namespace signin {
 class IdentityManager;
 }
+
+namespace bookmarks {
+class BookmarkModel;
+}  // namespace bookmarks
+
+namespace commerce {
+class ShoppingService;
+}  // namespace commerce
 
 // Mediator for managing the state of the TabResumption Magic Stack module.
 @interface TabResumptionMediator : NSObject
@@ -36,6 +49,11 @@ class IdentityManager;
 @property(nonatomic, weak)
     ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
 
+// Dispatcher.
+@property(nonatomic, weak)
+    id<ApplicationCommands, PriceTrackedItemsCommands, SnackbarCommands>
+        dispatcher;
+
 // Default initializer.
 - (instancetype)
           initWithLocalState:(PrefService*)localState
@@ -44,6 +62,10 @@ class IdentityManager;
                      browser:(Browser*)browser
     optimizationGuideService:(OptimizationGuideService*)optimizationGuideService
       impressionLimitService:(ImpressionLimitService*)impressionLimitService
+             shoppingService:(commerce::ShoppingService*)shoppingService
+               bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+     pushNotificationService:(PushNotificationService*)pushNotificationService
+       authenticationService:(AuthenticationService*)authenticationService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

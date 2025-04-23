@@ -7,6 +7,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/font/font_api.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -15,19 +16,31 @@ namespace {
 NSString* const kLensTranslateErrorImage = @"lens_translate_error";
 
 // The size of the translate error image.
-const CGFloat kLensTranslateErrorImageSize = 60.0;
+const CGFloat kLensTranslateErrorImageSize = 56.0;
 
-// The lateral padding for the translate error view.
-const CGFloat kLateralPadding = 22.0;
+// The leading padding for the translate error view.
+const CGFloat kLeadingPadding = 24.0;
+
+// The trailing padding for the translate error view.
+const CGFloat kTrailingPadding = 52.0;
 
 // Top padding for the view content.
 const CGFloat kViewTopPadding = 36.0;
 
 // Ammount of spacing from the trailing edge of the image, in points.
-const CGFloat kImageHorizontalSpacing = 22.0;
+const CGFloat kImageHorizontalSpacing = 24.0;
 
 // The height of the translate error message.
-const CGFloat kPreferredContentHeight = 130.0;
+const CGFloat kPreferredContentHeight = 120.0;
+
+// The font size of the title.
+const CGFloat kTitleFontSize = 18;
+
+// The font size of the subtitle.
+const CGFloat kSubtitleFontSize = 12;
+
+// The extra space between the title label and the subtitle.
+const CGFloat kVerticalSpacing = 2;
 
 }  // namespace
 
@@ -71,7 +84,7 @@ const CGFloat kPreferredContentHeight = 130.0;
   LayoutSides sides =
       LayoutSides::kTop | LayoutSides::kTrailing | LayoutSides::kLeading;
   NSDirectionalEdgeInsets insets = NSDirectionalEdgeInsetsMake(
-      kViewTopPadding, kLateralPadding, 0, kLateralPadding);
+      kViewTopPadding, kLeadingPadding, 0, kTrailingPadding);
   AddSameConstraintsToSidesWithInsets(mainStackView, self.view, sides, insets);
 }
 
@@ -83,7 +96,7 @@ const CGFloat kPreferredContentHeight = 130.0;
   label.adjustsFontForContentSizeCategory = YES;
   label.lineBreakMode = NSLineBreakByWordWrapping;
   label.numberOfLines = 0;
-  label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleTitle3];
+  label.font = ios::provider::GetBrandedProductRegularFont(kTitleFontSize);
   label.text =
       l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_TRANSLATE_ERROR_TITLE);
   label.textColor = [UIColor colorNamed:kTextPrimaryColor];
@@ -96,9 +109,26 @@ const CGFloat kPreferredContentHeight = 130.0;
   label.adjustsFontForContentSizeCategory = YES;
   label.lineBreakMode = NSLineBreakByWordWrapping;
   label.numberOfLines = 0;
-  label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCallout];
-  label.text =
+
+  NSString* labelText =
       l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_TRANSLATE_ERROR_SUBTITLE);
+  NSMutableAttributedString* attributedString =
+      [[NSMutableAttributedString alloc] initWithString:labelText];
+
+  NSMutableParagraphStyle* paragraphStyle =
+      [[NSMutableParagraphStyle alloc] init];
+  [paragraphStyle setLineSpacing:kVerticalSpacing];
+
+  NSDictionary* attributes = @{
+    NSFontAttributeName :
+        ios::provider::GetBrandedProductRegularFont(kSubtitleFontSize),
+    NSParagraphStyleAttributeName : paragraphStyle,
+  };
+
+  [attributedString addAttributes:attributes
+                            range:NSMakeRange(0, labelText.length)];
+
+  label.attributedText = attributedString;
   label.textColor =
       [UIColor colorNamed:kLensOverlayConsentDialogDescriptionColor];
   return label;
@@ -107,6 +137,7 @@ const CGFloat kPreferredContentHeight = 130.0;
 - (UIImageView*)createImageView {
   UIImageView* imageView = [[UIImageView alloc] init];
   imageView.translatesAutoresizingMaskIntoConstraints = NO;
+  imageView.contentMode = UIViewContentModeScaleAspectFit;
   imageView.image = [UIImage imageNamed:kLensTranslateErrorImage];
   return imageView;
 }

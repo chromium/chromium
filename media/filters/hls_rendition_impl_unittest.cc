@@ -607,7 +607,7 @@ TEST_F(HlsRenditionImplUnittest, TestPauseAndUnpause) {
   auto parsed = hls::MediaPlaylist::Parse(
       kSecondFetchLivePlaylist, GURL("http://example.com"), 3, nullptr);
   CHECK(parsed.has_value());
-  rendition->UpdatePlaylist(std::move(parsed).value(), std::nullopt);
+  rendition->UpdatePlaylist(std::move(parsed).value());
 
   // Once again, the pipeline finishes it's seeking, and a new media CheckState
   // event happens, this time for 200 seconds. Now the media_time is way past
@@ -795,11 +795,11 @@ TEST_F(HlsRenditionImplUnittest, TestAES128Content) {
 
   // Update the playlist. The segment stream should keep around media_3.ts,
   // but follow it up with mediax_4.ts
-  auto parsed = hls::MediaPlaylist::Parse(
-      kAESContentReplacement, GURL("https://example.com/manifest.m3u8"), 3,
-      nullptr);
+  GURL manifest_uri = GURL("https://example.com/manifest.m3u8");
+  auto parsed = hls::MediaPlaylist::Parse(kAESContentReplacement, manifest_uri,
+                                          3, nullptr);
   CHECK(parsed.has_value());
-  rendition->UpdatePlaylist(std::move(parsed).value(), std::nullopt);
+  rendition->UpdatePlaylist(std::move(parsed).value());
 
   // The encryption data is the same for segment 3, since it didn't change.
   RespondWithRangeTwice(base::Seconds(0), base::Seconds(2), base::Seconds(0),

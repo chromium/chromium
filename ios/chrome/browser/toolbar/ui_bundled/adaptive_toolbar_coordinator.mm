@@ -116,7 +116,7 @@
 
 - (void)updateToolbarForSideSwipeSnapshot:(web::WebState*)webState {
   BOOL isNonIncognitoNTP =
-      !self.profile->IsOffTheRecord() && IsVisibleURLNewTabPage(webState);
+      !self.isOffTheRecord && IsVisibleURLNewTabPage(webState);
 
   [self.mediator updateConsumerForWebState:webState];
   [self.viewController updateForSideSwipeSnapshot:isNonIncognitoNTP];
@@ -179,7 +179,7 @@
 #pragma mark - Protected
 
 - (ToolbarButtonFactory*)buttonFactoryWithType:(ToolbarType)type {
-  BOOL isIncognito = self.profile->IsOffTheRecord();
+  BOOL isIncognito = self.isOffTheRecord;
   ToolbarStyle style =
       isIncognito ? ToolbarStyle::kIncognito : ToolbarStyle::kNormal;
 

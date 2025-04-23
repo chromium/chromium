@@ -104,7 +104,6 @@ enum CSPDirectiveName {
   ObjectSrc,
   ReportTo,
   ReportURI,
-  RequireSRIFor,
   RequireTrustedTypesFor,
   Sandbox,
   ScriptSrc,
@@ -117,11 +116,6 @@ enum CSPDirectiveName {
   TrustedTypes,
   UpgradeInsecureRequests,
   WorkerSrc,
-};
-
-enum CSPRequireSRIFor {
-  None,
-  Script,
 };
 
 enum CSPRequireTrustedTypesFor {
@@ -181,8 +175,6 @@ struct ContentSecurityPolicy {
 
   // Set of reporting endpoints to which violation reports are sent.
   array<string> report_endpoints;
-
-  CSPRequireSRIFor require_sri_for = CSPRequireSRIFor.None;
 
   // The parsed value of the directive 'require-trusted-types-for'.
   // https://w3c.github.io/trusted-types/dist/spec/#require-trusted-types-for-csp-directive

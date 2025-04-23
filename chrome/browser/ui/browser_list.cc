@@ -23,6 +23,7 @@
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list_enumerator.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
 
@@ -70,6 +71,28 @@ Browser* BrowserList::GetLastActive() const {
     return *(browsers_ordered_by_activation_.rbegin());
   }
   return nullptr;
+}
+
+void BrowserList::ForEachCurrentBrowser(
+    base::FunctionRef<void(Browser*)> on_browser) {
+  // Make a copy of the BrowserList to simplify the case where we need to
+  // add or remove a Browser during the loop.
+  constexpr bool kEnumerateNewBrowser = false;
+  BrowserListEnumerator browser_list_copy(kEnumerateNewBrowser);
+  while (!browser_list_copy.empty()) {
+    on_browser(browser_list_copy.Next());
+  }
+}
+
+void BrowserList::ForEachCurrentAndNewBrowser(
+    base::FunctionRef<void(Browser*)> on_browser) {
+  // Make a copy of the BrowserList to simplify the case where we need to
+  // add or remove a Browser during the loop.
+  constexpr bool kEnumerateNewBrowser = true;
+  BrowserListEnumerator browser_list_copy(kEnumerateNewBrowser);
+  while (!browser_list_copy.empty()) {
+    on_browser(browser_list_copy.Next());
+  }
 }
 
 // static

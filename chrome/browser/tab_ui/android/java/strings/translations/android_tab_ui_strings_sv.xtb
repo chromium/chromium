@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="sv">
+<translation id="1293272072740285747">Behåll gruppen om du vill lägga till flikar senare eller radera den om den inte längre behövs.
+
+Om du raderar den förlorar alla omedelbart åtkomst till flikgruppen <ph name="TITLE_OF_GROUP" /> och den tas bort från alla enheter.</translation>
+<translation id="1340839264183302272">Lämna grupp</translation>
+<translation id="1419023007528516122">Detta raderar gruppen permanent från enheten</translation>
+<translation id="1501480321619201731">Ta bort grupp</translation>
+<translation id="2677748264148917807">Lämna</translation>
+<translation id="3547352561153509682">Detta raderar gruppen från alla enheter som är inloggade på <ph name="USER_EMAIL" /></translation>
+<translation id="381219490185664296">Vill du ta bort grupperingen av flikgruppen?</translation>
+<translation id="4139634748112164403">Flikarna förblir öppna på den här enheten men gruppen raderas permanent</translation>
+<translation id="4431937619879060901">Du förlorar omedelbart åtkomst till flikgruppen <ph name="GROUP_NAME" /> och den raderas från alla dina enheter</translation>
+<translation id="4460014764210899310">Ta bort gruppering</translation>
+<translation id="4777866634702576038">Vill du radera flikgruppen?</translation>
+<translation id="5094423602314093681">Vill du ta bort flikarna och radera gruppen?</translation>
+<translation id="5647702255748985085">Vill du lämna gruppen?</translation>
+<translation id="742664698522525515">Vill du behålla gruppen?</translation>
+<translation id="750886945254958667">Behåll gruppen om du vill lägga till flikar senare eller lämna den om du inte längre vill ha åtkomst till den</translation>
+<translation id="8261506727792406068">Radera</translation>
+<translation id="870736955561925754">Vill du stänga fliken och radera gruppen?</translation>
+<translation id="8804742093141782941">Behåll grupp</translation>
+<translation id="9169141410816678175">Alla förlorar omedelbart åtkomst till flikgruppen <ph name="GROUP_NAME" /> och den raderas från alla enheter</translation>
+<translation id="9216898458513705996">Flikarna förblir öppna på den här enheten men gruppen raderas från alla enheter där du är inloggad på <ph name="USER_EMAIL" /></translation>
+<translation id="94870150074703282">Vill du ta bort gruppen?</translation>
+</translationbundle>

@@ -168,12 +168,6 @@ if (is_apple) {
       "mock_apple_keychain.h",
     ]
 
-    if (is_mac) {
-      sources += [ "mock_apple_keychain_mac.cc" ]
-    } else if (is_ios) {
-      sources += [ "mock_apple_keychain_ios.cc" ]
-    }
-
     deps = [
       ":crypto",
       "//base",

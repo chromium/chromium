@@ -15,7 +15,7 @@ source_set("page_action") {
     "page_action_container_view.h",
     "page_action_controller.h",
     "page_action_observer.h",
-    "page_action_properties.h",
+    "page_action_properties_provider.h",
     "page_action_triggers.h",
     "page_action_view.h",
     "page_action_view_params.h",
@@ -24,11 +24,13 @@ source_set("page_action") {
   sources = [
     "page_action_container_view.cc",
     "page_action_controller.cc",
+    "page_action_metrics_recorder.cc",
+    "page_action_metrics_recorder.h",
     "page_action_model.cc",
     "page_action_model.h",
     "page_action_model_observer.h",
     "page_action_observer.cc",
-    "page_action_properties.cc",
+    "page_action_properties_provider.cc",
     "page_action_triggers.cc",
     "page_action_view.cc",
   ]
@@ -36,6 +38,7 @@ source_set("page_action") {
   public_deps = [
     "//base",
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/page_action:icon_type",
     "//components/metrics/structured:structured_events",
@@ -54,6 +57,7 @@ source_set("unit_tests") {
     "page_action_container_view_unittest.cc",
     "page_action_controller_unittest.cc",
     "page_action_icon_view_unittest.cc",
+    "page_action_metric_recorder_unittest.cc",
     "page_action_model_unittest.cc",
     "page_action_observer_unittest.cc",
     "page_action_view_unittest.cc",
@@ -61,8 +65,10 @@ source_set("unit_tests") {
     "test_support/fake_tab_interface.h",
     "test_support/mock_page_action_model.cc",
     "test_support/mock_page_action_model.h",
-    "test_support/page_action_properties.cc",
-    "test_support/page_action_properties.h",
+    "test_support/noop_page_action_metrics_recorder.cc",
+    "test_support/noop_page_action_metrics_recorder.h",
+    "test_support/test_page_action_properties_provider.cc",
+    "test_support/test_page_action_properties_provider.h",
   ]
 
   deps = [

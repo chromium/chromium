@@ -76,6 +76,11 @@ void AccountManagementTypeMetricsRecorder::OnRefreshTokensLoaded() {
   observation_.Reset();
 }
 
+void AccountManagementTypeMetricsRecorder::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  observation_.Reset();
+}
+
 void AccountManagementTypeMetricsRecorder::QueryAccountTypes(
     IdentityManager& identity_manager) {
   CHECK(identity_manager.AreRefreshTokensLoaded());

@@ -4,12 +4,23 @@
 
 #include "chrome/browser/ui/tabs/existing_comparison_table_sub_menu_model.h"
 
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include <memory>
+
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/tabs/test_util.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_utils.h"
-#include "components/commerce/core/mojom/product_specifications.mojom.h"
-#include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/product_specifications/mock_product_specifications_service.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace commerce {
 namespace {
@@ -24,80 +35,103 @@ const int kFullItemCount = 4;
 
 }  // namespace
 
-class ExistingComparisonTableSubMenuModelTest
-    : public BrowserWithTestWindowTest {
+class ExistingComparisonTableSubMenuModelTest : public testing::Test {
  public:
-  ExistingComparisonTableSubMenuModelTest() {
-    test_features_.InitAndEnableFeature(commerce::kProductSpecifications);
-  }
+  ExistingComparisonTableSubMenuModelTest() = default;
 
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-
-    product_specs_service =
+    features_.InitAndEnableFeature(commerce::kProductSpecifications);
+    profile_ = std::make_unique<TestingProfile>();
+    delegate_ = std::make_unique<TestTabStripModelDelegate>();
+    tab_strip_model_ =
+        std::make_unique<TabStripModel>(delegate_.get(), profile_.get());
+    product_specifications_service_ =
         std::make_unique<MockProductSpecificationsService>();
-    ON_CALL(*product_specs_service, GetAllProductSpecifications())
-        .WillByDefault(testing::Return(kProductSpecsSets));
+    product_specifications_data_ = std::vector<ProductSpecificationsSet>{
+        ProductSpecificationsSet(
+            base::Uuid::GenerateRandomV4().AsLowercaseString(), 0, 0,
+            {
+                GURL(kTestUrl1),
+            },
+            "Set 1"),
+        ProductSpecificationsSet(
+            base::Uuid::GenerateRandomV4().AsLowercaseString(), 0, 0,
+            {
+                GURL(kTestUrl1),
+                GURL(kTestUrl2),
+            },
+            "Set 2")};
+
+    ON_CALL(*product_specifications_service_, GetAllProductSpecifications())
+        .WillByDefault(testing::Return(product_specifications_data_));
   }
 
-  TabStripModel* tab_strip() { return browser()->tab_strip_model(); }
+  void AddTab(GURL url) {
+    std::unique_ptr<content::WebContents> web_contents =
+        content::WebContentsTester::CreateTestWebContents(profile_.get(),
+                                                          nullptr);
+    content::WebContentsTester::For(web_contents.get())
+        ->SetLastCommittedURL(url);
 
- protected:
-  base::test::ScopedFeatureList test_features_;
-  std::unique_ptr<MockProductSpecificationsService> product_specs_service;
+    tab_strip_model()->AppendTab(
+        std::make_unique<tabs::TabModel>(std::move(web_contents),
+                                         tab_strip_model()),
+        /*foreground=*/true);
+  }
 
-  const std::vector<ProductSpecificationsSet> kProductSpecsSets = {
-      ProductSpecificationsSet(
-          base::Uuid::GenerateRandomV4().AsLowercaseString(),
-          0,
-          0,
-          {
-              GURL(kTestUrl1),
-          },
-          "Set 1"),
-      ProductSpecificationsSet(
-          base::Uuid::GenerateRandomV4().AsLowercaseString(),
-          0,
-          0,
-          {
-              GURL(kTestUrl1),
-              GURL(kTestUrl2),
-          },
-          "Set 2")};
+  TabStripModel* tab_strip_model() { return tab_strip_model_.get(); }
+  MockProductSpecificationsService* product_specifications_service() {
+    return product_specifications_service_.get();
+  }
+  std::vector<ProductSpecificationsSet> product_specifications_data() {
+    return product_specifications_data_;
+  }
+
+ private:
+  content::BrowserTaskEnvironment task_environment;
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+  tabs::PreventTabFeatureInitialization prevent_;
+  base::test::ScopedFeatureList features_;
+  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<TestTabStripModelDelegate> delegate_;
+  std::unique_ptr<TabStripModel> tab_strip_model_;
+  std::unique_ptr<MockProductSpecificationsService>
+      product_specifications_service_;
+  std::vector<ProductSpecificationsSet> product_specifications_data_;
 };
 
 TEST_F(ExistingComparisonTableSubMenuModelTest, ShouldShowSubmenu_NoSets) {
-  ON_CALL(*product_specs_service, GetAllProductSpecifications())
+  ON_CALL(*product_specifications_service(), GetAllProductSpecifications())
       .WillByDefault(testing::Return(std::vector<ProductSpecificationsSet>()));
 
   ASSERT_FALSE(ExistingComparisonTableSubMenuModel::ShouldShowSubmenu(
-      GURL(kTestUrl3), product_specs_service.get()));
+      GURL(kTestUrl3), product_specifications_service()));
 }
 
 TEST_F(ExistingComparisonTableSubMenuModelTest,
        ShouldShowSubmenu_NoSetsContainUrl) {
   ASSERT_TRUE(ExistingComparisonTableSubMenuModel::ShouldShowSubmenu(
-      GURL(kTestUrl3), product_specs_service.get()));
+      GURL(kTestUrl3), product_specifications_service()));
 }
 
 TEST_F(ExistingComparisonTableSubMenuModelTest,
        ShouldShowSubmenu_SomeSetsContainUrl) {
   ASSERT_TRUE(ExistingComparisonTableSubMenuModel::ShouldShowSubmenu(
-      GURL(kTestUrl2), product_specs_service.get()));
+      GURL(kTestUrl2), product_specifications_service()));
 }
 
 TEST_F(ExistingComparisonTableSubMenuModelTest,
        ShouldShowSubmenu_AllSetsContainUrl) {
   ASSERT_FALSE(ExistingComparisonTableSubMenuModel::ShouldShowSubmenu(
-      GURL(kTestUrl1), product_specs_service.get()));
+      GURL(kTestUrl1), product_specifications_service()));
 }
 
 TEST_F(ExistingComparisonTableSubMenuModelTest, BuildMenuItems_MultipleSets) {
-  AddTab(browser(), GURL(kTestUrl3));
-  tab_strip()->SelectTabAt(0);
+  AddTab(GURL(kTestUrl3));
+  tab_strip_model()->SelectTabAt(0);
 
   ExistingComparisonTableSubMenuModel sub_menu_model(
-      nullptr, nullptr, tab_strip(), 0, product_specs_service.get());
+      nullptr, nullptr, tab_strip_model(), 0, product_specifications_service());
 
   ASSERT_TRUE(sub_menu_model.GetItemCount() == kFullItemCount);
   ASSERT_TRUE(sub_menu_model.GetLabelAt(2) == u"Set 1");
@@ -106,11 +140,11 @@ TEST_F(ExistingComparisonTableSubMenuModelTest, BuildMenuItems_MultipleSets) {
 
 TEST_F(ExistingComparisonTableSubMenuModelTest,
        BuildMenuItems_SomeSetsContainUrl) {
-  AddTab(browser(), GURL(kTestUrl2));
-  tab_strip()->SelectTabAt(0);
+  AddTab(GURL(kTestUrl2));
+  tab_strip_model()->SelectTabAt(0);
 
   ExistingComparisonTableSubMenuModel sub_menu_model(
-      nullptr, nullptr, tab_strip(), 0, product_specs_service.get());
+      nullptr, nullptr, tab_strip_model(), 0, product_specifications_service());
 
   // New item, separator, and one table item.
   ASSERT_TRUE(sub_menu_model.GetItemCount() == kFullItemCount - 1);
@@ -118,19 +152,20 @@ TEST_F(ExistingComparisonTableSubMenuModelTest,
 }
 
 TEST_F(ExistingComparisonTableSubMenuModelTest, UrlAddedToExistingSet) {
-  AddTab(browser(), GURL(kTestUrl3));
-  tab_strip()->SelectTabAt(0);
+  AddTab(GURL(kTestUrl3));
+  tab_strip_model()->SelectTabAt(0);
 
-  const auto& title = tab_strip()->GetWebContentsAt(0)->GetTitle();
+  const auto& title = tab_strip_model()->GetWebContentsAt(0)->GetTitle();
 
   ExistingComparisonTableSubMenuModel sub_menu_model(
-      nullptr, nullptr, tab_strip(), 0, product_specs_service.get());
+      nullptr, nullptr, tab_strip_model(), 0, product_specifications_service());
   ASSERT_TRUE(sub_menu_model.GetItemCount() == kFullItemCount);
 
-  ON_CALL(*product_specs_service, GetSetByUuid(kProductSpecsSets[0].uuid()))
-      .WillByDefault(testing::Return(kProductSpecsSets[0]));
-  EXPECT_CALL(*product_specs_service,
-              SetUrls(kProductSpecsSets[0].uuid(),
+  ON_CALL(*product_specifications_service(),
+          GetSetByUuid(product_specifications_data()[0].uuid()))
+      .WillByDefault(testing::Return(product_specifications_data()[0]));
+  EXPECT_CALL(*product_specifications_service(),
+              SetUrls(product_specifications_data()[0].uuid(),
                       testing::ElementsAre(UrlInfo(GURL(kTestUrl1), u""),
                                            UrlInfo(GURL(kTestUrl3), title))))
       .Times(1);

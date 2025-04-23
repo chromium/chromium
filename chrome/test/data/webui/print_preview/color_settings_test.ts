@@ -6,7 +6,7 @@ import 'chrome://print/print_preview.js';
 
 import type {PrintPreviewColorSettingsElement, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {selectOption} from './print_preview_test_utils.js';
 
@@ -21,26 +21,26 @@ suite('ColorSettingsTest', function() {
     document.body.appendChild(model);
 
     colorSection = document.createElement('print-preview-color-settings');
-    colorSection.settings = model.settings;
     colorSection.disabled = false;
-    fakeDataBind(model, colorSection, 'settings');
     model.set('settings.color.available', true);
     document.body.appendChild(colorSection);
+    return microtasksFinished();
   });
 
   // Tests that setting the setting updates the UI.
-  test('set setting', () => {
-    const select = colorSection.shadowRoot!.querySelector('select')!;
+  test('set setting', async () => {
+    const select = colorSection.shadowRoot.querySelector('select')!;
     assertEquals('color', select.value);
 
     colorSection.setSetting('color', false);
+    await microtasksFinished();
     assertEquals('bw', select.value);
   });
 
   // Tests that selecting a new option in the dropdown updates the setting.
   test('select option', async () => {
     // Verify that the selected option and names are as expected.
-    const select = colorSection.shadowRoot!.querySelector('select')!;
+    const select = colorSection.shadowRoot.querySelector('select')!;
     assertEquals('color', select.value);
     assertTrue(colorSection.getSettingValue('color') as boolean);
     assertFalse(colorSection.getSetting('color').setFromUi);

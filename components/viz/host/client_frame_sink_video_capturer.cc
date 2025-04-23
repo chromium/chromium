@@ -39,6 +39,17 @@ void ClientFrameSinkVideoCapturer::SetFormat(media::VideoPixelFormat format) {
   capturer_remote_->SetFormat(format);
 }
 
+void ClientFrameSinkVideoCapturer::SetAnimationFpsLockIn(
+    bool enabled,
+    float majority_damaged_pixel_min_ratio) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  animated_content_sampler_enabled_ = enabled;
+  majority_damaged_pixel_min_ratio_ = majority_damaged_pixel_min_ratio;
+  capturer_remote_->SetAnimationFpsLockIn(enabled,
+                                          majority_damaged_pixel_min_ratio);
+}
+
 void ClientFrameSinkVideoCapturer::SetMinCapturePeriod(
     base::TimeDelta min_capture_period) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -206,6 +217,10 @@ void ClientFrameSinkVideoCapturer::EstablishConnection() {
     capturer_remote_->SetMinCapturePeriod(*min_capture_period_);
   if (min_size_change_period_)
     capturer_remote_->SetMinSizeChangePeriod(*min_size_change_period_);
+  if (animated_content_sampler_enabled_ && majority_damaged_pixel_min_ratio_) {
+    capturer_remote_->SetAnimationFpsLockIn(*animated_content_sampler_enabled_,
+                                            *majority_damaged_pixel_min_ratio_);
+  }
   if (resolution_constraints_) {
     capturer_remote_->SetResolutionConstraints(
         resolution_constraints_->min_size, resolution_constraints_->max_size,

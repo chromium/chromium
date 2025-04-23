@@ -117,15 +117,7 @@ public class AppMenuItemViewBinderRenderTest {
                             new LayoutViewBuilder(R.layout.title_button_menu_item),
                             AppMenuItemViewBinder::bindTitleButtonItem);
                     mModelListAdapter.registerType(
-                            AppMenuItemType.THREE_BUTTON_ROW,
-                            new LayoutViewBuilder(R.layout.icon_row_menu_item),
-                            AppMenuItemViewBinder::bindIconRowItem);
-                    mModelListAdapter.registerType(
-                            AppMenuItemType.FOUR_BUTTON_ROW,
-                            new LayoutViewBuilder(R.layout.icon_row_menu_item),
-                            AppMenuItemViewBinder::bindIconRowItem);
-                    mModelListAdapter.registerType(
-                            AppMenuItemType.FIVE_BUTTON_ROW,
+                            AppMenuItemType.BUTTON_ROW,
                             new LayoutViewBuilder(R.layout.icon_row_menu_item),
                             AppMenuItemViewBinder::bindIconRowItem);
                 });
@@ -230,16 +222,14 @@ public class AppMenuItemViewBinderRenderTest {
                         .build();
 
         ModelListAdapter.ModelList subList = new ModelListAdapter.ModelList();
-        int menutype = AppMenuItemType.THREE_BUTTON_ROW;
+        int menutype = AppMenuItemType.BUTTON_ROW;
         createIconMenuItem(subList, subId1, titleCondensed1, icon1, enabled);
         createIconMenuItem(subList, subId2, titleCondensed2, icon2, enabled);
         createIconMenuItem(subList, subId3, titleCondensed3, icon3, enabled);
         if (subId4 != View.NO_ID) {
             createIconMenuItem(subList, subId4, titleCondensed4, icon4, enabled);
-            menutype = AppMenuItemType.FOUR_BUTTON_ROW;
             if (subId5 != View.NO_ID) {
                 createIconMenuItem(subList, subId5, titleCondensed5, icon5, enabled);
-                menutype = AppMenuItemType.FIVE_BUTTON_ROW;
             }
         }
 

@@ -330,12 +330,15 @@ void GaiaScreen::OnGetAuthFactorsConfiguration(
         config.HasConfiguredFactor(cryptohome::AuthFactorType::kRecovery);
     auto* password_factor =
         config.FindFactorByType(cryptohome::AuthFactorType::kPassword);
-    is_gaia_password_configured =
-        password_factor && auth::IsGaiaPassword(*password_factor);
+    if (password_factor != nullptr) {
+      is_gaia_password_configured =
+          password_factor && auth::IsGaiaPassword(*password_factor);
+    }
   }
 
   // Disallow passwordless login when Gaia password is configured during
   // reauthentication or recovery flow.
+  CHECK(context());
   auto flow = context()->knowledge_factor_setup.auth_setup_flow;
   if ((flow == WizardContext::AuthChangeFlow::kReauthentication ||
        flow == WizardContext::AuthChangeFlow::kRecovery) &&
@@ -344,12 +347,18 @@ void GaiaScreen::OnGetAuthFactorsConfiguration(
   }
 
   const AccountId& account_id = user_context->GetAccountId();
-  WizardContext::GaiaPath& gaia_path = LoginDisplayHost::default_host()
-                                           ->GetWizardContext()
-                                           ->gaia_config.gaia_path;
-  WizardContext::GaiaScreenMode& screen_mode = LoginDisplayHost::default_host()
-                                                   ->GetWizardContext()
-                                                   ->gaia_config.screen_mode;
+  CHECK(account_id.is_valid());
+
+  LoginDisplayHost* login_display_host = LoginDisplayHost::default_host();
+  CHECK(login_display_host);
+
+  WizardContext* wizard_context = login_display_host->GetWizardContext();
+  CHECK(wizard_context);
+
+  WizardContext::GaiaConfig& gaia_config = wizard_context->gaia_config;
+  WizardContext::GaiaPath& gaia_path = gaia_config.gaia_path;
+  WizardContext::GaiaScreenMode& screen_mode = gaia_config.screen_mode;
+
   if (GaiaScreenHandler::GetGaiaScreenMode(account_id.GetUserEmail()) ==
       WizardContext::GaiaScreenMode::kSamlRedirect) {
     gaia_path = WizardContext::GaiaPath::kSamlRedirect;

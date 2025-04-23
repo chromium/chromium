@@ -482,7 +482,8 @@ class AvdConfig:
 
   def HasSnapshot(self, snapshot_name):
     """Check if a given snapshot exists or not."""
-    snapshot_path = os.path.join(self._avd_dir, 'snapshots', snapshot_name)
+    snapshot_path = os.path.join(self._avd_dir, 'snapshots', snapshot_name,
+                                 'ram.bin')
     return os.path.exists(snapshot_path)
 
   def Create(self,
@@ -1210,7 +1211,7 @@ class _AvdInstance:
                                        'listen_for_serial'):
           self._emulator_serial = timeout_retry.Run(
               listen_for_serial,
-              timeout=300 if is_slow_start else 60,
+              timeout=300 if is_slow_start else 120,
               retries=retries,
               args=[sock])
           logging.info('%s started', self._emulator_serial)

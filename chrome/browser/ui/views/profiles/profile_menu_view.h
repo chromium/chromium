@@ -38,9 +38,16 @@ class Browser;
 
 // This bubble view is displayed when the user clicks on the avatar button.
 // It displays a list of profiles and allows users to switch between profiles.
+//
+// If `explicit_signin_access_point` is provided, it will be used as the access
+// point for the signin (or sync) flow. This is used to track the real source of
+// the signin (or sync), e.g. history sync opt-in identity pill promo.
 class ProfileMenuView : public ProfileMenuViewBase {
  public:
-  ProfileMenuView(views::Button* anchor_button, Browser* browser);
+  ProfileMenuView(views::Button* anchor_button,
+                  Browser* browser,
+                  std::optional<signin_metrics::AccessPoint>
+                      explicit_signin_access_point = std::nullopt);
   ~ProfileMenuView() override;
 
   ProfileMenuView(const ProfileMenuView&) = delete;
@@ -48,7 +55,6 @@ class ProfileMenuView : public ProfileMenuViewBase {
 
   // ProfileMenuViewBase:
   void BuildMenu() override;
-  gfx::ImageSkia GetSyncIcon() const override;
 
  private:
   friend class ProfileMenuViewExtensionsTest;
@@ -100,23 +106,12 @@ class ProfileMenuView : public ProfileMenuViewBase {
       const ProfileAttributesEntry& entry);
   void BuildIdentityWithCallToAction();
 
-  // TODO(crbug.com/370473765): Delete these functions after
-  // `switches::IsImprovedSigninUIOnDesktopEnabled()` is launched.
-  void BuildIdentity();
-  void BuildAutofillButtons();
-  void BuildSyncInfo();
-
   // Gets the profiles to be displayed in the "Other profiles" section. Does not
   // include the current profile.
-  // When `switches::IsImprovedSigninUIOnDesktopEnabled()` returns true, the
-  // guest profile is never shown in this section. It is shown in the profile
-  // management section instead.
   void GetProfilesForOtherProfilesSection(
-      std::vector<ProfileAttributesEntry*>& available_profiles,
-      bool& show_guest_in_other_profiles_section) const;
+      std::vector<ProfileAttributesEntry*>& available_profiles) const;
   void BuildOtherProfilesSection(
-      const std::vector<ProfileAttributesEntry*>& available_profiles,
-      bool show_guest_in_other_profiles_section);
+      const std::vector<ProfileAttributesEntry*>& available_profiles);
 
   void BuildProfileManagementFeatureButtons();
 
@@ -126,6 +121,8 @@ class ProfileMenuView : public ProfileMenuViewBase {
   // A profile switcher object needed if the user triggers opening other
   // profile in a web app.
   std::optional<WebAppProfileSwitcher> app_profile_switcher_;
+
+  std::optional<signin_metrics::AccessPoint> explicit_signin_access_point_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MENU_VIEW_H_

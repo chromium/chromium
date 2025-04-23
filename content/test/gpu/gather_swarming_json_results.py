@@ -128,7 +128,7 @@ def GatherResults(bot, build, step):
   json_output = FindStepLogURL(build_json['steps'], step, 'json.output')
   if not json_output:
     raise ValueError(
-        'Unable to find json.output from step starting with %s' % step)
+        f'Unable to find json.output from step starting with {step}')
   logging.debug('json.output for step starting with %s: %s', step, json_output)
 
   merged_json = JsonLoadFromUrl(json_output)

@@ -117,14 +117,9 @@ TEST(ToStringTest, Pointer) {
   int i = 42;
   std::string result_string = ToString(&i);
 
-  // The result of ToString() on a pointer is a string that begins with "0x" on
-  // all platforms except for Windows...
+  // The result of ToString() on a pointer is a string that begins with "0x".
   ASSERT_GT(result_string.size(), 2);
-#if BUILDFLAG(IS_WIN)
-  EXPECT_NE(result_string.substr(0, 2), "0x");
-#else
   EXPECT_EQ(result_string.substr(0, 2), "0x");
-#endif
 
   // ... and whose contents is the hex representation of the value of the actual
   // pointer value.

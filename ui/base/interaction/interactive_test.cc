@@ -67,15 +67,6 @@ InteractionSequence::StepBuilder InteractiveTestApi::SelectMenuItem(
             test->test_util().SelectMenuItem(el, input_type));
       },
       input_type, base::Unretained(this)));
-
-  // TODO(https://crbug.com/359252812): On Linux, sometimes a SelectMenuItem is
-  // interrupted by a spurious focus change, even on tests designed to run
-  // single-thread, single-process. Once the culprit has been tracked down and
-  // eliminated, remove this #if.
-#if BUILDFLAG(IS_LINUX)
-  builder.SetStepStartMode(InteractionSequence::StepStartMode::kImmediate);
-#endif
-
   return builder;
 }
 
@@ -100,18 +91,23 @@ InteractionSequence::StepBuilder InteractiveTestApi::DoDefaultAction(
 InteractionSequence::StepBuilder InteractiveTestApi::SelectTab(
     ElementSpecifier tab_collection,
     size_t tab_index,
-    InputType input_type) {
+    InputType input_type,
+    std::optional<size_t> expected_index_after_selection) {
   StepBuilder builder;
   builder.SetDescription(base::StringPrintf("SelectTab( %zu )", tab_index));
   internal::SpecifyElement(builder, tab_collection);
   builder.SetStartCallback(base::BindOnce(
-      [](size_t index, InputType input_type, InteractiveTestApi* test,
-         InteractionSequence* seq, TrackedElement* el) {
+      [](size_t index, InputType input_type,
+         std::optional<size_t> expected_index_after_selection,
+         InteractiveTestApi* test, InteractionSequence* seq,
+         TrackedElement* el) {
         test->private_test_impl().HandleActionResult(
             seq, el, "SelectTab",
-            test->test_util().SelectTab(el, index, input_type));
+            test->test_util().SelectTab(el, index, input_type,
+                                        expected_index_after_selection));
       },
-      tab_index, input_type, base::Unretained(this)));
+      tab_index, input_type, expected_index_after_selection,
+      base::Unretained(this)));
   return builder;
 }
 

@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -802,6 +803,81 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlFromOpaqueOrigin) {
                   net::StorageAccessApiStatus::kNone, std::move(options)),
               IsEmpty());
   EXPECT_TRUE(received_bad_message());
+}
+
+TEST_P(RestrictedCookieManagerTest, GetAllForUrlSkipAccessNotification) {
+  SetSessionCookie("cookie1", "value1", "example.com", "/");
+  SetSessionCookie("cookie2", "value2", "example.com", "/");
+  SetSessionCookie("cookie3", "value3", "example.com", "/");
+
+  auto options = mojom::CookieManagerGetOptions::New();
+  options->match_type = mojom::CookieMatchType::STARTS_WITH;
+  EXPECT_THAT(sync_service_->GetAllForUrl(
+                  kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+                  net::StorageAccessApiStatus::kNone, std::move(options)),
+              testing::SizeIs(3));
+  WaitForCallback();
+  EXPECT_THAT(
+      recorded_activity(),
+      UnorderedElementsAre(
+          MatchesCookieOp(
+              mojom::CookieAccessDetails::Type::kRead, kDefaultUrlWithPath,
+              kDefaultSiteForCookies,
+              CookieOrLine("cookie1=value1", mojom::CookieOrLine::Tag::kCookie),
+              net::IsInclude()),
+          MatchesCookieOp(
+              mojom::CookieAccessDetails::Type::kRead, kDefaultUrlWithPath,
+              kDefaultSiteForCookies,
+              CookieOrLine("cookie2=value2", mojom::CookieOrLine::Tag::kCookie),
+              net::IsInclude()),
+          MatchesCookieOp(
+              mojom::CookieAccessDetails::Type::kRead, kDefaultUrlWithPath,
+              kDefaultSiteForCookies,
+              CookieOrLine("cookie3=value3", mojom::CookieOrLine::Tag::kCookie),
+              net::IsInclude())));
+  recorded_activity().clear();
+
+  // Modify one of the cookies and do another get.
+  SetSessionCookie("cookie2", "updated-value2", "example.com", "/");
+  options = mojom::CookieManagerGetOptions::New();
+  options->match_type = mojom::CookieMatchType::STARTS_WITH;
+  EXPECT_THAT(sync_service_->GetAllForUrl(
+                  kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+                  net::StorageAccessApiStatus::kNone, std::move(options)),
+              testing::SizeIs(3));
+  WaitForCallback();
+
+  // There should only be an access notification for the modified cookie.
+  EXPECT_THAT(recorded_activity(),
+              UnorderedElementsAre(MatchesCookieOp(
+                  mojom::CookieAccessDetails::Type::kRead, kDefaultUrlWithPath,
+                  kDefaultSiteForCookies,
+                  CookieOrLine("cookie2=updated-value2",
+                               mojom::CookieOrLine::Tag::kCookie),
+                  net::IsInclude())));
+}
+
+TEST_P(RestrictedCookieManagerTest,
+       GetAllForUrlCantSkipAccessNotificationForTooManyCookies) {
+  for (int i = 0; i < 101; i++) {
+    SetSessionCookie(base::StringPrintf("cookie%d", i).c_str(), "value1",
+                     "example.com", "/");
+  }
+
+  // Even with no changes, every iteration reports the same cookie accesses,
+  // because the number of cookies surpases the maximum cookie access cache
+  // size.
+  for (int i = 0; i < 2; i++) {
+    auto options = mojom::CookieManagerGetOptions::New();
+    options->match_type = mojom::CookieMatchType::STARTS_WITH;
+    EXPECT_THAT(sync_service_->GetAllForUrl(
+                    kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+                    net::StorageAccessApiStatus::kNone, std::move(options)),
+                testing::SizeIs(101));
+    WaitForCallback();
+    EXPECT_THAT(recorded_activity(), testing::SizeIs(101));
+    recorded_activity().clear();
+  }
 }
 
 TEST_P(RestrictedCookieManagerTest, GetCookieStringFromWrongOrigin) {

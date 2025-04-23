@@ -55,4 +55,6 @@ export enum AiPageActions {
       'Settings.AiPage.Compose.ProactiveNudgeDisabled',
   TAB_ORGANIZATION_LEARN_MORE_CLICKED =
       'Settings.AiPage.TabOrganization.LearnMoreClicked',
+  GLIC_SHORTCUTS_LEARN_MORE_CLICKED =
+      'Settings.AiPage.GlicShortcuts.LearnMoreClicked',
 }

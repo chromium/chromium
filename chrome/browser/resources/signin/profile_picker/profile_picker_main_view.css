@@ -16,10 +16,12 @@
   --profile-item-border-width: 1px;
   --profile-item-margin: 4px;
   --profile-item-background: var(--google-grey-50);
+  --picker-logo-height: 44px;
 }
 
 :host([is-glic_]) {
   --footer-spacing: 0px;
+  --picker-logo-height: 58px;
 }
 
 .flex-container {
@@ -43,19 +45,8 @@
   text-align: center;
 }
 
-#images-container {
-  display: flex;
-  justify-content: center;
-  column-gap: 20px;
-}
-
-#glic-logo,
-#product-logo {
-  height: 44px;
-}
-
-#glic-logo {
-  content: url(glic_logo.svg);
+#picker-logo {
+  height: var(--picker-logo-height);
 }
 
 .title {

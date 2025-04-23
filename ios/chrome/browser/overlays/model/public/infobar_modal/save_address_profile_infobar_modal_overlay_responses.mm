@@ -8,8 +8,6 @@ namespace save_address_profile_infobar_modal_responses {
 
 #pragma mark - EditedProfileSaveAction
 
-OVERLAY_USER_DATA_SETUP_IMPL(EditedProfileSaveAction);
-
 EditedProfileSaveAction::EditedProfileSaveAction(
     autofill::AutofillProfile* profileData)
     : profile_data_(profileData) {}
@@ -18,15 +16,9 @@ EditedProfileSaveAction::~EditedProfileSaveAction() = default;
 
 #pragma mark - CancelViewAction
 
-OVERLAY_USER_DATA_SETUP_IMPL(CancelViewAction);
-
 CancelViewAction::CancelViewAction(BOOL edit_view_is_dismissed)
     : edit_view_is_dismissed_(edit_view_is_dismissed) {}
 
 CancelViewAction::~CancelViewAction() = default;
-
-#pragma mark - NoThanksViewAction
-
-OVERLAY_USER_DATA_SETUP_IMPL(NoThanksViewAction);
 
 }  // namespace save_address_profile_infobar_modal_responses

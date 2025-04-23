@@ -41,8 +41,6 @@
 #include "chrome/browser/extensions/standard_management_policy_provider.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -63,6 +61,11 @@
 #include "extensions/common/url_pattern.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #else
@@ -70,7 +73,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/extensions/management/management_util.h"
 #endif
 
 namespace extensions {
@@ -80,18 +83,6 @@ namespace extensions {
 BASE_FEATURE(kDisableOffstoreForceInstalledExtensionsInLowTrustEnviroment,
              "DisableOffstoreForceInstalledExtensionsInLowTrustEnviroment",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// The highest level of trustworthiness for either platform or browser.
-policy::ManagementAuthorityTrustworthiness GetHighestTrustworthiness(
-    Profile* profile) {
-  policy::ManagementAuthorityTrustworthiness platform_trustworthiness =
-      policy::ManagementServiceFactory::GetForPlatform()
-          ->GetManagementAuthorityTrustworthiness();
-  policy::ManagementAuthorityTrustworthiness browser_trustworthiness =
-      policy::ManagementServiceFactory::GetForProfile(profile)
-          ->GetManagementAuthorityTrustworthiness();
-  return std::max(platform_trustworthiness, browser_trustworthiness);
-}
 #endif
 
 ExtensionManagement::ExtensionManagement(Profile* profile)
@@ -312,11 +303,13 @@ bool ExtensionManagement::IsOffstoreInstallAllowed(
 bool ExtensionManagement::IsAllowedManifestType(
     Manifest::Type manifest_type,
     const std::string& extension_id) const {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // If a managed theme has been set for the current profile, theme extension
   // installations are not allowed.
   if (manifest_type == Manifest::Type::TYPE_THEME &&
       ThemeServiceFactory::GetForProfile(profile_)->UsingPolicyTheme())
     return false;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   if (!global_settings_->allowed_types.has_value())
     return true;
@@ -460,7 +453,7 @@ bool ExtensionManagement::IsForceInstalledInLowTrustEnvironment(
     return false;
   }
 
-  return GetHighestTrustworthiness(profile_) <
+  return GetHigherManagementAuthorityTrustworthiness(profile_) <
          policy::ManagementAuthorityTrustworthiness::TRUSTED;
 #else
   return false;
@@ -484,7 +477,7 @@ bool ExtensionManagement::ShouldBlockForceInstalledOffstoreExtension(
     return false;
   }
 
-  return GetHighestTrustworthiness(profile_) <
+  return GetHigherManagementAuthorityTrustworthiness(profile_) <
          policy::ManagementAuthorityTrustworthiness::TRUSTED;
 #else
   return false;
@@ -763,10 +756,10 @@ void ExtensionManagement::Refresh() {
       const base::Value::Dict* subdict = iter.second.GetIfDict();
       if (!subdict)
         continue;
-      if (base::StartsWith(iter.first, schema_constants::kUpdateUrlPrefix,
-                           base::CompareCase::SENSITIVE)) {
-        const std::string& update_url =
-            iter.first.substr(strlen(schema_constants::kUpdateUrlPrefix));
+      std::optional<std::string_view> remainder =
+          base::RemovePrefix(iter.first, schema_constants::kUpdateUrlPrefix);
+      if (remainder) {
+        const std::string update_url(*remainder);
         if (!GURL(update_url).is_valid()) {
           LOG(WARNING) << "Invalid update URL: " << update_url << ".";
           continue;
@@ -1052,8 +1045,8 @@ ExtensionManagementFactory::ExtensionManagementFactory()
           "ExtensionManagement",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
-              // TODO(crbug.com/40257657): Check if this service is needed in
-              // Guest mode.
+              // TODO(crbug.com/40257657): Audit whether these should be
+              // redirected or should have their own instance.
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.

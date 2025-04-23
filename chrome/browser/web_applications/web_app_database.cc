@@ -12,12 +12,14 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_database_factory.h"
 #include "chrome/browser/web_applications/web_app_database_serialization.h"
+#include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -26,6 +28,7 @@
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
+#include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
 
@@ -91,7 +94,7 @@ void WebAppDatabase::Write(
 
 // static
 int WebAppDatabase::GetCurrentDatabaseVersion() {
-    return 1;
+  return 2;
 }
 
 WebAppDatabase::ProtobufState::ProtobufState() = default;
@@ -137,9 +140,20 @@ void WebAppDatabase::MigrateDatabase(ProtobufState& state) {
 
   // Upgrade from version 0 to version 1. This migrates the kSync source to
   // a combination of kSync and kUserInstalled.
-  if (state.metadata.version() == 0 && GetCurrentDatabaseVersion() >= 1) {
+  if (state.metadata.version() < 1 && GetCurrentDatabaseVersion() >= 1) {
     MigrateInstallSourceAddUserInstalled(state, changed_apps);
+    base::UmaHistogramSparse("WebApp.Database.VersionUpgradedTo", 1);
     state.metadata.set_version(1);
+    did_change_metadata = true;
+  }
+
+  // Upgrade from version 1 to version 2.
+  if (state.metadata.version() < 2 && GetCurrentDatabaseVersion() >= 2) {
+    MigrateShortcutAppsToDiyApps(state, changed_apps);
+    MigrateDefaultDisplayModeToPlatformDisplayMode(state, changed_apps);
+    MigratePartiallyInstalledAppsToCorrectState(state, changed_apps);
+    base::UmaHistogramSparse("WebApp.Database.VersionUpgradedTo", 2);
+    state.metadata.set_version(2);
     did_change_metadata = true;
   }
 
@@ -153,9 +167,9 @@ void WebAppDatabase::MigrateDatabase(ProtobufState& state) {
                              state.metadata.SerializeAsString());
     }
     for (const auto& app_id : changed_apps) {
+      CHECK(state.apps.contains(app_id));
       write_batch->WriteData(app_id, state.apps[app_id].SerializeAsString());
     }
-
     store_->CommitWriteBatch(
         std::move(write_batch),
         base::BindOnce(&WebAppDatabase::OnDataWritten,
@@ -169,15 +183,123 @@ void WebAppDatabase::MigrateInstallSourceAddUserInstalled(
   // Migrating from version 0 to version 1.
   CHECK_LT(state.metadata.version(), 1);
   const bool is_syncing_apps = database_factory_->IsSyncingApps();
+  int apps_migrated_count = 0;
   for (auto& [app_id, app_proto] : state.apps) {
-    if (app_proto.sources().sync()) {
+    if (!app_proto.sources().sync()) {
+      continue;
+    }
+    bool changed = false;
+    if (!app_proto.sources().user_installed()) {
       app_proto.mutable_sources()->set_user_installed(true);
-      if (!is_syncing_apps) {
-        app_proto.mutable_sources()->set_sync(false);
-      }
+      changed = true;
+    }
+    if (!is_syncing_apps) {
+      app_proto.mutable_sources()->set_sync(false);
+      changed = true;
+    }
+    if (changed) {
       changed_apps.insert(app_id);
+      apps_migrated_count++;
     }
   }
+  base::UmaHistogramCounts1000(
+      "WebApp.Migrations.InstallSourceAddUserInstalled", apps_migrated_count);
+}
+
+void WebAppDatabase::MigrateShortcutAppsToDiyApps(
+    WebAppDatabase::ProtobufState& state,
+    std::set<webapps::AppId>& changed_apps) {
+  // Migrating from version 1 to version 2.
+  CHECK_LT(state.metadata.version(), 2);
+  int shortcut_to_diy_apps = 0;
+  for (auto& [app_id, app_proto] : state.apps) {
+    bool is_shortcut =
+        !app_proto.has_scope() || app_proto.scope().empty() ||
+        (app_proto.has_latest_install_source() &&
+         app_proto.latest_install_source() ==
+             static_cast<uint32_t>(
+                 webapps::WebappInstallSource::MENU_CREATE_SHORTCUT));
+    if (!is_shortcut) {
+      continue;
+    }
+    changed_apps.insert(app_id);
+    app_proto.set_is_diy_app(true);
+    app_proto.set_was_shortcut_app(true);
+    shortcut_to_diy_apps++;
+    if (app_proto.has_scope() && !app_proto.scope().empty() &&
+        GURL(app_proto.scope()).is_valid()) {
+      continue;
+    }
+    // Populate the scope if it was empty or invalid.
+    if (!app_proto.has_sync_data() || !app_proto.sync_data().has_start_url()) {
+      DLOG(ERROR) << "Missing sync data or start_url for shortcut app "
+                  << app_id;
+      continue;
+    }
+    GURL start_url(app_proto.sync_data().start_url());
+    if (!start_url.is_valid()) {
+      // Cannot recover scope, mark for potential cleanup later if needed.
+      DLOG(ERROR) << "Invalid start_url for shortcut app " << app_id << ":"
+                  << start_url.possibly_invalid_spec();
+      continue;
+    }
+    app_proto.set_scope(start_url.GetWithoutFilename().spec());
+  }
+  base::UmaHistogramCounts1000("WebApp.Migrations.ShortcutAppsToDiy2",
+                               shortcut_to_diy_apps);
+}
+
+void WebAppDatabase::MigrateDefaultDisplayModeToPlatformDisplayMode(
+    WebAppDatabase::ProtobufState& state,
+    std::set<webapps::AppId>& changed_apps) {
+  // Migrating from version 1 to version 2.
+  CHECK_LT(state.metadata.version(), 2);
+  int apps_migrated_count = 0;
+  for (auto& [app_id, app_proto] : state.apps) {
+    if (!app_proto.has_sync_data()) {
+      // Cannot migrate without sync data.
+      continue;
+    }
+    sync_pb::WebAppSpecifics* sync_data = app_proto.mutable_sync_data();
+    if (!HasCurrentPlatformUserDisplayMode(*sync_data)) {
+      sync_pb::WebAppSpecifics_UserDisplayMode udm =
+          ResolvePlatformSpecificUserDisplayMode(*sync_data);
+      SetPlatformSpecificUserDisplayMode(udm, sync_data);
+      changed_apps.insert(app_id);
+      apps_migrated_count++;
+    }
+  }
+  base::UmaHistogramCounts1000("WebApp.Migrations.DefaultDisplayModeToPlatform",
+                               apps_migrated_count);
+}
+
+// Corrects the install_state for apps that claim OS integration but lack the
+// necessary OS integration state data.
+void WebAppDatabase::MigratePartiallyInstalledAppsToCorrectState(
+    WebAppDatabase::ProtobufState& state,
+    std::set<webapps::AppId>& changed_apps) {
+  // Migrating from version 1 to version 2.
+  CHECK_LT(state.metadata.version(), 2);
+  int install_state_fixed_count = 0;
+  for (auto& [app_id, app_proto] : state.apps) {
+    if (app_proto.install_state() !=
+        proto::InstallState::INSTALLED_WITH_OS_INTEGRATION) {
+      continue;
+    }
+    // Check if any OS integration state exists. A simple check for shortcut
+    // presence is sufficient as a proxy for any OS integration.
+    if (app_proto.has_current_os_integration_states() &&
+        app_proto.current_os_integration_states().has_shortcut()) {
+      continue;
+    }
+    app_proto.set_install_state(
+        proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION);
+    changed_apps.insert(app_id);
+    install_state_fixed_count++;
+  }
+  base::UmaHistogramCounts1000(
+      "WebApp.Migrations.PartiallyInstalledAppsToCorrectState",
+      install_state_fixed_count);
 }
 
 void WebAppDatabase::OnDatabaseOpened(

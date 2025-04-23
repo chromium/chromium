@@ -149,6 +149,33 @@ BASE_FEATURE(kSearchEnginePreconnectInterval,
              "SearchEnginePreconnectInterval",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSearchEnginePreconnect2,
+             "SearchEnginePreconnect2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(int,
+                   kIdleTimeoutInSeconds,
+                   &kSearchEnginePreconnect2,
+                   "IdleTimeoutInSeconds",
+                   120);
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kShortSessionThreshold,
+                   &kSearchEnginePreconnect2,
+                   "MaxShortSessionThreashold",
+                   base::Seconds(30));
+
+extern const base::FeatureParam<int> kMaxPreconnectRetryInterval(
+    &kSearchEnginePreconnect2,
+    "MaxPreconnectRetryInterval",
+    30);
+
+BASE_FEATURE_PARAM(int,
+                   kPingIntervalInSeconds,
+                   &kSearchEnginePreconnect2,
+                   "PingIntervalInSeconds",
+                   30);
+
 BASE_FEATURE(kShortLaxAllowUnsafeThreshold,
              "ShortLaxAllowUnsafeThreshold",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -475,6 +502,10 @@ BASE_FEATURE_PARAM(size_t,
                    "max_report_body_size_kb",
                    1024);
 
+BASE_FEATURE(kRelatedWebsitePartitionAPI,
+             "RelatedWebsitePartitionAPI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Network-change migration requires NetworkHandle support, which are currently
 // only supported on Android (see
 // NetworkChangeNotifier::AreNetworkHandlesSupported).
@@ -543,8 +574,6 @@ BASE_FEATURE(kThirdPartyPartitionedStorageAllowedByDefault,
 BASE_FEATURE(kSpdyHeadersToHttpResponseUseBuilder,
              "SpdyHeadersToHttpResponseUseBuilder",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kReportEcn, "ReportEcn", base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseNewAlpsCodepointHttp2,
              "UseNewAlpsCodepointHttp2",
@@ -703,5 +732,11 @@ BASE_FEATURE(kSelfSignedLocalNetworkInterstitial,
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 BASE_FEATURE(kVerifyQWACs, "VerifyQWACs", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+
+#if BUILDFLAG(IS_MAC)
+BASE_FEATURE(kIncludeDeprecatedClientCertLookup,
+             "IncludeDeprecatedClientCertLookup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 }  // namespace net::features

@@ -38,6 +38,11 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformSessionManager {
   virtual std::optional<std::string> RestoreSession(
       const std::string& session_name,
       RestoreReason reason) = 0;
+
+  // Requests the platform session manager to stop tracking state of window
+  // identified by `window_id`, for a given session whose id is `session_id`.
+  virtual void RemoveWindow(const std::string& session_id,
+                            int32_t window_id) = 0;
 };
 
 // PlatformSessionWindowData encapsulates the data required by the ozone

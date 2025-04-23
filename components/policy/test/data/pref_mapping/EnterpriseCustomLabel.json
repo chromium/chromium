@@ -9,10 +9,6 @@
       {
         "policies": {},
         "prefs": {
-          "enterprise_label.custom_value.for_browser": {
-            "location": "local_state",
-            "default_value": ""
-          },
           "enterprise_label.custom_value.for_profile": {
             "location": "user_profile",
             "default_value": ""
@@ -30,10 +26,6 @@
           }
         },
         "prefs": {
-          "enterprise_label.custom_value.for_browser": {
-            "location": "local_state",
-            "value": "Label"
-          },
           "enterprise_label.custom_value.for_profile": {
             "location": "user_profile",
             "default_value": ""

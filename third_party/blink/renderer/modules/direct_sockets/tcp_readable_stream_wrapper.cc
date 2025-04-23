@@ -12,6 +12,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_byob_request.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -29,12 +30,14 @@ namespace blink {
 TCPReadableStreamWrapper::TCPReadableStreamWrapper(
     ScriptState* script_state,
     CloseOnceCallback on_close,
-    mojo::ScopedDataPipeConsumerHandle handle)
+    mojo::ScopedDataPipeConsumerHandle handle,
+    uint64_t inspector_id)
     : ReadableByteStreamWrapper(script_state),
       on_close_(std::move(on_close)),
       data_pipe_(std::move(handle)),
       read_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL),
-      close_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC) {
+      close_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC),
+      inspector_id_(inspector_id) {
   read_watcher_.Watch(
       data_pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE,
       MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
@@ -121,6 +124,9 @@ void TCPReadableStreamWrapper::Pull() {
       result = data_pipe_->EndReadData(data_buffer.size());
       DCHECK_EQ(result, MOJO_RESULT_OK);
 
+      // Send data to DevTools protocol.
+      probe::DirectTCPSocketChunkReceived(*script_state, inspector_id_,
+                                          data_buffer);
       break;
     }
 

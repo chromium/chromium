@@ -12,6 +12,9 @@
 name = "bumpalo"
 version = "3.17.0"
 
+[package.metadata.gnrt]
+is_placeholder = true
+
 [features]
 "allocator-api2" = []
 "allocator_api" = []

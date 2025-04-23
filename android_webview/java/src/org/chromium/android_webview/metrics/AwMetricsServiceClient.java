@@ -9,12 +9,14 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.ManifestMetadataUtil;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Determines user consent and app opt-out for metrics. See aw_metrics_service_client.h for more
  * explanation.
  */
 @JNINamespace("android_webview")
+@NullMarked
 public class AwMetricsServiceClient {
     /**
      * Set user consent settings.

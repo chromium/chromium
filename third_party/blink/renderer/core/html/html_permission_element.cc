@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -857,7 +858,7 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
       IsBorderSufficientlyDistinctFromBackgroundColor(builder.CloneStyle());
 
   if (unlimited_width_allowed) {
-    if (builder.PaddingRight().IsSpecified() &&
+    if (builder.PaddingRight().HasOnlyFixedAndPercent() &&
         !builder.PaddingRight().IsZero() &&
         builder.PaddingLeft() != builder.PaddingRight()) {
       AddConsoleError(
@@ -874,9 +875,10 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
     // If width is set to auto and there is left padding specified, we will
     // respect the padding (up to a certain maximum), otherwise the padding has
     // no effect. We treat height and top/bottom padding similarly.
-    if (builder.Width().IsAuto() && builder.PaddingLeft().IsSpecified() &&
+    if (builder.Width().IsAuto() &&
+        builder.PaddingLeft().HasOnlyFixedAndPercent() &&
         !builder.PaddingLeft().IsZero()) {
-      if (builder.PaddingRight().IsSpecified() &&
+      if (builder.PaddingRight().HasOnlyFixedAndPercent() &&
           !builder.PaddingRight().IsZero() &&
           builder.PaddingLeft() != builder.PaddingRight()) {
         AddConsoleError(
@@ -898,9 +900,10 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
     }
   }
 
-  if (builder.Height().IsAuto() && builder.PaddingTop().IsSpecified() &&
+  if (builder.Height().IsAuto() &&
+      builder.PaddingTop().HasOnlyFixedAndPercent() &&
       !builder.PaddingTop().IsZero()) {
-    if (builder.PaddingBottom().IsSpecified() &&
+    if (builder.PaddingBottom().HasOnlyFixedAndPercent() &&
         !builder.PaddingBottom().IsZero() &&
         builder.PaddingTop() != builder.PaddingBottom()) {
       AddConsoleError(
@@ -1145,9 +1148,9 @@ HTMLPermissionElement::GetTaskRunner() {
 
 bool HTMLPermissionElement::IsClickingEnabled() {
   if (permission_descriptors_.empty()) {
-    AddConsoleError(String::Format(
-        "The permission element '%s' cannot be activated due to invalid type.",
-        GetType().Utf8().c_str()));
+    AddConsoleError(
+        WTF::StrCat({"The permission element '", GetType(),
+                     "' cannot be activated due to invalid type."}));
     base::UmaHistogramEnumeration(
         "Blink.PermissionElement.UserInteractionDeniedReason",
         UserInteractionDeniedReason::kInvalidType);
@@ -1155,10 +1158,10 @@ bool HTMLPermissionElement::IsClickingEnabled() {
   }
 
   if (!is_registered_in_browser_process()) {
-    AddConsoleError(String::Format(
-        "The permission element '%s' cannot be activated because of security "
-        "checks or because the page's quota has been exceeded.",
-        GetType().Utf8().c_str()));
+    AddConsoleError(
+        WTF::StrCat({"The permission element '", GetType(),
+                     "' cannot be activated because of security "
+                     "checks or because the page's quota has been exceeded."}));
     base::UmaHistogramEnumeration(
         "Blink.PermissionElement.UserInteractionDeniedReason",
         UserInteractionDeniedReason::kFailedOrHasNotBeenRegistered);
@@ -1178,10 +1181,9 @@ bool HTMLPermissionElement::IsClickingEnabled() {
       [&now](const auto& it) { return it.value < now; });
 
   for (const auto& it : clicking_disabled_reasons_) {
-    AddConsoleError(String::Format(
-        "The permission element '%s' cannot be activated due to %s.",
-        GetType().Utf8().c_str(),
-        DisableReasonToString(it.key).Utf8().c_str()));
+    AddConsoleError(WTF::StrCat({"The permission element '", GetType(),
+                                 "' cannot be activated due to ",
+                                 DisableReasonToString(it.key), "."}));
     if (it.key == DisableReason::kIntersectionVisibilityOccludedOrDistorted &&
         occluder_node_id_ != kInvalidDOMNodeId) {
       AddOccluderInfoToConsole();
@@ -1452,9 +1454,8 @@ void HTMLPermissionElement::OnIntersectionChanged(
 bool HTMLPermissionElement::IsStyleValid() {
   // No computed style when using `display: none`.
   if (!GetComputedStyle()) {
-    AddConsoleWarning(
-        String::Format("Cannot compute style for the permission element '%s'",
-                       GetType().Utf8().c_str()));
+    AddConsoleWarning(WTF::StrCat(
+        {"Cannot compute style for the permission element '", GetType(), "'"}));
     base::UmaHistogramEnumeration("Blink.PermissionElement.InvalidStyleReason",
                                   InvalidStyleReason::kNoComputedStyle);
     return false;
@@ -1462,9 +1463,8 @@ bool HTMLPermissionElement::IsStyleValid() {
 
   if (AreColorsNonOpaque(GetComputedStyle())) {
     AddConsoleWarning(
-        String::Format("Color or background color of the permission element "
-                       "'%s' is non-opaque",
-                       GetType().Utf8().c_str()));
+        WTF::StrCat({"Color or background color of the permission element '",
+                     GetType(), "' is non-opaque"}));
     base::UmaHistogramEnumeration(
         "Blink.PermissionElement.InvalidStyleReason",
         InvalidStyleReason::kNonOpaqueColorOrBackgroundColor);
@@ -1474,9 +1474,9 @@ bool HTMLPermissionElement::IsStyleValid() {
   if (ContrastBetweenColorAndBackgroundColor(GetComputedStyle()) <
       kMinimumAllowedContrast) {
     AddConsoleWarning(
-        String::Format("Contrast between color and background color of the "
-                       "permission element '%s' is too low",
-                       GetType().Utf8().c_str()));
+        WTF::StrCat({"Contrast between color and background color of the "
+                     "permission element '",
+                     GetType(), "' is too low"}));
     base::UmaHistogramEnumeration(
         "Blink.PermissionElement.InvalidStyleReason",
         InvalidStyleReason::kLowConstrastColorAndBackgroundColor);
@@ -1485,46 +1485,45 @@ bool HTMLPermissionElement::IsStyleValid() {
 
   // Compute the font size but reverse browser zoom as it should not affect font
   // size validation. The same font size value should always pass regardless of
-  // what the user's browser zoom is.
-  // TODO(crbug.com/352046941): This does not currently distinguish between
-  // browser zoom and cross-origin iframe zoom (set via CSS).
-  float font_size_dip = GetComputedStyle()->ComputedFontSize() /
-                        GetComputedStyle()->EffectiveZoom();
+  // what the user's browser zoom is or the device-level viewport zoom.
+  //
+  // However critically css zoom should still be part of the final computed font
+  // size (as that is controlled by the site) so we cancel the css zoom factor
+  // out of the layout zoom factor.
 
-  float css_zoom_factor =
-      GetComputedStyle()->EffectiveZoom() /
-      GetDocument().GetFrame()->LocalFrameRoot().LayoutZoomFactor();
+  float non_css_layout_zoom_factor =
+      GetDocument().GetFrame()->LocalFrameRoot().LayoutZoomFactor() /
+      GetDocument().GetFrame()->LocalFrameRoot().CssZoomFactor();
+
+  float font_size_dip =
+      GetComputedStyle()->ComputedFontSize() / non_css_layout_zoom_factor;
 
   bool is_font_monospace =
       GetComputedStyle()->GetFontDescription().IsMonospace();
 
   // The min size is what `font-size:small` looks like when rendered in the
-  // document element of the local root frame, without any intervening CSS
+  // document element of the local root frame, without any intervening
   // zoom factors applied.
   float min_font_size_dip = FontSizeFunctions::FontSizeForKeyword(
       &GetDocument(), FontSizeFunctions::KeywordSize(CSSValueID::kSmall),
       is_font_monospace);
-  if (font_size_dip <
-      std::min(min_font_size_dip, kDefaultSmallFontSize) / css_zoom_factor) {
-    AddConsoleWarning(
-        String::Format("Font size of the permission element '%s' is too small",
-                       GetType().Utf8().c_str()));
+  if (font_size_dip < std::min(min_font_size_dip, kDefaultSmallFontSize)) {
+    AddConsoleWarning(WTF::StrCat({"Font size of the permission element '",
+                                   GetType(), "' is too small"}));
     base::UmaHistogramEnumeration("Blink.PermissionElement.InvalidStyleReason",
                                   InvalidStyleReason::kTooSmallFontSize);
     return false;
   }
 
   // The max size is what `font-size:xxxlarge` looks like when rendered in the
-  // document element of the local root frame, without any intervening CSS
+  // document element of the local root frame, without any intervening
   // zoom factors applied.
   float max_font_size_dip = FontSizeFunctions::FontSizeForKeyword(
       &GetDocument(), FontSizeFunctions::KeywordSize(CSSValueID::kXxxLarge),
       is_font_monospace);
-  if (font_size_dip >
-      std::max(max_font_size_dip, kDefaultXxxLargeFontSize) / css_zoom_factor) {
-    AddConsoleWarning(
-        String::Format("Font size of the permission element '%s' is too large",
-                       GetType().Utf8().c_str()));
+  if (font_size_dip > std::max(max_font_size_dip, kDefaultXxxLargeFontSize)) {
+    AddConsoleWarning(WTF::StrCat({"Font size of the permission element '",
+                                   GetType(), "' is too large"}));
     base::UmaHistogramEnumeration("Blink.PermissionElement.InvalidStyleReason",
                                   InvalidStyleReason::kTooLargeFontSize);
     return false;
@@ -1691,9 +1690,8 @@ void HTMLPermissionElement::AddOccluderInfoToConsole() {
   if (!node) {
     return;
   }
-  AddConsoleError(
-      String::Format("The permission element is occluded by node %s",
-                     node->ToString().Utf8().c_str()));
+  AddConsoleError(WTF::StrCat(
+      {"The permission element is occluded by node ", node->ToString()}));
 
   auto* element = DynamicTo<Element>(node);
   if (element && (element->HasID() || element->HasClass())) {
@@ -1702,8 +1700,8 @@ void HTMLPermissionElement::AddOccluderInfoToConsole() {
   // Printing parent node might give some useful information if there's no id or
   // class attr.
   if (Node* parent = node->parentNode()) {
-    AddConsoleError(String::Format("The occluder's parent node is %s",
-                                   parent->ToString().Utf8().c_str()));
+    AddConsoleError(
+        WTF::StrCat({"The occluder's parent node is ", parent->ToString()}));
   }
 }
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/text/character.h"
 
 #include <ubidi_props.h>
@@ -496,11 +491,11 @@ TEST(CharacterTest, IsVerticalMathCharacter) {
     } else if (test_char == kArabicMathematicalOperatorHahWithDal) {
       EXPECT_FALSE(Character::IsVerticalMathCharacter(test_char));
     } else {
-      bool in_vertical =
-          !std::binary_search(stretchy_operator_with_inline_axis,
-                              stretchy_operator_with_inline_axis +
-                                  std::size(stretchy_operator_with_inline_axis),
-                              test_char);
+      bool in_vertical = !std::binary_search(
+          stretchy_operator_with_inline_axis,
+          UNSAFE_TODO(stretchy_operator_with_inline_axis +
+                      std::size(stretchy_operator_with_inline_axis)),
+          test_char);
       EXPECT_TRUE(Character::IsVerticalMathCharacter(test_char) == in_vertical);
     }
   }

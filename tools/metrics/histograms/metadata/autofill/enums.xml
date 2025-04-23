@@ -2983,6 +2983,22 @@ Called by update_autofill_enums.py.-->
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/webdata/autofill_webdata_backend_impl.cc:Result) -->
 
+<!-- LINT.IfChange(BnplFormEvent) -->
+
+<enum name="BnplFormEvent">
+  <int value="0" label="Suggestions shown"/>
+  <int value="1" label="A Buy Now Pay Later suggestion was shown"/>
+  <int value="2" label="Suggestion accepted"/>
+  <int value="3" label="Form filled with Affirm VCN"/>
+  <int value="4" label="Form filled with Zip VCN"/>
+  <int value="5" label="Form filled with Afterpay VCN"/>
+  <int value="6" label="Form submitted with Affirm VCN"/>
+  <int value="7" label="Form submitted with Zip VCN"/>
+  <int value="8" label="Form submitted with Afterpay VCN"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/bnpl_metrics.h:BnplFormEvent) -->
+
 <!-- LINT.IfChange(BnplPopupWindowResult) -->
 
 <enum name="BnplPopupWindowResult">
@@ -3640,8 +3656,6 @@ Called by update_autofill_enums.py.-->
       label="&lt;label&gt; for attribute linked to a control element inside a
              shadow DOM via its name attribute"/>
   <int value="15" label="Succeeding DOM node overlaying the input"/>
-  <int value="16"
-      label="The text of a &lt;select&gt; element's first &lt;option&gt;"/>
 </enum>
 
 <!-- LINT.IfChange(InvalidSubmittedFormReasonIOS) -->
@@ -3820,6 +3834,15 @@ Called by update_autofill_enums.py.-->
 
 <!-- LINT.ThenChange(/components/autofill/ios/browser/credit_card_save_metrics_ios.h:SaveCreditCardPromptResultIOS) -->
 
+<!-- LINT.IfChange(SelectBnplIssuerDialogResult) -->
+
+<enum name="SelectBnplIssuerDialogResult">
+  <int value="0" label="The cancel button was pressed"/>
+  <int value="1" label="An issuer was selected"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/bnpl_metrics.h:SelectBnplIssuerDialogResult) -->
+
 <!-- LINT.IfChange(SuggestionType) -->
 
 <enum name="SuggestionType">
@@ -3904,6 +3927,16 @@ Called by update_autofill_enums.py.-->
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/suggestions/suggestion_type.h:SuggestionType) -->
 
+<!-- LINT.IfChange(SupportedBnplIssuer) -->
+
+<enum name="SupportedBnplIssuer">
+  <int value="0" label="Affirm"/>
+  <int value="1" label="Afterpay"/>
+  <int value="2" label="Zip"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/bnpl_metrics.h:SupportedBnplIssuer) -->
+
 <enum name="TouchToFill.CreditCard.Outcome">
   <int value="0"
       label="Credit card selected from the sheet (either local or server one)"/>
@@ -3911,6 +3944,13 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Manage payment settings option selected"/>
   <int value="3" label="Scan new card option selected"/>
   <int value="4" label="Bottom sheet dismissed"/>
+</enum>
+
+<enum name="TouchToFill.Iban.Outcome">
+  <int value="0"
+      label="IBAN selected from the sheet (either local or server one)"/>
+  <int value="1" label="Manage payment settings option selected"/>
+  <int value="2" label="Bottom sheet dismissed"/>
 </enum>
 
 <enum name="TouchToFill.PaymentMethod.TriggerOutcome">

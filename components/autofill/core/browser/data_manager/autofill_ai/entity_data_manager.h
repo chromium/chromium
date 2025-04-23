@@ -86,6 +86,10 @@ class EntityDataManager : public KeyedService, history::HistoryServiceObserver {
   void OnHistoryDeletions(history::HistoryService*,
                           const history::DeletionInfo& deletion_info) override;
 
+  // Records the date an entity was used and also increments the number of times
+  // it was used.
+  void RecordEntityUsed(const base::Uuid& guid, base::Time use_date);
+
   // Notifies the observers that the entity instances have changed.
   void NotifyEntityInstancesChanged();
 
@@ -97,6 +101,9 @@ class EntityDataManager : public KeyedService, history::HistoryServiceObserver {
 
  private:
   void LoadEntities();
+
+  base::optional_ref<EntityInstance> GetMutableEntityInstance(
+      const base::Uuid& guid);
 
   // Non-null except perhaps in TestEntityDataManager, which overrides all
   // functions that access it.

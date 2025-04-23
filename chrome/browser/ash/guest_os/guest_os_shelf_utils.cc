@@ -237,9 +237,10 @@ std::string GetGuestOsShelfAppId(Profile* profile,
       window_app_id->end());
 
   // Wayland apps will have a "wayland." identifier.
-  if (base::StartsWith(suffix, kWaylandPrefix, base::CompareCase::SENSITIVE)) {
-    const std::string_view wayland_app = suffix.substr(strlen(kWaylandPrefix));
-    if (FindAppId(apps, guest_os::prefs::kAppDesktopFileIdKey, wayland_app,
+  std::optional<std::string_view> wayland_app =
+      base::RemovePrefix(suffix, kWaylandPrefix);
+  if (wayland_app) {
+    if (FindAppId(apps, guest_os::prefs::kAppDesktopFileIdKey, *wayland_app,
                   guest_id, &app_id) == FindAppIdResult::UniqueMatch) {
       return app_id;
     }
@@ -247,34 +248,37 @@ std::string GetGuestOsShelfAppId(Profile* profile,
   }
 
   // If we don't have an id to match to a desktop file, use the window app id.
-  if (!base::StartsWith(suffix, kWmClassPrefix, base::CompareCase::SENSITIVE)) {
+  std::optional<std::string_view> key =
+      base::RemovePrefix(suffix, kWmClassPrefix);
+  if (!key) {
     return GetUnregisteredAppIdPrefix(token) + *window_app_id;
   }
 
   // If an app had StartupWMClass set to the given WM class, use that,
   // otherwise look for a desktop file id matching the WM class.
-  std::string_view key = suffix.substr(strlen(kWmClassPrefix));
   FindAppIdResult result = FindAppId(
-      apps, guest_os::prefs::kAppStartupWMClassKey, key, guest_id, &app_id,
+      apps, guest_os::prefs::kAppStartupWMClassKey, *key, guest_id, &app_id,
       false /* require_startup_notification */, true /* need_display */);
-  if (result == FindAppIdResult::UniqueMatch)
+  if (result == FindAppIdResult::UniqueMatch) {
     return app_id;
-  if (result == FindAppIdResult::NonUniqueMatch)
+  }
+  if (result == FindAppIdResult::NonUniqueMatch) {
     return GetUnregisteredAppIdPrefix(token) + *window_app_id;
+  }
 
-  if (FindAppId(apps, guest_os::prefs::kAppDesktopFileIdKey, key, guest_id,
+  if (FindAppId(apps, guest_os::prefs::kAppDesktopFileIdKey, *key, guest_id,
                 &app_id) == FindAppIdResult::UniqueMatch) {
     return app_id;
   }
 
-  if (FindAppId(apps, guest_os::prefs::kAppNameKey, key, guest_id, &app_id,
+  if (FindAppId(apps, guest_os::prefs::kAppNameKey, *key, guest_id, &app_id,
                 false /* require_startup_notification */,
                 true /* need_display */,
                 true /* ignore_space */) == FindAppIdResult::UniqueMatch) {
     return app_id;
   }
 
-  const std::string* app_name = GetAppNameForWMClass(key);
+  const std::string* app_name = GetAppNameForWMClass(*key);
   if (app_name &&
       FindAppId(apps, guest_os::prefs::kAppNameKey, *app_name, guest_id,
                 &app_id, false /* require_startup_notification */,

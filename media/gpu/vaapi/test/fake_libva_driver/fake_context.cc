@@ -21,9 +21,9 @@ std::unique_ptr<media::internal::ContextDelegate> CreateDelegate(
     int picture_height) {
   std::unique_ptr<base::Environment> env = base::Environment::Create();
   CHECK(env);
-  std::string no_op_flag;
-  if (env->GetVar("USE_NO_OP_CONTEXT_DELEGATE", &no_op_flag) &&
-      no_op_flag == "1") {
+  std::string no_op_flag =
+      env->GetVar("USE_NO_OP_CONTEXT_DELEGATE").value_or(std::string());
+  if (no_op_flag == "1") {
     return std::make_unique<media::internal::NoOpContextDelegate>();
   }
 

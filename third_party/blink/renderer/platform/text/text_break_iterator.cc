@@ -21,11 +21,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 
 #include <unicode/uchar.h>
@@ -39,66 +34,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
 namespace blink {
-
-unsigned NumGraphemeClusters(const String& string) {
-  unsigned string_length = string.length();
-
-  if (!string_length)
-    return 0;
-
-  // The only Latin-1 Extended Grapheme Cluster is CR LF
-  if (string.Is8Bit() && !string.Contains('\r'))
-    return string_length;
-
-  NonSharedCharacterBreakIterator it(string);
-  if (!it)
-    return string_length;
-
-  unsigned num = 0;
-  while (it.Next() != kTextBreakDone)
-    ++num;
-  return num;
-}
-
-void GraphemesClusterList(const StringView& text, Vector<unsigned>* graphemes) {
-  const unsigned length = text.length();
-  graphemes->resize(length);
-  if (!length)
-    return;
-
-  NonSharedCharacterBreakIterator it(text);
-  int cursor_pos = it.Next();
-  unsigned count = 0;
-  unsigned pos = 0;
-  while (cursor_pos >= 0) {
-    for (; pos < static_cast<unsigned>(cursor_pos) && pos < length; ++pos) {
-      (*graphemes)[pos] = count;
-    }
-    cursor_pos = it.Next();
-    count++;
-  }
-}
-
-unsigned LengthOfGraphemeCluster(const String& string, unsigned offset) {
-  unsigned string_length = string.length();
-
-  if (string_length - offset <= 1)
-    return string_length - offset;
-
-  // The only Latin-1 Extended Grapheme Cluster is CRLF.
-  if (string.Is8Bit()) {
-    auto* characters = string.Characters8();
-    return 1 + (characters[offset] == '\r' && characters[offset + 1] == '\n');
-  }
-
-  NonSharedCharacterBreakIterator it(string);
-  if (!it)
-    return string_length - offset;
-
-  if (it.Following(offset) == kTextBreakDone)
-    return string_length - offset;
-  return it.Current() - offset;
-}
 
 // Pack 8 bits into one byte
 #define B(a, b, c, d, e, f, g, h)                                         \
@@ -189,8 +124,8 @@ static inline bool ShouldBreakAfterBreakAll(ULineBreak last_line_break,
   if (line_break >= 0 && line_break < BA_LB_COUNT && last_line_break >= 0 &&
       last_line_break < BA_LB_COUNT) {
     const unsigned char* table_row =
-        kBreakAllLineBreakClassTable[last_line_break];
-    return table_row[line_break / 8] & (1 << (line_break % 8));
+        UNSAFE_TODO(kBreakAllLineBreakClassTable[last_line_break]);
+    return UNSAFE_TODO(table_row[line_break / 8]) & (1 << (line_break % 8));
   }
   return false;
 }
@@ -236,9 +171,9 @@ struct LazyLineBreakIterator::Context {
     DCHECK_GE(index, start_offset);
     CHECK_LE(index, len);
     if (index > start_offset) {
-      last = ContextChar(str[index - 1]);
+      last = ContextChar(UNSAFE_TODO(str[index - 1]));
       if (index > start_offset + 1) {
-        last_last_ch = str[index - 2];
+        last_last_ch = UNSAFE_TODO(str[index - 2]);
       }
     }
   }
@@ -247,7 +182,7 @@ struct LazyLineBreakIterator::Context {
     if (index >= len) [[unlikely]] {
       return false;
     }
-    current = ContextChar(str[index]);
+    current = ContextChar(UNSAFE_TODO(str[index]));
     return true;
   }
 
@@ -397,7 +332,8 @@ inline unsigned LazyLineBreakIterator::NextBreakablePosition(
         }
         next_break = following + start_offset_;
         if (disable_soft_hyphen_ && next_break > 0 &&
-            str[next_break - 1] == kSoftHyphenCharacter) [[unlikely]] {
+            UNSAFE_TODO(str[next_break - 1]) == kSoftHyphenCharacter)
+            [[unlikely]] {
           continue;
         }
         break;
@@ -438,16 +374,16 @@ inline unsigned LazyLineBreakIterator::NextBreakablePosition(
   }
   if (string_.Is8Bit()) {
     return NextBreakablePosition<LChar, lineBreakType>(
-        pos, string_.Characters8(), len);
+        pos, UNSAFE_TODO(string_.Characters8()), len);
   }
   return NextBreakablePosition<UChar, lineBreakType>(
-      pos, string_.Characters16(), len);
+      pos, UNSAFE_TODO(string_.Characters16()), len);
 }
 
 unsigned LazyLineBreakIterator::NextBreakablePositionBreakCharacter(
     unsigned pos) const {
   DCHECK_LE(start_offset_, string_.length());
-  NonSharedCharacterBreakIterator iterator(StringView(string_, start_offset_));
+  CharacterBreakIterator& iterator = GetCharacterBreakIterator();
   DCHECK_GE(pos, start_offset_);
   pos -= start_offset_;
   // `- 1` because the `Following()` returns the next opportunity after the
@@ -501,7 +437,7 @@ unsigned LazyLineBreakIterator::PreviousBreakOpportunity(unsigned offset,
     if (string_.Is8Bit())
       --pos;
     else
-      U16_BACK_1(string_.Characters16(), 0, pos);
+      UNSAFE_TODO(U16_BACK_1(string_.Characters16(), 0, pos));
   }
   return min;
 }

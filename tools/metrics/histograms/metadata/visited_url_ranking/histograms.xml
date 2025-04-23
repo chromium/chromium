@@ -23,6 +23,74 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="GroupSuggestionsService.OpenedTabCount.Last10Mins"
+    units="counts" expires_after="2025-08-22">
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records the number of opened tabs in last 10 minutes, that are being
+    considered as part of the group suggestion. Logged every time the group
+    suggestion computation is run, every page load.
+  </summary>
+</histogram>
+
+<histogram name="GroupSuggestionsService.SuggestionsCount" units="counts"
+    expires_after="2025-08-22">
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records the number of group suggestions that are available to show. Logged
+    every time the group suggestion computation is run, every page load.
+  </summary>
+</histogram>
+
+<histogram name="GroupSuggestionsService.SuggestionsCountAfterThrottling"
+    units="counts" expires_after="2025-08-22">
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records the number of group suggestions that are available to show after
+    throttling. Logged every time the group suggestion computation is run, every
+    page load.
+  </summary>
+</histogram>
+
+<histogram name="GroupSuggestionsService.TopSuggestionReason"
+    enum="GroupSuggestionReason" expires_after="2025-08-22">
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records the reason for the top group suggestion. Logged every time the group
+    suggestion is available to show.
+  </summary>
+</histogram>
+
+<histogram name="GroupSuggestionsService.TopSuggestionTabCount" units="counts"
+    expires_after="2025-08-22">
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records the number of tabs in the top group suggestion. Logged every time
+    the group suggestion is available to show.
+  </summary>
+</histogram>
+
+<histogram name="GroupSuggestionsService.TopSuggestionTabCount.{ReasonVariant}"
+    units="counts" expires_after="2025-08-22">
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records the number of tabs in the top group suggestion. Logged every time
+    the group suggestion is available to show.
+  </summary>
+  <token key="ReasonVariant">
+    <variant name="RecentlyOpened" summary="Recently opened"/>
+    <variant name="SameOrigin" summary="Same origin"/>
+    <variant name="SimilarSource" summary="Similar source"/>
+    <variant name="SwitchedBetween" summary="Switched between"/>
+  </token>
+</histogram>
+
 <histogram
     name="VisitedURLRanking.Fetch.History.Filter.ZeroDurationVisits.InOutPercentage"
     units="%" expires_after="2025-08-22">

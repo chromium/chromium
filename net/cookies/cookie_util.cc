@@ -9,6 +9,7 @@
 
 #include "net/cookies/cookie_util.h"
 
+#include <array>
 #include <cstdio>
 #include <cstdlib>
 #include <string>
@@ -479,9 +480,20 @@ std::optional<std::string> GetCookieDomainWithString(
 // An average cookie expiration will look something like this:
 //   Sat, 15-Apr-17 21:01:22 GMT
 base::Time ParseCookieExpirationTime(const std::string& time_string) {
-  static const char* const kMonths[] = {
-    "jan", "feb", "mar", "apr", "may", "jun",
-    "jul", "aug", "sep", "oct", "nov", "dec" };
+  static const auto kMonths = std::to_array<const char*>({
+      "jan",
+      "feb",
+      "mar",
+      "apr",
+      "may",
+      "jun",
+      "jul",
+      "aug",
+      "sep",
+      "oct",
+      "nov",
+      "dec",
+  });
   // We want to be pretty liberal, and support most non-ascii and non-digit
   // characters as a delimiter.  We can't treat : as a delimiter, because it
   // is the delimiter for hh:mm:ss, and we want to keep this field together.

@@ -38,7 +38,7 @@ process_version("branding_header") {
     "-e",
     "ENTERPRISE_COMPANION_EVENT_LOGGING_URL=\"$enterprise_companion_event_logging_url\"",
     "-e",
-    "KEYSTONE_NAME=\"$keystone_app_name\"",
+    "KEYSTONE_NAME=\"$enterprise_companion_keystone_app_name\"",
     "-e",
     "MAC_BUNDLE_IDENTIFIER_STRING=\"$mac_enterprise_companion_bundle_identifier\"",
     "-e",

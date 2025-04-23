@@ -24,7 +24,7 @@ build_webui("build") {
   grd_prefix = "cr_components_certificate_manager"
 
   web_component_files = []
-  non_web_component_files = []
+  ts_files = []
   static_files = []
   css_files = []
 
@@ -40,7 +40,7 @@ build_webui("build") {
       "certificate_subentry.ts",
       "certificates_error_dialog.ts",
     ]
-    non_web_component_files += [
+    ts_files += [
       "certificate_manager_types.ts",
       "certificates_browser_proxy.ts",
     ]
@@ -57,7 +57,7 @@ build_webui("build") {
       "crs_section_v2.ts",
       "local_certs_section_v2.ts",
     ]
-    non_web_component_files += [
+    ts_files += [
       "certificate_confirmation_dialog.html.ts",
       "certificate_confirmation_dialog.ts",
       "certificate_info_dialog.html.ts",
@@ -82,7 +82,7 @@ build_webui("build") {
       "certificate_provisioning_entry.ts",
       "certificate_provisioning_list.ts",
     ]
-    non_web_component_files += [ "certificate_provisioning_browser_proxy.ts" ]
+    ts_files += [ "certificate_provisioning_browser_proxy.ts" ]
   }
 
   ts_out_dir =
@@ -92,7 +92,6 @@ build_webui("build") {
     "//tools/typescript/definitions/metrics_private.d.ts",
   ]
   ts_composite = true
-  ts_tsconfig_base = "//tools/typescript/tsconfig_base_polymer_legacy.json"
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",

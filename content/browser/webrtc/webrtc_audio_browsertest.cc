@@ -136,6 +136,13 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebRtcAudioBrowserTest,
+                       EnsureRemoteAudioMuteMakeMediaRecorderSilence) {
+  std::string constraints = BuildConstraints(kAudioConstraints, "");
+  MakeAudioDetectingPeerConnectionCall(
+      "callAndEnsureMuteWorksForMediaRecorder(" + constraints + ");");
+}
+
+IN_PROC_BROWSER_TEST_F(WebRtcAudioBrowserTest,
                        EstablishAudioVideoCallAndVerifyUnmutingWorks) {
   std::string constraints =
       BuildConstraints(kAudioConstraints, kVideoConstraints);

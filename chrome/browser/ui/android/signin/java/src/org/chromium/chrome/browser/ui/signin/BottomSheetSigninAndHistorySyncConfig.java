@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,7 +12,6 @@ import androidx.annotation.StringRes;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.signin.base.CoreAccountId;
-import org.chromium.components.signin.base.GaiaId;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -25,7 +21,7 @@ import java.util.Objects;
  * Class containing configurations for the bottom sheet based sign-in view and the history sync
  * opt-in view.
  */
-public final class BottomSheetSigninAndHistorySyncConfig implements Parcelable {
+public final class BottomSheetSigninAndHistorySyncConfig {
 
     /** The sign-in step that should be shown to the user when there's no account on the device. */
     @IntDef({
@@ -162,20 +158,6 @@ public final class BottomSheetSigninAndHistorySyncConfig implements Parcelable {
         this.selectedCoreAccountId = selectedCoreAccountId;
     }
 
-    private BottomSheetSigninAndHistorySyncConfig(Parcel in) {
-        this(
-                in.readParcelable(AccountPickerBottomSheetStrings.class.getClassLoader()),
-                in.readParcelable(HistorySyncConfig.class.getClassLoader()),
-                /* noAccountSigninMode= */ in.readInt(),
-                /* withAccountSigninMode= */ in.readInt(),
-                /* historyOptInMode= */ in.readInt(),
-                /* selectedCoreAccountId= */ getCoreAccountId(in.readString()));
-    }
-
-    private static @Nullable CoreAccountId getCoreAccountId(@Nullable String gaiaId) {
-        return gaiaId == null ? null : new CoreAccountId(new GaiaId(gaiaId));
-    }
-
     @Override
     public boolean equals(@Nullable Object object) {
         if (!(object instanceof BottomSheetSigninAndHistorySyncConfig)) {
@@ -202,35 +184,4 @@ public final class BottomSheetSigninAndHistorySyncConfig implements Parcelable {
                 historyOptInMode,
                 selectedCoreAccountId);
     }
-
-    /** Implements {@link Parcelable} */
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    /** Implements {@link Parcelable} */
-    @Override
-    public void writeToParcel(Parcel out, int flags) {
-        out.writeParcelable(bottomSheetStrings, 0);
-        out.writeParcelable(historySyncConfig, 0);
-        out.writeInt(noAccountSigninMode);
-        out.writeInt(withAccountSigninMode);
-        out.writeInt(historyOptInMode);
-        String id = selectedCoreAccountId == null ? null : selectedCoreAccountId.getId().toString();
-        out.writeString(id);
-    }
-
-    public static final Parcelable.Creator<BottomSheetSigninAndHistorySyncConfig> CREATOR =
-            new Parcelable.Creator<BottomSheetSigninAndHistorySyncConfig>() {
-                @Override
-                public BottomSheetSigninAndHistorySyncConfig createFromParcel(Parcel in) {
-                    return new BottomSheetSigninAndHistorySyncConfig(in);
-                }
-
-                @Override
-                public BottomSheetSigninAndHistorySyncConfig[] newArray(int size) {
-                    return new BottomSheetSigninAndHistorySyncConfig[size];
-                }
-            };
 }

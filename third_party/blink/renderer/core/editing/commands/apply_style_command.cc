@@ -288,8 +288,10 @@ void ApplyStyleCommand::ApplyBlockStyle(EditingStyle* style,
       visible_end.DeepEquivalent().ParentAnchoredEquivalent());
 
   const TextIteratorBehavior behavior =
-      TextIteratorBehavior::AllVisiblePositionsRangeLengthBehavior();
-
+      RuntimeEnabledFeatures::EnterInOpenShadowRootsEnabled()
+          ? TextIteratorBehavior::
+                AllVisiblePositionsIncludingShadowRootRangeLengthBehavior()
+          : TextIteratorBehavior::AllVisiblePositionsRangeLengthBehavior();
   const int start_index = TextIterator::RangeLength(start_range, behavior);
   const int end_index = TextIterator::RangeLength(end_range, behavior);
 

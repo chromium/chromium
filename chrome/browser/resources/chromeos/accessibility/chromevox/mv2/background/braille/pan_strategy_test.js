@@ -7,7 +7,7 @@ GEN_INCLUDE(['../../testing/chromevox_e2e_test_base.js']);
 /**
  * Test fixture.
  */
-ChromeVoxPanStrategyUnitTest = class extends ChromeVoxE2ETest {};
+ChromeVoxMV2PanStrategyUnitTest = class extends ChromeVoxE2ETest {};
 
 /**
  * Creates an array buffer based off of the passed in content.
@@ -23,7 +23,7 @@ function createArrayBuffer(content) {
   return result;
 }
 
-AX_TEST_F('ChromeVoxPanStrategyUnitTest', 'FixedPanning', function() {
+AX_TEST_F('ChromeVoxMV2PanStrategyUnitTest', 'FixedPanning', function() {
   const panner = new PanStrategy();
   panner.setPanStrategy(false);
 
@@ -77,7 +77,7 @@ AX_TEST_F('ChromeVoxPanStrategyUnitTest', 'FixedPanning', function() {
 });
 
 AX_TEST_F(
-    'ChromeVoxPanStrategyUnitTest', 'WrappedPanningSingleLine', function() {
+    'ChromeVoxMV2PanStrategyUnitTest', 'WrappedPanningSingleLine', function() {
       const panner = new PanStrategy();
       panner.setPanStrategy(true);
 
@@ -136,7 +136,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxPanStrategyUnitTest', 'WrappedPanningMultiline', function() {
+    'ChromeVoxMV2PanStrategyUnitTest', 'WrappedPanningMultiline', function() {
       const panner = new PanStrategy();
       panner.setPanStrategy(true);
 
@@ -171,7 +171,7 @@ AX_TEST_F(
           panner.getCurrentBrailleViewportContents());
     });
 
-AX_TEST_F('ChromeVoxPanStrategyUnitTest', 'FixedSetContent', function() {
+AX_TEST_F('ChromeVoxMV2PanStrategyUnitTest', 'FixedSetContent', function() {
   const panner = new PanStrategy();
   panner.setPanStrategy(false);
 
@@ -186,7 +186,7 @@ AX_TEST_F('ChromeVoxPanStrategyUnitTest', 'FixedSetContent', function() {
   assertArraysEquals(expectedMappingValue, panner.brailleToText);
 });
 
-AX_TEST_F('ChromeVoxPanStrategyUnitTest', 'WrappedSetContent', function() {
+AX_TEST_F('ChromeVoxMV2PanStrategyUnitTest', 'WrappedSetContent', function() {
   const panner = new PanStrategy();
   panner.setPanStrategy(true);
 
@@ -241,7 +241,7 @@ AX_TEST_F('ChromeVoxPanStrategyUnitTest', 'WrappedSetContent', function() {
 });
 
 AX_TEST_F(
-    'ChromeVoxPanStrategyUnitTest', 'getCurrentTextViewportContents',
+    'ChromeVoxMV2PanStrategyUnitTest', 'getCurrentTextViewportContents',
     function() {
       const panner = new PanStrategy();
       panner.setPanStrategy(true);
@@ -269,7 +269,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxPanStrategyUnitTest', 'WrappedUnwrappedCursors', function() {
+    'ChromeVoxMV2PanStrategyUnitTest', 'WrappedUnwrappedCursors', function() {
       const panner = new PanStrategy();
       panner.setPanStrategy(true);
 

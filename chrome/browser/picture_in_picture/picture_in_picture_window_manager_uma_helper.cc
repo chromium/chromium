@@ -34,6 +34,9 @@ void PictureInPictureWindowManagerUmaHelper::MaybeRecordPictureInPictureChanged(
   UMA_HISTOGRAM_CUSTOM_TIMES("Media.PictureInPicture.Window.TotalTime",
                              total_pip_time, base::Milliseconds(1),
                              base::Minutes(2), 50);
+  UMA_HISTOGRAM_CUSTOM_TIMES("Media.PictureInPicture.Window.TotalTimeV2",
+                             total_pip_time, base::Milliseconds(1),
+                             base::Hours(10), 100);
 }
 
 void PictureInPictureWindowManagerUmaHelper::SetClockForTest(

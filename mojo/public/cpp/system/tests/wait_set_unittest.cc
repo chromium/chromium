@@ -9,6 +9,7 @@
 
 #include "mojo/public/cpp/system/wait_set.h"
 
+#include <array>
 #include <set>
 #include <string_view>
 #include <vector>
@@ -327,7 +328,7 @@ TEST_F(WaitSetTest, NoStarvation) {
 
   WaitSet wait_set;
 
-  MessagePipe pipes[kNumTestPipes];
+  std::array<MessagePipe, kNumTestPipes> pipes;
   for (size_t i = 0; i < kNumTestPipes; ++i) {
     WriteMessage(pipes[i].handle0, kTestMessage);
     Wait(pipes[i].handle1.get(), MOJO_HANDLE_SIGNAL_READABLE);

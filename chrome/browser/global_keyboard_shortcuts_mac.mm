@@ -15,6 +15,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #import "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/ui/cocoa/accelerators_cocoa.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/platform_accelerator_cocoa.h"
@@ -155,6 +156,19 @@ const std::vector<KeyboardShortcutData>& GetShortcutsNotPresentInMainMenu() {
 #endif
     });
     // clang-format on
+
+    if (tabs::AreTabGroupShortcutsEnabled()) {
+      keys.push_back(
+          {true, false, true, false, kVK_ANSI_C, IDC_ADD_NEW_TAB_TO_GROUP});
+      keys.push_back(
+          {true, false, true, false, kVK_ANSI_D, IDC_CREATE_NEW_TAB_GROUP});
+      keys.push_back(
+          {true, false, true, false, kVK_ANSI_W, IDC_CLOSE_TAB_GROUP});
+      keys.push_back(
+          {true, false, true, false, kVK_ANSI_X, IDC_FOCUS_NEXT_TAB_GROUP});
+      keys.push_back(
+          {true, false, true, false, kVK_ANSI_Z, IDC_FOCUS_PREV_TAB_GROUP});
+    }
 
     if (base::FeatureList::IsEnabled(features::kUIDebugTools)) {
       keys.push_back(

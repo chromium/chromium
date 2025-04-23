@@ -19,6 +19,7 @@
 
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -26,6 +27,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "crypto/mac_security_services_lock.h"
+#include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_apple.h"
@@ -323,46 +325,53 @@ ClientCertIdentityList GetClientCertsOnBackgroundThread(
   std::unique_ptr<ClientCertIdentityMac> preferred_identity;
   ClientCertIdentityMacList regular_identities;
 
-// TODO(crbug.com/40233280): Is it still true, as claimed below, that
-// SecIdentitySearchCopyNext sometimes returns identities missed by
-// SecItemCopyMatching? Add some histograms to test this and, if none are
-// missing, remove this code.
+  // macOS provides two ways to search for identities, SecItemCopyMatching() and
+  // SecIdentitySearchCreate(). SecIdentitySearchCreate() is deprecated, as it
+  // relies on CSSM_KEYUSE_SIGN (part of the deprecated CDSM/CSSA
+  // implementation). At one point, we merged the results of the old and new
+  // APIs, to account for any identities that were not returned by
+  // SecItemCopyMatching(), particularly smartcard-based identities. It is
+  // unclear whether such identities still exist, but the APIs have been
+  // deprecated since 10.7.
+  //
+  // TODO(crbug.com/40233280): The SecIdentitySearchCreate() codepath is now
+  // disabled by default, but can be re-enabled via field trials if there are
+  // still issues. This will reach stable in M137 (May 2025). Remove this branch
+  // sometime after August 2025.
+  if (base::FeatureList::IsEnabled(
+          features::kIncludeDeprecatedClientCertLookup)) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  SecIdentitySearchRef search = nullptr;
-  OSStatus err;
-  {
-    base::AutoLock lock(crypto::GetMacSecurityServicesLock());
-    err = SecIdentitySearchCreate(nullptr, CSSM_KEYUSE_SIGN, &search);
-  }
-  if (err)
-    return ClientCertIdentityList();
-  ScopedCFTypeRef<SecIdentitySearchRef> scoped_search(search);
-  while (!err) {
-    ScopedCFTypeRef<SecIdentityRef> sec_identity;
+    SecIdentitySearchRef search = nullptr;
+    OSStatus err;
     {
       base::AutoLock lock(crypto::GetMacSecurityServicesLock());
-      err = SecIdentitySearchCopyNext(search, sec_identity.InitializeInto());
+      err = SecIdentitySearchCreate(nullptr, CSSM_KEYUSE_SIGN, &search);
     }
-    if (err)
-      break;
-    AddIdentity(std::move(sec_identity), preferred_sec_identity.get(),
-                &regular_identities, &preferred_identity);
-  }
+    if (err) {
+      return ClientCertIdentityList();
+    }
+    ScopedCFTypeRef<SecIdentitySearchRef> scoped_search(search);
+    while (!err) {
+      ScopedCFTypeRef<SecIdentityRef> sec_identity;
+      {
+        base::AutoLock lock(crypto::GetMacSecurityServicesLock());
+        err = SecIdentitySearchCopyNext(search, sec_identity.InitializeInto());
+      }
+      if (err) {
+        break;
+      }
+      AddIdentity(std::move(sec_identity), preferred_sec_identity.get(),
+                  &regular_identities, &preferred_identity);
+    }
 
-  if (err != errSecItemNotFound) {
-    OSSTATUS_LOG(ERROR, err) << "SecIdentitySearch error";
-    return ClientCertIdentityList();
-  }
+    if (err != errSecItemNotFound) {
+      OSSTATUS_LOG(ERROR, err) << "SecIdentitySearch error";
+      return ClientCertIdentityList();
+    }
 #pragma clang diagnostic pop  // "-Wdeprecated-declarations"
+  }
 
-  // macOS provides two ways to search for identities. SecIdentitySearchCreate()
-  // is deprecated, as it relies on CSSM_KEYUSE_SIGN (part of the deprecated
-  // CDSM/CSSA implementation), but is necessary to return some certificates
-  // that would otherwise not be returned by SecItemCopyMatching(), which is the
-  // non-deprecated way. However, SecIdentitySearchCreate() will not return all
-  // items, particularly smart-card based identities, so it's necessary to call
-  // both functions.
   static const void* kKeys[] = {
       kSecClass, kSecMatchLimit, kSecReturnRef, kSecAttrCanSign,
   };
@@ -373,6 +382,7 @@ ClientCertIdentityList GetClientCertsOnBackgroundThread(
       kCFAllocatorDefault, kKeys, kValues, std::size(kValues),
       &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
   ScopedCFTypeRef<CFArrayRef> result;
+  OSStatus err;
   {
     base::AutoLock lock(crypto::GetMacSecurityServicesLock());
     err = SecItemCopyMatching(

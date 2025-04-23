@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="sq">
+<translation id="1293272072740285747">Mbaje këtë grup për të shtuar skeda më vonë ose fshije atë nëse nuk të nevojitet më.
+
+Nëse e fshin atë, të gjithë do të humbasin menjëherë qasjen te grupi i skedave "<ph name="TITLE_OF_GROUP" />" dhe ai do të fshihet nga të gjitha pajisjet.</translation>
+<translation id="1340839264183302272">Largohu nga grupi</translation>
+<translation id="1419023007528516122">Kjo do të fshijë përgjithmonë grupin nga pajisja jote</translation>
+<translation id="1501480321619201731">Fshi grupin</translation>
+<translation id="2677748264148917807">Largohu</translation>
+<translation id="3547352561153509682">Kjo do ta fshijë grupin nga të gjitha pajisjet ku je identifikuar me <ph name="USER_EMAIL" /></translation>
+<translation id="381219490185664296">Të anulohet grupimi për grupin e skedave?</translation>
+<translation id="4139634748112164403">Skedat do të qëndrojnë të hapura në këtë pajisje, por grupi do të fshihet përgjithmonë</translation>
+<translation id="4431937619879060901">Do të humbasësh menjëherë qasjen te grupi i skedave "<ph name="GROUP_NAME" />" dhe ai do të fshihet nga të gjitha pajisjet e tua</translation>
+<translation id="4460014764210899310">Mos grupo</translation>
+<translation id="4777866634702576038">Të fshihet grupi i skedave?</translation>
+<translation id="5094423602314093681">Të hiqen skedat dhe të fshihet grupi?</translation>
+<translation id="5647702255748985085">Dëshiron të largohesh nga grupi?</translation>
+<translation id="742664698522525515">Të mbahet grupi?</translation>
+<translation id="750886945254958667">Mbaje këtë grup për të shtuar skeda më vonë ose largohu nga ai nëse nuk dëshiron më të kesh qasje në të</translation>
+<translation id="8261506727792406068">Fshi</translation>
+<translation id="870736955561925754">Të mbyllet skeda dhe të fshihet grupi?</translation>
+<translation id="8804742093141782941">Mbaje grupin</translation>
+<translation id="9169141410816678175">Të gjithë do të humbasin menjëherë qasjen te grupi i skedave "<ph name="GROUP_NAME" />" dhe ai do të fshihet nga të gjitha pajisjet</translation>
+<translation id="9216898458513705996">Skedat do të qëndrojnë të hapura në këtë pajisje, por grupi do të fshihet nga të gjitha pajisjet ku je identifikuar me <ph name="USER_EMAIL" /></translation>
+<translation id="94870150074703282">Të fshihet grupi?</translation>
+</translationbundle>

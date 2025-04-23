@@ -140,6 +140,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Stability.Android.KillSpareRendererAvailability.{KillType}"
+    enum="SpareRendererAvailabilityWhenKilled" expires_after="2025-09-30">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records whether a process killed because of KillType is a spare renderer and
+    the spare renderer existence. Recorded when a child process exits and the
+    kill type in the ChildProcessTerminationInfo matches KillType. KillType
+    Details: {KillType}
+  </summary>
+  <token key="KillType">
+    <variant name="Intentional"
+        summary="Intentionally killed by the browser process"/>
+    <variant name="Oom"
+        summary="Killed because of out of memory. All the non-clean exits
+                 that is neither a crash nor requested by the browser or the
+                 renderer are classified as out of memory."/>
+  </token>
+</histogram>
+
 <histogram name="Stability.Android.MinidumpUploadingTime" units="ms"
     expires_after="2023-12-24">
   <owner>shaktisahu@chromium.org</owner>
@@ -484,7 +504,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.IOS.PostCrashAction" enum="IOSPostCrashAction"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>justincohen@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>

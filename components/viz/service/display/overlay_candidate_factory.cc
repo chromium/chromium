@@ -682,6 +682,8 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromTextureQuad(
         candidate.priority_hint = gfx::OverlayPriorityHint::kRegular;
       }
 
+    candidate.protected_video_type = quad->protected_video_type;
+
 #if BUILDFLAG(IS_ANDROID)
     candidate.is_video_in_surface_view =
         resource_provider_->IsBackedBySurfaceView(quad->resource_id);

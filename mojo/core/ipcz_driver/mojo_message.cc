@@ -85,7 +85,7 @@ MojoMessage::MojoMessage() = default;
 MojoMessage::MojoMessage(std::vector<uint8_t> data,
                          std::vector<IpczHandle> handles)
     : handles_(std::move(handles)) {
-  data_storage_.reset(static_cast<uint8_t*>(operator new(data.size())));
+  data_storage_.reset(new uint8_t[data.size()]);
   data_storage_size_ = data.size();
   std::ranges::copy(data, data_storage_.get());
 }
@@ -125,7 +125,7 @@ void MojoMessage::SetParcel(ScopedIpczHandle parcel) {
   // We always pass a parcel object in, so Begin/EndGet() must always succeed.
   DCHECK_EQ(result, IPCZ_RESULT_OK);
   if (num_bytes > 0) {
-    data_storage_.reset(static_cast<uint8_t*>(operator new(num_bytes)));
+    data_storage_.reset(new uint8_t[num_bytes]);
 
     // Copy into private memory, out of the potentially shared and volatile
     // `data` buffer. Note that it's fine to cast away volatility here since we
@@ -165,7 +165,7 @@ MojoResult MojoMessage::ReserveCapacity(uint32_t payload_buffer_size,
   }
 
   data_storage_size_ = std::max(payload_buffer_size, uint32_t{kMinBufferSize});
-  DataPtr new_storage(static_cast<uint8_t*>(operator new(data_storage_size_)));
+  DataPtr new_storage(new uint8_t[data_storage_size_]);
   data_storage_ = std::move(new_storage);
   data_ = base::span(data_storage_.get(), 0u);
 
@@ -193,8 +193,7 @@ MojoResult MojoMessage::AppendData(uint32_t additional_num_bytes,
     const size_t copy_size = std::min(new_data_size, data_storage_size_);
     data_storage_size_ =
         std::max(data_size * kGrowthFactor, required_storage_size);
-    DataPtr new_storage(
-        static_cast<uint8_t*>(operator new(data_storage_size_)));
+    DataPtr new_storage(new uint8_t[data_storage_size_]);
     std::ranges::copy(base::span(data_storage_.get(), copy_size),
                       new_storage.get());
     data_storage_ = std::move(new_storage);

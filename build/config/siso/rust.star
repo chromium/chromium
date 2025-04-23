@@ -11,6 +11,7 @@ load("@builtin//struct.star", "module")
 load("./ar.star", "ar")
 load("./config.star", "config")
 load("./fuchsia.star", "fuchsia")
+load("./gn_logs.star", "gn_logs")
 load("./win_sdk.star", "win_sdk")
 
 def __filegroups(ctx):
@@ -48,6 +49,7 @@ def __filegroups(ctx):
                 "bin/clang++",
                 "lib/clang/*/share/cfi_ignorelist.txt",
                 "libclang*.a",
+                "*.lib",
             ],
         },
     }
@@ -164,8 +166,14 @@ def __step_config(ctx, step_config):
     platform_ref = "large"  # Rust actions run faster on large workers.
 
     remote = True
+    remote_link = True
     if runtime.os != "linux":
         remote = False
+        remote_link = False
+    elif "args.gn" in ctx.metadata:
+        gn_args = gn.args(ctx)
+        if gn_args.get("target_os") in ('"mac"', '"ios"', '"win"'):
+            remote_link = False
     clang_inputs = [
         "build/linux/debian_bullseye_amd64-sysroot:rustlink",
         "third_party/llvm-build/Release+Asserts:rustlink",
@@ -199,7 +207,7 @@ def __step_config(ctx, step_config):
             "indirect_inputs": rust_indirect_inputs,
             "handler": "rust_link_handler",
             "deps": "none",  # disable gcc scandeps
-            "remote": remote,
+            "remote": remote_link,
             # "canonicalize_dir": True,  # TODO(b/300352286)
             "timeout": "2m",
             "platform_ref": platform_ref,
@@ -211,7 +219,7 @@ def __step_config(ctx, step_config):
             "indirect_inputs": rust_indirect_inputs,
             "handler": "rust_link_handler",
             "deps": "none",  # disable gcc scandeps
-            "remote": remote,
+            "remote": remote_link,
             # "canonicalize_dir": True,  # TODO(b/300352286)
             "timeout": "2m",
             "platform_ref": platform_ref,
@@ -224,7 +232,7 @@ def __step_config(ctx, step_config):
             "handler": "rust_link_handler",
             "deps": "none",  # disable gcc scandeps
             # "canonicalize_dir": True,  # TODO(b/300352286)
-            "remote": remote,
+            "remote": remote_link,
             "timeout": "2m",
             "platform_ref": platform_ref,
         },

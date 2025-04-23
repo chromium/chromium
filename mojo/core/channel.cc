@@ -88,12 +88,12 @@ Channel::AlignedBuffer MakeAlignedBuffer(size_t size) {
   // Generic allocators (such as malloc) return a pointer that is suitably
   // aligned for storing any type of object with a fundamental alignment
   // requirement. Buffers have no additional alignment requirement beyond that.
-  void* ptr = operator new(size);
+  auto* ptr = new char[size];
   // Even though the allocator is configured in such a way that it crashes
   // rather than return nullptr, ASAN and friends don't know about that. This
   // CHECK() prevents Clusterfuzz from complaining. crbug.com/1180576.
   CHECK(ptr);
-  return Channel::AlignedBuffer(static_cast<char*>(ptr));
+  return Channel::AlignedBuffer(ptr);
 }
 
 struct TrivialMessage;
@@ -105,7 +105,7 @@ struct IpczMessage : public Channel::Message {
   IpczMessage(base::span<const uint8_t> data,
               std::vector<PlatformHandle> handles) {
     size_ = sizeof(IpczHeader) + data.size();
-    data_.reset(static_cast<char*>(operator new(size_)));
+    data_.reset(new char[size_]);
 
     IpczHeader& header = *reinterpret_cast<IpczHeader*>(data_.get());
     header.size = sizeof(IpczHeader);

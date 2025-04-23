@@ -81,6 +81,10 @@ GPUAdapter::GPUAdapter(
     *propertiesChain = &vkProperties;
     propertiesChain = &(*propertiesChain)->nextInChain;
   }
+  wgpu::DawnAdapterPropertiesPowerPreference powerProperties{};
+  *propertiesChain = &powerProperties;
+  propertiesChain = &(*propertiesChain)->nextInChain;
+
   GetHandle().GetInfo(&info);
   is_fallback_adapter_ = info.adapterType == wgpu::AdapterType::CPU;
   adapter_type_ = info.adapterType;
@@ -110,6 +114,7 @@ GPUAdapter::GPUAdapter(
   }
   subgroup_min_size_ = subgroupsProperties.subgroupMinSize;
   subgroup_max_size_ = subgroupsProperties.subgroupMaxSize;
+  power_preference_ = powerProperties.powerPreference;
 
   features_ = MakeFeatureNameSet(GetHandle());
 
@@ -129,7 +134,7 @@ GPUAdapterInfo* GPUAdapter::CreateAdapterInfoForAdapter() {
         vendor_, architecture_, subgroup_min_size_, subgroup_max_size_,
         is_fallback_adapter_, device_, description_, driver_,
         FromDawnEnum(backend_type_), FromDawnEnum(adapter_type_),
-        d3d_shader_model_, vk_driver_version_);
+        d3d_shader_model_, vk_driver_version_, FromDawnEnum(power_preference_));
     for (GPUMemoryHeapInfo* memory_heap : memory_heaps_) {
       info->AppendMemoryHeapInfo(memory_heap);
     }

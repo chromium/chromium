@@ -1,0 +1,71 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import Foundation
+import SwiftUI
+
+enum DeletedAccountUIConstants {
+  static let cornerRadius: CGFloat = 22
+  static let smallWidgetHeight: CGFloat = 140
+  static let smallWidgetWidth: CGFloat = 140
+  static let mediumWidgetHeight: CGFloat = 130
+  static let mediumWidgetWidth: CGFloat = 310
+  static let padding: CGFloat = 8
+}
+
+func SmallWidgetDeletedAccountView() -> some View {
+  VStack {
+    ZStack {
+      RoundedRectangle(cornerRadius: DeletedAccountUIConstants.cornerRadius)
+        .frame(
+          width: DeletedAccountUIConstants.smallWidgetHeight,
+          height: DeletedAccountUIConstants.smallWidgetHeight
+        )
+        .foregroundColor(Color("widget_search_bar_color"))
+        .overlay(
+          // TODO(crbug.com/408987116): Add string to ios_widget_kit_extension_strings.
+          Text(
+            "Account removed from device. Edit the widget to select a new account."
+          )
+          .font(.subheadline)
+          .foregroundColor(Color("widget_text_color"))
+          .multilineTextAlignment(.center)
+          .padding(DeletedAccountUIConstants.padding)
+        )
+    }
+  }
+  .crContainerBackground(Color("widget_background_color").unredacted())
+
+}
+
+func MediumWidgetDeletedAccountView() -> some View {
+  VStack {
+    ZStack {
+      RoundedRectangle(cornerRadius: DeletedAccountUIConstants.cornerRadius)
+        .frame(
+          width: DeletedAccountUIConstants.mediumWidgetWidth,
+          height: DeletedAccountUIConstants.mediumWidgetHeight
+        )
+        .foregroundColor(Color("widget_search_bar_color"))
+        .overlay(
+          VStack {
+            Image("widget_chrome_logo")
+              .clipShape(Circle())
+              .padding(.top, DeletedAccountUIConstants.padding)
+              .unredacted()
+            // TODO(crbug.com/408987116): Add string to ios_widget_kit_extension_strings.
+            Text(
+              "Account removed from device. Edit the widget to select a new account."
+            )
+            .font(.subheadline)
+            .foregroundColor(Color("widget_text_color"))
+            .multilineTextAlignment(.center)
+            .padding(DeletedAccountUIConstants.padding)
+          }
+        )
+    }
+  }
+  .crContainerBackground(Color("widget_background_color").unredacted())
+
+}

@@ -352,7 +352,7 @@ bool FFmpegVideoDecoder::FFmpegDecode(const DecoderBuffer& buffer) {
   // not want to allow on-stack allocation of AVPackets.
   AVPacket* packet = av_packet_alloc();
   if (buffer.end_of_stream()) {
-    packet->data = NULL;
+    packet->data = nullptr;
     packet->size = 0;
   } else {
     auto buffer_span = base::span(buffer);
@@ -489,7 +489,7 @@ bool FFmpegVideoDecoder::ConfigureDecoder(const VideoDecoderConfig& config,
   ReleaseFFmpegResources();
 
   // Initialize AVCodecContext structure.
-  codec_context_.reset(avcodec_alloc_context3(NULL));
+  codec_context_.reset(avcodec_alloc_context3(nullptr));
   VideoDecoderConfigToAVCodecContext(config, codec_context_.get());
 
   codec_context_->thread_count = GetFFmpegVideoDecoderThreadCount(config);
@@ -505,7 +505,7 @@ bool FFmpegVideoDecoder::ConfigureDecoder(const VideoDecoderConfig& config,
   }
 
   const AVCodec* codec = avcodec_find_decoder(codec_context_->codec_id);
-  if (!codec || avcodec_open2(codec_context_.get(), codec, NULL) < 0) {
+  if (!codec || avcodec_open2(codec_context_.get(), codec, nullptr) < 0) {
     ReleaseFFmpegResources();
     return false;
   }

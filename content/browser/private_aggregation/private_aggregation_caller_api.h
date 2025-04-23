@@ -29,6 +29,6 @@ constexpr std::string_view PrivateAggregationCallerApiToString(
 inline void PrintTo(PrivateAggregationCallerApi caller_api, std::ostream* os) {
   *os << PrivateAggregationCallerApiToString(caller_api);
 }
-}
+}  // namespace content
 
 #endif  // CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_CALLER_API_H_

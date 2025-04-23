@@ -207,7 +207,7 @@ RequestResult TestBudgetUsageAgainstLimits(
     base::CheckedNumeric<int> total_budget_used_larger_scope) {
   if (!total_budget_used_smaller_scope.IsValid() ||
       !total_budget_used_larger_scope.IsValid()) {
-    return RequestResult::kBadValuesOnDisk;
+    return RequestResult::kRequestedMoreThanTotalBudget;
   }
   if (total_budget_used_smaller_scope.ValueOrDie() >
       PrivateAggregationBudgeter::kSmallerScopeValues.max_budget_per_scope) {
@@ -436,6 +436,14 @@ void PrivateAggregationBudgeter::InspectBudgetAndLockImpl(
 
   BudgetQueryResult query_results =
       QueryBudget(contributions, budget_key, /*consume_budget=*/false);
+
+  // This is the only fatal error that can occur from `QueryBudget()`.
+  if (query_results.overall_result == RequestResult::kBadValuesOnDisk) {
+    std::move(result_callback)
+        .Run({std::move(query_results), std::nullopt,
+              pending_report_limit_result});
+    return;
+  }
 
   std::move(result_callback)
       .Run(InspectBudgetCallResult(std::move(query_results), VendLock(),
@@ -727,6 +735,12 @@ PrivateAggregationBudgeter::QueryBudget(
       total_budget_used_smaller_scope += elem.budget_used();
     }
     total_budget_used_larger_scope += elem.budget_used();
+  }
+
+  if (TestBudgetUsageAgainstLimits(total_budget_used_smaller_scope,
+                                   total_budget_used_larger_scope) !=
+      RequestResult::kApproved) {
+    return {RequestResult::kBadValuesOnDisk, {}};
   }
 
   base::CheckedNumeric<int> additional_budget = 0;
@@ -1042,5 +1056,16 @@ bool PrivateAggregationBudgeter::DidStorageInitializationSucceed() const {
       return true;
   }
 }
+
+// LINT.IfChange(ComputeOverallRequestResult)
+RequestResult PrivateAggregationBudgeter::CombineRequestResults(
+    RequestResult inspect_budget_result,
+    RequestResult consume_budget_result) {
+  // We can combine the results by simply taking the maximum as any fatal error
+  // can only occur once (and should be the final result) and any insufficient
+  // budget value should override a `kApproved` result.
+  return std::max(inspect_budget_result, consume_budget_result);
+}
+// LINT.ThenChange(//content/browser/private_aggregation/private_aggregation_budgeter.h:RequestResult)
 
 }  // namespace content

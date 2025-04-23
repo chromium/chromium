@@ -229,16 +229,13 @@ std::string VitQueryParamValueForMimeType(lens::MimeType mime_type) {
       break;
     case lens::MimeType::kHtml:
     case lens::MimeType::kPlainText:
+    case lens::MimeType::kAnnotatedPageContent:
       if (lens::features::UseWebpageVitParam()) {
         vitValue = kWebpageVisualInputTypeQueryParameterValue;
       }
       break;
     case lens::MimeType::kUnknown:
       break;
-    case lens::MimeType::kAnnotatedPageContent:
-      // APC is not used as a primary content type; the primary content type
-      // should be kHtml when APC is sent. If this path is hit, it's a mistake.
-      NOTREACHED() << "Apc should not be uploaded by itself.";
     case lens::MimeType::kImage:
     case lens::MimeType::kVideo:
     case lens::MimeType::kAudio:
@@ -291,16 +288,13 @@ lens::LensOverlayInteractionRequestMetadata::Type ContentTypeToInteractionType(
       break;
     case lens::MimeType::kHtml:
     case lens::MimeType::kPlainText:
+    case lens::MimeType::kAnnotatedPageContent:
       if (lens::features::UseWebpageInteractionType()) {
         return lens::LensOverlayInteractionRequestMetadata::WEBPAGE_QUERY;
       }
       break;
     case lens::MimeType::kUnknown:
       break;
-    case lens::MimeType::kAnnotatedPageContent:
-      // APC is not used as a primary content type; the primary content type
-      // should be kHtml when APC is sent. If this path is hit, it's a mistake.
-      NOTREACHED() << "Apc should not be uploaded by itself.";
     case lens::MimeType::kImage:
     case lens::MimeType::kVideo:
     case lens::MimeType::kAudio:
@@ -431,12 +425,48 @@ lens::LensOverlayUploadChunkRequest CreateUploadChunkRequest(
   return request;
 }
 
+// Returns the lens::Payload to be sent after uploading chunked data using the
+// repeated Content field instead of the deprecated payload fields.
+lens::Payload CreatePageContentPayloadWithUpdatedContentFieldsForChunks(
+    base::span<const lens::PageContent> page_content,
+    lens::MimeType primary_content_type,
+    GURL page_url,
+    std::optional<std::string> page_title,
+    int64_t total_stored_chunks) {
+  lens::Payload payload;
+  auto* content = payload.mutable_content();
+
+  if (!page_url.is_empty() &&
+      lens::features::SendPageUrlForContextualization()) {
+    content->set_webpage_url(page_url.spec());
+  }
+  if (page_title.has_value() && !page_title.value().empty() &&
+      lens::features::SendPageTitleForContextualization()) {
+    content->set_webpage_title(page_title.value());
+  }
+
+  auto* content_data = content->add_content_data();
+  content_data->set_content_type(MimeTypeToContentType(primary_content_type));
+  content_data->mutable_stored_chunk_options()->set_read_stored_chunks(true);
+  content_data->mutable_stored_chunk_options()->set_total_stored_chunks(
+      total_stored_chunks);
+  content_data->set_compression_type(lens::CompressionType::ZSTD);
+  return payload;
+}
+
 // Returns the lens::Payload to be sent after uploading chunked data.
 lens::Payload CreatePageContentPayloadForChunks(
     base::span<const lens::PageContent> page_content,
     lens::MimeType primary_content_type,
     GURL page_url,
+    std::optional<std::string> page_title,
     int64_t total_stored_chunks) {
+  if (lens::features::UseUpdatedContextFields()) {
+    return CreatePageContentPayloadWithUpdatedContentFieldsForChunks(
+        page_content, primary_content_type, page_url, page_title,
+        total_stored_chunks);
+  }
+
   lens::Payload payload;
   payload.set_content_type(ContentTypeToString(primary_content_type));
   if (!page_url.is_empty() &&
@@ -446,6 +476,7 @@ lens::Payload CreatePageContentPayloadForChunks(
   payload.mutable_stored_chunk_options()->set_read_stored_chunks(true);
   payload.mutable_stored_chunk_options()->set_total_stored_chunks(
       total_stored_chunks);
+  payload.set_compression_type(lens::CompressionType::ZSTD);
   return payload;
 }
 
@@ -453,13 +484,18 @@ lens::Payload CreatePageContentPayloadForChunks(
 // deprecated payload fields.
 lens::Payload CreatePageContentPayloadWithUpdatedContentFields(
     base::span<const lens::PageContent> page_contents,
-    GURL page_url) {
+    GURL page_url,
+    std::optional<std::string> page_title) {
   lens::Payload payload;
   auto* content = payload.mutable_content();
 
   if (!page_url.is_empty() &&
       lens::features::SendPageUrlForContextualization()) {
     content->set_webpage_url(page_url.spec());
+  }
+  if (page_title.has_value() && !page_title.value().empty() &&
+      lens::features::SendPageTitleForContextualization()) {
+    content->set_webpage_title(page_title.value());
   }
 
   for (const lens::PageContent& page_content : page_contents) {
@@ -490,10 +526,11 @@ lens::Payload CreatePageContentPayloadWithUpdatedContentFields(
 lens::Payload CreatePageContentPayload(
     base::span<const lens::PageContent> page_content,
     lens::MimeType primary_content_type,
-    GURL page_url) {
+    GURL page_url,
+    std::optional<std::string> page_title) {
   if (lens::features::UseUpdatedContextFields()) {
-    return CreatePageContentPayloadWithUpdatedContentFields(page_content,
-                                                            page_url);
+    return CreatePageContentPayloadWithUpdatedContentFields(
+        page_content, page_url, page_title);
   }
 
   CHECK_EQ(page_content.size(), 1u);
@@ -583,6 +620,7 @@ void LensOverlayQueryController::StartQueryFlow(
     std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
     base::span<const lens::PageContent> underlying_page_contents,
     lens::MimeType primary_content_type,
+    std::optional<uint32_t> pdf_current_page,
     float ui_scale_factor,
     base::TimeTicks invocation_time) {
   original_screenshot_ = screenshot;
@@ -591,6 +629,7 @@ void LensOverlayQueryController::StartQueryFlow(
   significant_region_boxes_ = std::move(significant_region_boxes);
   underlying_page_contents_ = underlying_page_contents;
   primary_content_type_ = primary_content_type;
+  pdf_current_page_ = pdf_current_page;
   ui_scale_factor_ = ui_scale_factor;
   invocation_time_ = invocation_time;
   gen204_id_ = base::RandUint64();
@@ -636,6 +675,8 @@ void LensOverlayQueryController::MaybeRestartQueryFlow() {
 void LensOverlayQueryController::SendFullPageTranslateQuery(
     const std::string& source_language,
     const std::string& target_language) {
+  CHECK(query_controller_state_ != QueryControllerState::kOff)
+      << "SendFullPageTranslateQuery called when query controller is off";
   translate_options_ = TranslateOptions(source_language, target_language);
 
   // Send a normal full image request. The parameters to make it a translate
@@ -645,6 +686,9 @@ void LensOverlayQueryController::SendFullPageTranslateQuery(
 }
 
 void LensOverlayQueryController::SendEndTranslateModeQuery() {
+  CHECK(query_controller_state_ != QueryControllerState::kOff)
+      << "SendEndTranslateModeQuery called when query controller is off";
+
   translate_options_.reset();
   PrepareAndFetchFullImageRequest();
 }
@@ -652,7 +696,9 @@ void LensOverlayQueryController::SendEndTranslateModeQuery() {
 void LensOverlayQueryController::ResetPageContentData() {
   underlying_page_contents_ = base::span<const lens::PageContent>();
   primary_content_type_ = lens::MimeType::kUnknown;
+  pdf_current_page_ = std::nullopt;
   page_url_ = GURL();
+  page_title_ = std::nullopt;
   partial_content_ = base::span<const std::u16string>();
 }
 
@@ -660,12 +706,19 @@ void LensOverlayQueryController::SendUpdatedPageContent(
     std::optional<base::span<const lens::PageContent>> underlying_page_content,
     std::optional<lens::MimeType> primary_content_type,
     std::optional<GURL> new_page_url,
+    std::optional<std::string> new_page_title,
+    std::optional<uint32_t> pdf_current_page,
     const SkBitmap& screenshot) {
+  CHECK(query_controller_state_ != QueryControllerState::kOff)
+      << "SendUpdatedPageContent called when query controller is off";
+
   if (underlying_page_content.has_value()) {
     underlying_page_contents_ = underlying_page_content.value();
     primary_content_type_ = primary_content_type.value();
     page_url_ = new_page_url.value();
+    page_title_ = new_page_title;
   }
+  pdf_current_page_ = pdf_current_page;
   if (!screenshot.drawsNothing()) {
     original_screenshot_ = screenshot;
   }
@@ -692,6 +745,8 @@ void LensOverlayQueryController::SendUpdatedPageContent(
 
 void LensOverlayQueryController::SendPartialPageContentRequest(
     base::span<const std::u16string> partial_content) {
+  CHECK(query_controller_state_ != QueryControllerState::kOff)
+      << "SendPartialPageContentRequest called when query controller is off";
   partial_content_ = partial_content;
 
   PrepareAndFetchPartialPageContentRequest();
@@ -702,6 +757,9 @@ void LensOverlayQueryController::SendRegionSearch(
     lens::LensOverlaySelectionType lens_selection_type,
     std::map<std::string, std::string> additional_search_query_params,
     std::optional<SkBitmap> region_bytes) {
+  CHECK(query_controller_state_ != QueryControllerState::kOff)
+      << "SendRegionSearch called when query controller is off";
+
   SendInteraction(/*region=*/std::move(region), /*query_text=*/std::nullopt,
                   /*object_id=*/std::nullopt, lens_selection_type,
                   additional_search_query_params, region_bytes);
@@ -711,6 +769,8 @@ void LensOverlayQueryController::SendContextualTextQuery(
     const std::string& query_text,
     lens::LensOverlaySelectionType lens_selection_type,
     std::map<std::string, std::string> additional_search_query_params) {
+  CHECK(query_controller_state_ != QueryControllerState::kOff)
+      << "SendContextualTextQuery called when query controller is off";
   if (underlying_page_contents_.empty()) {
     SendTextOnlyQuery(query_text, lens_selection_type,
                       additional_search_query_params);
@@ -741,6 +801,9 @@ void LensOverlayQueryController::SendTextOnlyQuery(
     const std::string& query_text,
     lens::LensOverlaySelectionType lens_selection_type,
     std::map<std::string, std::string> additional_search_query_params) {
+  CHECK(query_controller_state_ != QueryControllerState::kOff)
+      << "SendTextOnlyQuery called when query controller is off";
+
   // Although the text only flow might not send an interaction request, we
   // should replace any in-flight interaction requests to cancel previously
   // issued fetches.
@@ -786,6 +849,9 @@ void LensOverlayQueryController::SendMultimodalRequest(
     lens::LensOverlaySelectionType multimodal_selection_type,
     std::map<std::string, std::string> additional_search_query_params,
     std::optional<SkBitmap> region_bytes) {
+  CHECK(query_controller_state_ != QueryControllerState::kOff)
+      << "SendMultimodalRequest called when query controller is off";
+
   if (base::TrimWhitespaceASCII(query_text, base::TRIM_ALL).empty()) {
     return;
   }
@@ -1132,6 +1198,12 @@ void LensOverlayQueryController::
       request_context);
   request.mutable_objects_request()->mutable_image_data()->CopyFrom(image_data);
 
+  if (pdf_current_page_.has_value()) {
+    request.mutable_objects_request()
+        ->mutable_viewport_request_context()
+        ->set_pdf_page_number(pdf_current_page_.value());
+  }
+
   FullImageRequestDataReady(sequence_id, request);
 }
 
@@ -1319,11 +1391,18 @@ void LensOverlayQueryController::PrepareAndFetchPageContentRequest() {
 
   compression_task_tracker_->TryCancelAll();
   page_contents_request_start_time_ = base::TimeTicks::Now();
+  page_content_request_in_progress_ = true;
 
   // The initial request id should be set by the time we get here. If not, call
   // below will crash.
   CHECK(initial_request_id_);
-  if (lens::features::IsLensOverlayUploadChunkingEnabled()) {
+
+  // Send a chunk request if the upload is a PDF larger than the chunk size.
+  // If not, send a normal page content request.
+  if (lens::features::IsLensOverlayUploadChunkingEnabled() &&
+      primary_content_type_ == lens::MimeType::kPdf &&
+      underlying_page_contents_.front().bytes_.size() >
+          lens::features::GetLensOverlayChunkSizeBytes()) {
     // Post MakeChunks to a task off the main thread so compression does not
     // throttle the main thread.
     compression_task_tracker_->PostTaskAndReplyWithResult(
@@ -1334,7 +1413,7 @@ void LensOverlayQueryController::PrepareAndFetchPageContentRequest() {
             weak_ptr_factory_.GetWeakPtr(),
             is_first_page_contents_request_
                 ? *initial_request_id_
-                : *request_id_generator_->GetNextRequestId(
+                : *GetNextRequestId(
                       lens::RequestIdUpdateMode::kPageContentRequest)));
   } else {
     // Post CreatePageContentPayload to a task off the main thread so
@@ -1342,13 +1421,13 @@ void LensOverlayQueryController::PrepareAndFetchPageContentRequest() {
     compression_task_tracker_->PostTaskAndReplyWithResult(
         compression_task_runner_.get(), FROM_HERE,
         base::BindOnce(&CreatePageContentPayload, underlying_page_contents_,
-                       primary_content_type_, page_url_),
+                       primary_content_type_, page_url_, page_title_),
         base::BindOnce(
             &LensOverlayQueryController::PrepareAndFetchPageContentRequestPart2,
             weak_ptr_factory_.GetWeakPtr(),
             is_first_page_contents_request_
                 ? *initial_request_id_
-                : *request_id_generator_->GetNextRequestId(
+                : *GetNextRequestId(
                       lens::RequestIdUpdateMode::kPageContentRequest)));
   }
 
@@ -1428,7 +1507,7 @@ void LensOverlayQueryController::UploadChunkResponseHandler(
       FROM_HERE,
       base::BindOnce(&CreatePageContentPayloadForChunks,
                      underlying_page_contents_, primary_content_type_,
-                     page_url_, total_chunks),
+                     page_url_, page_title_, total_chunks),
       base::BindOnce(
           &LensOverlayQueryController::PrepareAndFetchPageContentRequestPart2,
           weak_ptr_factory_.GetWeakPtr(), request_id));
@@ -1458,7 +1537,6 @@ void LensOverlayQueryController::PerformPageContentRequest(
     std::vector<std::string> headers) {
   page_content_access_token_fetcher_.reset();
 
-  page_content_request_in_progress_ = true;
   PerformFetchRequest(
       &request, &headers,
       base::Milliseconds(
@@ -1537,7 +1615,7 @@ void LensOverlayQueryController::PrepareAndFetchPartialPageContentRequest() {
     request_context.mutable_request_id()->CopyFrom(*initial_request_id_);
   } else {
     request_context.mutable_request_id()->CopyFrom(
-        *request_id_generator_->GetNextRequestId(
+        *GetNextRequestId(
             lens::RequestIdUpdateMode::kPartialPageContentRequest));
   }
   request_context.mutable_client_context()->CopyFrom(CreateClientContext());
@@ -1568,6 +1646,10 @@ void LensOverlayQueryController::PrepareAndFetchPartialPageContentRequest() {
     if (!page_url_.is_empty() &&
         lens::features::SendPageUrlForContextualization()) {
       content->set_webpage_url(page_url_.spec());
+    }
+    if (page_title_.has_value() && !page_title_.value().empty() &&
+        lens::features::SendPageTitleForContextualization()) {
+      content->set_webpage_title(page_title_.value());
     }
   } else {
     payload.mutable_partial_pdf_document()->CopyFrom(partial_pdf_document);
@@ -2320,7 +2402,7 @@ void LensOverlayQueryController::OnChunkUploadEndpointFetcherCreated(
 
 bool LensOverlayQueryController::ShouldSendContextualSearchQuery() {
   // Can send the query if the page content request has finished.
-  return !page_content_request_in_progress_;
+  return !page_content_request_in_progress_ && cluster_info_.has_value();
 }
 
 bool LensOverlayQueryController::IsPartialPageContentSubstantial() {

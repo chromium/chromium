@@ -20,6 +20,7 @@
 
 namespace web_app {
 class FakeWebAppProvider;
+class WebAppProvider;
 }
 
 // Consider to implement web app specific test harness independent of
@@ -66,6 +67,8 @@ class WebAppTest : public content::RenderViewHostTestHarness {
            "will be `nullptr`.";
     return test_url_loader_factory_;
   }
+
+  web_app::WebAppProvider& provider() const;
 
   web_app::FakeWebAppProvider& fake_provider() const;
 

@@ -96,6 +96,13 @@ MojoGpuVideoAcceleratorFactories::MojoGpuVideoAcceleratorFactories(
 MojoGpuVideoAcceleratorFactories::~MojoGpuVideoAcceleratorFactories() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
+  // If we have a context provider still, ensure that we have removed ourselves
+  // from its observer list.
+  if (context_provider_) {
+    context_provider_->RemoveObserver(this);
+    context_provider_ = nullptr;
+  }
+
   // `context_provider_lost_` is a pointer to a boolean, and should be
   // deleted on the main thread.
   main_thread_task_runner_->DeleteSoon(FROM_HERE,

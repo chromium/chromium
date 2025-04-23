@@ -50,26 +50,26 @@ const char* ScopeLimitedUnrecoverableErrorReasonToString(
       return "admin policy enforced";
     case kRemoteConsentResolutionRequired:
       return "remote consent resolution required";
+    case kAccessDenied:
+      return "access denied";
   }
   NOTREACHED();
 }
+
+bool IsTransientError(GoogleServiceAuthError::State state) {
+  switch (state) {
+    // These are failures that are likely to succeed if tried again.
+    case GoogleServiceAuthError::CONNECTION_FAILED:
+    case GoogleServiceAuthError::SERVICE_UNAVAILABLE:
+    case GoogleServiceAuthError::REQUEST_CANCELED:
+    case GoogleServiceAuthError::CHALLENGE_RESPONSE_REQUIRED:
+      return true;
+    // Everything else will have the same result.
+    default:
+      return false;
+  }
+}
 }  // namespace
-
-bool GoogleServiceAuthError::operator==(
-    const GoogleServiceAuthError& b) const {
-  return (state_ == b.state_) && (network_error_ == b.network_error_) &&
-         (error_message_ == b.error_message_) &&
-         (invalid_gaia_credentials_reason_ ==
-          b.invalid_gaia_credentials_reason_) &&
-         (scope_limited_unrecoverable_error_reason_ ==
-          b.scope_limited_unrecoverable_error_reason_) &&
-         (token_binding_challenge_ == b.token_binding_challenge_);
-}
-
-bool GoogleServiceAuthError::operator!=(
-    const GoogleServiceAuthError& b) const {
-  return !(*this == b);
-}
 
 GoogleServiceAuthError::GoogleServiceAuthError()
     : GoogleServiceAuthError(NONE) {}
@@ -258,17 +258,7 @@ bool GoogleServiceAuthError::IsScopePersistentError() const {
 }
 
 bool GoogleServiceAuthError::IsTransientError() const {
-  switch (state_) {
-  // These are failures that are likely to succeed if tried again.
-  case GoogleServiceAuthError::CONNECTION_FAILED:
-  case GoogleServiceAuthError::SERVICE_UNAVAILABLE:
-  case GoogleServiceAuthError::REQUEST_CANCELED:
-  case GoogleServiceAuthError::CHALLENGE_RESPONSE_REQUIRED:
-      return true;
-  // Everything else will have the same result.
-  default:
-      return false;
-  }
+  return ::IsTransientError(state_);
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -295,5 +285,9 @@ GoogleServiceAuthError GoogleServiceAuthError::FromJavaObject(
 jni_zero::ScopedJavaLocalRef<jobject> GoogleServiceAuthError::ToJavaObject(
     JNIEnv* env) const {
   return Java_GoogleServiceAuthError_Constructor(env, state_);
+}
+
+jboolean JNI_GoogleServiceAuthError_IsTransientError(JNIEnv* env, jint state) {
+  return IsTransientError(static_cast<GoogleServiceAuthError::State>(state));
 }
 #endif  // BUILDFLAG(IS_ANDROID)

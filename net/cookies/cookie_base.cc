@@ -582,18 +582,17 @@ UniqueCookieKey CookieBase::UniqueKey() const {
           ? std::make_optional(source_scheme_)
           : std::nullopt;
 
-  if (IsHostCookie()) {
-    std::optional<int> source_port = cookie_util::IsPortBoundCookiesEnabled()
-                                         ? std::make_optional(source_port_)
-                                         : std::nullopt;
-
-    return UniqueCookieKey::Host(base::PassKey<CookieBase>(), partition_key_,
-                                 name_, domain_, path_, source_scheme,
-                                 source_port);
+  if (IsDomainCookie()) {
+    return UniqueCookieKey::Domain(base::PassKey<CookieBase>(), partition_key_,
+                                   name_, domain_, path_, source_scheme);
   }
+  std::optional<int> source_port = cookie_util::IsPortBoundCookiesEnabled()
+                                       ? std::make_optional(source_port_)
+                                       : std::nullopt;
 
-  return UniqueCookieKey::Domain(base::PassKey<CookieBase>(), partition_key_,
-                                 name_, domain_, path_, source_scheme);
+  return UniqueCookieKey::Host(base::PassKey<CookieBase>(), partition_key_,
+                               name_, domain_, path_, source_scheme,
+                               source_port);
 }
 
 RefUniqueCookieKey CookieBase::RefUniqueKey() const {
@@ -602,18 +601,19 @@ RefUniqueCookieKey CookieBase::RefUniqueKey() const {
           ? std::make_optional(source_scheme_)
           : std::nullopt;
 
-  if (IsHostCookie()) {
-    std::optional<int> source_port = cookie_util::IsPortBoundCookiesEnabled()
-                                         ? std::make_optional(source_port_)
-                                         : std::nullopt;
-
-    return RefUniqueCookieKey::Host(base::PassKey<CookieBase>(), partition_key_,
-                                    name_, domain_, path_, source_scheme,
-                                    source_port);
+  if (IsDomainCookie()) {
+    return RefUniqueCookieKey::Domain(base::PassKey<CookieBase>(),
+                                      partition_key_, name_, domain_, path_,
+                                      source_scheme);
   }
 
-  return RefUniqueCookieKey::Domain(base::PassKey<CookieBase>(), partition_key_,
-                                    name_, domain_, path_, source_scheme);
+  std::optional<int> source_port = cookie_util::IsPortBoundCookiesEnabled()
+                                       ? std::make_optional(source_port_)
+                                       : std::nullopt;
+
+  return RefUniqueCookieKey::Host(base::PassKey<CookieBase>(), partition_key_,
+                                  name_, domain_, path_, source_scheme,
+                                  source_port);
 }
 
 UniqueCookieKey CookieBase::LegacyUniqueKey() const {

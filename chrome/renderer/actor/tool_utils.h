@@ -30,6 +30,14 @@ blink::WebNode GetNodeFromId(const content::RenderFrame& frame,
 std::optional<gfx::PointF> InteractionPointFromWebNode(
     const blink::WebNode& node);
 
+// Returns whether the Node is focusable and in focus.
+bool IsNodeFocused(const content::RenderFrame& frame,
+                   const blink::WebNode& node);
+
+// `point` is relative to the viewport origin.
+bool IsPointWithinViewport(const gfx::PointF& point,
+                           const content::RenderFrame& frame);
+
 }  // namespace actor
 
 #endif  // CHROME_RENDERER_ACTOR_TOOL_UTILS_H_

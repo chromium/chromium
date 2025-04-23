@@ -154,15 +154,6 @@ void BidirectionalStream::Cancel() {
       base::BindOnce(&BidirectionalStream::CancelOnNetworkThread, weak_this_));
 }
 
-void BidirectionalStream::Destroy() {
-  // Destroy could be called from any thread, including network thread (if
-  // posting task to executor throws an exception), but is posted, so |this|
-  // is valid until calling task is complete.
-  PostToNetworkThread(
-      FROM_HERE, base::BindOnce(&BidirectionalStream::DestroyOnNetworkThread,
-                                base::Unretained(this)));
-}
-
 void BidirectionalStream::OnStreamReady(bool request_headers_sent) {
   DCHECK(IsOnNetworkThread());
   DCHECK_EQ(STARTED, write_state_);
@@ -387,11 +378,6 @@ void BidirectionalStream::CancelOnNetworkThread() {
   bidi_stream_.reset();
   weak_factory_.InvalidateWeakPtrs();
   delegate_->OnCanceled();
-}
-
-void BidirectionalStream::DestroyOnNetworkThread() {
-  DCHECK(IsOnNetworkThread());
-  delete this;
 }
 
 void BidirectionalStream::MaybeOnSucceded() {

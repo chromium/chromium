@@ -49,16 +49,6 @@ bool ServiceWorkerRouterCondition::operator==(
   return get() == other.get();
 }
 
-bool ServiceWorkerRouterRaceSource::operator==(
-    const ServiceWorkerRouterRaceSource& other) const {
-  return target == other.target;
-}
-
-bool ServiceWorkerRouterCacheSource::operator==(
-    const ServiceWorkerRouterCacheSource& other) const {
-  return cache_name == other.cache_name;
-}
-
 bool ServiceWorkerRouterSource::operator==(
     const ServiceWorkerRouterSource& other) const {
   if (type != other.type) {
@@ -67,12 +57,17 @@ bool ServiceWorkerRouterSource::operator==(
   switch (type) {
     case network::mojom::ServiceWorkerRouterSourceType::kNetwork:
       return network_source == other.network_source;
-    case network::mojom::ServiceWorkerRouterSourceType::kRace:
-      return race_source == other.race_source;
+    case network::mojom::ServiceWorkerRouterSourceType::
+        kRaceNetworkAndFetchEvent:
+      return race_network_and_fetch_event_source ==
+             other.race_network_and_fetch_event_source;
     case network::mojom::ServiceWorkerRouterSourceType::kFetchEvent:
       return fetch_event_source == other.fetch_event_source;
     case network::mojom::ServiceWorkerRouterSourceType::kCache:
       return cache_source == other.cache_source;
+    case network::mojom::ServiceWorkerRouterSourceType::kRaceNetworkAndCache:
+      return race_network_and_cache_source ==
+             other.race_network_and_cache_source;
   }
 }
 

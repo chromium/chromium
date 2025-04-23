@@ -9,10 +9,6 @@
       {
         "policies": {},
         "prefs": {
-          "enterprise_logo.url.for_browser": {
-            "location": "local_state",
-            "default_value": ""
-          },
           "enterprise_logo.url.for_profile": {
             "location": "user_profile",
             "default_value": ""
@@ -45,10 +41,6 @@
           }
         },
         "prefs": {
-          "enterprise_logo.url.for_browser": {
-            "location": "local_state",
-            "value": "http://www.example.com"
-          },
           "enterprise_logo.url.for_profile": {
             "location": "user_profile",
             "default_value": ""

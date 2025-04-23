@@ -7,10 +7,12 @@
 #import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/fallback_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -149,12 +151,15 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
   self.view.backgroundColor =
       [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 
-  // Set the view's frame to get the right height initially. Once the view's
-  // window is loaded in `viewDidAppear`, the view's height will be dynamically
-  // constraint to its window's height instead.
-  self.view.autoresizingMask = UIViewAutoresizingNone;
-  self.view.frame = CGRectMake(
-      0, 0, 0, UIScreen.mainScreen.bounds.size.height * kViewHeightMultiplier);
+  if (!IsKeyboardAccessoryUpgradeWithShortManualFillMenuEnabled()) {
+    // Set the view's frame to get the right height initially. Once the view's
+    // window is loaded in `viewDidAppear`, the view's height will be
+    // dynamically constraint to its window's height instead.
+    self.view.autoresizingMask = UIViewAutoresizingNone;
+    self.view.frame = CGRectMake(
+        0, 0, 0,
+        UIScreen.mainScreen.bounds.size.height * kViewHeightMultiplier);
+  }
 
   _headerView = [self createHeaderView];
   _headerTopView = [self createHeaderTopView];
@@ -207,25 +212,32 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
 
-  // The top padding must take into account the arrow of the popover view if the
-  // arrow is at the top of the view.
-  BOOL isPopoverUpArrow = self.popoverPresentationController.arrowDirection ==
-                          UIPopoverArrowDirectionUp;
-  _headerViewTopConstraint.active = !isPopoverUpArrow;
-  _headerViewPopoverTopConstraint.active = isPopoverUpArrow;
+  [self adjustTopHeaderViewConstraint];
+
+  if (IsKeyboardAccessoryUpgradeWithShortManualFillMenuEnabled()) {
+    // Set the view to be the same height as the keyboard and keyboard accessory
+    // combined.
+    [NSLayoutConstraint activateConstraints:@[
+      [self.view.heightAnchor
+          constraintEqualToAnchor:self.view.superview.heightAnchor
+                         constant:kFormInputAccessoryViewLargeHeight],
+    ]];
+  }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
 
-  // Anchor the view's height to its window's height so that the view's height
-  // resizes dynamically when switching between portrait and landscape modes.
-  self.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-  [NSLayoutConstraint activateConstraints:@[
-    [self.view.heightAnchor
-        constraintEqualToAnchor:self.view.window.heightAnchor
-                     multiplier:kViewHeightMultiplier],
-  ]];
+  if (!IsKeyboardAccessoryUpgradeWithShortManualFillMenuEnabled()) {
+    // Anchor the view's height to its window's height so that the view's height
+    // resizes dynamically when switching between portrait and landscape modes.
+    self.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+    [NSLayoutConstraint activateConstraints:@[
+      [self.view.heightAnchor
+          constraintEqualToAnchor:self.view.window.heightAnchor
+                       multiplier:kViewHeightMultiplier],
+    ]];
+  }
 
   // Bring focus to the expanded view by focusing on the Chrome logo.
   UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
@@ -249,6 +261,8 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
                              trailingConstraint:_headerViewTrailingConstraint
                                        constant:_tableViewCellHorizontalInset];
   }
+
+  [self adjustTopHeaderViewConstraint];
 }
 
 #pragma mark - UITraitEnvironment
@@ -297,6 +311,15 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
 }
 
 #pragma mark - Private
+
+// Adjusts the top padding so that it takes into account the arrow of the
+// popover view if the arrow is at the top of the view.
+- (void)adjustTopHeaderViewConstraint {
+  BOOL isPopoverUpArrow = self.popoverPresentationController.arrowDirection ==
+                          UIPopoverArrowDirectionUp;
+  _headerViewTopConstraint.active = !isPopoverUpArrow;
+  _headerViewPopoverTopConstraint.active = isPopoverUpArrow;
+}
 
 // Creates and configures the header view.
 - (UIView*)createHeaderView {

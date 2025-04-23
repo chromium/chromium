@@ -16,7 +16,7 @@ build_webui("build") {
     "pref_display.ts",
     "value_display.ts",
   ]
-  non_web_component_files = [ "index.ts" ]
+  ts_files = [ "index.ts" ]
   html_to_wrapper_template = "native"
 
   mojo_files_deps = [

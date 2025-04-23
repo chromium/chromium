@@ -113,13 +113,10 @@ RasterMode CanvasResourceHost::GetRasterMode() const {
 
 void CanvasResourceHost::ResetLayer() {
   if (cc_layer_) {
-    if (GetRasterMode() == RasterMode::kGPU) {
-      cc_layer_->ClearTexture();
-      // Orphaning the layer is required to trigger the recreation of a new
-      // layer in the case where destruction is caused by a canvas resize. Test:
-      // virtual/gpu/fast/canvas/canvas-resize-after-paint-without-layout.html
-      cc_layer_->RemoveFromParent();
-    }
+    // Orphaning the layer is required to trigger the recreation of a new
+    // layer in the case where destruction is caused by a canvas resize. Test:
+    // virtual/gpu/fast/canvas/canvas-resize-after-paint-without-layout.html
+    cc_layer_->RemoveFromParent();
     cc_layer_->ClearClient();
     cc_layer_ = nullptr;
   }
@@ -202,7 +199,7 @@ bool CanvasResourceHost::PrepareTransferableResource(
   // If the context is lost, we don't know if we should be producing GPU or
   // software frames, until we get a new context, since the compositor will
   // be trying to get a new context and may change modes.
-  if (!GetOrCreateResourceProviderWithCurrentRasterModeHint()) {
+  if (!GetOrCreateCanvasResourceProvider()) {
     return false;
   }
 
@@ -268,7 +265,7 @@ bool CanvasResourceHost::IsResourceValid() {
     return false;
   }
 
-  return !!GetOrCreateResourceProviderWithCurrentRasterModeHint();
+  return !!GetOrCreateCanvasResourceProvider();
 }
 
 }  // namespace blink

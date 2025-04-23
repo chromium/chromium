@@ -4,6 +4,7 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/to_string.h"
+#include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -23,10 +24,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/extension_platform_browsertest.h"
-#else
-#include "chrome/browser/extensions/extension_browsertest.h"
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -45,13 +43,7 @@ void RestrictProcessCount() {
   content::RenderProcessHost::SetMaxRendererProcessCount(1);
 }
 
-#if BUILDFLAG(IS_ANDROID)
-using CrossOriginIsolationTestBase = ExtensionPlatformBrowserTest;
-#else
-using CrossOriginIsolationTestBase = ExtensionBrowserTest;
-#endif
-
-class CrossOriginIsolationTest : public CrossOriginIsolationTestBase {
+class CrossOriginIsolationTest : public ExtensionBrowserTest {
  public:
   CrossOriginIsolationTest() = default;
   ~CrossOriginIsolationTest() override = default;
@@ -59,7 +51,7 @@ class CrossOriginIsolationTest : public CrossOriginIsolationTestBase {
   CrossOriginIsolationTest& operator=(const CrossOriginIsolationTest&) = delete;
 
   void SetUpOnMainThread() override {
-    CrossOriginIsolationTestBase::SetUpOnMainThread();
+    ExtensionBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
@@ -72,7 +64,7 @@ class CrossOriginIsolationTest : public CrossOriginIsolationTestBase {
     const char* test_js = "";
     bool is_platform_app = false;
   };
-  using CrossOriginIsolationTestBase::LoadExtension;
+  using ExtensionBrowserTest::LoadExtension;
   const Extension* LoadExtension(TestExtensionDir& dir,
                                  const Options& options) {
     CHECK(options.coep_value);
@@ -738,8 +730,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
 
 // Verify extension resource access if it's in an iframe. Regression test for
 // crbug.com/1343610.
-IN_PROC_BROWSER_TEST_F(ExtensionPlatformBrowserTest,
-                       ExtensionResourceInIframe) {
+IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, ExtensionResourceInIframe) {
   EXPECT_TRUE(embedded_test_server()->Start());
 
   // Load an extension that has one web accessible resource.

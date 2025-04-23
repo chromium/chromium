@@ -5,6 +5,8 @@ include_rules = [
   "+components/bookmarks/common",
   "+components/bookmarks/managed",
   "+components/bookmarks/test",
+  "+components/collaboration/public/collaboration_service.h",
+  "+components/collaboration/public/data_type_controller",
   "+components/commerce/core",
   "+components/consent_auditor",
   "+components/data_sharing/public",

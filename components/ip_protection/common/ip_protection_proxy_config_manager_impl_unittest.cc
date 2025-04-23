@@ -106,6 +106,7 @@ class MockIpProtectionCore : public IpProtectionCore {
       size_t chain_index) override {
     return std::nullopt;
   }
+  bool IsProbabilisticRevealTokenAvailable() override { NOTREACHED(); }
   std::optional<std::string> GetProbabilisticRevealToken(
       const std::string& top_level,
       const std::string& third_party) override {

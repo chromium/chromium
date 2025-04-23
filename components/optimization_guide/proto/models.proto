@@ -246,6 +246,10 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_SEGMENTATION_FEDCM_USER = 58;
   // Target for Writing Assistance APIs (Writer and Rewriter).
   OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_WRITING_ASSISTANCE_API = 59;
+  // Target for Geolocation Permission Relevance.
+  OPTIMIZATION_TARGET_GEOLOCATION_IMAGE_PERMISSION_RELEVANCE = 60;
+  // Target for Notification Permission Relevance.
+  OPTIMIZATION_TARGET_NOTIFICATION_IMAGE_PERMISSION_RELEVANCE = 61;
 }
 
 // The model engine versions that can be used to do model inference.
@@ -302,6 +306,9 @@ enum ModelEngineVersion {
   MODEL_ENGINE_VERSION_TFLITE_2_18 = 18;
   // A model using only operations that are supported by 2.20.0.
   MODEL_ENGINE_VERSION_TFLITE_2_20_0 = 19;
+  // A model using only operations that are supported by 2.20.0.
+  // This adds GATHER v4 to the supported operations.
+  MODEL_ENGINE_VERSION_TFLITE_2_20_1 = 20;
 }
 
 // The set of parameters that the server can use to vary the served model for

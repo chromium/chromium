@@ -162,7 +162,9 @@ public class TabGridItemLongPressOrchestrator {
                     if (cardIdx == TabModel.INVALID_TAB_INDEX) {
                         return;
                     }
-                    View card = recyclerView.getChildAt(cardIdx);
+                    ViewHolder viewHolder = recyclerView.findViewHolderForAdapterPosition(cardIdx);
+                    if (viewHolder == null) return;
+                    View card = viewHolder.itemView;
                     mCancelLongPressTabItemEventListener =
                             mOnLongPressTabItemEventListener.onLongPressEvent(tabId, card);
                 });

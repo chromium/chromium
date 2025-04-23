@@ -45,18 +45,14 @@ interface IndexedDBControlTest {
   // Forgets the storage keys and sizes read from disk.
   ResetCachesForTesting() => ();
 
-  // Does a direct write to a database with a given key/value pair.
-  WriteToIndexedDBForTesting(storage.mojom.BucketLocator bucket_locator,
-                             mojo_base.mojom.ByteString key,
-                             mojo_base.mojom.ByteString value) => ();
-
   // Returns the path for a given key/database/blob.
   GetPathForBlobForTesting(storage.mojom.BucketLocator bucket_locator,
                            int64 database_id, int64 blob_number) =>
       (mojo_base.mojom.FilePath path);
 
-  // Compacts the backing store for a given `bucket_locator`.
-  CompactBackingStoreForTesting(storage.mojom.BucketLocator bucket_locator) =>
+  // Writes backing store files to disk in their long-term format, e.g. converts
+  // a log to actual DB files.
+  FlushBackingStoreForTesting(storage.mojom.BucketLocator bucket_locator) =>
       ();
 
   // Computes the scheduling priority for the first bucket in the map. Returns
@@ -75,10 +71,6 @@ interface IndexedDBControlTest {
   // class factory isn't used before the testing one is set.
   BindMockFailureSingletonForTesting(
       pending_receiver<MockFailureInjector> receiver);
-
-  // Return keys used in WriteToIndexedDBForTesting.
-  GetDatabaseKeysForTesting() =>
-      (string schema_version_key, string data_version_key);
 
   // Forces disk files to be re-read and added to active set if changed.
   ForceInitializeFromFilesForTesting() => ();

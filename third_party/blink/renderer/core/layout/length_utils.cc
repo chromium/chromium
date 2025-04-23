@@ -1342,7 +1342,11 @@ int ResolveUsedColumnCount(int computed_count,
                            LayoutUnit used_gap,
                            LayoutUnit available_size) {
   if (computed_size == kIndefiniteSize) {
-    DCHECK(computed_count);
+    if (!computed_count) {
+      // Both `column-width` and `column-count` are auto. We're here because
+      // `column-height` is non-auto. Set column count to 1.
+      return 1;
+    }
     return computed_count;
   }
   DCHECK_GT(computed_size, LayoutUnit());
@@ -1379,7 +1383,7 @@ LayoutUnit ResolveUsedColumnInlineSize(int computed_count,
 LayoutUnit ResolveUsedColumnInlineSize(const ComputedStyle& style,
                                        LayoutUnit available_size) {
   // Should only attempt to resolve this if columns != auto.
-  DCHECK(!style.HasAutoColumnCount() || !style.HasAutoColumnWidth());
+  DCHECK(style.SpecifiesColumns());
 
   LayoutUnit computed_size =
       style.HasAutoColumnWidth()

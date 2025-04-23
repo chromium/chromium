@@ -12,6 +12,8 @@ static_library("regional_capabilities") {
     "eea_countries_ids.h",
     "regional_capabilities_metrics.cc",
     "regional_capabilities_metrics.h",
+    "regional_capabilities_prefs.cc",
+    "regional_capabilities_prefs.h",
     "regional_capabilities_service.cc",
     "regional_capabilities_service.h",
     "regional_capabilities_switches.cc",
@@ -28,8 +30,13 @@ static_library("regional_capabilities") {
 
   deps = [
     ":country_access_reason",
+    "//base/version_info",
     "//components/country_codes",
+    "//components/pref_registry",
     "//components/prefs",
+    "//components/search_engines:search_engine_pref_names",
+    "//third_party/search_engines_data:prepopulated_engines",
+    "//third_party/search_engines_data:regional_settings",
   ]
 
   if (is_android) {

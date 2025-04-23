@@ -4,17 +4,21 @@
 
 #include "remoting/host/webauthn/remote_webauthn_caller_security_utils.h"
 
+#include <optional>
 #include <string_view>
 
 #include "base/environment.h"
+#include "base/logging.h"
+#include "base/notreached.h"
+#include "base/process/process_handle.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #include "base/containers/fixed_flat_set.h"
 #include "base/files/file_path.h"
-#include "base/process/process_handle.h"
 #include "remoting/host/base/process_util.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -27,8 +31,14 @@
 #include "remoting/host/win/trust_util.h"
 #endif
 
-#else  // !IS_LINUX && !IS_WIN
-#include "base/notreached.h"
+#if BUILDFLAG(IS_MAC)
+#include <Security/Security.h>
+#include <mach/kern_return.h>
+#include <unistd.h>
+
+#include <array>
+
+#include "remoting/host/mac/trust_util.h"
 #endif
 
 namespace remoting {
@@ -75,6 +85,12 @@ constexpr auto kAllowedCallerPrograms =
         L"Google\\Chrome Dev\\Application\\chrome.exe",
     });
 
+#elif BUILDFLAG(IS_MAC)
+
+constexpr auto kAllowedIdentifiers = std::to_array<const std::string_view>(
+    {"com.google.Chrome", "com.google.Chrome.beta", "com.google.Chrome.dev",
+     "com.google.Chrome.canary"});
+
 #endif
 
 }  // namespace
@@ -108,9 +124,9 @@ bool IsLaunchedByTrustedProcess() {
 
   // COMSPEC is generally "C:\WINDOWS\system32\cmd.exe". Note that the casing
   // does not match the actual file path's casing.
-  std::string comspec_utf8;
-  if (environment->GetVar("COMSPEC", &comspec_utf8)) {
-    base::FilePath::StringType comspec = base::UTF8ToWide(comspec_utf8);
+  std::optional<std::string> comspec_utf8 = environment->GetVar("COMSPEC");
+  if (comspec_utf8.has_value()) {
+    base::FilePath::StringType comspec = base::UTF8ToWide(comspec_utf8.value());
     if (base::FilePath::CompareEqualIgnoreCase(parent_image_path.value(),
                                                comspec)) {
       // Skip to the grandparent.
@@ -129,11 +145,13 @@ bool IsLaunchedByTrustedProcess() {
 
   // Check if the caller's image path is allowlisted.
   for (std::string_view apps_dir_env_var : kAppsDirectoryEnvVars) {
-    std::string apps_dir_path_utf8;
-    if (!environment->GetVar(apps_dir_env_var, &apps_dir_path_utf8)) {
+    std::optional<std::string> apps_dir_path_utf8 =
+        environment->GetVar(apps_dir_env_var);
+    if (!apps_dir_path_utf8.has_value()) {
       continue;
     }
-    auto apps_dir_path = base::FilePath::FromUTF8Unsafe(apps_dir_path_utf8);
+    auto apps_dir_path =
+        base::FilePath::FromUTF8Unsafe(apps_dir_path_utf8.value());
     if (!apps_dir_path.IsParent(parent_image_path)) {
       continue;
     }
@@ -151,7 +169,34 @@ bool IsLaunchedByTrustedProcess() {
   }
   // Caller's path is not allowlisted.
   return false;
-#else  // !IS_LINUX && !IS_WIN
+#elif BUILDFLAG(IS_MAC)
+  // TODO: crbug.com/410903981 - move away from PID-based security checks, which
+  // might be susceptible of PID reuse attacks, if Apple provides APIs to query
+  // parent process audit token without using a PPID.
+  base::ProcessId parent_pid = getppid();
+  kern_return_t kern_return;
+  task_name_t task;
+
+  kern_return = task_name_for_pid(mach_task_self(), parent_pid, &task);
+  if (kern_return != KERN_SUCCESS) {
+    LOG(ERROR) << "Failed to get task name for parent PID " << parent_pid
+               << ": " << kern_return;
+    return false;
+  }
+
+  mach_msg_type_number_t size = TASK_AUDIT_TOKEN_COUNT;
+  audit_token_t audit_token;
+  kern_return =
+      task_info(task, TASK_AUDIT_TOKEN, (task_info_t)&audit_token, &size);
+  mach_port_deallocate(mach_task_self(), task);
+  if (kern_return != KERN_SUCCESS) {
+    LOG(ERROR) << "Failed to get audit token for parent PID " << parent_pid
+               << ": " << kern_return;
+    return false;
+  }
+
+  return IsProcessTrusted(audit_token, kAllowedIdentifiers);
+#else  // Unsupported platform
   NOTIMPLEMENTED();
   return true;
 #endif

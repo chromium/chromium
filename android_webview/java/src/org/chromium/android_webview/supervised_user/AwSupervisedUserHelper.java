@@ -13,9 +13,11 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /** Helper class for executing user actions on the restricted content interstitial. */
 @JNINamespace("android_webview")
+@NullMarked
 final class AwSupervisedUserHelper {
     private static final String HELP_CENTER_URL =
             "https://support.google.com/families?p=content_blocked_webview";

@@ -4,9 +4,9 @@
 
 syntax = "proto2";
 
-option optimize_for = LITE_RUNTIME;
-
 package enterprise_connectors;
+
+option optimize_for = LITE_RUNTIME;
 
 // For ClientDownloadRequest.
 import "components/safe_browsing/core/common/proto/csd.proto";
@@ -91,6 +91,8 @@ message ContentMetaData {
     optional CopiedTextSourceType context = 2;
   }
   optional CopiedTextSource copied_text_source = 13;
+
+  repeated safe_browsing.ReferrerChainEntry referrer_chain = 14;
 }
 
 message ClientMetadata {
@@ -102,7 +104,7 @@ message ClientMetadata {
 
     // This is omitted on scans triggered at the profile level.
     optional string machine_user = 4;
-  };
+  }
   optional Browser browser = 1;
 
   // Describes the device uploading a scan request. This is omitted on scans
@@ -115,7 +117,7 @@ message ClientMetadata {
     optional string name = 5;
     optional string device_fqdn = 6;
     optional string network_name = 7;
-  };
+  }
   optional Device device = 2;
 
   // Describes the profile uploading a scan request.
@@ -127,25 +129,24 @@ message ClientMetadata {
     optional string client_id = 5;
 
     reserved 6;
-  };
+  }
   optional Profile profile = 3;
 
   // True if the request comes from a Managed Guest Session on ChromeOS. False
   // in all other cases.
   optional bool is_chrome_os_managed_guest_session = 4;
-};
+}
 
 // Analysis request sent from chrome to backend.
 // The proto here is the source of truth; the copy in the LCAC Github repo
-// should always be in sync with it (https://github.com/chromium/content_analysis_sdk/blob/main/proto/content_analysis/sdk/analysis.proto)
+// should always be in sync with it
+// (https://github.com/chromium/content_analysis_sdk/blob/main/proto/content_analysis/sdk/analysis.proto)
 message ContentAnalysisRequest {
   // The TokenID for Enterprise-enrolled devices.  This identifies a specific
   // chrome instance.
   optional string device_token = 1;
 
-  // Firebase Cloud Messaging token used to notify this client of the verdict.
-  // This identifies a specific chrome instance.
-  optional string fcm_notification_token = 2 [deprecated = true];
+  reserved 2;
 
   // Token used to correlate requests and responses. This is different than the
   // FCM token in that it is unique for each request.
@@ -343,7 +344,7 @@ message ContentAnalysisAcknowledgement {
     // The response from the agent was too late and Google Chrome took the
     // default action.
     TOO_LATE = 3;
-  };
+  }
   optional Status status = 2;
 
   // The final action that chrome took with this request.  This may be different
@@ -356,6 +357,6 @@ message ContentAnalysisAcknowledgement {
     REPORT_ONLY = 2;
     WARN = 3;
     BLOCK = 4;
-  };
+  }
   optional FinalAction final_action = 3;
 }

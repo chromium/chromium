@@ -153,12 +153,6 @@ BASE_FEATURE(kRemoveRedirectionBitmap,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Feature finched to stable 50% and launched.
-// See crbug.com/350764043
-BASE_FEATURE(kRenderPassDrawnRect,
-             "RenderPassDrawnRect",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 // When wide color gamut content from the web is encountered, promote our
 // display to wide color gamut if supported.
@@ -269,27 +263,11 @@ BASE_FEATURE(kAllowUndamagedNonrootRenderPassToSkip,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Enables occlusion culling for TextureDrawQuads when possible.
-BASE_FEATURE(kOcclusionCullingForTextureQuads,
-             "OcclusionCullingForTextureQuads",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Allow SurfaceAggregator to merge render passes when they contain quads that
 // require overlay (e.g. protected video). See usage in |EmitSurfaceContent|.
 BASE_FEATURE(kAllowForceMergeRenderPassWithRequireOverlayQuads,
              "AllowForceMergeRenderPassWithRequireOverlayQuads",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-
-// If enabled, CompositorFrameSinkClient::OnBeginFrame is also treated as the
-// DidReceiveCompositorFrameAck. Both in providing the Ack for the previous
-// frame, and in returning resources. While enabled we attempt to not send
-// separate Ack and ReclaimResources signals. However if while sending an
-// OnBeginFrame there is a pending Ack, then if the Ack arrives before the next
-// OnBeginFrame we will send the Ack immediately, rather than batching it.
-BASE_FEATURE(kOnBeginFrameAcks,
-             "OnBeginFrameAcks",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // if enabled, Any CompositorFrameSink of type video that defines a preferred
 // framerate that is below the display framerate will throttle OnBeginFrame
@@ -368,24 +346,14 @@ BASE_FEATURE(kEnableADPFSetThreads,
 // If enabled, surface activation and draw do not block on dependencies.
 BASE_FEATURE(kDrawImmediatelyWhenInteractive,
              "DrawImmediatelyWhenInteractive",
-#if BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, we immediately send acks to clients when a viz surface
 // activates. This effectively removes back-pressure. This can result in wasted
 // work and contention, but should regularize the timing of client rendering.
 BASE_FEATURE(kAckOnSurfaceActivationWhenInteractive,
              "AckOnSurfaceActivationWhenInteractive",
-#if BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int>
     kNumCooldownFramesForAckOnSurfaceActivationDuringInteraction{
@@ -557,16 +525,6 @@ bool ShouldOnBeginFrameThrottleVideo() {
   return base::FeatureList::IsEnabled(features::kOnBeginFrameThrottleVideo);
 }
 
-bool IsOnBeginFrameAcksEnabled() {
-  return base::FeatureList::IsEnabled(features::kOnBeginFrameAcks);
-}
-
-bool IsOcclusionCullingForTextureQuadsEnabled() {
-  static bool enabled =
-      base::FeatureList::IsEnabled(features::kOcclusionCullingForTextureQuads);
-  return enabled;
-}
-
 bool ShouldDrawImmediatelyWhenInteractive() {
   return base::FeatureList::IsEnabled(
       features::kDrawImmediatelyWhenInteractive);
@@ -636,16 +594,10 @@ bool ShouldUseDCompSurfacesForDelegatedInk() {
 }
 
 bool ShouldRemoveRedirectionBitmap() {
-  // Redirection bitmap should not be removed if Direct Composition is
-  // disabled. On devices with DComp disabled, ANGLE draws to the redirection
-  // bitmap via a blit swap chain. DWM_SYSTEMBACKDROP_TYPE is only available
-  // on Win11 22H2+, therefore limit the bitmap removal to those versions or
+  // Windows.UI.Composition DesktopWindowTarget is supported on on Win10 version
+  // 1511 and higher, therefore limit the bitmap removal to those versions or
   // higher so that an appropriate background replacement is available.
-  // Note: the disable-direct-composition command line check is a workaround for
-  // https://crbug.com/40276881.
-  return base::win::GetVersion() >= base::win::Version::WIN11_22H2 &&
-         !base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kDisableDirectComposition) &&
+  return base::win::GetVersion() >= base::win::Version::WIN10_RS4 &&
          base::FeatureList::IsEnabled(kRemoveRedirectionBitmap);
 }
 #endif

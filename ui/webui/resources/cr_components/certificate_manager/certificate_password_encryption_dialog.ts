@@ -54,8 +54,8 @@ export class CertificatePasswordEncryptionDialogElement extends
     };
   }
 
-  private password_: string;
-  private confirmPassword_: string;
+  declare private password_: string;
+  declare private confirmPassword_: string;
 
   override connectedCallback() {
     super.connectedCallback();

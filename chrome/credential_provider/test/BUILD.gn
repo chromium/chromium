@@ -54,6 +54,7 @@ test("gcp_unittests") {
     "//chrome/common:version_header",
     "//chrome/test:credential_provider_test_utils",
     "//content/public/browser",
+    "//extensions/common",
     "//google_apis",
     "//net:test_support",
     "//testing/gmock",

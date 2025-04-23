@@ -86,6 +86,8 @@
 - (void)stop {
   [self stopSafeBrowsingEnhancedProtectionCoordinator];
   [self stopSafeBrowsingStandardProtectionCoordinator];
+  [self.mediator disconnect];
+  self.mediator = nil;
   [super stop];
 }
 

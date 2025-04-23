@@ -10,9 +10,11 @@ import android.widget.CheckBox;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.R;
 
 /** Dialog that is displayed to ask user where they want to open a download. */
+@NullMarked
 public class OpenDownloadCustomView extends ScrollView {
     private TextView mTitle;
     private TextView mSubtitleView;

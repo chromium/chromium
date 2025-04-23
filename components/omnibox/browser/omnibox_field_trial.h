@@ -689,12 +689,12 @@ std::vector<std::pair<double, int>> GetPiecewiseMappingBreakPoints(
 constexpr base::FeatureParam<int> kIpadAdditionalTrendingQueries(
     &omnibox::kIpadZeroSuggestMatches,
     "IpadAdditionalTrendingQueries",
-    0);
+    5);
 
 constexpr base::FeatureParam<int> kIpadZPSLimit(
     &omnibox::kIpadZeroSuggestMatches,
     "IpadZPSSuggestionsLimit",
-    10);
+    20);
 
 // <- Ipad suggestions limit
 // ---------------------------------------------------------
@@ -741,9 +741,6 @@ bool IsStarterPackExpansionEnabled();
 // When true, enables an informational IPH message at the bottom of the Omnibox
 // directing users to certain starter pack engines.
 bool IsStarterPackIPHEnabled();
-
-// Whether the starter pack page scope is enabled.
-bool IsStarterPackPageEnabled();
 
 // <- Site Search Starter Pack
 // ---------------------------------------------------------

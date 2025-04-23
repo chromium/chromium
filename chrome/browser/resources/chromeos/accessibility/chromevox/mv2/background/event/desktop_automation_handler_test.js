@@ -9,7 +9,7 @@ GEN_INCLUDE(['../../testing/fake_objects.js']);
 /**
  * Test fixture for DesktopAutomationHandler.
  */
-ChromeVoxDesktopAutomationHandlerTest = class extends ChromeVoxE2ETest {
+ChromeVoxMV2DesktopAutomationHandlerTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
@@ -40,7 +40,7 @@ ChromeVoxDesktopAutomationHandlerTest = class extends ChromeVoxE2ETest {
 };
 
 AX_TEST_F(
-    'ChromeVoxDesktopAutomationHandlerTest', 'OnValueChangedSlider',
+    'ChromeVoxMV2DesktopAutomationHandlerTest', 'OnValueChangedSlider',
     async function() {
       const mockFeedback = this.createMockFeedback();
       const site = `<input type="range"></input>`;
@@ -84,7 +84,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxDesktopAutomationHandlerTest', 'OnAutofillAvailabilityChanged',
+    'ChromeVoxMV2DesktopAutomationHandlerTest', 'OnAutofillAvailabilityChanged',
     async function() {
       const AUTOFILL_AVAILABLE_UTTERANCE =
           'Press up or down arrow for auto completions';
@@ -132,7 +132,8 @@ AX_TEST_F(
 
 // Ensures behavior when IME candidates are selected.
 AX_TEST_F(
-    'ChromeVoxDesktopAutomationHandlerTest', 'ImeCandidate', async function() {
+    'ChromeVoxMV2DesktopAutomationHandlerTest', 'ImeCandidate',
+    async function() {
       const mockFeedback = this.createMockFeedback();
       const site = `<button>First</button><button>Second</button>`;
       const root = await this.runWithLoadedTree(site);
@@ -164,7 +165,7 @@ AX_TEST_F(
 // Ensures that selection events from IME candidate doesn't break ChromeVox's
 // range.
 AX_TEST_F(
-    'ChromeVoxDesktopAutomationHandlerTest', 'ImeCandidate_keepRange',
+    'ChromeVoxMV2DesktopAutomationHandlerTest', 'ImeCandidate_keepRange',
     async function() {
       const mockFeedback = this.createMockFeedback();
       const site =
@@ -190,7 +191,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxDesktopAutomationHandlerTest', 'IgnoreRepeatedAlerts',
+    'ChromeVoxMV2DesktopAutomationHandlerTest', 'IgnoreRepeatedAlerts',
     async function() {
       const mockFeedback = this.createMockFeedback();
       const site = `<button>Hello world</button>`;
@@ -217,7 +218,7 @@ AX_TEST_F(
 
 // TODO(crbug.com/40819389): Fix flakiness.
 AX_TEST_F(
-    'ChromeVoxDesktopAutomationHandlerTest', 'DISABLED_DatalistSelection',
+    'ChromeVoxMV2DesktopAutomationHandlerTest', 'DISABLED_DatalistSelection',
     async function() {
       const mockFeedback = this.createMockFeedback();
       const site = `
@@ -250,7 +251,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxDesktopAutomationHandlerTest', 'OnDocumentSelectionChanged',
+    'ChromeVoxMV2DesktopAutomationHandlerTest', 'OnDocumentSelectionChanged',
     async function() {
       const root = await this.runWithLoadedTree(`
           <div>
@@ -300,93 +301,97 @@ AX_TEST_F(
       assertFalse(called);
     });
 
-AX_TEST_F('ChromeVoxDesktopAutomationHandlerTest', 'OnFocus', async function() {
-  const root = await this.runWithLoadedTree(Documents.button);
-  const button = root.find({role: RoleType.BUTTON});
+AX_TEST_F(
+    'ChromeVoxMV2DesktopAutomationHandlerTest', 'OnFocus', async function() {
+      const root = await this.runWithLoadedTree(Documents.button);
+      const button = root.find({role: RoleType.BUTTON});
 
-  // Case 1: Exits early if it's a rootWebArea that's not a frame, and the event
-  // is not from an action.
-  assertEquals('rootWebArea', root.role);
-  // Ensure it appears to not be a frame.
-  const rootParent = root.parent;
-  Object.defineProperty(root, 'parent', {value: null, configurable: true});
-  // The textEditHandler_ should not change if we exit early.
-  DesktopAutomationInterface.instance.textEditHandler_ = 'fake handler';
-  const assertGetFocusCalled = this.prepareToExpectMethodCall(
-      DesktopAutomationInterface.instance, 'maybeRecoverFocusAndOutput_');
+      // Case 1: Exits early if it's a rootWebArea that's not a frame, and the
+      // event is not from an action.
+      assertEquals('rootWebArea', root.role);
+      // Ensure it appears to not be a frame.
+      const rootParent = root.parent;
+      Object.defineProperty(root, 'parent', {value: null, configurable: true});
+      // The textEditHandler_ should not change if we exit early.
+      DesktopAutomationInterface.instance.textEditHandler_ = 'fake handler';
+      const assertGetFocusCalled = this.prepareToExpectMethodCall(
+          DesktopAutomationInterface.instance, 'maybeRecoverFocusAndOutput_');
 
-  DesktopAutomationInterface.instance.onFocus_({target: root});
-  await this.waitForPendingMethods();
-  assertGetFocusCalled();
-  assertEquals(
-      'fake handler', DesktopAutomationInterface.instance.textEditHandler_);
+      DesktopAutomationInterface.instance.onFocus_({target: root});
+      await this.waitForPendingMethods();
+      assertGetFocusCalled();
+      assertEquals(
+          'fake handler', DesktopAutomationInterface.instance.textEditHandler_);
 
-  Object.defineProperty(root, 'parent', {value: rootParent});
+      Object.defineProperty(root, 'parent', {value: rootParent});
 
-  const assertNoOutput = async () => {
-    const assertCreateTextHandlerCalled = this.prepareToExpectMethodCall(
-        DesktopAutomationInterface.instance, 'createTextEditHandlerIfNeeded_');
-    const assertExitEarly = this.prepareToExpectMethodNotCalled(
-        Output, 'forceModeForNextSpeechUtterance');
+      const assertNoOutput = async () => {
+        const assertCreateTextHandlerCalled = this.prepareToExpectMethodCall(
+            DesktopAutomationInterface.instance,
+            'createTextEditHandlerIfNeeded_');
+        const assertExitEarly = this.prepareToExpectMethodNotCalled(
+            Output, 'forceModeForNextSpeechUtterance');
 
-    DesktopAutomationInterface.instance.onFocus_({target: button});
-    await this.waitForPendingMethods();
-    assertCreateTextHandlerCalled();
-    assertExitEarly();
-  };
+        DesktopAutomationInterface.instance.onFocus_({target: button});
+        await this.waitForPendingMethods();
+        assertCreateTextHandlerCalled();
+        assertExitEarly();
+      };
 
-  // Case 2: Ignore embedded objects.
-  Object.defineProperty(
-      button, 'role', {value: RoleType.EMBEDDED_OBJECT, configurable: true});
-  await assertNoOutput();
+      // Case 2: Ignore embedded objects.
+      Object.defineProperty(
+          button, 'role',
+          {value: RoleType.EMBEDDED_OBJECT, configurable: true});
+      await assertNoOutput();
 
-  // Case 3: Ignore plugin objects.
-  Object.defineProperty(
-      button, 'role', {value: RoleType.PLUGIN_OBJECT, configurable: true});
-  await assertNoOutput();
+      // Case 3: Ignore plugin objects.
+      Object.defineProperty(
+          button, 'role', {value: RoleType.PLUGIN_OBJECT, configurable: true});
+      await assertNoOutput();
 
-  // Case 4: Ignore web views.
-  Object.defineProperty(
-      button, 'role', {value: RoleType.WEB_VIEW, configurable: true});
-  await assertNoOutput();
+      // Case 4: Ignore web views.
+      Object.defineProperty(
+          button, 'role', {value: RoleType.WEB_VIEW, configurable: true});
+      await assertNoOutput();
 
-  // Case 5: Ignore nodes with unknown role if there's not a reasonable target
-  // to "sync down" into.
-  AutomationUtil.findNodePre = () => null;
-  Object.defineProperty(
-      button, 'role', {value: RoleType.UNKNOWN, configurable: true});
-  await assertNoOutput();
+      // Case 5: Ignore nodes with unknown role if there's not a reasonable
+      // target to "sync down" into.
+      AutomationUtil.findNodePre = () => null;
+      Object.defineProperty(
+          button, 'role', {value: RoleType.UNKNOWN, configurable: true});
+      await assertNoOutput();
 
-  Object.defineProperty(button, 'role', {value: RoleType.BUTTON});
+      Object.defineProperty(button, 'role', {value: RoleType.BUTTON});
 
-  // Case 6: Ignore nodes with no root.
-  Object.defineProperty(button, 'root', {value: null, configurable: true});
-  await assertNoOutput();
+      // Case 6: Ignore nodes with no root.
+      Object.defineProperty(button, 'root', {value: null, configurable: true});
+      await assertNoOutput();
 
-  Object.defineProperty(button, 'root', {value: root});
+      Object.defineProperty(button, 'root', {value: root});
 
-  // Case 7: AutoScrollHandler eats the event with onFocusEventNavigation().
-  AutoScrollHandler.instance.onFocusEventNavigation = () => false;
-  await assertNoOutput();
+      // Case 7: AutoScrollHandler eats the event with onFocusEventNavigation().
+      AutoScrollHandler.instance.onFocusEventNavigation = () => false;
+      await assertNoOutput();
 
-  AutoScrollHandler.instance.onFocusEventNavigation = () => true;
+      AutoScrollHandler.instance.onFocusEventNavigation = () => true;
 
-  // Default case.
-  DesktopAutomationInterface.instance.lastRootUrl_ = 'fake url';
-  const assertOutputFlush =
-      this.prepareToExpectMethodCall(Output, 'forceModeForNextSpeechUtterance');
-  const assertEventDefault = this.prepareToExpectMethodCall(
-      DesktopAutomationInterface.instance, 'onEventDefault');
+      // Default case.
+      DesktopAutomationInterface.instance.lastRootUrl_ = 'fake url';
+      const assertOutputFlush = this.prepareToExpectMethodCall(
+          Output, 'forceModeForNextSpeechUtterance');
+      const assertEventDefault = this.prepareToExpectMethodCall(
+          DesktopAutomationInterface.instance, 'onEventDefault');
 
-  DesktopAutomationInterface.instance.onFocus_({target: button});
-  await this.waitForPendingMethods();
-  assertNotEquals('fake url', DesktopAutomationInterface.instance.lastRootUrl_);
-  assertOutputFlush();
-  assertEventDefault();
-});
+      DesktopAutomationInterface.instance.onFocus_({target: button});
+      await this.waitForPendingMethods();
+      assertNotEquals(
+          'fake url', DesktopAutomationInterface.instance.lastRootUrl_);
+      assertOutputFlush();
+      assertEventDefault();
+    });
 
 AX_TEST_F(
-    'ChromeVoxDesktopAutomationHandlerTest',
+    'ChromeVoxMV2DesktopAutomationHandlerTest',
     'NoActiononMenuItemCollapsedWhenNoMenuPopupStart', async function() {
       const site = `
         <ol role="menu">
@@ -416,7 +421,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxDesktopAutomationHandlerTest',
+    'ChromeVoxMV2DesktopAutomationHandlerTest',
     'onMenuItemCollapsedAfterMenuPopupStart', async function() {
       const site = `
       <ol role="menu">
@@ -450,7 +455,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxDesktopAutomationHandlerTest',
+    'ChromeVoxMV2DesktopAutomationHandlerTest',
     'ResetIsSubMenuShowingStateWhenFocusChanges', async function() {
       const site = `
       <ol role="menu">
@@ -485,20 +490,25 @@ AX_TEST_F(
  * `features::kTaskManagerDesktopRefresh` is included in the base fixture which
  * inherits from ChromeVoxE2ETest.
  */
-ChromeVoxDesktopAutomationHandlerWithoutTaskManagerDesktopRefreshTest =
-    class extends ChromeVoxDesktopAutomationHandlerTest {};
-ChromeVoxDesktopAutomationHandlerWithoutTaskManagerDesktopRefreshTest.prototype
-    .featureList = {
-  disabled: ['features::kTaskManagerDesktopRefresh'],
+ChromeVoxMV2DesktopAutomationHandlerWithoutTaskManagerDesktopRefreshTest =
+    class extends ChromeVoxMV2DesktopAutomationHandlerTest {
+  /** @override */
+  get featureList() {
+    let list = super.featureList || {};
+    list.disabled = list.disabled || [];
+    list.disabled.push('features::kTaskManagerDesktopRefresh');
+    return list;
+  }
 };
+
 
 // TODO(crbug.com/407459387): Fix and re-enable this test.
 TEST_F(
-    'ChromeVoxDesktopAutomationHandlerWithoutTaskManagerDesktopRefreshTest',
+    'ChromeVoxMV2DesktopAutomationHandlerWithoutTaskManagerDesktopRefreshTest',
     'DISABLED_TaskManagerTableView', function() {
       // TODO(crbug.com/397484647): Merge this test with the
       // TaskManagerDesktopRefresh version, and reintegrate it back into
-      // ChromeVoxDesktopAutomationHandlerTest after the flag is enabled by
+      // ChromeVoxMV2DesktopAutomationHandlerTest after the flag is enabled by
       // default.
 
       const mockFeedback = this.createMockFeedback();
@@ -528,18 +538,22 @@ TEST_F(
  * `features::kTaskManagerDesktopRefresh` is included in the base fixture which
  * inherits from ChromeVoxE2ETest.
  */
-ChromeVoxDesktopAutomationHandlerWithTaskManagerDesktopRefreshTest =
-    class extends ChromeVoxDesktopAutomationHandlerTest {};
-ChromeVoxDesktopAutomationHandlerWithTaskManagerDesktopRefreshTest.prototype
-    .featureList = {
-  enabled: ['features::kTaskManagerDesktopRefresh'],
+ChromeVoxMV2DesktopAutomationHandlerWithTaskManagerDesktopRefreshTest =
+    class extends ChromeVoxMV2DesktopAutomationHandlerTest {
+  /** @override */
+  get featureList() {
+    let list = super.featureList || {};
+    list.enabled = list.enabled || [];
+    list.enabled.push('features::kTaskManagerDesktopRefresh');
+    return list;
+  }
 };
 
 TEST_F(
-    'ChromeVoxDesktopAutomationHandlerWithTaskManagerDesktopRefreshTest',
+    'ChromeVoxMV2DesktopAutomationHandlerWithTaskManagerDesktopRefreshTest',
     'TaskManagerTableView', function() {
       // TODO(crbug.com/397484647): Merge this test with the production
-      // (ChromeVoxDesktopAutomationHandlerWithoutTaskManagerDesktopRefreshTest.
+      // (ChromeVoxMV2DesktopAutomationHandlerWithoutTaskManagerDesktopRefreshTest.
       // TaskManagerTableView) version after the flag is enabled by default.
 
       const mockFeedback = this.createMockFeedback();

@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.hub;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -19,45 +17,56 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.ParameterizedRobolectricTestRunner;
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.util.XrUtils;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 /** Tests for {@link HubCoordinator}. */
-@RunWith(BaseRobolectricTestRunner.class)
+@RunWith(ParameterizedRobolectricTestRunner.class)
 public class HubCoordinatorUnitTest {
+    // All the tests in this file will run twice, once for isXrDevice=true and once for
+    // isXrDevice=false. Expect all the tests with the same results on XR devices too.
+    // The setup ensures the correct environment is configured for each run.
+    @Parameters
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][] {{true}, {false}});
+    }
+
+    @Parameter(0)
+    public boolean mIsXrDevice;
+
     private static final int TAB_ID = 7;
     private static final int INCOGNITO_TAB_ID = 9;
 
@@ -67,6 +76,8 @@ public class HubCoordinatorUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Rule public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
+
     @Mock private Tab mTab;
     @Mock private Tab mIncognitoTab;
     @Mock private HubLayoutController mHubLayoutController;
@@ -75,13 +86,10 @@ public class HubCoordinatorUnitTest {
     @Mock private MenuButtonCoordinator mMenuButtonCoordinator;
     @Mock private DisplayButtonData mReferenceButtonData;
     @Mock private ProfileProvider mProfileProvider;
+    @Mock private Profile mProfile;
     @Mock private Tracker mTracker;
     @Mock private SearchActivityClient mSearchActivityClient;
-    @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Mock private HubColorMixer mHubColorMixer;
-    @Captor private ArgumentCaptor<EdgeToEdgePadAdjuster> mEdgeToEdgePadAdjusterArgumentCaptor;
-    private final ObservableSupplierImpl<Integer> mColorOverviewSupplier =
-            new ObservableSupplierImpl<>();
     private ObservableSupplierImpl<Boolean> mHubVisibilitySupplier = new ObservableSupplierImpl<>();
     private ObservableSupplierImpl<Boolean> mTabSwitcherBackPressSupplier =
             new ObservableSupplierImpl<>();
@@ -106,8 +114,11 @@ public class HubCoordinatorUnitTest {
 
     @Before
     public void setUp() {
+        XrUtils.setXrDeviceForTesting(mIsXrDevice);
+
         TrackerFactory.setTrackerForTests(mTracker);
         mReferenceButtonDataSupplier.set(mReferenceButtonData);
+        when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
         mProfileProviderSupplier.set(mProfileProvider);
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
         when(mTabSwitcherPane.getColorScheme()).thenReturn(HubColorScheme.DEFAULT);
@@ -135,6 +146,8 @@ public class HubCoordinatorUnitTest {
         when(mIncognitoTab.isIncognito()).thenReturn(true);
         when(mHubLayoutController.getPreviousLayoutTypeSupplier())
                 .thenReturn(mPreviousLayoutTypeSupplier);
+        when(mHubLayoutController.getIsAnimatingSupplier())
+                .thenReturn(new ObservableSupplierImpl<>());
 
         PaneListBuilder builder =
                 new PaneListBuilder(new DefaultPaneOrderController())
@@ -180,10 +193,10 @@ public class HubCoordinatorUnitTest {
         assertFalse(mPreviousLayoutTypeSupplier.hasObservers());
         assertFalse(mIncognitoTabSwitcherBackPressSupplier.hasObservers());
         assertFalse(mTabSupplier.hasObservers());
+        XrUtils.resetXrDeviceForTesting();
     }
 
     @Test
-    @SmallTest
     public void testFocusedPaneBackPress() {
         assertFalse(mHubCoordinator.getHandleBackPressChangedSupplier().get());
 
@@ -205,7 +218,6 @@ public class HubCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testChangePaneBackPress() {
         assertFalse(mHubCoordinator.getHandleBackPressChangedSupplier().get());
 
@@ -241,7 +253,6 @@ public class HubCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBackNavigationBetweenPanes() {
         assertFalse(mHubCoordinator.getHandleBackPressChangedSupplier().get());
 
@@ -255,7 +266,6 @@ public class HubCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBackNavigationWithNullTab() {
         assertFalse(mHubCoordinator.getHandleBackPressChangedSupplier().get());
         assertEquals(BackPressResult.FAILURE, mHubCoordinator.handleBackPress());
@@ -269,7 +279,6 @@ public class HubCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBackNavigationWithTab() {
         assertFalse(mHubCoordinator.getHandleBackPressChangedSupplier().get());
         assertEquals(BackPressResult.FAILURE, mHubCoordinator.handleBackPress());
@@ -282,7 +291,6 @@ public class HubCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testFocusPane() {
         reset(mPaneManager);
         mHubCoordinator.focusPane(PaneId.TAB_SWITCHER);
@@ -290,51 +298,9 @@ public class HubCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSelectTabAndHideHub() {
         int tabId = 5;
         mHubCoordinator.selectTabAndHideHub(tabId);
         verify(mHubLayoutController).selectTabAndHideHubLayout(tabId);
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.FLOATING_SNACKBAR,
-        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE,
-        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
-    })
-    public void testEdgeToEdgePadAdjuster() {
-        // Register the pad adjuster with the mock controller.
-        mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
-        // Verify that the pad adjuster was registered and capture it.
-        verify(mEdgeToEdgeController)
-                .registerAdjuster(mEdgeToEdgePadAdjusterArgumentCaptor.capture());
-        // Get the value of the pad adjuster from the argument captor.
-        EdgeToEdgePadAdjuster padAdjuster = mEdgeToEdgePadAdjusterArgumentCaptor.getValue();
-        assertNotNull("Pad adjuster should be created when feature enabled.", padAdjuster);
-        ViewGroup snackbarContainer = mHubCoordinator.getSnackbarContainer();
-
-        int bottomInset = 63;
-        padAdjuster.overrideBottomInset(bottomInset);
-        assertEquals(bottomInset, snackbarContainer.getPaddingBottom());
-        assertTrue("clipToPadding should not change.", snackbarContainer.getClipToPadding());
-
-        padAdjuster.overrideBottomInset(0);
-        assertEquals(0, snackbarContainer.getPaddingBottom());
-        assertTrue("clipToPadding should not change.", snackbarContainer.getClipToPadding());
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures({
-        ChromeFeatureList.FLOATING_SNACKBAR,
-        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE,
-        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
-    })
-    public void testEdgeToEdgePadAdjuster_FeatureDisabled() {
-        mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
-        // Verify that the pad adjuster was never registered.
-        verify(mEdgeToEdgeController, never()).registerAdjuster(any());
     }
 }

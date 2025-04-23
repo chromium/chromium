@@ -11,12 +11,14 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/win_util.h"
+#include "base/win/windows_version.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/aura/client/aura_constants.h"
@@ -32,6 +34,8 @@
 #include "ui/base/win/event_creation_utils.h"
 #include "ui/base/win/hwnd_metrics.h"
 #include "ui/base/win/win_cursor.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_context.h"
@@ -112,6 +116,12 @@ void UpdateMouseLockRegion(aura::Window* window, bool locked) {
   ::ClipCursor(&window_rect);
 }
 
+bool ShouldApplySystemBackdrop() {
+  return base::win::GetVersion() >= base::win::Version::WIN11_22H2 &&
+         !base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kUseWUCForWindowBackdrop);
+}
+
 }  // namespace
 
 DEFINE_UI_CLASS_PROPERTY_KEY(aura::Window*, kContentWindowForRootWindow, NULL)
@@ -172,19 +182,6 @@ void DesktopWindowTreeHostWin::FinishTouchDrag(gfx::Point screen_point) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// DesktopWindowTreeHostWin, WidgetObserver implementation:
-void DesktopWindowTreeHostWin::OnWidgetThemeChanged(Widget* widget) {
-  // Ensure that DWM knows to apply the correct color scheme to the window
-  // backdrop whenever it changes.
-  BOOL use_dark_mode =
-      widget->GetColorMode() == ui::ColorProviderKey::ColorMode::kDark;
-  HRESULT hr = DwmSetWindowAttribute(GetHWND(), DWMWA_USE_IMMERSIVE_DARK_MODE,
-                                     &use_dark_mode, sizeof(use_dark_mode));
-  CHECK_EQ(hr, S_OK);
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // DesktopWindowTreeHostWin, DesktopWindowTreeHost implementation:
 
 void DesktopWindowTreeHostWin::Init(const Widget::InitParams& params) {
@@ -212,7 +209,7 @@ void DesktopWindowTreeHostWin::Init(const Widget::InitParams& params) {
 
   // We don't have an HWND yet, so scale relative to the nearest screen.
   gfx::Rect pixel_bounds =
-      display::win::ScreenWin::DIPToScreenRect(nullptr, params.bounds);
+      display::win::GetScreenWin()->DIPToScreenRect(nullptr, params.bounds);
   message_handler_->Init(parent_hwnd, pixel_bounds);
 
   // If the Redirection Surface is removed, there needs to be a replacement
@@ -225,22 +222,30 @@ void DesktopWindowTreeHostWin::Init(const Widget::InitParams& params) {
   if (((message_handler_->window_ex_style() & WS_EX_NOREDIRECTIONBITMAP) ==
        WS_EX_NOREDIRECTIONBITMAP) &&
       !message_handler_->is_translucent()) {
-    // Observe the widget to update the backdrop when the color mode changes.
-    widget_observation_.Observe(GetWidget());
-
     // Ensure that the hwnd has been created.
     CHECK(GetHWND());
-    DWM_SYSTEMBACKDROP_TYPE backdrop = DWMSBT_TRANSIENTWINDOW;
-    HRESULT hr = DwmSetWindowAttribute(GetHWND(), DWMWA_SYSTEMBACKDROP_TYPE,
-                                       &backdrop, sizeof(backdrop));
-    CHECK_EQ(hr, S_OK);
 
-    // Ensure that the backdrop honors the OS dark mode setting.
-    BOOL use_dark_mode =
-        GetWidget()->GetColorMode() == ui::ColorProviderKey::ColorMode::kDark;
-    hr = DwmSetWindowAttribute(GetHWND(), DWMWA_USE_IMMERSIVE_DARK_MODE,
-                               &use_dark_mode, sizeof(use_dark_mode));
-    CHECK_EQ(hr, S_OK);
+    // Apply backdrop to the window. If on Win10 or older versions of Win11, use
+    // WUC for the backdrop. If on Win11 22H2 or newer, use DWM since it has the
+    // functionality included.
+    if (ShouldApplySystemBackdrop()) {
+      DWM_SYSTEMBACKDROP_TYPE backdrop = DWMSBT_TRANSIENTWINDOW;
+      HRESULT hr = DwmSetWindowAttribute(GetHWND(), DWMWA_SYSTEMBACKDROP_TYPE,
+                                         &backdrop, sizeof(backdrop));
+      CHECK_EQ(hr, S_OK);
+
+      // Ensure that the backdrop honors the OS dark mode setting.
+      BOOL use_dark_mode =
+          GetWidget()->GetColorMode() == ui::ColorProviderKey::ColorMode::kDark;
+      hr = DwmSetWindowAttribute(GetHWND(), DWMWA_USE_IMMERSIVE_DARK_MODE,
+                                 &use_dark_mode, sizeof(use_dark_mode));
+      CHECK_EQ(hr, S_OK);
+    } else {
+      wuc_backdrop_ = std::make_unique<gfx::WUCBackdrop>(GetHWND());
+
+      wuc_backdrop_->UpdateBackdropColor(
+          GetWidget()->GetColorProvider()->GetColor(ui::kColorFrameActive));
+    }
   }
 
   CreateCompositor(params.force_software_compositing);
@@ -276,6 +281,25 @@ void DesktopWindowTreeHostWin::OnNativeWidgetCreated(
 void DesktopWindowTreeHostWin::OnActiveWindowChanged(bool active) {}
 
 void DesktopWindowTreeHostWin::OnWidgetInitDone() {}
+
+void DesktopWindowTreeHostWin::OnWidgetThemeChanged(
+    ui::ColorProviderKey::ColorMode color_mode) {
+  if (ShouldApplySystemBackdrop()) {
+    // Ensure that DWM knows to apply the correct color scheme to the window
+    // backdrop whenever it changes.
+    BOOL use_dark_mode =
+        color_mode == ui::ColorProviderKey::ColorMode::kDark;
+    HRESULT hr = DwmSetWindowAttribute(GetHWND(), DWMWA_USE_IMMERSIVE_DARK_MODE,
+                                       &use_dark_mode, sizeof(use_dark_mode));
+    CHECK_EQ(hr, S_OK);
+    return;
+  }
+
+  if (GetWidget() && wuc_backdrop_) {
+    wuc_backdrop_->UpdateBackdropColor(
+        GetWidget()->GetColorProvider()->GetColor(ui::kColorFrameActive));
+  }
+}
 
 std::unique_ptr<corewm::Tooltip> DesktopWindowTreeHostWin::CreateTooltip() {
   return std::make_unique<corewm::TooltipAura>();
@@ -327,7 +351,7 @@ void DesktopWindowTreeHostWin::Show(ui::mojom::WindowShowState show_state,
     // positions in variable-DPI situations. See https://crbug.com/1252564 for
     // details.
     pixel_restore_bounds =
-        display::win::ScreenWin::DIPToScreenRect(nullptr, restore_bounds);
+        display::win::GetScreenWin()->DIPToScreenRect(nullptr, restore_bounds);
   }
   message_handler_->Show(show_state, pixel_restore_bounds);
 
@@ -340,7 +364,7 @@ bool DesktopWindowTreeHostWin::IsVisible() const {
 
 void DesktopWindowTreeHostWin::SetSize(const gfx::Size& size) {
   gfx::Size size_in_pixels =
-      display::win::ScreenWin::DIPToScreenSize(GetHWND(), size);
+      display::win::GetScreenWin()->DIPToScreenSize(GetHWND(), size);
   gfx::Size expanded =
       GetExpandedWindowSize(message_handler_->is_translucent(), size_in_pixels);
   window_enlargement_ =
@@ -362,7 +386,7 @@ void DesktopWindowTreeHostWin::StackAtTop() {
 
 void DesktopWindowTreeHostWin::CenterWindow(const gfx::Size& size) {
   gfx::Size size_in_pixels =
-      display::win::ScreenWin::DIPToScreenSize(GetHWND(), size);
+      display::win::GetScreenWin()->DIPToScreenSize(GetHWND(), size);
   gfx::Size expanded_size;
   expanded_size =
       GetExpandedWindowSize(message_handler_->is_translucent(), size_in_pixels);
@@ -377,25 +401,25 @@ void DesktopWindowTreeHostWin::GetWindowPlacement(
     ui::mojom::WindowShowState* show_state) const {
   message_handler_->GetWindowPlacement(bounds, show_state);
   InsetBottomRight(bounds, window_enlargement_);
-  *bounds = display::win::ScreenWin::ScreenToDIPRect(GetHWND(), *bounds);
+  *bounds = display::win::GetScreenWin()->ScreenToDIPRect(GetHWND(), *bounds);
 }
 
 gfx::Rect DesktopWindowTreeHostWin::GetWindowBoundsInScreen() const {
   gfx::Rect pixel_bounds = message_handler_->GetWindowBoundsInScreen();
   InsetBottomRight(&pixel_bounds, window_enlargement_);
-  return display::win::ScreenWin::ScreenToDIPRect(GetHWND(), pixel_bounds);
+  return display::win::GetScreenWin()->ScreenToDIPRect(GetHWND(), pixel_bounds);
 }
 
 gfx::Rect DesktopWindowTreeHostWin::GetClientAreaBoundsInScreen() const {
   gfx::Rect pixel_bounds = message_handler_->GetClientAreaBoundsInScreen();
   InsetBottomRight(&pixel_bounds, window_enlargement_);
-  return display::win::ScreenWin::ScreenToDIPRect(GetHWND(), pixel_bounds);
+  return display::win::GetScreenWin()->ScreenToDIPRect(GetHWND(), pixel_bounds);
 }
 
 gfx::Rect DesktopWindowTreeHostWin::GetRestoredBounds() const {
   gfx::Rect pixel_bounds = message_handler_->GetRestoredBounds();
   InsetBottomRight(&pixel_bounds, window_enlargement_);
-  return display::win::ScreenWin::ScreenToDIPRect(GetHWND(), pixel_bounds);
+  return display::win::GetScreenWin()->ScreenToDIPRect(GetHWND(), pixel_bounds);
 }
 
 std::string DesktopWindowTreeHostWin::GetWorkspace() const {
@@ -409,7 +433,7 @@ gfx::Rect DesktopWindowTreeHostWin::GetWorkAreaBoundsInScreen() const {
       MonitorFromWindow(message_handler_->hwnd(), MONITOR_DEFAULTTONEAREST),
       &monitor_info);
   gfx::Rect pixel_bounds = gfx::Rect(monitor_info.rcWork);
-  return display::win::ScreenWin::ScreenToDIPRect(GetHWND(), pixel_bounds);
+  return display::win::GetScreenWin()->ScreenToDIPRect(GetHWND(), pixel_bounds);
 }
 
 void DesktopWindowTreeHostWin::SetShape(
@@ -422,7 +446,8 @@ void DesktopWindowTreeHostWin::SetShape(
   // TODO(wez): This would be a lot simpler if we were passed an SkPath.
   // See crbug.com/410593.
   SkRegion shape;
-  const float scale = display::win::ScreenWin::GetScaleFactorForHWND(GetHWND());
+  const float scale =
+      display::win::GetScreenWin()->GetScaleFactorForHWND(GetHWND());
   if (scale > 1.0) {
     std::vector<SkIRect> sk_rects;
     for (const gfx::Rect& rect : *native_shape) {
@@ -943,7 +968,7 @@ int DesktopWindowTreeHostWin::GetNonClientComponent(
     return HTTRANSPARENT;
   }
   gfx::Point dip_position =
-      display::win::ScreenWin::ClientToDIPPoint(GetHWND(), point);
+      display::win::GetScreenWin()->ClientToDIPPoint(GetHWND(), point);
   return native_widget_delegate_->GetNonClientComponent(dip_position);
 }
 
@@ -957,13 +982,13 @@ void DesktopWindowTreeHostWin::GetWindowMask(const gfx::Size& size_px,
 
   if (Widget* widget = GetWidget(); widget && widget->non_client_view()) {
     widget->non_client_view()->GetWindowMask(
-        display::win::ScreenWin::ScreenToDIPSize(GetHWND(),
-                                                 adjusted_size_in_px),
+        display::win::GetScreenWin()->ScreenToDIPSize(GetHWND(),
+                                                      adjusted_size_in_px),
         path);
     // Convert path in DIPs to pixels.
     if (!path->isEmpty()) {
       const float scale =
-          display::win::ScreenWin::GetScaleFactorForHWND(GetHWND());
+          display::win::GetScreenWin()->GetScaleFactorForHWND(GetHWND());
       SkScalar sk_scale = SkFloatToScalar(scale);
       SkMatrix matrix;
       matrix.setScale(sk_scale, sk_scale);
@@ -976,13 +1001,12 @@ void DesktopWindowTreeHostWin::GetWindowMask(const gfx::Size& size_px,
 }
 
 bool DesktopWindowTreeHostWin::GetClientAreaInsets(gfx::Insets* insets,
-                                                   HMONITOR monitor) const {
+                                                   int frame_thickness) const {
   // WS_THICKFRAME style has a system titlebar. Remove this titlebar for
   // borderless windows.
   if (desktop_native_widget_aura_->widget_type() ==
           Widget::InitParams::TYPE_WINDOW_FRAMELESS &&
       (GetWindowLong(GetHWND(), GWL_STYLE) & WS_THICKFRAME)) {
-    int frame_thickness = ui::GetFrameThickness(monitor);
     *insets = gfx::Insets(frame_thickness);
     // In non-maximized window, the top-border inset must be zero, otherwise
     // Windows will draw a full native titlebar.
@@ -1020,7 +1044,7 @@ gfx::Size DesktopWindowTreeHostWin::GetRootViewSize() const {
 
 gfx::Size DesktopWindowTreeHostWin::DIPToScreenSize(
     const gfx::Size& dip_size) const {
-  return display::win::ScreenWin::DIPToScreenSize(GetHWND(), dip_size);
+  return display::win::GetScreenWin()->DIPToScreenSize(GetHWND(), dip_size);
 }
 
 void DesktopWindowTreeHostWin::ResetWindowControls() {
@@ -1070,6 +1094,8 @@ void DesktopWindowTreeHostWin::HandleClose() {
     widget->Close();
   }
 }
+
+void DesktopWindowTreeHostWin::HandleRequestClose() {}
 
 bool DesktopWindowTreeHostWin::HandleCommand(int command) {
   if (Widget* widget = GetWidget(); widget && widget->widget_delegate()) {
@@ -1148,7 +1174,7 @@ void DesktopWindowTreeHostWin::HandleMove() {
   // Adding/removing a monitor, or changing the primary monitor can cause a
   // WM_MOVE message before `OnDisplayChanged()`. Without this call, we would
   // DCHECK due to stale `DisplayInfo`s. See https:://crbug.com/1413940.
-  display::win::ScreenWin::UpdateDisplayInfosIfNeeded();
+  display::win::GetScreenWin()->UpdateDisplayInfosIfNeeded();
   CheckForMonitorChange();
   OnHostMovedInPixels();
 }
@@ -1466,12 +1492,13 @@ bool DesktopWindowTreeHostWin::IsModalWindowActive() const {
 }
 
 void DesktopWindowTreeHostWin::CheckForMonitorChange() {
-  HMONITOR monitor_from_window =
-      ::MonitorFromWindow(GetHWND(), MONITOR_DEFAULTTOPRIMARY);
-  if (monitor_from_window == last_monitor_from_window_) {
+  display::Display nearest_display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window());
+  if (nearest_display == last_nearest_display_) {
     return;
   }
-  last_monitor_from_window_ = monitor_from_window;
+  last_nearest_display_ = nearest_display;
+
   OnHostDisplayChanged();
 }
 

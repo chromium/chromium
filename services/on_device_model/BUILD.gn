@@ -65,6 +65,9 @@ source_set("tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+  if (enable_constraints) {
+    defines = [ "ENABLE_ON_DEVICE_CONSTRAINTS" ]
+  }
 }
 
 buildflag_header("ml_internal_buildflags") {

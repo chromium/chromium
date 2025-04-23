@@ -9,7 +9,7 @@
 
 #include "base/notreached.h"
 #include "base/supports_user_data.h"
-#include "components/optimization_guide/content/browser/ai_page_content_metadata.h"
+#include "components/optimization_guide/content/mojom/ai_page_content_metadata.mojom.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
@@ -50,6 +50,8 @@ optimization_guide::proto::ContentAttributeType ConvertAttributeType(
       return optimization_guide::proto::CONTENT_ATTRIBUTE_ANCHOR;
     case blink::mojom::AIPageContentAttributeType::kImage:
       return optimization_guide::proto::CONTENT_ATTRIBUTE_IMAGE;
+    case blink::mojom::AIPageContentAttributeType::kSVG:
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_SVG;
     case blink::mojom::AIPageContentAttributeType::kForm:
       return optimization_guide::proto::CONTENT_ATTRIBUTE_FORM;
     case blink::mojom::AIPageContentAttributeType::kFormControl:
@@ -161,6 +163,8 @@ void ConvertNodeInteractionInfo(
       mojom_node_interaction_info.is_draggable);
   proto_interaction_info->set_is_clickable(
       mojom_node_interaction_info.is_clickable);
+  proto_interaction_info->set_for_dom_node_id(
+      mojom_node_interaction_info.for_dom_node_id);
 }
 
 void ConvertPoint(const gfx::Point& mojom_point,
@@ -247,6 +251,13 @@ void ConvertImageInfo(
     SecurityOriginSerializer::Serialize(
         *mojom_image_info.source_origin,
         proto_image_info->mutable_security_origin());
+  }
+}
+
+void ConvertSVGData(const blink::mojom::AIPageContentSVGData& mojom_svg_data,
+                    optimization_guide::proto::SVGData* proto_svg_data) {
+  if (mojom_svg_data.inner_text) {
+    proto_svg_data->set_inner_text(*mojom_svg_data.inner_text);
   }
 }
 
@@ -447,6 +458,13 @@ bool ConvertAttributes(
     }
     ConvertImageInfo(*mojom_attributes.image_info,
                      proto_attributes->mutable_image_data());
+  } else if (mojom_attributes.svg_data) {
+    if (mojom_attributes.attribute_type !=
+        blink::mojom::AIPageContentAttributeType::kSVG) {
+      return false;
+    }
+    ConvertSVGData(*mojom_attributes.svg_data,
+                   proto_attributes->mutable_svg_data());
   } else if (mojom_attributes.anchor_data) {
     if (mojom_attributes.attribute_type !=
         blink::mojom::AIPageContentAttributeType::kAnchor) {
@@ -496,15 +514,16 @@ bool ConvertAttributes(
 void ConvertFrameMetadata(
     GURL url,
     const blink::mojom::AIPageContentFrameData& mojom_frame_data,
-    AIPageContentMetadata& metadata) {
-  FrameMetadata frame_metadata;
-  frame_metadata.url = url;
+    optimization_guide::mojom::PageMetadata& metadata) {
+
+  auto frame_metadata = optimization_guide::mojom::FrameMetadata::New();
+  frame_metadata->url = url;
 
   for (const auto& mojom_meta_tag : mojom_frame_data.meta_data) {
-    MetaTag meta_tag;
-    meta_tag.name = mojom_meta_tag->name;
-    meta_tag.content = mojom_meta_tag->content;
-    frame_metadata.meta_tags.push_back(std::move(meta_tag));
+    auto meta_tag = optimization_guide::mojom::MetaTag::New();
+    meta_tag->name = mojom_meta_tag->name;
+    meta_tag->content = mojom_meta_tag->content;
+    frame_metadata->meta_tags.push_back(std::move(meta_tag));
   }
   metadata.frame_metadata.push_back(std::move(frame_metadata));
 }
@@ -513,7 +532,7 @@ void ConvertFrameData(
     const RenderFrameInfo& render_frame_info,
     const blink::mojom::AIPageContentFrameData& mojom_frame_data,
     optimization_guide::proto::FrameData* proto_frame_data,
-    AIPageContentMetadata& metadata,
+    optimization_guide::mojom::PageMetadata& metadata,
     FrameTokenSet& frame_token_set) {
   ConvertFrameMetadata(render_frame_info.url, mojom_frame_data, metadata);
   SecurityOriginSerializer::Serialize(
@@ -553,7 +572,7 @@ void ConvertIframeData(
     const RenderFrameInfo& render_frame_info,
     const blink::mojom::AIPageContentIframeData& mojom_iframe_data,
     const blink::mojom::AIPageContentFrameData& mojom_local_frame_data,
-    AIPageContentMetadata& metadata,
+    optimization_guide::mojom::PageMetadata& metadata,
     FrameTokenSet& frame_token_set,
     optimization_guide::proto::IframeData* proto_iframe_data) {
   proto_iframe_data->set_likely_ad_frame(mojom_iframe_data.likely_ad_frame);
@@ -568,7 +587,7 @@ bool ConvertNode(content::GlobalRenderFrameHostToken source_frame_token,
                  const AIPageContentMap& page_content_map,
                  FrameTokenSet& frame_token_set,
                  GetRenderFrameInfo get_render_frame_info,
-                 AIPageContentMetadata& metadata,
+                 optimization_guide::mojom::PageMetadata& metadata,
                  optimization_guide::proto::ContentNode* proto_node) {
   const auto& mojom_attributes = *mojom_node.content_attributes;
   if (!ConvertAttributes(mojom_attributes,
@@ -675,10 +694,10 @@ bool ConvertAIPageContentToProto(
 
   ConvertFrameData(*render_frame_info, *main_frame_page_content.frame_data,
                    page_content_result.proto.mutable_main_frame_data(),
-                   page_content_result.metadata, frame_token_set);
+                   *page_content_result.metadata, frame_token_set);
   if (!ConvertNode(main_frame_token, *main_frame_page_content.root_node,
                    page_content_map, frame_token_set, get_render_frame_info,
-                   page_content_result.metadata,
+                   *page_content_result.metadata,
                    page_content_result.proto.mutable_root_node())) {
     return false;
   }

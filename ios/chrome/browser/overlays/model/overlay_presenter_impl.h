@@ -47,7 +47,7 @@ class OverlayPresenterImpl : public BrowserObserver,
     OverlayPresenterImpl* PresenterForModality(OverlayModality modality);
 
    private:
-    OVERLAY_USER_DATA_SETUP(Container);
+    friend class OverlayUserData<Container>;
     explicit Container(Browser* browser);
 
     raw_ptr<Browser> browser_ = nullptr;

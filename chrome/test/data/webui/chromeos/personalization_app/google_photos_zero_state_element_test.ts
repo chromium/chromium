@@ -38,7 +38,8 @@ suite('GooglePhotosZeroStateElementTest', function() {
       // `localizedLink.localizedString` typescript type is string but is
       // actually TrustedHTML.
       assertTrue(
-          (localizedLink.localizedString as unknown) instanceof TrustedHTML,
+          (localizedLink.localizedString as unknown) instanceof
+              window.TrustedHTML,
           'localizedLink has message set as TrustedHTML');
       assertEquals(
           'No image available. To add photos, go to ' +
@@ -63,7 +64,8 @@ suite('GooglePhotosZeroStateElementTest', function() {
     // `localizedLink.localizedString` typescript type is string but is
     // actually TrustedHTML.
     assertTrue(
-        (localizedLink.localizedString as unknown) instanceof TrustedHTML,
+        (localizedLink.localizedString as unknown) instanceof
+            window.TrustedHTML,
         'localizedLink has message set as TrustedHTML');
 
     assertEquals(

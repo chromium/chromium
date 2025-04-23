@@ -4,20 +4,24 @@
 
 package org.chromium.chrome.browser.magic_stack;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.AUXILIARY_SEARCH;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEFAULT_BROWSER_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEPRECATED_EDUCATIONAL_TIP;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEPRECATED_TAB_RESUMPTION;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.HISTORY_SYNC_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.QUICK_DELETE_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SAFETY_HUB;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_SYNC_PROMO;
-import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_RESUMPTION;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
@@ -26,6 +30,7 @@ import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import java.util.HashSet;
 
 /** The utility class for logging the magic stack's metrics. */
+@NullMarked
 public class HomeModulesMetricsUtils {
     @VisibleForTesting public static final String HISTOGRAM_PREFIX = "MagicStack.Clank.NewTabPage";
     @VisibleForTesting public static final String HISTOGRAM_MAGIC_STACK_MODULE = ".Module.";
@@ -99,6 +104,8 @@ public class HomeModulesMetricsUtils {
     static final String HISTOGRAM_EDUCATIONAL_TIP_MODULE_IMPRESSION_COUNT_BEFORE_INTERACTION =
             ".ImpressionCountBeforeInteraction";
 
+    private static final String TAG = "HomeModules";
+
     /**
      * Returns a string name of a module. Remember to update the variant ModuleType in
      * tools/metrics/histograms/metadata/magic_stack/histograms.xml when adding a new module type
@@ -109,8 +116,6 @@ public class HomeModulesMetricsUtils {
                 return "SingleTab";
             case PRICE_CHANGE:
                 return "PriceChange";
-            case TAB_RESUMPTION:
-                return "TabResumption";
             case SAFETY_HUB:
                 return "SafetyHub";
             case AUXILIARY_SEARCH:
@@ -123,9 +128,11 @@ public class HomeModulesMetricsUtils {
                 return "TabGroupSyncPromo";
             case QUICK_DELETE_PROMO:
                 return "QuickDeletePromo";
+            case HISTORY_SYNC_PROMO:
+                return "HistorySyncPromo";
             default:
                 assert false : "Module type not supported!";
-                return null;
+                return assumeNonNull(null);
         }
     }
 
@@ -135,8 +142,6 @@ public class HomeModulesMetricsUtils {
                 return SINGLE_TAB;
             case "PriceChange":
                 return PRICE_CHANGE;
-            case "TabResumption":
-                return TAB_RESUMPTION;
             case "SafetyHub":
                 return SAFETY_HUB;
             case "AuxiliarySearch":
@@ -149,8 +154,10 @@ public class HomeModulesMetricsUtils {
                 return TAB_GROUP_SYNC_PROMO;
             case "QuickDeletePromo":
                 return QUICK_DELETE_PROMO;
+            case "HistorySyncPromo":
+                return HISTORY_SYNC_PROMO;
             default:
-                assert false : "Module type not supported!";
+                Log.i(TAG, "Module type %s not supported!", label);
                 return ModuleType.NUM_ENTRIES;
         }
     }
@@ -159,7 +166,8 @@ public class HomeModulesMetricsUtils {
     static HashSet<Integer> getAllActiveModulesForTesting() {
         HashSet<Integer> set = new HashSet<>();
         for (@ModuleType int moduleType = 0; moduleType < ModuleType.NUM_ENTRIES; moduleType++) {
-            if (moduleType == DEPRECATED_EDUCATIONAL_TIP) {
+            if (moduleType == DEPRECATED_EDUCATIONAL_TIP
+                    || moduleType == DEPRECATED_TAB_RESUMPTION) {
                 continue;
             }
             set.add(moduleType);

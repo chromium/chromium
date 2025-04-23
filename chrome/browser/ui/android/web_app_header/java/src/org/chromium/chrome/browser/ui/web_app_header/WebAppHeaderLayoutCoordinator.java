@@ -1,0 +1,191 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.ui.web_app_header;
+
+import android.graphics.Rect;
+import android.os.Build;
+import android.view.ViewStub;
+import android.widget.ImageButton;
+
+import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
+
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.reload_button.ReloadButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.top.NavigationPopup;
+import org.chromium.chrome.browser.web_app_header.R;
+import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Root component to interact with web app header. This coordinator lazily initializes web app
+ * header when {@link DesktopWindowStateManager} indicates that the view hierarchy is in the desktop
+ * window.
+ */
+@NullMarked
+@RequiresApi(api = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.AppHeaderObserver {
+    private @Nullable WebAppHeaderLayoutMediator mMediator;
+    private @Nullable WebAppHeaderLayout mView;
+    private @Nullable ReloadButtonCoordinator mReloadButtonCoordinator;
+    private @Nullable BackButtonCoordinator mBackButtonCoordinator;
+    private final ViewStub mViewStub;
+    private final DesktopWindowStateManager mDesktopWindowStateManager;
+    private final ObservableSupplier<Tab> mTabSupplier;
+    private final ThemeColorProvider mThemeColorProvider;
+    private final @DisplayMode.EnumType int mDisplayMode;
+    private final NavigationPopup.HistoryDelegate mHistoryDelegate;
+
+    /**
+     * Creates an instance of {@link WebAppHeaderLayoutCoordinator}.
+     *
+     * @param viewStub a stub in which web app header will be inflated into.
+     * @param desktopWindowStateManager a class that notifies about desktop windowing state changes.
+     */
+    public WebAppHeaderLayoutCoordinator(
+            ViewStub viewStub,
+            DesktopWindowStateManager desktopWindowStateManager,
+            ObservableSupplier<Tab> tabSupplier,
+            ThemeColorProvider themeColorProvider,
+            BrowserServicesIntentDataProvider browserServicesIntentDataProvider,
+            NavigationPopup.HistoryDelegate historyDelegate) {
+        final var webAppExtras = browserServicesIntentDataProvider.getWebappExtras();
+        assert webAppExtras != null;
+        mDisplayMode = webAppExtras.displayMode;
+        mHistoryDelegate = historyDelegate;
+
+        mViewStub = viewStub;
+        mViewStub.setLayoutResource(R.layout.web_app_header_layout);
+
+        mDesktopWindowStateManager = desktopWindowStateManager;
+        mDesktopWindowStateManager.addObserver(this);
+
+        mTabSupplier = tabSupplier;
+        mThemeColorProvider = themeColorProvider;
+
+        final var appHeaderState = desktopWindowStateManager.getAppHeaderState();
+        if (appHeaderState != null) {
+            onAppHeaderStateChanged(appHeaderState);
+        }
+    }
+
+    @Override
+    public void onAppHeaderStateChanged(AppHeaderState newState) {
+        ensureInitialized();
+    }
+
+    private void ensureInitialized() {
+        if (mView != null) return;
+
+        mView = (WebAppHeaderLayout) mViewStub.inflate();
+        final var model = new PropertyModel.Builder(WebAppHeaderLayoutProperties.ALL_KEYS).build();
+        final int headerMinHeight =
+                mView.getResources().getDimensionPixelSize(R.dimen.web_app_header_min_height);
+        mMediator =
+                new WebAppHeaderLayoutMediator(
+                        model,
+                        mDesktopWindowStateManager,
+                        mTabSupplier,
+                        this::collectNonDraggableAreas,
+                        headerMinHeight);
+        PropertyModelChangeProcessor.create(model, mView, WebAppHeaderLayoutViewBinder::bind);
+
+        if (mDisplayMode == DisplayMode.MINIMAL_UI) {
+            initMinUiControls();
+        }
+    }
+
+    private void initMinUiControls() {
+        assert mView != null;
+        assert mMediator != null;
+
+        final ImageButton reloadButton = mView.findViewById(R.id.refresh_button);
+        mReloadButtonCoordinator =
+                new ReloadButtonCoordinator(
+                        reloadButton,
+                        this::refreshTab,
+                        mTabSupplier,
+                        new ObservableSupplierImpl<>(),
+                        mThemeColorProvider);
+        mReloadButtonCoordinator.setVisibility(true);
+
+        final ImageButton backButton = mView.findViewById(R.id.back_button);
+        mBackButtonCoordinator =
+                new BackButtonCoordinator(
+                        backButton,
+                        mMediator::goBack,
+                        mThemeColorProvider,
+                        mTabSupplier,
+                        mHistoryDelegate);
+        mBackButtonCoordinator.setVisibility(true);
+    }
+
+    private List<Rect> collectNonDraggableAreas() {
+        final var areas = new ArrayList<Rect>();
+        if (mReloadButtonCoordinator != null) {
+            areas.add(mReloadButtonCoordinator.getHitRect());
+        }
+
+        if (mBackButtonCoordinator != null) {
+            areas.add(mBackButtonCoordinator.getHitRect());
+        }
+
+        return areas;
+    }
+
+    // TODO(vkorotkevich): Move to the Mediator
+    @VisibleForTesting
+    void refreshTab(boolean ignoreCache) {
+        final var tab = mTabSupplier.get();
+        if (tab == null) return;
+
+        if (tab.isLoading()) {
+            tab.stopLoading();
+        } else if (ignoreCache) {
+            tab.reloadIgnoringCache();
+        } else {
+            tab.reload();
+        }
+    }
+
+    /**
+     * Cleans up resources and subscriptions. This class should not be used after this method is
+     * called.
+     */
+    public void destroy() {
+        mDesktopWindowStateManager.removeObserver(this);
+
+        if (mView != null) {
+            mView.destroy();
+        }
+
+        if (mMediator != null) {
+            mMediator.destroy();
+        }
+
+        if (mBackButtonCoordinator != null) {
+            mBackButtonCoordinator.destroy();
+            mBackButtonCoordinator = null;
+        }
+
+        if (mReloadButtonCoordinator != null) {
+            mReloadButtonCoordinator.destroy();
+            mReloadButtonCoordinator = null;
+        }
+    }
+}

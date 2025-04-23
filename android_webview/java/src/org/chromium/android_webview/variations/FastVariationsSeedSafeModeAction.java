@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.os.ParcelFileDescriptor.AutoCloseInputStream;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.AwBrowserProcess;
@@ -23,6 +22,8 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.variations.LoadSeedResult;
 
 import java.io.ByteArrayOutputStream;
@@ -34,11 +35,12 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 /**
- * A {@link SafeModeAction} to ensure the variations seed is distributed on an app's first run.
- * This is the browser-process counterpart to {@link
+ * A {@link SafeModeAction} to ensure the variations seed is distributed on an app's first run. This
+ * is the browser-process counterpart to {@link
  * org.chromium.android_webview.services.NonEmbeddedFastVariationsSeedSafeModeAction}.
  */
 @Lifetime.Singleton
+@NullMarked
 public class FastVariationsSeedSafeModeAction implements SafeModeAction {
     private static final String TAG = "FastVariationsSeed";
     // This ID should not be reused.
@@ -70,7 +72,6 @@ public class FastVariationsSeedSafeModeAction implements SafeModeAction {
     }
 
     @Override
-    @NonNull
     public String getId() {
         return ID;
     }
@@ -116,12 +117,12 @@ public class FastVariationsSeedSafeModeAction implements SafeModeAction {
     }
 
     /**
-     * This class queries {@link SafeModeVariationsSeedContentProvider} for the
-     * latest variations seed.
+     * This class queries {@link SafeModeVariationsSeedContentProvider} for the latest variations
+     * seed.
      *
      * @return Byte array representation of a variations seed
      */
-    private byte[] getProtoFromServiceBlocking() {
+    private byte @Nullable [] getProtoFromServiceBlocking() {
         return new ContentProviderQuery(mWebViewPackageName)
                 .querySafeModeVariationsSeedContentProvider();
     }
@@ -136,7 +137,7 @@ public class FastVariationsSeedSafeModeAction implements SafeModeAction {
             mWebViewPackageName = webViewPackageName;
         }
 
-        public byte[] querySafeModeVariationsSeedContentProvider() {
+        public byte @Nullable [] querySafeModeVariationsSeedContentProvider() {
             try {
                 Uri uri =
                         new Uri.Builder()

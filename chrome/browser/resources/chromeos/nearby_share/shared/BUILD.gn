@@ -24,7 +24,7 @@ build_webui("build") {
     "nearby_visibility_page.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "nearby_contact_manager.ts",
     "nearby_metrics_logger.ts",
     "nearby_share_settings.ts",

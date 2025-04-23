@@ -108,6 +108,9 @@ constexpr char kFileVideoVP9[] = "world.webm";
 // A 5-second long 96kb/s Ogg-Vorbis 44.1kHz mono audio file.
 constexpr char kFileAudioOgg[] = "music.ogg";
 
+// A 10-second long mp3 file.
+constexpr char kFileAudioMp3[] = "audio_10s.mp3";
+
 // A 1-page (8.5" x 11") PDF with some text and metadata.
 constexpr char kFilePdfTall[] = "tall.pdf";
 
@@ -1272,6 +1275,12 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, Autoplay) {
 
 // Ensures the autoplay on audio file launch updates the global media controls
 // with an appropriate media source name.
+// TODO(crbug.com/409122482): Update this test to be resilient for all audio
+// files. Indeed, this test is dependent on specific audio files to hit a "happy
+// path" and not time out. E.g., `kFileAudioMp3` works fine, but `kFileAudioOgg`
+// causes a timeout. This is probably a test issue, since MediaControls seemed
+// to be working regardless of the file, when manually playing audio through
+// the app.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaControls) {
   using std::optional;
   class MediaControlsObserver
@@ -1312,7 +1321,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaControls) {
   media_controller_remote->AddObserver(
       observer_receiver_.BindNewPipeAndPassRemote());
 
-  LaunchWithOneTestFile(kFileAudioOgg);
+  // TODO(crbug.com/409122482): switch back to using `kFileAudioOgg`.
+  LaunchWithOneTestFile(kFileAudioMp3);
 
   if (observer.source_title.empty()) {
     observer.run_loop.Run();

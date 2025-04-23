@@ -114,6 +114,11 @@ inline constexpr char kFirstFollowUpdateUIShownCount[] =
 inline constexpr char kFeaturePushNotificationPermissions[] =
     "push_notifications.feature_permissions";
 
+// A boolean indicating if the user has ever switched accounts via an account
+// menu triggered from a web flow.
+inline constexpr char kHasSwitchedAccountsViaWebFlow[] =
+    "ios.signin.has_switched_accounts_via_web_flow";
+
 // Prefs for persisting HttpServerProperties.
 inline constexpr char kHttpServerProperties[] = "net.http_server_properties";
 
@@ -739,6 +744,11 @@ inline constexpr char kMigrateWidgetsPrefs[] =
 // A boolean specifying whether provisional notifications are allowed by policy.
 inline constexpr char kProvisionalNotificationsAllowedByPolicy[] =
     "ios.notifications.provisional.allowed_by_policy";
+
+// Timestamp tracking when the sync error infobar was dismissed the last time
+// (either explicitly swiped by the user or through the dismissal timeout).
+inline constexpr char kIosSyncInfobarErrorLastDismissedTimestamp[] =
+    "ios.sync_infobar_error.last_dismissed_timestamp";
 
 }  // namespace prefs
 

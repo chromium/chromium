@@ -1241,7 +1241,13 @@ pre, xmp, plaintext, listing {
     display: block;
     font-family: monospace;
     white-space: pre;
-    margin: 1__qem 0
+    @supports not blink-feature(PreLogicalMargin) {
+        margin: 1__qem 0;
+    }
+    @supports blink-feature(PreLogicalMargin) {
+        margin-block: 1__qem;
+        margin-inline: 0;
+    }
 }
 
 mark {
@@ -1735,10 +1741,10 @@ dialog:where(:modal) {
     /* TODO(crbug.com/1511354): This might be able to be combined with the
      * default select option rules at some point. This should be re-evaluated
      * before StylableSelect is shipped. */
-    min-inline-size: -internal-auto-base(auto, 24px);
+    min-inline-size: -internal-auto-base(auto, calc-size(auto, max(size, 24px)));
     /* The 1lh here makes sure that options with no text still make the button
      * have the same height as options with text. */
-    min-block-size: -internal-auto-base(auto, max(24px, 1lh));
+    min-block-size: -internal-auto-base(auto, calc-size(auto, max(size, 24px, 1lh)));
 
     display: -internal-auto-base(inline-block, inline-flex);
     gap: -internal-auto-base(initial, 0.5em);

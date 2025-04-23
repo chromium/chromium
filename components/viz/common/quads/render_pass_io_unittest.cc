@@ -22,6 +22,8 @@
 #include "components/viz/test/test_surface_id_allocator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/modules/skcms/skcms.h"
+#include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace gfx {
 struct HDRMetadata;
@@ -65,7 +67,9 @@ TEST(RenderPassIOTest, FilterOperations) {
     // Set backdrop filter bounds.
     gfx::RRectF rrect(gfx::RectF(2.f, 3.f, 4.f, 5.f), 1.5f);
     ASSERT_EQ(gfx::RRectF::Type::kSingle, rrect.GetType());
-    render_pass0->backdrop_filter_bounds = rrect;
+    render_pass0->backdrop_filter_bounds = SkPath::RRect(SkRRect::MakeRectXY(
+        gfx::RectFToSkRect(rrect.rect()), rrect.GetSimpleRadii().x(),
+        rrect.GetSimpleRadii().y()));
   }
   base::Value::Dict dict0 = CompositorRenderPassToDict(*render_pass0);
   auto render_pass1 = CompositorRenderPassFromDict(dict0);
@@ -102,13 +106,17 @@ TEST(RenderPassIOTest, FilterOperations) {
   {
     // Verify backdrop filter bounds are as expected.
     EXPECT_TRUE(render_pass1->backdrop_filter_bounds.has_value());
-    EXPECT_TRUE(render_pass0->backdrop_filter_bounds->Equals(
-        render_pass1->backdrop_filter_bounds.value()));
-    EXPECT_EQ(gfx::RRectF::Type::kSingle,
-              render_pass1->backdrop_filter_bounds->GetType());
-    EXPECT_EQ(1.5f, render_pass1->backdrop_filter_bounds->GetSimpleRadius());
-    EXPECT_EQ(gfx::RectF(2.f, 3.f, 4.f, 5.f),
-              render_pass1->backdrop_filter_bounds->rect());
+    SkRRect backdrop_filter_as_rect_0;
+    SkRRect backdrop_filter_as_rect_1;
+    EXPECT_TRUE(render_pass0->backdrop_filter_bounds->isRRect(
+        &backdrop_filter_as_rect_0));
+    EXPECT_TRUE(render_pass1->backdrop_filter_bounds->isRRect(
+        &backdrop_filter_as_rect_1));
+    EXPECT_EQ(backdrop_filter_as_rect_0, backdrop_filter_as_rect_1);
+    EXPECT_EQ(backdrop_filter_as_rect_1.type(), SkRRect::kSimple_Type);
+    EXPECT_EQ(1.5f, backdrop_filter_as_rect_1.getSimpleRadii().x());
+    EXPECT_EQ(SkRect::MakeXYWH(2.f, 3.f, 4.f, 5.f),
+              backdrop_filter_as_rect_1.rect());
   }
   base::Value::Dict dict1 = CompositorRenderPassToDict(*render_pass1);
   EXPECT_EQ(dict0, dict1);
@@ -275,7 +283,7 @@ TEST(RenderPassIOTest, QuadList) {
       quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
                    gfx::Rect(0, 0, 256, 512), gfx::Rect(2, 2, 250, 500), true,
                    ResourceId(512u), gfx::RectF(0.0f, 0.0f, 0.9f, 0.8f),
-                   gfx::Size(256, 512), true, true, true);
+                   gfx::Size(256, 512), true, true);
       ++quad_count;
     }
     {

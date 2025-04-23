@@ -488,7 +488,7 @@ struct JapaneseSettings {
   [MinVersion=22] bool use_system_dictionary@10;
   [MinVersion=22] uint32 number_of_suggestions@11;
   [MinVersion=22] bool disable_personalized_suggestions@12;
-  [MinVersion=22] bool automatically_send_statistics_to_google@13;
+  [MinVersion=22] bool unused2@13;
 };
 
 // Next ordinal: 3

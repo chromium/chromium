@@ -75,10 +75,10 @@ export class SettingsRecentSitePermissionsElement extends
     };
   }
 
-  noRecentPermissions: boolean;
-  private shouldFocusAfterPopulation_: boolean;
-  private recentSitePermissionsList_: RecentSitePermissions[];
-  focusConfig: FocusConfig;
+  declare noRecentPermissions: boolean;
+  declare private shouldFocusAfterPopulation_: boolean;
+  declare private recentSitePermissionsList_: RecentSitePermissions[];
+  declare focusConfig: FocusConfig;
   private lastSelected_: {origin: string, incognito: boolean, index: number}|
       null;
 

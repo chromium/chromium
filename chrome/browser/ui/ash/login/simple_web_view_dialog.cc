@@ -335,7 +335,7 @@ std::unique_ptr<views::WidgetDelegate>
 SimpleWebViewDialog::MakeWidgetDelegate() {
   auto delegate = std::make_unique<views::WidgetDelegate>();
   delegate->SetInitiallyFocusedView(web_view_);
-  delegate->SetOwnedByWidget(true);
+  delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
   return delegate;
 }
 

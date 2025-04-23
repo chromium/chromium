@@ -1480,7 +1480,6 @@ void PrerenderHost::OnWaitingForHeadersStarted(
 }
 
 void PrerenderHost::OnWaitingForHeadersFinished(
-    NavigationHandle& navigation_handle,
     WaitingForHeadersFinishedReason reason) {
   // Prerender frame tree is alive. This check is also done by the caller.
   CHECK(frame_tree_);
@@ -1491,13 +1490,12 @@ void PrerenderHost::OnWaitingForHeadersFinished(
       reason);
 
   for (auto& observer : observers_) {
-    observer.OnWaitingForHeadersFinished(navigation_handle, reason);
+    observer.OnWaitingForHeadersFinished(reason);
   }
 }
 
 bool PrerenderHost::ShouldAbortNavigationBecausePrefetchUnavailable() const {
-  CHECK(base::FeatureList::IsEnabled(
-      features::kPrerender2FallbackPrefetchSpecRules));
+  CHECK(features::UsePrefetchPrerenderIntegration());
 
   auto is_prefetch_used =
       [](const std::optional<PrefetchStatus>& prefetch_status) -> bool {

@@ -6103,6 +6103,75 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5476" label="CustomHighlightPseudoElement"/>
   <int value="5477" label="SpellingErrorPseudoElement"/>
   <int value="5478" label="GrammarErrorPseudoElement"/>
+  <int value="5479" label="SpeculationRulesTags"/>
+  <int value="5480" label="MLCreateContextGPUDevice"/>
+  <int value="5481" label="DisallowedSelectChild"/>
+  <int value="5482" label="DisallowedOptGroupChild"/>
+  <int value="5483" label="NonPhrasingContentOptionChild"/>
+  <int value="5484" label="InteractiveContentOptionChild"/>
+  <int value="5485" label="InteractiveContentLegendChild"/>
+  <int value="5486" label="PrivateAggregationApiErrorReporting"/>
+  <int value="5487" label="LanguageModel_Prompt_Input_Image"/>
+  <int value="5488" label="LanguageModel_Prompt_Input_Audio"/>
+  <int value="5489" label="Http3"/>
+  <int value="5490" label="CanvasReadbackNoise"/>
+  <int value="5491" label="CanvasReadbackNoiseMatchesHeuristics"/>
+  <int value="5492" label="SVGImage"/>
+  <int value="5493" label="DeviceBoundSessionRequestInScope"/>
+  <int value="5494" label="DeviceBoundSessionRequestDeferral"/>
+  <int value="5495" label="RoleAttributeMenu"/>
+  <int value="5496" label="RoleAttributeMenubar"/>
+  <int value="5497" label="RoleAttributeMenuitem"/>
+  <int value="5498" label="RoleAttributeMenuitemcheckbox"/>
+  <int value="5499" label="RoleAttributeMenuitemradio"/>
+  <int value="5500" label="RoleAttributeButton"/>
+  <int value="5501" label="RoleAttributeCell"/>
+  <int value="5502" label="RoleAttributeCheckbox"/>
+  <int value="5503" label="RoleAttributeColumnheader"/>
+  <int value="5504" label="RoleAttributeCombobox"/>
+  <int value="5505" label="RoleAttributeDialog"/>
+  <int value="5506" label="RoleAttributeGrid"/>
+  <int value="5507" label="RoleAttributeGridcell"/>
+  <int value="5508" label="RoleAttributeHeading"/>
+  <int value="5509" label="RoleAttributeImg"/>
+  <int value="5510" label="RoleAttributeInput"/>
+  <int value="5511" label="RoleAttributeLink"/>
+  <int value="5512" label="RoleAttributeList"/>
+  <int value="5513" label="RoleAttributeListbox"/>
+  <int value="5514" label="RoleAttributeListitem"/>
+  <int value="5515" label="RoleAttributeMain"/>
+  <int value="5516" label="RoleAttributeMarquee"/>
+  <int value="5517" label="RoleAttributeMath"/>
+  <int value="5518" label="RoleAttributeMeter"/>
+  <int value="5519" label="RoleAttributeNavigation"/>
+  <int value="5520" label="RoleAttributeOption"/>
+  <int value="5521" label="RoleAttributeProgressbar"/>
+  <int value="5522" label="RoleAttributeRadio"/>
+  <int value="5523" label="RoleAttributeRadiogroup"/>
+  <int value="5524" label="RoleAttributeRange"/>
+  <int value="5525" label="RoleAttributeRow"/>
+  <int value="5526" label="RoleAttributeRowgroup"/>
+  <int value="5527" label="RoleAttributeRowheader"/>
+  <int value="5528" label="RoleAttributeScrollbar"/>
+  <int value="5529" label="RoleAttributeSearch"/>
+  <int value="5530" label="RoleAttributeSearchbox"/>
+  <int value="5531" label="RoleAttributeSelect"/>
+  <int value="5532" label="RoleAttributeSeparator"/>
+  <int value="5533" label="RoleAttributeSlider"/>
+  <int value="5534" label="RoleAttributeSpinbutton"/>
+  <int value="5535" label="RoleAttributeSwitch"/>
+  <int value="5536" label="RoleAttributeTab"/>
+  <int value="5537" label="RoleAttributeTable"/>
+  <int value="5538" label="RoleAttributeTablist"/>
+  <int value="5539" label="RoleAttributeTabpanel"/>
+  <int value="5540" label="RoleAttributeTextbox"/>
+  <int value="5541" label="RoleAttributeToolbar"/>
+  <int value="5542" label="RoleAttributeTooltip"/>
+  <int value="5543" label="RoleAttributeTree"/>
+  <int value="5544" label="RoleAttributeTreegrid"/>
+  <int value="5545" label="RoleAttributeTreeitem"/>
+  <int value="5546" label="InputParsedParentSelect"/>
+  <int value="5547" label="InputParsedAncestorSelect"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -6248,6 +6317,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="132" label="Rewriter"/>
   <int value="133" label="Translator"/>
   <int value="134" label="LanguageDetector"/>
+  <int value="135" label="DeviceAttributes"/>
 </enum>
 
 <enum name="FedCmAccountChooserResult">
@@ -7625,7 +7695,7 @@ Called by update_use_counter_css.py.-->
   <int value="805" label="text-wrap-mode"/>
   <int value="806" label="text-wrap-style"/>
   <int value="807" label="masonry-track"/>
-  <int value="808" label="masonry-slack"/>
+  <int value="808" label="item-tolerance"/>
   <int value="809" label="caret-animation"/>
   <int value="810" label="view-transition-capture-mode (obsolete)"/>
   <int value="811" label="interactivity"/>
@@ -7668,6 +7738,9 @@ Called by update_use_counter_css.py.-->
   <int value="848" label="print-color-adjust"/>
   <int value="849" label="column-height"/>
   <int value="850" label="column-wrap"/>
+  <int value="851" label="rule-color"/>
+  <int value="852" label="rule-width"/>
+  <int value="853" label="rule-style"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->
@@ -8008,7 +8081,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="226" label="PromiseAny"/>
   <int value="227" label="SetMethods"/>
   <int value="228" label="ScrollSnapEvents"/>
-  <int value="229" label="MoveBeforeAPI"/>
+  <int value="229" label="MoveBefore"/>
   <int value="230" label="ScrollDrivenAnimations"/>
   <int value="231" label="WebAnimations"/>
   <int value="232" label="CrossDocumentViewTransitions"/>
@@ -8053,8 +8126,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="271" label="ClipboardCustomFormat"/>
   <int value="272" label="ClipboardSvg"/>
   <int value="273" label="ClipboardSupports"/>
-  <int value="274" label="BarProp"/>
-  <int value="275" label="BeforeUnload"/>
+  <int value="274" label="Barprop"/>
+  <int value="275" label="Beforeunload"/>
   <int value="276" label="BfcacheBlockingReasons"/>
   <int value="277" label="LayoutInstability"/>
   <int value="278" label="Profiler"/>
@@ -8082,19 +8155,21 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="300" label="AppProtocolHandlers"/>
   <int value="301" label="Badging"/>
   <int value="302" label="Manifest"/>
-  <int value="303" label="BeforeInstallPrompt"/>
+  <int value="303" label="Beforeinstallprompt"/>
   <int value="304" label="AppShareTargets"/>
   <int value="305" label="AppShortcuts"/>
-  <int value="306" label="FetchLater"/>
+  <int value="306" label="Fetchlater"/>
   <int value="307" label="DRAFT_WasmBranchHinting"/>
   <int value="308" label="DRAFT_ExplicitResourceManagement"/>
-  <int value="309" label="LaunchHandler"/>
+  <int value="309" label="AppLaunchHandler"/>
   <int value="310" label="DRAFT_CssFunction"/>
   <int value="311" label="DRAFT_CssIf"/>
   <int value="312" label="WebAppManifestUpdateToken"/>
   <int value="313" label="ReadingFlow"/>
   <int value="314" label="ComposedRanges"/>
   <int value="315" label="CompressionDictionaryTransport"/>
+  <int value="316" label="Http3"/>
+  <int value="317" label="SpeculationRules"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

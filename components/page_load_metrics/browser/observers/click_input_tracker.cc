@@ -6,11 +6,22 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "components/page_load_metrics/browser/features.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 
 namespace page_load_metrics {
+
+namespace {
+
+bool IsClickInputTrackerEnabled() {
+  static bool enabled = base::FeatureList::IsEnabled(
+      page_load_metrics::features::kClickInputTracker);
+  return enabled;
+}
+
+}  // namespace
 
 const int kMaxCountForUkm = 50;
 
@@ -18,18 +29,22 @@ ClickInputTracker::ClickInputTracker() {
   // Set thresholds per Feature parameters as appropriate.
   time_delta_threshold_ =
       base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
-          kClickInputTracker, "time_delta_threshold_ms", 500));
+          page_load_metrics::features::kClickInputTracker,
+          "time_delta_threshold_ms", 500));
   position_delta_threshold_ = base::GetFieldTrialParamByFeatureAsInt(
-      kClickInputTracker, "position_delta_threshold", 10);
+      page_load_metrics::features::kClickInputTracker,
+      "position_delta_threshold", 10);
   burst_count_threshold_ = base::GetFieldTrialParamByFeatureAsInt(
-      kClickInputTracker, "burst_count_threshold", 3);
+      page_load_metrics::features::kClickInputTracker, "burst_count_threshold",
+      3);
 }
 
 ClickInputTracker::~ClickInputTracker() = default;
 
 void ClickInputTracker::OnUserInput(const blink::WebInputEvent& event) {
-  if (!base::FeatureList::IsEnabled(kClickInputTracker))
+  if (!IsClickInputTrackerEnabled()) {
     return;
+  }
 
   if (event.GetType() != blink::WebInputEvent::Type::kGestureTap &&
       event.GetType() != blink::WebInputEvent::Type::kMouseUp) {
@@ -71,8 +86,9 @@ void ClickInputTracker::OnUserInput(const blink::WebInputEvent& event) {
 }
 
 void ClickInputTracker::RecordClickBurst(ukm::SourceId source_id) {
-  if (!base::FeatureList::IsEnabled(kClickInputTracker))
+  if (!IsClickInputTrackerEnabled()) {
     return;
+  }
 
   if (max_click_input_burst_ >= burst_count_threshold_) {
     UMA_HISTOGRAM_COUNTS_100("PageLoad.Experimental.ClickInputBurst",

@@ -9,6 +9,7 @@
 #include "ash/public/cpp/test/test_shelf_item_delegate.h"
 #include "ash/shelf/shelf_controller.h"
 #include "ash/shell.h"
+#include "base/strings/utf_string_conversions.h"
 
 namespace ash {
 

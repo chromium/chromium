@@ -101,6 +101,16 @@ void SyncAuthManager::RegisterForAuthNotifications() {
   // Also initialize the sync account here, but *without* notifying the
   // SyncService.
   sync_account_ = DetermineAccountToUse();
+
+  // If sync isn't currently on, cache in `previously_syncing_gaia_id_` the
+  // last gaia ID that had sync turned on. Otherwise, stay as nullopt to
+  // convey the notion that it is impossible to determine which account was
+  // syncing earlier.
+  if (sync_account_.account_info.account_id.empty() ||
+      !sync_account_.is_sync_consented) {
+    previously_syncing_gaia_id_ = delegate_->SyncAuthGetLastSyncingGaiaId();
+  }
+
   // If there's already a persistent auth error, also propagate that into our
   // local state. Note that (as of 2021-01) this shouldn't happen in practice:
   // Auth errors are not persisted, so it's unlikely that at this point in time
@@ -159,6 +169,11 @@ SyncTokenStatus SyncAuthManager::GetSyncTokenStatus() const {
     token_status.next_token_request_time = base::Time::Now() + delta;
   }
   return token_status;
+}
+
+const std::optional<GaiaId>&
+SyncAuthManager::GetPreviouslySyncingGaiaIdIfKnown() const {
+  return previously_syncing_gaia_id_;
 }
 
 SyncCredentials SyncAuthManager::GetCredentials() const {
@@ -406,7 +421,8 @@ SyncAccountInfo SyncAuthManager::DetermineAccountToUse() const {
 bool SyncAuthManager::UpdateSyncAccountIfNecessary() {
   DCHECK(registered_for_auth_notifications_);
 
-  SyncAccountInfo new_account = DetermineAccountToUse();
+  const SyncAccountInfo new_account = DetermineAccountToUse();
+
   if (new_account.account_info.account_id ==
       sync_account_.account_info.account_id) {
     // We're already using this account (or there was and is no account to use).
@@ -418,6 +434,11 @@ bool SyncAuthManager::UpdateSyncAccountIfNecessary() {
     // The `is_sync_consented` bit *has* changed, so update our state and
     // notify.
     sync_account_ = new_account;
+    if (!new_account.is_sync_consented) {
+      // Here the gaia ID should match `sync_account_`, but get it from the
+      // delegate just in case and for consistency with other codepaths.
+      previously_syncing_gaia_id_ = delegate_->SyncAuthGetLastSyncingGaiaId();
+    }
     delegate_->SyncAuthAccountStateChanged();
     return true;
   }
@@ -427,6 +448,9 @@ bool SyncAuthManager::UpdateSyncAccountIfNecessary() {
 
   // Sign out of the old account (if any).
   if (!sync_account_.account_info.account_id.empty()) {
+    // Cache the value of the last syncing gaia ID, before the pref gets
+    // overriden next time sync is turned on.
+    previously_syncing_gaia_id_ = delegate_->SyncAuthGetLastSyncingGaiaId();
     sync_account_ = SyncAccountInfo();
     // Let the client (SyncService) know of the removed account *before*
     // throwing away the access token, so it can do "unregister" tasks.

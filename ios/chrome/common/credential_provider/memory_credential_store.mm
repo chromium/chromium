@@ -39,8 +39,9 @@
 
 - (NSArray<id<Credential>>*)credentials {
   __block NSArray<id<Credential>>* credentials;
+  __weak __typeof(self) weakSelf = self;
   dispatch_sync(self.workingQueue, ^{
-    credentials = [self.memoryStorage allValues];
+    credentials = [weakSelf.memoryStorage allValues];
   });
   return credentials;
 }
@@ -48,8 +49,9 @@
 - (void)getCredentialsWithCompletion:
     (void (^)(NSArray<id<Credential>>*))completion {
   CHECK(completion);
+  __weak __typeof(self) weakSelf = self;
   dispatch_async(self.workingQueue, ^{
-    completion([self.memoryStorage allValues]);
+    completion([weakSelf.memoryStorage allValues]);
   });
 }
 
@@ -61,16 +63,18 @@
 }
 
 - (void)removeAllCredentials {
+  __weak __typeof(self) weakSelf = self;
   dispatch_barrier_async(self.workingQueue, ^{
-    [self.memoryStorage removeAllObjects];
+    [weakSelf.memoryStorage removeAllObjects];
   });
 }
 
 - (void)addCredential:(id<Credential>)credential {
   DCHECK(credential.recordIdentifier)
       << "credential must have a record identifier";
+  __weak __typeof(self) weakSelf = self;
   dispatch_barrier_async(self.workingQueue, ^{
-    self.memoryStorage[credential.recordIdentifier] =
+    weakSelf.memoryStorage[credential.recordIdentifier] =
         base::apple::ObjCCastStrict<ArchivableCredential>(credential);
   });
 }
@@ -82,16 +86,18 @@
 
 - (void)removeCredentialWithRecordIdentifier:(NSString*)recordIdentifier {
   DCHECK(recordIdentifier.length) << "Invalid `recordIdentifier` was passed.";
+  __weak __typeof(self) weakSelf = self;
   dispatch_barrier_async(self.workingQueue, ^{
-    self.memoryStorage[recordIdentifier] = nil;
+    weakSelf.memoryStorage[recordIdentifier] = nil;
   });
 }
 
 - (id<Credential>)credentialWithRecordIdentifier:(NSString*)recordIdentifier {
   DCHECK(recordIdentifier.length);
   __block id<Credential> credential;
+  __weak __typeof(self) weakSelf = self;
   dispatch_sync(self.workingQueue, ^{
-    credential = self.memoryStorage[recordIdentifier];
+    credential = weakSelf.memoryStorage[recordIdentifier];
   });
   return credential;
 }

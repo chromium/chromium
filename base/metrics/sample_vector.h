@@ -201,7 +201,8 @@ class BASE_EXPORT SampleVector : public SampleVectorBase {
 // A sample vector that uses persistent memory for the counts array.
 class BASE_EXPORT PersistentSampleVector : public SampleVectorBase {
  public:
-  PersistentSampleVector(uint64_t id,
+  PersistentSampleVector(std::string_view name,
+                         uint64_t id,
                          const BucketRanges* bucket_ranges,
                          Metadata* meta,
                          const DelayedPersistentAllocation& counts);

@@ -49,9 +49,9 @@ export class ModuleHeaderElement extends CrLitElement {
     };
   }
 
-  headerText: string|null = null;
-  menuItemGroups: MenuItem[][] = [];
-  moreActionsText: string;
+  accessor headerText: string|null = null;
+  accessor menuItemGroups: MenuItem[][] = [];
+  accessor moreActionsText: string;
 
   protected onButtonClick_(e: Event) {
     const action = (e.currentTarget as HTMLElement).dataset['action'];

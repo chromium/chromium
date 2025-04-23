@@ -65,15 +65,4 @@ public class PriceInsightsBottomSheetProperties {
                 OPEN_URL_BUTTON_VISIBLE,
                 OPEN_URL_BUTTON_ON_CLICK_LISTENER
             };
-
-    public static final PropertyKey[] PRICE_TRACKING_KEYS =
-            new PropertyKey[] {
-                PRICE_TRACKING_TITLE,
-                PRICE_TRACKING_BUTTON_TEXT,
-                PRICE_TRACKING_BUTTON_ICON,
-                PRICE_TRACKING_BUTTON_FOREGROUND_COLOR,
-                PRICE_TRACKING_BUTTON_BACKGROUND_COLOR,
-                PRICE_TRACKING_BUTTON_ENABLED,
-                PRICE_TRACKING_BUTTON_ON_CLICK_LISTENER
-            };
 }

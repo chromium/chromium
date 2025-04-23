@@ -13,15 +13,17 @@ import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.metrics.TrackExitReasons;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /**
- * This class is intended to notify observers of the existence native instances of
- * aw_contents. It receives a callback when native aw_contents are created or
- * destroyed. Observers are notified when the first instance is created or the
- * last instance is destroyed. This tracks all WebViews across all profiles.
+ * This class is intended to notify observers of the existence native instances of aw_contents. It
+ * receives a callback when native aw_contents are created or destroyed. Observers are notified when
+ * the first instance is created or the last instance is destroyed. This tracks all WebViews across
+ * all profiles.
  */
 @JNINamespace("android_webview")
 @Lifetime.Singleton
+@NullMarked
 public class AwContentsLifecycleNotifier {
     // Initializing here means that the class will not initialize the LazyHolder members
     // until #getInstance is called since LazyHolder is a separate class.

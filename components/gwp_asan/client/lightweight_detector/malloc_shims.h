@@ -19,7 +19,9 @@ namespace gwp_asan::internal::lud {
 enum class FreeFunctionKind : uint8_t {
   kUnknown,
   kFree,
-  kFreeDefiniteSize,
+  kFreeWithSize,
+  kFreeWithAlignment,
+  kFreeWithSizeAndAlignment,
   kTryFreeDefault,
   kAlignedFree,
 };

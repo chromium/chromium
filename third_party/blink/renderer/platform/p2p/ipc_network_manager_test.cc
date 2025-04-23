@@ -36,9 +36,9 @@ class MockP2PSocketDispatcher
 
 class EmptyMdnsResponder : public webrtc::MdnsResponderInterface {
  public:
-  void CreateNameForAddress(const rtc::IPAddress& addr,
+  void CreateNameForAddress(const webrtc::IPAddress& addr,
                             NameCreatedCallback callback) override {}
-  void RemoveNameForAddress(const rtc::IPAddress& addr,
+  void RemoveNameForAddress(const webrtc::IPAddress& addr,
                             NameRemovedCallback callback) override {}
 };
 
@@ -75,7 +75,7 @@ class IpcNetworkManagerTest : public testing::Test {
 TEST_F(IpcNetworkManagerTest, TestMergeNetworkList) {
   net::NetworkInterfaceList list;
   net::IPAddress ip;
-  rtc::IPAddress ip_address;
+  webrtc::IPAddress ip_address;
 
   // Add 2 networks with the same prefix and prefix length.
   EXPECT_TRUE(ip.AssignFromIPLiteral(kIPv6PublicAddrString1));
@@ -90,7 +90,8 @@ TEST_F(IpcNetworkManagerTest, TestMergeNetworkList) {
 
   network_manager_->OnNetworkListChanged(list, net::IPAddress(),
                                          net::IPAddress());
-  std::vector<const rtc::Network*> networks = network_manager_->GetNetworks();
+  std::vector<const webrtc::Network*> networks =
+      network_manager_->GetNetworks();
   EXPECT_EQ(1uL, networks.size());
   EXPECT_EQ(2uL, networks[0]->GetIPs().size());
 
@@ -113,25 +114,25 @@ TEST_F(IpcNetworkManagerTest, TestMergeNetworkList) {
   EXPECT_EQ(2uL, networks.size());
   // Verify the network with prefix length of 64 has 2 IP addresses.
   auto network_with_two_ips =
-      std::ranges::find(networks, 64, &rtc::Network::prefix_length);
+      std::ranges::find(networks, 64, &webrtc::Network::prefix_length);
   ASSERT_NE(networks.end(), network_with_two_ips);
   EXPECT_EQ(2uL, (*network_with_two_ips)->GetIPs().size());
   // IPs should be in the same order as the list passed into
   // OnNetworkListChanged.
-  EXPECT_TRUE(rtc::IPFromString(kIPv6PublicAddrString1, &ip_address));
+  EXPECT_TRUE(webrtc::IPFromString(kIPv6PublicAddrString1, &ip_address));
   EXPECT_EQ((*network_with_two_ips)->GetIPs()[0],
-            rtc::InterfaceAddress(ip_address));
-  EXPECT_TRUE(rtc::IPFromString(kIPv6PublicAddrString2, &ip_address));
+            webrtc::InterfaceAddress(ip_address));
+  EXPECT_TRUE(webrtc::IPFromString(kIPv6PublicAddrString2, &ip_address));
   EXPECT_EQ((*network_with_two_ips)->GetIPs()[1],
-            rtc::InterfaceAddress(ip_address));
+            webrtc::InterfaceAddress(ip_address));
   // Verify the network with prefix length of 48 has 1 IP address.
   auto network_with_one_ip =
-      std::ranges::find(networks, 48, &rtc::Network::prefix_length);
+      std::ranges::find(networks, 48, &webrtc::Network::prefix_length);
   ASSERT_NE(networks.end(), network_with_one_ip);
   EXPECT_EQ(1uL, (*network_with_one_ip)->GetIPs().size());
-  EXPECT_TRUE(rtc::IPFromString(kIPv6PublicAddrString2, &ip_address));
+  EXPECT_TRUE(webrtc::IPFromString(kIPv6PublicAddrString2, &ip_address));
   EXPECT_EQ((*network_with_one_ip)->GetIPs()[0],
-            rtc::InterfaceAddress(ip_address));
+            webrtc::InterfaceAddress(ip_address));
 }
 
 // Test that IpcNetworkManager will guess a network type from the interface
@@ -139,7 +140,7 @@ TEST_F(IpcNetworkManagerTest, TestMergeNetworkList) {
 TEST_F(IpcNetworkManagerTest, DeterminesNetworkTypeFromNameIfUnknown) {
   net::NetworkInterfaceList list;
   net::IPAddress ip;
-  rtc::IPAddress ip_address;
+  webrtc::IPAddress ip_address;
 
   // Add a "tun1" entry of type "unknown" and "tun2" entry of type Wi-Fi. The
   // "tun1" entry (and only it) should have its type determined from its name,
@@ -156,23 +157,24 @@ TEST_F(IpcNetworkManagerTest, DeterminesNetworkTypeFromNameIfUnknown) {
 
   network_manager_->OnNetworkListChanged(list, net::IPAddress(),
                                          net::IPAddress());
-  std::vector<const rtc::Network*> networks = network_manager_->GetNetworks();
+  std::vector<const webrtc::Network*> networks =
+      network_manager_->GetNetworks();
   EXPECT_EQ(2uL, networks.size());
 
-  auto tun1 = std::ranges::find(networks, "tun1", &rtc::Network::name);
+  auto tun1 = std::ranges::find(networks, "tun1", &webrtc::Network::name);
   ASSERT_NE(networks.end(), tun1);
-  auto tun2 = std::ranges::find(networks, "tun2", &rtc::Network::name);
+  auto tun2 = std::ranges::find(networks, "tun2", &webrtc::Network::name);
   ASSERT_NE(networks.end(), tun1);
 
-  EXPECT_EQ(rtc::ADAPTER_TYPE_VPN, (*tun1)->type());
-  EXPECT_EQ(rtc::ADAPTER_TYPE_WIFI, (*tun2)->type());
+  EXPECT_EQ(webrtc::ADAPTER_TYPE_VPN, (*tun1)->type());
+  EXPECT_EQ(webrtc::ADAPTER_TYPE_WIFI, (*tun2)->type());
 }
 
 // Test that IpcNetworkManager will detect hardcoded VPN interfaces.
 TEST_F(IpcNetworkManagerTest, DeterminesVPNFromMacAddress) {
   net::NetworkInterfaceList list;
   net::IPAddress ip;
-  rtc::IPAddress ip_address;
+  webrtc::IPAddress ip_address;
   std::optional<net::Eui48MacAddress> mac_address(
       {0x0, 0x5, 0x9A, 0x3C, 0x7A, 0x0});
 
@@ -184,17 +186,19 @@ TEST_F(IpcNetworkManagerTest, DeterminesVPNFromMacAddress) {
 
   network_manager_->OnNetworkListChanged(list, net::IPAddress(),
                                          net::IPAddress());
-  std::vector<const rtc::Network*> networks = network_manager_->GetNetworks();
+  std::vector<const webrtc::Network*> networks =
+      network_manager_->GetNetworks();
   ASSERT_EQ(1uL, networks.size());
-  ASSERT_EQ(rtc::ADAPTER_TYPE_VPN, networks[0]->type());
-  ASSERT_EQ(rtc::ADAPTER_TYPE_UNKNOWN, networks[0]->underlying_type_for_vpn());
+  ASSERT_EQ(webrtc::ADAPTER_TYPE_VPN, networks[0]->type());
+  ASSERT_EQ(webrtc::ADAPTER_TYPE_UNKNOWN,
+            networks[0]->underlying_type_for_vpn());
 }
 
 // Test that IpcNetworkManager doesn't classify this mac as VPN.
 TEST_F(IpcNetworkManagerTest, DeterminesNotVPN) {
   net::NetworkInterfaceList list;
   net::IPAddress ip;
-  rtc::IPAddress ip_address;
+  webrtc::IPAddress ip_address;
   std::optional<net::Eui48MacAddress> mac_address(
       {0x0, 0x5, 0x9A, 0x3C, 0x7A, 0x1});
 
@@ -206,9 +210,10 @@ TEST_F(IpcNetworkManagerTest, DeterminesNotVPN) {
 
   network_manager_->OnNetworkListChanged(list, net::IPAddress(),
                                          net::IPAddress());
-  std::vector<const rtc::Network*> networks = network_manager_->GetNetworks();
+  std::vector<const webrtc::Network*> networks =
+      network_manager_->GetNetworks();
   ASSERT_EQ(1uL, networks.size());
-  ASSERT_EQ(rtc::ADAPTER_TYPE_ETHERNET, networks[0]->type());
+  ASSERT_EQ(webrtc::ADAPTER_TYPE_ETHERNET, networks[0]->type());
 }
 
 // Test that IpcNetworkManager will act as the mDNS responder provider for
@@ -225,7 +230,8 @@ TEST_F(IpcNetworkManagerTest,
 
   network_manager_->OnNetworkListChanged(list, net::IPAddress(),
                                          net::IPAddress());
-  std::vector<const rtc::Network*> networks = network_manager_->GetNetworks();
+  std::vector<const webrtc::Network*> networks =
+      network_manager_->GetNetworks();
 
   ASSERT_EQ(1u, networks.size());
   webrtc::MdnsResponderInterface* const mdns_responder =

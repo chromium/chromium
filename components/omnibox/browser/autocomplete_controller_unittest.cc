@@ -2574,8 +2574,8 @@ TEST_F(AutocompleteControllerTest,
 TEST_F(AutocompleteControllerTest,
        ContextualSearchActionAttachedInZeroSuggest) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      omnibox::kContextualZeroSuggestLensFulfillment);
+  feature_list.InitAndEnableFeature(omnibox_feature_configs::ContextualSearch::
+                                        kContextualZeroSuggestLensFulfillment);
 
   // Create a pedal provider to ensure that the contextual search action takes
   // precedence over the pedal.
@@ -2754,4 +2754,162 @@ TEST_F(AutocompleteControllerTest, UpdateAssociatedKeywords) {
                     {u"keyword_0 space"}},
                    /*is_zero_suggest=*/true),
               testing::ElementsAreArray({u"", u"", u""}));
+}
+
+// Helper function to create a basic AutocompleteMatch for testing default match
+// changes.
+AutocompleteMatch CreateDefaultMatch(std::u16string fill_into_edit,
+                                     GURL icon_url,
+                                     std::u16string associated_keyword,
+                                     std::u16string keyword) {
+  AutocompleteMatch match;
+  match.fill_into_edit = fill_into_edit;
+  match.icon_url = icon_url;
+  if (!associated_keyword.empty()) {
+    match.associated_keyword = std::make_unique<AutocompleteMatch>();
+    match.associated_keyword->keyword = associated_keyword;
+  }
+  match.keyword = keyword;
+
+  // Set other fields to make it a plausible default match
+  match.relevance = 1000;
+  match.allowed_to_be_default_match = true;
+  match.destination_url =
+      GURL("https://foo.com/" + base::UTF16ToUTF8(match.fill_into_edit));
+
+  return match;
+}
+
+TEST_F(AutocompleteControllerTest, CheckWhetherDefaultMatchChanged) {
+  // Helper lambda to set the internal default match
+  auto set_current_default = [&](std::optional<AutocompleteMatch> match) {
+    controller_.internal_result_.ClearMatches();  // Clear previous matches
+    if (match) {
+      controller_.internal_result_.AppendMatches({*match});
+    }
+  };
+
+  // Helper lambda to call the private method under test
+  auto check_change =
+      [&](std::optional<AutocompleteMatch> last_default_match,
+          const std::u16string& last_default_associated_keyword) {
+        // Reset timestamp before check
+        controller_.last_time_default_match_changed_ = base::TimeTicks();
+        bool changed = controller_.CheckWhetherDefaultMatchChanged(
+            last_default_match, last_default_associated_keyword);
+        // Check if timestamp was updated only if a change was detected
+        if (changed) {
+          EXPECT_NE(controller_.last_time_default_match_changed_,
+                    base::TimeTicks());
+        } else {
+          EXPECT_EQ(controller_.last_time_default_match_changed_,
+                    base::TimeTicks());
+        }
+        return changed;
+      };
+
+  {
+    // No change: Both null
+    set_current_default(std::nullopt);
+    EXPECT_FALSE(check_change(std::nullopt, u""));
+  }
+  {
+    // No change: Both exist and are identical
+    auto match = CreateDefaultMatch(u"test1", GURL("https://www.foo.com/icon1"),
+                                    u"assoc1", u"key1");
+    set_current_default(match);
+    EXPECT_FALSE(check_change(match, u"assoc1"));
+  }
+  {
+    // No change: Irrelevant fields differ (e.g., relevance)
+    auto match = CreateDefaultMatch(u"test1", GURL("https://www.foo.com/icon1"),
+                                    u"assoc1", u"key1");
+    auto match_different_relevance = match;
+    match_different_relevance.relevance = 900;
+    set_current_default(match);
+    EXPECT_FALSE(check_change(match_different_relevance, u"assoc1"));
+  }
+  {
+    // Change: Existence (last had value, current doesn't)
+    auto match = CreateDefaultMatch(u"test1", GURL("https://www.foo.com/icon1"),
+                                    u"assoc1", u"key1");
+    set_current_default(std::nullopt);
+    EXPECT_TRUE(check_change(match, u"assoc1"));
+  }
+  {
+    // Change: Existence (last didn't have value, current does)
+    auto match = CreateDefaultMatch(u"test1", GURL("https://www.foo.com/icon1"),
+                                    u"assoc1", u"key1");
+    set_current_default(match);
+    EXPECT_TRUE(check_change(std::nullopt, u""));
+  }
+  {
+    // Change: fill_into_edit differs
+    auto match = CreateDefaultMatch(u"test1", GURL("https://www.foo.com/icon1"),
+                                    u"assoc1", u"key1");
+    auto match_different_fill_into_edit = CreateDefaultMatch(
+        u"test2", GURL("https://www.foo.com/icon1"), u"assoc1", u"key1");
+    set_current_default(match_different_fill_into_edit);
+    EXPECT_TRUE(check_change(match, u"assoc1"));
+  }
+  {
+    // Change: icon_url differs
+    auto match = CreateDefaultMatch(u"test1", GURL("https://www.foo.com/icon1"),
+                                    u"assoc1", u"key1");
+    auto match_different_icon_url = CreateDefaultMatch(
+        u"test1", GURL("https://www.foo.com/icon2"), u"assoc1", u"key1");
+    set_current_default(match_different_icon_url);
+    EXPECT_TRUE(check_change(match, u"assoc1"));
+  }
+  {
+    // Change: associated_keyword existence differs (last had, current doesn't)
+    auto match = CreateDefaultMatch(u"test1", GURL("https://www.foo.com/icon1"),
+                                    u"assoc1", u"key1");
+    auto match_no_associated_keyword = CreateDefaultMatch(
+        u"test1", GURL("https://www.foo.com/icon1"), u"", u"key1");
+    set_current_default(match_no_associated_keyword);
+    EXPECT_TRUE(check_change(match, u"assoc1"));
+  }
+  {
+    // Change: associated_keyword existence differs (last didn't, current does)
+    auto match = CreateDefaultMatch(u"test1", GURL("https://www.foo.com/icon1"),
+                                    u"assoc1", u"key1");
+    auto match_no_associated_keyword = CreateDefaultMatch(
+        u"test1", GURL("https://www.foo.com/icon1"), u"", u"key1");
+    set_current_default(match);
+    EXPECT_TRUE(
+        check_change(match_no_associated_keyword, u""));  // double check this
+  }
+  {
+    // Change: associated_keyword differs
+    auto match = CreateDefaultMatch(u"test1", GURL("https://www.foo.com/icon1"),
+                                    u"assoc1", u"key1");
+    auto match_different_associated_keyword = CreateDefaultMatch(
+        u"test1", GURL("https://www.foo.com/icon1"), u"assoc2", u"key1");
+    set_current_default(match_different_associated_keyword);
+    EXPECT_TRUE(check_change(match, u"assoc1"));
+  }
+  {
+    // No change: associated_keyword same
+    auto match = CreateDefaultMatch(u"test1", GURL("https://www.foo.com/icon1"),
+                                    u"assoc1", u"key1");
+    set_current_default(match);
+    EXPECT_FALSE(check_change(match, u"assoc1"));
+  }
+  {
+    // Change: keyword differs
+    auto match = CreateDefaultMatch(u"test1", GURL("https://www.foo.com/icon1"),
+                                    u"assoc1", u"key1");
+    auto match_different_keyword = CreateDefaultMatch(
+        u"test1", GURL("https://www.foo.com/icon1"), u"assoc1", u"key2");
+    set_current_default(match_different_keyword);
+    EXPECT_TRUE(check_change(match, u"assoc1"));
+  }
+  {
+    // No change: keyword same
+    auto match = CreateDefaultMatch(u"test1", GURL("https://www.foo.com/icon1"),
+                                    u"assoc1", u"key1");
+    set_current_default(match);
+    EXPECT_FALSE(check_change(match, u"assoc1"));
+  }
 }

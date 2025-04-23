@@ -126,9 +126,14 @@ class KeyboardAccessoryViewBinder {
             TraceEvent.begin("BarItemChipViewHolder#bind");
             int iconId = item.getSuggestion().getIconId();
             boolean isIphShown = false;
+            // TODO (crbug.com/408984579): Reduce or move the nested IPH logic from here.
             if (item.getFeatureForIph() != null) {
                 if (item.getFeatureForIph()
-                        .equals(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE)) {
+                                .equals(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE)
+                        || item.getFeatureForIph()
+                                .equals(
+                                        FeatureConstants
+                                                .KEYBOARD_ACCESSORY_HOME_WORK_PROFILE_SUGGESTION_FEATURE)) {
                     if (iconId != 0) {
                         isIphShown =
                                 showHelpBubble(

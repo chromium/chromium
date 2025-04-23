@@ -2,24 +2,9 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-:host {
-  --glic-branding-main-color: black;
-}
-
-@media (prefers-color-scheme: dark) {
-  :host {
-    --glic-branding-main-color: white;
-  }
-}
-
 /* This style will be applied on parts of the Glic version of the title. */
 /* Check IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GLIC string resource. */
 .glic-brand-style {
-  background: linear-gradient(74deg,
-      darkgrey 0%,
-      var(--glic-branding-main-color) 50%,
-      grey 100%);
-
-  background-clip: text;
-  color: transparent;
+  /* Keeping this empty instead of removing it in case the branding text color
+     changes in the near future.*/
 }

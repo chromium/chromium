@@ -7,7 +7,7 @@
 PasskeyModelObserverBridge::PasskeyModelObserverBridge(
     id<PasskeyModelObserverDelegate> observer_delegate,
     webauthn::PasskeyModel* passkey_model)
-    : observer_(observer_delegate) {
+    : passkey_model_(passkey_model), observer_(observer_delegate) {
   DCHECK(observer_);
 
   scoped_observation_.Observe(passkey_model);
@@ -27,6 +27,7 @@ void PasskeyModelObserverBridge::OnPasskeysChanged(
 
 void PasskeyModelObserverBridge::OnPasskeyModelShuttingDown() {
   scoped_observation_.Reset();
+  [observer_ passKeyModelShuttingDown:passkey_model_];
 }
 
 void PasskeyModelObserverBridge::OnPasskeyModelIsReady(bool is_ready) {

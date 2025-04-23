@@ -9,10 +9,14 @@
 
 #import <map>
 
+#import "base/ios/block_types.h"
 #import "base/memory/weak_ptr.h"
 #import "components/data_sharing/public/protocol/group_data.pb.h"
+#import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "components/saved_tab_groups/public/types.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
+
+class TabGroupService;
 
 namespace collaboration {
 class CollaborationService;
@@ -22,17 +26,14 @@ namespace data_sharing {
 class DataSharingService;
 }  // namespace data_sharing
 
-namespace tab_groups {
-class TabGroupSyncService;
-}  // namespace tab_groups
-
 // Test implementation of the ShareKitService.
 class TestShareKitService : public ShareKitService {
  public:
   TestShareKitService(
       data_sharing::DataSharingService* data_sharing_service,
       collaboration::CollaborationService* collaboration_service,
-      tab_groups::TabGroupSyncService* tab_group_sync_service);
+      tab_groups::TabGroupSyncService* tab_group_sync_service,
+      TabGroupService* tab_group_service);
   TestShareKitService(const TestShareKitService&) = delete;
   TestShareKitService& operator=(const TestShareKitService&) = delete;
   ~TestShareKitService() override;
@@ -44,7 +45,7 @@ class TestShareKitService : public ShareKitService {
   NSString* ShareTabGroup(ShareKitShareGroupConfiguration* config) override;
   NSString* ManageTabGroup(ShareKitManageConfiguration* config) override;
   NSString* JoinTabGroup(ShareKitJoinConfiguration* config) override;
-  UIViewController* FacePile(ShareKitFacePileConfiguration* config) override;
+  UIView* FacePileView(ShareKitFacePileConfiguration* config) override;
   void ReadGroups(ShareKitReadGroupsConfiguration* config) override;
   void ReadGroupWithToken(
       ShareKitReadGroupWithTokenConfiguration* config) override;
@@ -62,6 +63,18 @@ class TestShareKitService : public ShareKitService {
   void Shutdown() override;
 
  private:
+  // Shares the group with `tab_group_id` to the `collab_id`.
+  // `continuation_block` will be called once the group is ready to be shared.
+  void ShareGroup(tab_groups::LocalTabGroupID tab_group_id,
+                  NSString* collab_id,
+                  ProceduralBlock continuation_block);
+
+  // Prepares to share the group with `tab_group_id` to the `collab_id` as
+  // `owner`. This is updating the fake sync server.
+  void PrepareToShareGroup(bool owner,
+                           tab_groups::LocalTabGroupID tab_group_id,
+                           NSString* collab_id);
+
   // Sets the `collab_id` for the given `tab_group_id` and sets the user as
   // `owner`.
   void SetTabGroupCollabIdFromGroupId(bool owner,
@@ -74,12 +87,23 @@ class TestShareKitService : public ShareKitService {
                                         base::Uuid group_guid,
                                         NSString* collab_id);
 
+  // Used as a callback called when a group `saved_group_guid` is shared.
+  // `result` represents if sharing a group succeeded.
+  void ProcessTabGroupSharingResult(
+      base::Uuid saved_group_guid,
+      tab_groups::TabGroupSyncService::TabGroupSharingResult result);
+
   // Map containing the role of `foo1` identity for each group, based on its
   // collaboration id.
   std::map<std::string, data_sharing_pb::MemberRole> group_to_membership_;
 
   raw_ptr<data_sharing::DataSharingService> data_sharing_service_;
   raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;
+  raw_ptr<TabGroupService> tab_group_service_;
+
+  // The set of group ID that is being shared.
+  std::set<base::Uuid> processing_group_guids_;
+
   base::WeakPtrFactory<TestShareKitService> weak_pointer_factory_{this};
 };
 

@@ -20,15 +20,19 @@
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
 #include "chrome/browser/ui/views/page_action/page_action_triggers.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_params.h"
+#include "chrome/browser/ui/views/page_action/test_support/fake_tab_interface.h"
 #include "chrome/browser/ui/views/page_action/test_support/mock_page_action_model.h"
-#include "chrome/browser/ui/views/page_action/test_support/page_action_properties.h"
+#include "chrome/browser/ui/views/page_action/test_support/test_page_action_properties_provider.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/test_web_contents_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/actions/actions.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/test_event.h"
@@ -36,7 +40,10 @@
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/background.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
+#include "ui/views/test/ax_event_counter.h"
+#include "ui/views/view_class_properties.h"
 
 namespace page_actions {
 namespace {
@@ -47,6 +54,17 @@ using ::ui::EventType;
 
 constexpr int kDefaultIconSize = 16;
 const std::u16string kTestText = u"Test text";
+
+static constexpr actions::ActionId kTestPageActionId = 0;
+static const PageActionPropertiesMap kTestProperties = PageActionPropertiesMap{
+    {
+        kTestPageActionId,
+        PageActionProperties{
+            .histogram_name = "Test",
+            .is_ephemeral = true,
+        },
+    },
+};
 
 class MockIconLabelViewDelegate : public IconLabelBubbleView::Delegate {
  public:
@@ -60,8 +78,11 @@ class MockIconLabelViewDelegate : public IconLabelBubbleView::Delegate {
               (const, override));
 };
 
-class AlwaysActiveTabInterface : public tabs::MockTabInterface {
+class AlwaysActiveTabInterface : public FakeTabInterface {
  public:
+  explicit AlwaysActiveTabInterface(TestingProfile* profile)
+      : FakeTabInterface(profile) {}
+
   ~AlwaysActiveTabInterface() override = default;
   bool IsActivated() const override { return true; }
 };
@@ -78,17 +99,20 @@ class PageActionViewWithControllerTest : public ChromeViewsTestBase {
     auto image = ui::ImageModel::FromVectorIcon(
         vector_icons::kBackArrowIcon, ui::kColorSysPrimary, kDefaultIconSize);
     action_item_ = actions::ActionManager::Get().AddAction(
-        actions::ActionItem::Builder().SetActionId(0).SetImage(image).Build());
+        actions::ActionItem::Builder()
+            .SetActionId(kTestPageActionId)
+            .SetImage(image)
+            .Build());
     test_page_action_view_ = std::make_unique<PageActionView>(
         action_item_,
         PageActionViewParams{
             .icon_size = kDefaultIconSize,
             .icon_label_bubble_delegate = &icon_label_view_delegate_,
-        });
+        },
+        ui::ElementIdentifier());
 
-    profile_ = std::make_unique<TestingProfile>();
     pinned_actions_model_ =
-        std::make_unique<PinnedToolbarActionsModel>(profile_.get());
+        std::make_unique<PinnedToolbarActionsModel>(&profile_);
   }
 
   void TearDown() override {
@@ -97,19 +121,22 @@ class PageActionViewWithControllerTest : public ChromeViewsTestBase {
     action_item_ = nullptr;
     actions::ActionManager::Get().ResetActions();
     pinned_actions_model_.reset();
-    profile_.reset();
   }
 
   std::unique_ptr<PageActionController> NewPageActionController(
       tabs::TabInterface& tab) const {
     auto controller = std::make_unique<PageActionController>(
-        GetPageActionControllerTestProperties(), pinned_actions_model_.get());
-    controller->Initialize(tab, {action_item_->GetActionId().value()});
+        pinned_actions_model_.get());
+    controller->Initialize(tab, {action_item_->GetActionId().value()},
+                           TestPageActionPropertiesProvider(kTestProperties));
     return controller;
   }
 
   PageActionView* page_action_view() { return test_page_action_view_.get(); }
   actions::ActionItem* action_item() { return action_item_; }
+
+ protected:
+  TestingProfile profile_;
 
  private:
   std::unique_ptr<PageActionView> page_action_view_;
@@ -119,7 +146,6 @@ class PageActionViewWithControllerTest : public ChromeViewsTestBase {
   testing::NiceMock<MockIconLabelViewDelegate> icon_label_view_delegate_;
 
   std::unique_ptr<PinnedToolbarActionsModel> pinned_actions_model_;
-  std::unique_ptr<TestingProfile> profile_;
 
   // Must exist in order to create PageActionView during the test.
   views::LayoutProvider layout_provider_;
@@ -133,7 +159,8 @@ class PageActionViewTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
 
-    action_item_ = actions::ActionItem::Builder().SetActionId(0).Build();
+    action_item_ =
+        actions::ActionItem::Builder().SetActionId(kTestPageActionId).Build();
 
     // Host the view in a Widget so it can handle things like mouse input.
     widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -144,7 +171,8 @@ class PageActionViewTest : public ChromeViewsTestBase {
             action_item_.get(),
             PageActionViewParams{
                 .icon_size = view_icon_size_,
-                .icon_label_bubble_delegate = &icon_label_view_delegate_}));
+                .icon_label_bubble_delegate = &icon_label_view_delegate_},
+            ui::ElementIdentifier()));
 
     page_action_view_->GetSlideAnimationForTesting().SetSlideDuration(
         base::Seconds(0));
@@ -153,6 +181,8 @@ class PageActionViewTest : public ChromeViewsTestBase {
     ON_CALL(mock_model_, GetShowSuggestionChip()).WillByDefault(Return(false));
     ON_CALL(mock_model_, GetShouldAnimateChip()).WillByDefault(Return(false));
     ON_CALL(mock_model_, GetText()).WillByDefault(ReturnRef(mock_string_));
+    ON_CALL(mock_model_, GetAccessibleName())
+        .WillByDefault(ReturnRef(mock_string_));
     ON_CALL(mock_model_, GetTooltipText())
         .WillByDefault(ReturnRef(mock_string_));
     ON_CALL(mock_model_, GetImage()).WillByDefault(ReturnRef(mock_image_));
@@ -171,6 +201,9 @@ class PageActionViewTest : public ChromeViewsTestBase {
   actions::ActionItem* action_item() { return action_item_.get(); }
   int view_icon_size() const { return view_icon_size_; }
 
+ protected:
+  testing::NiceMock<MockIconLabelViewDelegate> icon_label_view_delegate_;
+
  private:
   std::unique_ptr<actions::ActionItem> action_item_;
 
@@ -178,8 +211,6 @@ class PageActionViewTest : public ChromeViewsTestBase {
 
   // Owned by widget_.
   raw_ptr<PageActionView> page_action_view_;
-
-  testing::NiceMock<MockIconLabelViewDelegate> icon_label_view_delegate_;
 
   // Must exist in order to create PageActionView during the test.
   views::LayoutProvider layout_provider_;
@@ -195,11 +226,26 @@ class PageActionViewTest : public ChromeViewsTestBase {
   const int view_icon_size_ = kDefaultIconSize;
 };
 
+TEST_F(PageActionViewTest, ViewHasCorrectElementIdentifier) {
+  const ui::ElementIdentifier kCustomIdentifier =
+      ui::ElementIdentifier::FromName("PageActionViewTestIdentifier");
+
+  auto view_with_id = std::make_unique<PageActionView>(
+      action_item(),
+      PageActionViewParams{
+          .icon_size = view_icon_size(),
+          .icon_label_bubble_delegate = &icon_label_view_delegate_},
+      kCustomIdentifier);
+
+  EXPECT_EQ(view_with_id->GetProperty(views::kElementIdentifierKey),
+            kCustomIdentifier);
+}
+
 // Tests that calling Show/Hide on an inactive controller will not affect the
 // view.
 TEST_F(PageActionViewWithControllerTest, ViewIgnoresInactiveController) {
   // Use an always-active tab to ensure consistent visibility updates.
-  AlwaysActiveTabInterface tab;
+  AlwaysActiveTabInterface tab(&profile_);
   auto controller_a = NewPageActionController(tab);
   auto controller_b = NewPageActionController(tab);
   actions::ActionItem* item = action_item();
@@ -235,7 +281,7 @@ TEST_F(PageActionViewWithControllerTest, NoActiveController) {
   EXPECT_FALSE(view->GetVisible());
 
   // Use an always-active tab to ensure consistent visibility updates.
-  AlwaysActiveTabInterface tab;
+  AlwaysActiveTabInterface tab(&profile_);
   auto controller = NewPageActionController(tab);
   view->OnNewActiveController(controller.get());
   controller->Show(0);
@@ -366,6 +412,41 @@ TEST_F(PageActionViewTest, UpdateIconImageHandlesDifferentImageTypes) {
                    ->IsVectorIcon());
 }
 
+// TODO(crbug.com/411078148): Re-enable on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ChipAnnouncements DISABLED_ChipAnnouncements
+#else
+#define MAYBE_ChipAnnouncements ChipAnnouncements
+#endif
+TEST_F(PageActionViewTest, MAYBE_ChipAnnouncements) {
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
+  ASSERT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
+
+  // Initialize the page action so that the chip is showing, but announcements
+  // are disabled.
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetShouldAnnounceChip()).WillRepeatedly(Return(false));
+  page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
+
+  // Enabling the announcements now shouldn't trigger anything, since the chip
+  // is already showing.
+  EXPECT_CALL(*model(), GetShouldAnnounceChip()).WillRepeatedly(Return(true));
+  page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
+
+  // Hide the suggestion chip, then re-show it. This should trigger an
+  // announcement.
+  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(false));
+  page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
+
+  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
+  page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
+}
+
 class PageActionViewTriggerTest : public PageActionViewTest {
  public:
   PageActionViewTriggerTest() = default;
@@ -467,6 +548,8 @@ class PageActionViewAnimationTest : public PageActionViewTest {
         .WillRepeatedly(Return(showing));
     EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
     EXPECT_CALL(*model(), GetText()).WillRepeatedly(ReturnRef(kTestText));
+    EXPECT_CALL(*model(), GetAccessibleName())
+        .WillRepeatedly(ReturnRef(kTestText));
     page_action_view()->OnPageActionModelChanged(*model());
 
     ASSERT_FALSE(page_action_view()->is_animating_label());

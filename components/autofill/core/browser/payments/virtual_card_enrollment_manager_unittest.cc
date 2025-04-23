@@ -79,8 +79,8 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
   }
 
   void SetValidCardArtImageForCard(const CreditCard& card) {
-    payments_data_manager().AddCardArtImage(card.card_art_url(),
-                                            gfx::test::CreateImage(40, 24));
+    payments_data_manager().CacheImage(card.card_art_url(),
+                                       gfx::test::CreateImage(40, 24));
   }
 
   void SetNetworkImageInResourceBundle(ui::MockResourceBundleDelegate* delegate,
@@ -103,7 +103,7 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
       const TestLegalMessageLine& google_legal_message,
       const TestLegalMessageLine& issuer_legal_message,
       bool make_image_present) {
-    payments_data_manager().ClearCreditCardArtImages();
+    payments_data_manager().ClearCachedImages();
     SetUpCard();
     auto* state = virtual_card_enrollment_manager_
                       ->GetVirtualCardEnrollmentProcessState();
@@ -181,7 +181,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, InitVirtualCardEnroll) {
                    << " virtual_card_enrollment_source="
                    << static_cast<int>(virtual_card_enrollment_source)
                    << ", make_image_present=" << make_image_present);
-      payments_data_manager().ClearCreditCardArtImages();
+      payments_data_manager().ClearCachedImages();
       SetUpCard();
       auto* state = virtual_card_enrollment_manager_
                         ->GetVirtualCardEnrollmentProcessState();
@@ -218,7 +218,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, InitVirtualCardEnroll) {
 
 TEST_F(VirtualCardEnrollmentManagerTest,
        InitVirtualCardEnroll_GetDetailsForEnrollmentResponseReceived) {
-  payments_data_manager().ClearCreditCardArtImages();
+  payments_data_manager().ClearCachedImages();
   SetUpCard();
   auto* state =
       virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();

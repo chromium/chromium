@@ -57,15 +57,16 @@ class BnplTosViewDesktopInteractiveUiTest : public InteractiveBrowserTest {
     InteractiveBrowserTest::TearDownOnMainThread();
   }
 
-  InteractiveBrowserTestApi::MultiStep InvokeUiAndWaitForShow() {
+  InteractiveBrowserTestApi::MultiStep InvokeUiAndWaitForShow(
+      const std::string_view bnpl_issuer_id) {
     return Steps(
         ObserveState(
             views::test::kCurrentFocusedViewId,
             BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()),
-        Do([this]() {
+        Do([this, bnpl_issuer_id]() {
           BnplTosModel model;
           model.issuer = BnplIssuer(
-              /*instrument_id=*/std::nullopt, std::string(kBnplAffirmIssuerId),
+              /*instrument_id=*/std::nullopt, std::string(bnpl_issuer_id),
               std::vector<BnplIssuer::EligiblePriceRange>{});
           LegalMessageLine::Parse(
               base::JSONReader::Read(
@@ -96,7 +97,7 @@ class BnplTosViewDesktopInteractiveUiTest : public InteractiveBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest, InvokeUi) {
-  RunTestSequence(InvokeUiAndWaitForShow(),
+  RunTestSequence(InvokeUiAndWaitForShow(kBnplAffirmIssuerId),
                   InAnyContext(SetOnIncompatibleAction(
                                    OnIncompatibleAction::kIgnoreAndContinue,
                                    kSuppressedScreenshotError),
@@ -108,14 +109,14 @@ IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest, InvokeUi) {
 IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest, DialogAccepted) {
   EXPECT_CALL(accept_callback_, Run);
   RunTestSequence(
-      InvokeUiAndWaitForShow(),
+      InvokeUiAndWaitForShow(kBnplAffirmIssuerId),
       InAnyContext(PressButton(views::DialogClientView::kOkButtonElementId),
                    WaitForShow(BnplTosDialog::kThrobberId)));
 }
 
 IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest, DialogShownLogged) {
   base::HistogramTester histogram_tester;
-  RunTestSequence(InvokeUiAndWaitForShow(),
+  RunTestSequence(InvokeUiAndWaitForShow(kBnplAffirmIssuerId),
                   InSameContext(Check([&histogram_tester]() {
                     return histogram_tester.GetBucketCount(
                                "Autofill.Bnpl.TosDialogShown.Affirm",
@@ -127,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest,
                        DialogAcceptedTwice) {
   EXPECT_CALL(accept_callback_, Run);
   RunTestSequence(
-      InvokeUiAndWaitForShow(),
+      InvokeUiAndWaitForShow(kBnplAffirmIssuerId),
       InAnyContext(PressButton(views::DialogClientView::kOkButtonElementId),
                    WaitForShow(BnplTosDialog::kThrobberId),
                    PressButton(views::DialogClientView::kOkButtonElementId)));
@@ -136,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest, DialogDeclined) {
   EXPECT_CALL(cancel_callback_, Run);
   RunTestSequence(
-      InvokeUiAndWaitForShow(),
+      InvokeUiAndWaitForShow(kBnplAffirmIssuerId),
       InAnyContext(PressButton(views::DialogClientView::kCancelButtonElementId),
                    WaitForHide(views::DialogClientView::kTopViewId)));
 }
@@ -146,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest,
   EXPECT_CALL(accept_callback_, Run);
   EXPECT_CALL(cancel_callback_, Run);
   RunTestSequence(
-      InvokeUiAndWaitForShow(),
+      InvokeUiAndWaitForShow(kBnplAffirmIssuerId),
       InAnyContext(PressButton(views::DialogClientView::kOkButtonElementId),
                    WaitForShow(BnplTosDialog::kThrobberId)),
       PressButton(views::DialogClientView::kCancelButtonElementId),
@@ -156,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest, EscKeyPress) {
   EXPECT_CALL(cancel_callback_, Run);
   RunTestSequence(
-      InvokeUiAndWaitForShow(),
+      InvokeUiAndWaitForShow(kBnplAffirmIssuerId),
       InAnyContext(
 // Dialogs are already in focus for Mac builds and focusing again causes a
 // button click.
@@ -177,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest,
                        DialogLoggedWithAcceptButtonClicked) {
   base::HistogramTester histogram_tester;
   RunTestSequence(
-      InvokeUiAndWaitForShow(),
+      InvokeUiAndWaitForShow(kBnplAffirmIssuerId),
       InSameContext(Steps(
           PressButton(views::DialogClientView::kOkButtonElementId),
           WaitForShow(BnplTosDialog::kThrobberId), Check([&histogram_tester]() {
@@ -191,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest,
                        DialogLoggedWithCancelButtonClicked) {
   base::HistogramTester histogram_tester;
   RunTestSequence(
-      InvokeUiAndWaitForShow(),
+      InvokeUiAndWaitForShow(kBnplAffirmIssuerId),
       InSameContext(
           Steps(PressButton(views::DialogClientView::kCancelButtonElementId),
                 WaitForHide(views::DialogClientView::kTopViewId),

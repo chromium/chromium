@@ -19,13 +19,6 @@ void SplitLinkHeaderForTesting(const std::string& header,
     values->push_back(std::string(pair.first, pair.second));
 }
 
-bool ParseLinkHeaderValueForTesting(
-    std::string value,
-    std::string* url,
-    std::unordered_map<std::string, std::optional<std::string>>* params) {
-  return ParseLinkHeaderValue(value.begin(), value.end(), url, params);
-}
-
 TEST(LinkHeaderTest, SplitEmpty) {
   std::vector<std::string> values;
   SplitLinkHeaderForTesting("", &values);
@@ -97,12 +90,11 @@ class SimpleParseTest : public ::testing::TestWithParam<SimpleParseTestData> {};
 TEST_P(SimpleParseTest, Simple) {
   const SimpleParseTestData test = GetParam();
 
-  std::string url;
   std::unordered_map<std::string, std::optional<std::string>> params;
-  EXPECT_EQ(test.valid,
-            ParseLinkHeaderValueForTesting(test.link, &url, &params));
+  std::optional<std::string> url = ParseLinkHeaderValue(test.link, params);
+  EXPECT_EQ(test.valid, url.has_value());
   if (test.valid) {
-    EXPECT_EQ(test.url, url);
+    EXPECT_EQ(test.url, *url);
     EXPECT_EQ(test.rel, params["rel"].value_or(""));
     EXPECT_EQ(test.as, params["as"].value_or(""));
   }

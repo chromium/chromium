@@ -12,6 +12,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <optional>
 
 #include "base/time/time.h"
@@ -136,8 +137,9 @@ class AggregateFrameData {
 
  private:
   // Stores the data for ads on a page according to visibility.
-  AdDataByVisibility
-      ad_data_[static_cast<size_t>(FrameVisibility::kMaxValue) + 1] = {};
+  std::array<AdDataByVisibility,
+             static_cast<size_t>(FrameVisibility::kMaxValue) + 1>
+      ad_data_ = {};
 
   // The overall cpu usage for this page.
   base::TimeDelta cpu_usage_ = base::TimeDelta();

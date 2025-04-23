@@ -19,7 +19,7 @@ class DevToolsEventListener;
 
 namespace base {
 class FilePath;
-enum TerminationStatus;
+enum TerminationStatus : int;
 }  // namespace base
 
 namespace network::mojom {

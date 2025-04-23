@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.commerce.core.ShoppingService;
@@ -88,7 +89,14 @@ class BookmarkFolderPickerMediator {
         mBookmarkIds.removeIf(id -> mBookmarkModel.getBookmarkById(id) == null);
         mFinishRunnable = finishRunnable;
         mQueryHandler =
-                new ImprovedBookmarkQueryHandler(mBookmarkModel, bookmarkUiPrefs, shoppingService);
+                new ImprovedBookmarkQueryHandler(
+                        mBookmarkModel,
+                        bookmarkUiPrefs,
+                        shoppingService,
+                        /* rootFolderForceVisibleMask= */ BookmarkBarUtils.isFeatureEnabled(
+                                        mContext)
+                                ? BookmarkNodeMaskBit.ACCOUNT_AND_LOCAL_BOOKMARK_BAR
+                                : BookmarkNodeMaskBit.NONE);
         mModel = model;
         mModelList = modelList;
         mAddNewFolderCoordinator = addNewFolderCoordinator;

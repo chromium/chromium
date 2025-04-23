@@ -199,6 +199,21 @@ TEST_F(VisibleUnitsParagraphTest, endOfParagraphSimplePre) {
                 .DeepEquivalent());
 }
 
+TEST_F(VisibleUnitsParagraphTest, endOfParagraphHiddenElement) {
+  SetBodyContent(
+      "<div contenteditable='true'><div id='first'>First block</div>"
+      "<div id='second'>Second block<select style='visibility:hidden'>"
+      "<b contenteditable='false'>Non-editable</b>"
+      "</select></div></div>");
+
+  Node* second = GetElementById("second");
+  Node* second_block = second->firstChild();
+
+  EXPECT_EQ(Position(second_block, 12),
+            EndOfParagraph(CreateVisiblePositionInDOMTree(*second_block, 0))
+                .DeepEquivalent());
+}
+
 TEST_F(VisibleUnitsParagraphTest, isEndOfParagraph) {
   const char* body_content =
       "<span id=host><b slot='#one' id=one>1</b><b slot='#two' "

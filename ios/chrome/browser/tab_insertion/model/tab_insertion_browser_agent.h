@@ -93,7 +93,6 @@ class TabInsertionBrowserAgent
 
  private:
   friend class BrowserUserData<TabInsertionBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit TabInsertionBrowserAgent(Browser* browser);
 

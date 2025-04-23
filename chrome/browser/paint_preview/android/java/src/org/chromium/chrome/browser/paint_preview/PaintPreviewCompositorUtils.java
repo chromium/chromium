@@ -9,7 +9,10 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Utilities for warming up a compositor process for paint previews. */
+@NullMarked
 @JNINamespace("paint_preview")
 public class PaintPreviewCompositorUtils {
     /** Warms up the compositor process. */

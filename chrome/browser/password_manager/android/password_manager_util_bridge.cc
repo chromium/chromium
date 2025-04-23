@@ -89,4 +89,9 @@ bool PasswordManagerUtilBridge::IsPlayStoreAppPresent() {
       base::android::AttachCurrentThread());
 }
 
+bool PasswordManagerUtilBridge::IsGooglePlayServicesUpdatable() {
+  return Java_PasswordManagerUtilBridge_isGooglePlayServicesUpdatable(
+      base::android::AttachCurrentThread());
+}
+
 }  // namespace password_manager_android_util

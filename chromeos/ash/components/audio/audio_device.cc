@@ -27,11 +27,11 @@ uint8_t GetDevicePriority(AudioDeviceType type, bool is_input) {
     case AudioDeviceType::kUsb:
     case AudioDeviceType::kBluetooth:
       return 3;
-    case AudioDeviceType::kHdmi:
-      return 2;
     case AudioDeviceType::kInternalSpeaker:
     case AudioDeviceType::kInternalMic:
     case AudioDeviceType::kFrontMic:
+      return 2;
+    case AudioDeviceType::kHdmi:
       return 1;
     // Lower the priority of bluetooth mic to prevent unexpected bad eperience
     // to user because of bluetooth audio profile switching. Make priority to

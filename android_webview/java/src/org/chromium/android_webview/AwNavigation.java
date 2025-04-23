@@ -4,10 +4,12 @@
 
 package org.chromium.android_webview;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.NavigationHandle;
 
 /** Represents a navigation and is exposed to embedders. See also AwNavigationClient */
+@NullMarked
 public class AwNavigation extends AwSupportLibIsomorphic {
     private final NavigationHandle mNavigationHandle;
     // The Page that the navigation commits into. Set to null if the navigation doesn't commit or

@@ -84,8 +84,9 @@ public class PlayerFrameViewport {
     /**
      * Returns the current viewport position as a rect. Use cautiously as this is an instantaneous
      * snapshot and is not continually updated.
+     *
      * @return a rect of the current viewport.
-     * */
+     */
     public Rect asRect() {
         mViewportTransform.getValues(mMatrixValues);
         final int left = Math.round(mMatrixValues[Matrix.MTRANS_X]);

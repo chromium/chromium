@@ -225,8 +225,16 @@ export class ClientDelegateFactory {
         const result = await pageHandler.removeStudent(id);
         return !resultHasError(result);
       },
-      addStudents: async (ids: string[]) => {
-        const result = await pageHandler.addStudents(ids);
+      addStudents: async (students: Identity[]) => {
+        const result =
+            await pageHandler.addStudents(students?.map((item: Identity) => {
+              return {
+                id: item.id,
+                name: item.name,
+                email: item.email,
+                photoUrl: item.photoUrl ? {url: item.photoUrl} : null,
+              };
+            }));
         return !resultHasError(result);
       },
       updateOnTaskConfig: async (onTaskConfig: OnTaskConfig) => {

@@ -353,7 +353,6 @@ struct FormFieldData {
     kForShadowHostName, // <label> for-attribute that links to an control
                         // (inside a shadow DOM) via it's name attribute.
     kOverlayingLabel,   // Succeeding DOM node overlaying the input.
-    kDefaultSelectText, // The text of a <select> element's first <option>.
   };
 
   mojo_base.mojom.String16 label;
@@ -482,7 +481,6 @@ struct PasswordFormFillData {
   url.mojom.Url url;
   FieldRendererId username_element_renderer_id;
   FieldRendererId password_element_renderer_id;
-  bool username_may_use_prefilled_placeholder;
   PasswordAndMetadata preferred_login;
   array<PasswordAndMetadata> additional_logins;
   bool wait_for_username;
@@ -518,6 +516,7 @@ struct TriggeringField {
   mojo_base.mojom.TextDirection text_direction;
   mojo_base.mojom.String16 typed_username;
   bool show_webauthn_credentials;
+  bool show_identity_credentials;
   gfx.mojom.RectF bounds;
 };
 

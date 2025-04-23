@@ -30,6 +30,8 @@ class WasmTtsEngineComponentInstallerPolicy : public ComponentInstallerPolicy {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   static std::string GetId();
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  static void GetWasmTTSEngineDirectory(
+      base::OnceCallback<void(const base::FilePath&)> callback);
 
  private:
   // The following methods override ComponentInstallerPolicy.

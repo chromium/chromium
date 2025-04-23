@@ -94,7 +94,7 @@ public class OtrProfileId {
      * @return An OtrProfileId instance.
      */
     @CalledByNative
-    public static @Nullable OtrProfileId deserializeWithoutVerify(String value) {
+    public static @Nullable OtrProfileId deserializeWithoutVerify(@Nullable String value) {
         // The value might be null, if it represents the regular profile.
         if (TextUtils.isEmpty(value)) return null;
 

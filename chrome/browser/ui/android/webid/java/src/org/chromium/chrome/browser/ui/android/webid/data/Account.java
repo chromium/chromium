@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 /**
@@ -16,6 +17,7 @@ import org.chromium.build.annotations.Nullable;
  * Android counterpart of IdentityRequestAccount in
  * //content/public/browser/identity_request_account.h
  */
+@NullMarked
 public class Account {
     private final String mId;
     private final String mDisplayIdentifier;

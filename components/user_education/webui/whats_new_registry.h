@@ -78,7 +78,7 @@ class WhatsNewModule {
   // include a metric string, an owner string and a browser command.
   WhatsNewModule(std::string metric_name,
                  std::string owner,
-                 std::optional<BrowserCommand> browser_command)
+                 std::optional<BrowserCommand> browser_command = std::nullopt)
       : feature_(nullptr),
         unique_name_(metric_name),
         browser_command_(browser_command) {}

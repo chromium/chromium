@@ -9,6 +9,7 @@
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/overview_desk_bar_view.h"
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"

@@ -28,6 +28,9 @@
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
+class ApplicationLocaleStorage;
+class PrefService;
+
 namespace screen_ai {
 class OpticalCharacterRecognizer;
 }  // namespace screen_ai
@@ -40,7 +43,11 @@ class LensOverlayQueryController;
 // in Chrome.
 class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
  public:
-  ChromeCaptureModeDelegate();
+  // `local_state` must not be null and must outlive `this`.
+  // `application_locale_storage` must not be null and must outlive `this`.
+  ChromeCaptureModeDelegate(
+      PrefService* local_state,
+      ApplicationLocaleStorage* application_locale_storage);
   ChromeCaptureModeDelegate(const ChromeCaptureModeDelegate&) = delete;
   ChromeCaptureModeDelegate& operator=(const ChromeCaptureModeDelegate&) =
       delete;
@@ -214,6 +221,9 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   // Called after the response to a /qfmetadata GET request (for text detection)
   // is received and the response body has been decoded.
   void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
+
+  const raw_ref<PrefService> local_state_;
+  const raw_ref<ApplicationLocaleStorage> application_locale_storage_;
 
   // Used to temporarily disable capture mode in certain cases for which neither
   // a device policy, nor DLP will be triggered. For example, Some extension

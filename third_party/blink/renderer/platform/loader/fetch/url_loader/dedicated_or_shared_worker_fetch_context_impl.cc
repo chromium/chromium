@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -84,10 +85,21 @@ class DedicatedOrSharedWorkerFetchContextImpl::Factory
 
     // Create our own URLLoader to route the request to the controller service
     // worker.
+    bool can_create_sw_urlloader = CanCreateServiceWorkerURLLoader(request);
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory =
-        CanCreateServiceWorkerURLLoader(request)
-            ? service_worker_loader_factory_
-            : loader_factory_;
+        can_create_sw_urlloader ? service_worker_loader_factory_
+                                : loader_factory_;
+
+    // Record only if a fetch is from SharedWorker.
+    // TODO(crbug.com/324939068): remove the code when the feature launched.
+    if (container_is_shared_worker_) {
+      base::UmaHistogramBoolean(
+          "ServiceWorker.SharedWorker.ResourceFetch.UseServiceWorker",
+          can_create_sw_urlloader);
+      base::UmaHistogramBoolean(
+          "ServiceWorker.SharedWorker.ResourceFetch.FromBlob",
+          can_create_sw_urlloader & container_is_blob_url_shared_worker_);
+    }
 
     return std::make_unique<URLLoader>(
         cors_exempt_header_list_, terminate_sync_load_event_,
@@ -109,6 +121,14 @@ class DedicatedOrSharedWorkerFetchContextImpl::Factory
   }
 
   base::WeakPtr<Factory> GetWeakPtr() { return weak_ptr_factory_.GetWeakPtr(); }
+
+  // TODO(crbug.com/324939068): remove the flag when the feature launched.
+  void set_container_is_blob_url_shared_worker(bool is_blob_url) {
+    container_is_blob_url_shared_worker_ = is_blob_url;
+  }
+  void set_container_is_shared_worker(bool is_sharedworker) {
+    container_is_shared_worker_ = is_sharedworker;
+  }
 
  private:
   bool CanCreateServiceWorkerURLLoader(
@@ -142,6 +162,12 @@ class DedicatedOrSharedWorkerFetchContextImpl::Factory
   }
 
   scoped_refptr<network::SharedURLLoaderFactory> service_worker_loader_factory_;
+
+  // True if the container_is_blob_url_shared_worker_.
+  // TODO(crbug.com/324939068): remove the flag when the feature launched.
+  bool container_is_blob_url_shared_worker_ = false;
+  bool container_is_shared_worker_ = false;
+
   base::WeakPtrFactory<Factory> weak_ptr_factory_{this};
 };
 
@@ -258,6 +284,11 @@ void DedicatedOrSharedWorkerFetchContextImpl::set_site_for_cookies(
 void DedicatedOrSharedWorkerFetchContextImpl::set_top_frame_origin(
     const WebSecurityOrigin& top_frame_origin) {
   top_frame_origin_ = top_frame_origin;
+}
+
+void DedicatedOrSharedWorkerFetchContextImpl::set_container_is_shared_worker(
+    bool is_sharedworker) {
+  container_is_shared_worker_ = is_sharedworker;
 }
 
 void DedicatedOrSharedWorkerFetchContextImpl::SetTerminateSyncLoadEvent(
@@ -533,6 +564,10 @@ void DedicatedOrSharedWorkerFetchContextImpl::
           task_runner));
   web_loader_factory_->SetServiceWorkerURLLoaderFactory(
       std::move(service_worker_url_loader_factory));
+  web_loader_factory_->set_container_is_blob_url_shared_worker(
+      container_is_blob_url_shared_worker_);
+  web_loader_factory_->set_container_is_shared_worker(
+      container_is_shared_worker_);
 }
 
 void DedicatedOrSharedWorkerFetchContextImpl::UpdateSubresourceLoaderFactories(
@@ -632,6 +667,8 @@ WebDedicatedOrSharedWorkerFetchContext::Create(
     worker_fetch_context->set_controller_service_worker_mode(
         provider_context->GetControllerServiceWorkerMode());
     worker_fetch_context->set_client_id(provider_context->client_id());
+    worker_fetch_context->set_container_is_blob_url_shared_worker(
+        provider_context->container_is_blob_url_shared_worker());
   } else {
     worker_fetch_context->set_controller_service_worker_mode(
         mojom::ControllerServiceWorkerMode::kNoController);

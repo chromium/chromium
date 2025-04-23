@@ -13,8 +13,6 @@ namespace data_sharing {
 
 struct GroupData;
 
-data_sharing_pb::GroupData GroupDataToProto(const GroupData& group_data);
-
 GroupData GroupDataFromProto(const data_sharing_pb::GroupData& group_data);
 
 }  // namespace data_sharing

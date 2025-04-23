@@ -139,10 +139,6 @@ public class PageInfoController
     // The controller for the cookies section of the page info.
     private @Nullable PageInfoCookiesController mCookiesController;
 
-    // The controller for the tracking protection section for the 100% 3PCD launch UI.
-    private @Nullable PageInfoTrackingProtectionLaunchController
-            mTrackingProtectionLaunchController;
-
     // All subpage controllers.
     private Collection<PageInfoSubpageController> mSubpageControllers;
 
@@ -281,27 +277,10 @@ public class PageInfoController
                         mDelegate,
                         pageInfoHighlight.getHighlightedPermission());
         mSubpageControllers.add(mPermissionsController);
-        if (mDelegate.showTrackingProtectionActFeaturesUi()) {
-            mTrackingProtectionLaunchController =
-                    new PageInfoTrackingProtectionLaunchController(
-                            this, mView.getCookiesRowView(), mDelegate);
-            mSubpageControllers.add(mTrackingProtectionLaunchController);
-        } else {
-            mCookiesController =
-                    new PageInfoCookiesController(this, mView.getCookiesRowView(), mDelegate);
-            mSubpageControllers.add(mCookiesController);
-        }
-
-        if (source == OpenedFromSource.WEBAPK_SNACKBAR
-                && mDelegate.showTrackingProtectionActFeaturesUi()) {
-            assumeNonNull(mTrackingProtectionLaunchController);
-            mContainer.showPage(
-                    mTrackingProtectionLaunchController.createViewForSubpage(mContainer),
-                    null,
-                    null);
-        } else {
-            mContainer.showPage(mView, null, null);
-        }
+        mCookiesController =
+                new PageInfoCookiesController(this, mView.getCookiesRowView(), mDelegate);
+        mSubpageControllers.add(mCookiesController);
+        mContainer.showPage(mView, null, null);
 
         // TODO(crbug.com/40746014): Setup forget this site button after history delete is
         // implemented.
@@ -355,7 +334,9 @@ public class PageInfoController
                 };
 
         mDialog = dialog;
-        dialog.show();
+        if (mNativePageInfoController != 0) {
+            dialog.show();
+        }
     }
 
     private void destroy() {
@@ -367,9 +348,6 @@ public class PageInfoController
         mDialog = null;
         if (mCookiesController != null) {
             mCookiesController.destroy();
-        }
-        if (mTrackingProtectionLaunchController != null) {
-            mTrackingProtectionLaunchController.destroy();
         }
     }
 
@@ -507,12 +485,6 @@ public class PageInfoController
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public @Nullable PageInfoCookiesController getCookiesController() {
         return mCookiesController;
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public @Nullable
-            PageInfoTrackingProtectionLaunchController getTrackingProtectionLaunchController() {
-        return mTrackingProtectionLaunchController;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

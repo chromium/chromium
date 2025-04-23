@@ -30,7 +30,7 @@
  */
 
 // SharedWorkers also support the `sameSiteCookies` option outlined in:
-// https://privacycg.github.io/saa-non-cookie-storage/shared-workers.html
+// https://privacycg.github.io/saa-non-cookie-storage/#shared-worker
 dictionary SharedWorkerOptions : WorkerOptions {
     SharedWorkerSameSiteCookies sameSiteCookies;
 };

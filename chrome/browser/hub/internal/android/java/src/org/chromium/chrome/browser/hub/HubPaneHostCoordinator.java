@@ -9,10 +9,12 @@ import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
 import android.view.ViewGroup;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Sets up the component that holds a single pane at a time in the Hub. */
+@NullMarked
 public class HubPaneHostCoordinator {
     private final HubPaneHostMediator mMediator;
 

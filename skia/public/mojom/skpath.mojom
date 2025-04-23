@@ -1,0 +1,13 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file contains structures used to represent an SkPath in Mojo.
+module skia.mojom;
+
+// Represents a serialized version of SkPath
+// It uses SkPath's internal serialization format and passes the resulting
+// buffer to mojo.
+struct SkPath {
+  array<uint8> data;
+};

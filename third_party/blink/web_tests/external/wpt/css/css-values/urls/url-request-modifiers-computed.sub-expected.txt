@@ -1,0 +1,47 @@
+This is a testharness.js-based test.
+[FAIL] Property background-image value 'url("http://web-platform.test:8001/css/support/1x1-green.png" crossorigin(anonymous))'
+  assert_true: 'url("http://web-platform.test:8001/css/support/1x1-green.png" crossorigin(anonymous))' is a supported value for background-image. expected true got false
+[FAIL] Property background-image value 'url("http://web-platform.test:8001/css/support/1x1-green.png" crossorigin(use-credentials))'
+  assert_true: 'url("http://web-platform.test:8001/css/support/1x1-green.png" crossorigin(use-credentials))' is a supported value for background-image. expected true got false
+[FAIL] Property background-image value 'url("http://web-platform.test:8001/css/support/1x1-green.png" integrity("sha384-foobar"))'
+  assert_true: 'url("http://web-platform.test:8001/css/support/1x1-green.png" integrity("sha384-foobar"))' is a supported value for background-image. expected true got false
+[FAIL] Property background-image value 'url("http://web-platform.test:8001/css/support/1x1-green.png" integrity(""))'
+  assert_true: 'url("http://web-platform.test:8001/css/support/1x1-green.png" integrity(""))' is a supported value for background-image. expected true got false
+[FAIL] Property background-image value 'url("http://web-platform.test:8001/css/support/1x1-green.png" referrerpolicy(no-referrer))'
+  assert_true: 'url("http://web-platform.test:8001/css/support/1x1-green.png" referrerpolicy(no-referrer))' is a supported value for background-image. expected true got false
+[FAIL] Property background-image value 'url("http://web-platform.test:8001/css/support/1x1-green.png" referrerpolicy(no-referrer-when-downgrade))'
+  assert_true: 'url("http://web-platform.test:8001/css/support/1x1-green.png" referrerpolicy(no-referrer-when-downgrade))' is a supported value for background-image. expected true got false
+[FAIL] Property background-image value 'url("http://web-platform.test:8001/css/support/1x1-green.png" referrerpolicy(same-origin))'
+  assert_true: 'url("http://web-platform.test:8001/css/support/1x1-green.png" referrerpolicy(same-origin))' is a supported value for background-image. expected true got false
+[FAIL] Property background-image value 'url("http://web-platform.test:8001/css/support/1x1-green.png" referrerpolicy(origin))'
+  assert_true: 'url("http://web-platform.test:8001/css/support/1x1-green.png" referrerpolicy(origin))' is a supported value for background-image. expected true got false
+[FAIL] Property background-image value 'url("http://web-platform.test:8001/css/support/1x1-green.png" referrerpolicy(strict-origin))'
+  assert_true: 'url("http://web-platform.test:8001/css/support/1x1-green.png" referrerpolicy(strict-origin))' is a supported value for background-image. expected true got false
+[FAIL] Property background-image value 'url("http://web-platform.test:8001/css/support/1x1-green.png" referrerpolicy(origin-when-cross-origin))'
+  assert_true: 'url("http://web-platform.test:8001/css/support/1x1-green.png" referrerpolicy(origin-when-cross-origin))' is a supported value for background-image. expected true got false
+[FAIL] Property background-image value 'url("http://web-platform.test:8001/css/support/1x1-green.png" referrerpolicy(strict-origin-when-cross-origin))'
+  assert_true: 'url("http://web-platform.test:8001/css/support/1x1-green.png" referrerpolicy(strict-origin-when-cross-origin))' is a supported value for background-image. expected true got false
+[FAIL] Property background-image value 'url("http://web-platform.test:8001/css/support/1x1-green.png" referrerpolicy(unsafe-url))'
+  assert_true: 'url("http://web-platform.test:8001/css/support/1x1-green.png" referrerpolicy(unsafe-url))' is a supported value for background-image. expected true got false
+[FAIL] Property background-image value 'url("http://web-platform.test:8001/css/support/1x1-green.png" crossorigin(anonymous) integrity("sha384-foobar"))'
+  assert_true: 'url("http://web-platform.test:8001/css/support/1x1-green.png" crossorigin(anonymous) integrity("sha384-foobar"))' is a supported value for background-image. expected true got false
+[FAIL] Property background-image value 'url("http://web-platform.test:8001/css/support/1x1-green.png" integrity("sha384-foobar") crossorigin(anonymous))'
+  assert_true: 'url("http://web-platform.test:8001/css/support/1x1-green.png" integrity("sha384-foobar") crossorigin(anonymous))' is a supported value for background-image. expected true got false
+[FAIL] Property background-image value 'url("http://web-platform.test:8001/css/support/1x1-green.png" integrity("sha384-foobar") referrerpolicy(no-referrer))'
+  assert_true: 'url("http://web-platform.test:8001/css/support/1x1-green.png" integrity("sha384-foobar") referrerpolicy(no-referrer))' is a supported value for background-image. expected true got false
+[FAIL] Property background-image value 'url("http://web-platform.test:8001/css/support/1x1-green.png" referrerpolicy(no-referrer) integrity("sha384-foobar"))'
+  assert_true: 'url("http://web-platform.test:8001/css/support/1x1-green.png" referrerpolicy(no-referrer) integrity("sha384-foobar"))' is a supported value for background-image. expected true got false
+[FAIL] Property background-image value 'url("http://web-platform.test:8001/css/support/1x1-green.png" crossorigin(anonymous) referrerpolicy(no-referrer))'
+  assert_true: 'url("http://web-platform.test:8001/css/support/1x1-green.png" crossorigin(anonymous) referrerpolicy(no-referrer))' is a supported value for background-image. expected true got false
+[FAIL] Property background-image value 'url("http://web-platform.test:8001/css/support/1x1-green.png" referrerpolicy(no-referrer) crossorigin(anonymous))'
+  assert_true: 'url("http://web-platform.test:8001/css/support/1x1-green.png" referrerpolicy(no-referrer) crossorigin(anonymous))' is a supported value for background-image. expected true got false
+[FAIL] Property background-image value 'url("http://web-platform.test:8001/css/support/1x1-green.png" crossorigin(anonymous) integrity("sha384-foobar") referrerpolicy(no-referrer))'
+  assert_true: 'url("http://web-platform.test:8001/css/support/1x1-green.png" crossorigin(anonymous) integrity("sha384-foobar") referrerpolicy(no-referrer))' is a supported value for background-image. expected true got false
+[FAIL] Property background-image value 'url("http://web-platform.test:8001/css/support/1x1-green.png" integrity("sha384-foobar") referrerpolicy(no-referrer) crossorigin(anonymous))'
+  assert_true: 'url("http://web-platform.test:8001/css/support/1x1-green.png" integrity("sha384-foobar") referrerpolicy(no-referrer) crossorigin(anonymous))' is a supported value for background-image. expected true got false
+[FAIL] Property background-image value 'url("http://web-platform.test:8001/css/support/1x1-green.png" referrerpolicy(no-referrer) crossorigin(anonymous) integrity("sha384-foobar"))'
+  assert_true: 'url("http://web-platform.test:8001/css/support/1x1-green.png" referrerpolicy(no-referrer) crossorigin(anonymous) integrity("sha384-foobar"))' is a supported value for background-image. expected true got false
+[FAIL] Property background-image value 'url("http://web-platform.test:8001/css/support/1x1-green.png" referrerpolicy(no-referrer) integrity("sha384-foobar") crossorigin(anonymous))'
+  assert_true: 'url("http://web-platform.test:8001/css/support/1x1-green.png" referrerpolicy(no-referrer) integrity("sha384-foobar") crossorigin(anonymous))' is a supported value for background-image. expected true got false
+Harness: the test ran to completion.
+

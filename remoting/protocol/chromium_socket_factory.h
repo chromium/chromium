@@ -15,7 +15,7 @@ namespace remoting::protocol {
 
 class SessionOptionsProvider;
 
-class ChromiumPacketSocketFactory : public rtc::PacketSocketFactory {
+class ChromiumPacketSocketFactory : public webrtc::PacketSocketFactory {
  public:
   explicit ChromiumPacketSocketFactory(
       base::WeakPtr<SessionOptionsProvider> session_options_provider);
@@ -26,20 +26,20 @@ class ChromiumPacketSocketFactory : public rtc::PacketSocketFactory {
 
   ~ChromiumPacketSocketFactory() override;
 
-  // rtc::PacketSocketFactory implementation.
-  rtc::AsyncPacketSocket* CreateUdpSocket(
-      const rtc::SocketAddress& local_address,
+  // webrtc::PacketSocketFactory implementation.
+  webrtc::AsyncPacketSocket* CreateUdpSocket(
+      const webrtc::SocketAddress& local_address,
       uint16_t min_port,
       uint16_t max_port) override;
-  rtc::AsyncListenSocket* CreateServerTcpSocket(
-      const rtc::SocketAddress& local_address,
+  webrtc::AsyncListenSocket* CreateServerTcpSocket(
+      const webrtc::SocketAddress& local_address,
       uint16_t min_port,
       uint16_t max_port,
       int opts) override;
-  rtc::AsyncPacketSocket* CreateClientTcpSocket(
-      const rtc::SocketAddress& local_address,
-      const rtc::SocketAddress& remote_address,
-      const rtc::PacketSocketTcpOptions& opts) override;
+  webrtc::AsyncPacketSocket* CreateClientTcpSocket(
+      const webrtc::SocketAddress& local_address,
+      const webrtc::SocketAddress& remote_address,
+      const webrtc::PacketSocketTcpOptions& opts) override;
   std::unique_ptr<webrtc::AsyncDnsResolverInterface> CreateAsyncDnsResolver()
       override;
 

@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -147,8 +148,7 @@ bool PhysicalRect::InclusiveIntersect(const PhysicalRect& other) {
 }
 
 String PhysicalRect::ToString() const {
-  return String::Format("%s %s", offset.ToString().Ascii().c_str(),
-                        size.ToString().Ascii().c_str());
+  return WTF::StrCat({offset.ToString(), " ", size.ToString()});
 }
 
 PhysicalRect UnionRect(const Vector<PhysicalRect>& rects) {

@@ -56,6 +56,7 @@
           <settings-toggle-button
               id="launcherToggle" pref="{{prefs.glic.launcher_enabled}}"
               label="$i18n{glicOsWidgetToggle}"
+              sub-label="$i18n{glicOsWidgetToggleSublabel}"
               checked="{{launcherToggleOn_}}"
               on-settings-boolean-control-change="onLauncherToggleChange_">
           </settings-toggle-button>
@@ -65,7 +66,16 @@
                 <div id="keyboardShortcut" aria-hidden>
                   $i18n{glicKeyboardShortcut}
                 </div>
-                <div class="secondary">$i18n{glicKeyboardShortcutSublabel}</div>
+                <div class="secondary"
+                    learn-more-url="$i18n{glicKeyboardShortcutLearnMoreUrl}">
+                  $i18n{glicKeyboardShortcutSublabel}
+                  <a href="[[getLearnMoreUrl_(enterprisePref_)]]"
+                      aria-label="$i18n{glicKeyboardShortcutLearnMoreLabel}"
+                      aria-description="$i18n{opensInNewTab}"
+                      on-click="onLearnMoreClick_" target="_blank">
+                      $i18n{glicKeyboardShortcutLearnMoreLabel}
+                  </a>
+                </div>
               </div>
               <cr-shortcut-input id="shortcutInput" class="cr-padded-text"
                   input-aria-label="$i18n{glicKeyboardShortcut}"

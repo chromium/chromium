@@ -6,9 +6,56 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
-#include "chrome/browser/ui/tabs/tab_model.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace tabs {
+
+// This does not create a useful iterator, but providing a default constructor
+// is required for forward iterators by the C++ spec.
+TabCollection::Iterator::Iterator() : Iterator(nullptr, true) {}
+
+TabCollection::Iterator::Iterator(base::PassKey<TabCollection>,
+                                  const TabCollection* root,
+                                  bool is_end)
+    : Iterator(root, is_end) {}
+
+TabCollection::Iterator::Iterator(const tabs::TabCollection* root, bool is_end)
+    : cur_(nullptr), root_(root) {
+  if (!is_end && root) {
+    stack_.push({root, 0});
+    Next();
+  }
+}
+
+TabCollection::Iterator::Iterator(const Iterator& iterator) = default;
+
+TabCollection::Iterator::~Iterator() = default;
+
+void TabCollection::Iterator::Next() {
+  DCHECK(cur_ || !stack_.empty()) << "Trying to advance past the end";
+  cur_ = nullptr;
+  while (!stack_.empty()) {
+    // Copy by reference to update the index below.
+    Frame& frame = stack_.top();
+    const TabCollection* collection = frame.collection;
+
+    const auto& children = collection->GetChildren();
+
+    if (frame.index < children.size()) {
+      auto& child = children[frame.index++];
+      if (std::holds_alternative<std::unique_ptr<TabInterface>>(child)) {
+        cur_ = std::get<std::unique_ptr<TabInterface>>(child).get();
+        return;
+      } else {
+        TabCollection* child_collection =
+            std::get<std::unique_ptr<TabCollection>>(child).get();
+        stack_.push({child_collection, 0});
+      }
+    } else {
+      stack_.pop();
+    }
+  }
+}
 
 TabCollection::TabCollection(
     Type type,
@@ -37,15 +84,15 @@ std::optional<size_t> TabCollection::GetIndexOfTabRecursive(
   CHECK(tab);
   size_t current_index = 0;
 
-  // If the child is a `tab_model` check if it is the the desired tab, otherwise
-  // increase the current_index by 1.
+  // If the child is a `TabInterface` check if it is the the desired tab,
+  // otherwise increase the current_index by 1.
   // Otherwise the child is a collection. If the tab is present in the
   // collection, use the relative index and the `current_index` and return the
   // result. Otherwise, update the `current_index` by the number of tabs in the
   // collection.
   for (const auto& child : impl_->GetChildren()) {
-    if (std::holds_alternative<std::unique_ptr<TabModel>>(child)) {
-      if (std::get<std::unique_ptr<TabModel>>(child).get() == tab) {
+    if (std::holds_alternative<std::unique_ptr<TabInterface>>(child)) {
+      if (std::get<std::unique_ptr<TabInterface>>(child).get() == tab) {
         return current_index;
       }
       current_index++;
@@ -66,13 +113,13 @@ std::optional<size_t> TabCollection::GetIndexOfTabRecursive(
   return std::nullopt;
 }
 
-TabModel* TabCollection::GetTabAtIndexRecursive(size_t index) const {
+TabInterface* TabCollection::GetTabAtIndexRecursive(size_t index) const {
   size_t curr_index = 0;
 
   for (auto& child : impl_->GetChildren()) {
-    if (std::holds_alternative<std::unique_ptr<TabModel>>(child)) {
+    if (std::holds_alternative<std::unique_ptr<TabInterface>>(child)) {
       if (curr_index == index) {
-        return std::get<std::unique_ptr<TabModel>>(child).get();
+        return std::get<std::unique_ptr<TabInterface>>(child).get();
       } else {
         curr_index++;
       }
@@ -91,22 +138,9 @@ TabModel* TabCollection::GetTabAtIndexRecursive(size_t index) const {
   NOTREACHED();
 }
 
-std::list<TabModel*> TabCollection::GetTabsRecursive() const {
-  const auto& children = impl_->GetChildren();
-  std::list<TabModel*> tab_models;
-
-  for (const auto& child : children) {
-    if (std::holds_alternative<std::unique_ptr<TabModel>>(child)) {
-      TabModel* tab = std::get<std::unique_ptr<TabModel>>(child).get();
-      tab_models.push_back(tab);
-    } else {
-      std::list<TabModel*> tabs_to_insert =
-          std::get<std::unique_ptr<TabCollection>>(child)->GetTabsRecursive();
-      tab_models.splice(tab_models.end(), tabs_to_insert);
-    }
-  }
-
-  return tab_models;
+std::vector<TabInterface*> TabCollection::GetTabsRecursive() const {
+  std::list<TabInterface*> tabs = GetTabsRecursiveAsList();
+  return std::vector<TabInterface*>{tabs.begin(), tabs.end()};
 }
 
 std::optional<size_t> TabCollection::GetIndexOfCollection(
@@ -125,7 +159,7 @@ size_t TabCollection::ToDirectIndex(size_t index) {
     if (curr_index == index) {
       return direct_child_index;
     }
-    if (std::holds_alternative<std::unique_ptr<tabs::TabModel>>(child)) {
+    if (std::holds_alternative<std::unique_ptr<tabs::TabInterface>>(child)) {
       curr_index++;
     } else if (std::holds_alternative<std::unique_ptr<tabs::TabCollection>>(
                    child)) {
@@ -176,23 +210,28 @@ void TabCollection::OnTabRemovedFromTree() {
   }
 }
 
-TabModel* TabCollection::AddTab(std::unique_ptr<TabModel> tab_model,
-                                size_t index) {
-  CHECK(tab_model);
+TabInterface* TabCollection::AddTab(std::unique_ptr<TabInterface> tab,
+                                    size_t index) {
+  CHECK(tab);
   CHECK(supports_tabs_);
-  CHECK(index <= ChildCount());
 
-  TabModel* inserted_tab_model = impl_->AddTab(std::move(tab_model), index);
-  inserted_tab_model->OnReparented(this, GetPassKey());
-  return inserted_tab_model;
+  TabInterface* inserted_tab = impl_->AddTab(std::move(tab), index);
+  inserted_tab->OnReparented(this, GetPassKey());
+  return inserted_tab;
 }
 
-std::unique_ptr<TabModel> TabCollection::MaybeRemoveTab(TabModel* tab_model) {
-  CHECK(tab_model);
+void TabCollection::MoveTab(TabInterface* tab, size_t index) {
+  CHECK(tab);
 
-  std::unique_ptr<TabModel> removed_tab_model = impl_->RemoveTab(tab_model);
-  removed_tab_model->OnReparented(nullptr, GetPassKey());
-  return removed_tab_model;
+  impl_->MoveTab(tab, index);
+}
+
+std::unique_ptr<TabInterface> TabCollection::MaybeRemoveTab(TabInterface* tab) {
+  CHECK(tab);
+
+  std::unique_ptr<TabInterface> removed_tab = impl_->RemoveTab(tab);
+  removed_tab->OnReparented(nullptr, GetPassKey());
+  return removed_tab;
 }
 
 std::unique_ptr<TabCollection> TabCollection::MaybeRemoveCollection(
@@ -211,6 +250,25 @@ void TabCollection::OnReparented(TabCollection* new_parent) {
   for (auto tab : GetTabsRecursive()) {
     tab->OnAncestorChanged(GetPassKey());
   }
+}
+
+std::list<TabInterface*> TabCollection::GetTabsRecursiveAsList() const {
+  const auto& children = impl_->GetChildren();
+  std::list<TabInterface*> tabs;
+
+  for (const auto& child : children) {
+    if (std::holds_alternative<std::unique_ptr<TabInterface>>(child)) {
+      TabInterface* tab = std::get<std::unique_ptr<TabInterface>>(child).get();
+      tabs.push_back(tab);
+    } else {
+      std::list<TabInterface*> tabs_to_insert =
+          std::get<std::unique_ptr<TabCollection>>(child)
+              ->GetTabsRecursiveAsList();
+      tabs.splice(tabs.end(), tabs_to_insert);
+    }
+  }
+
+  return tabs;
 }
 
 }  // namespace tabs

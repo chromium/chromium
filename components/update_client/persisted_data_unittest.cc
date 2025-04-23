@@ -324,13 +324,13 @@ TEST(PersistedDataTest, LastUpdateCheckError) {
       std::make_unique<TestActivityDataService>());
 
   metadata->SetLastUpdateCheckError(
-      {.category_ = ErrorCategory::kDownload, .code_ = 5, .extra_ = 10});
+      {.category = ErrorCategory::kDownload, .code = 5, .extra = 10});
   EXPECT_EQ(pref->GetInteger(kLastUpdateCheckErrorCategoryPreference), 1);
   EXPECT_EQ(pref->GetInteger(kLastUpdateCheckErrorPreference), 5);
   EXPECT_EQ(pref->GetInteger(kLastUpdateCheckErrorExtraCode1Preference), 10);
 
   metadata->SetLastUpdateCheckError(
-      {.category_ = ErrorCategory::kNone, .code_ = 0, .extra_ = 0});
+      {.category = ErrorCategory::kNone, .code = 0, .extra = 0});
   EXPECT_EQ(pref->GetInteger(kLastUpdateCheckErrorCategoryPreference), 0);
   EXPECT_EQ(pref->GetInteger(kLastUpdateCheckErrorPreference), 0);
   EXPECT_EQ(pref->GetInteger(kLastUpdateCheckErrorExtraCode1Preference), 0);

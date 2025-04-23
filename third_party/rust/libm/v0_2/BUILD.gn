@@ -153,6 +153,7 @@ cargo_crate("lib") {
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
   proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
+  features = [ "default" ]
   build_root = "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/build.rs"
   build_sources =
       [ "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/build.rs" ]

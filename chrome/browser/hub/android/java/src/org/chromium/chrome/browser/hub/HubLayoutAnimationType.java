@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.hub;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -22,6 +24,7 @@ import java.lang.annotation.RetentionPolicy;
     HubLayoutAnimationType.COUNT
 })
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface HubLayoutAnimationType {
     /** Show the Hub immediately with no transition. */
     int NONE = 0;

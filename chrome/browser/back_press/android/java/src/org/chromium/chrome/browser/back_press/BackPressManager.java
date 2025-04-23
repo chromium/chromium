@@ -4,12 +4,13 @@
 
 package org.chromium.chrome.browser.back_press;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.util.SparseIntArray;
 
 import androidx.activity.BackEventCompat;
 import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -17,6 +18,8 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
@@ -35,6 +38,7 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.Type;
  *       BackPressHandler} with the new defined {@link Type}.
  * </ol>
  */
+@NullMarked
 public class BackPressManager implements Destroyable {
     private static final SparseIntArray sMetricsMap;
     private static final int sMetricsMaxValue;
@@ -71,14 +75,14 @@ public class BackPressManager implements Destroyable {
     }
 
     private class OnBackPressedCallbackImpl extends OnBackPressedCallback {
-        private BackPressHandler mActiveHandler;
-        private BackEventCompat mLastBackEvent;
+        private @Nullable BackPressHandler mActiveHandler;
+        private @Nullable BackEventCompat mLastBackEvent;
 
         public OnBackPressedCallbackImpl(boolean enabled) {
             super(enabled);
         }
 
-        public void willRemoveHandler(@NonNull BackPressHandler handler) {
+        public void willRemoveHandler(BackPressHandler handler) {
             if (handler == mActiveHandler) {
                 handleOnBackCancelled();
             }
@@ -126,7 +130,7 @@ public class BackPressManager implements Destroyable {
 
         // Following methods are only triggered on API 34+.
         @Override
-        public void handleOnBackStarted(@NonNull BackEventCompat backEvent) {
+        public void handleOnBackStarted(BackEventCompat backEvent) {
             mActiveHandler = getEnabledBackPressHandler();
             assert mActiveHandler != null;
             mActiveHandler.handleOnBackStarted(backEvent);
@@ -142,7 +146,7 @@ public class BackPressManager implements Destroyable {
         }
 
         @Override
-        public void handleOnBackProgressed(@NonNull BackEventCompat backEvent) {
+        public void handleOnBackProgressed(BackEventCompat backEvent) {
             if (mActiveHandler == null) return;
             mActiveHandler.handleOnBackProgressed(backEvent);
         }
@@ -157,14 +161,14 @@ public class BackPressManager implements Destroyable {
             "Android.BackPress.Intercept.CustomTab.SeparateTask";
     static final String FAILURE_HISTOGRAM = "Android.BackPress.Failure";
 
-    private final BackPressHandler[] mHandlers = new BackPressHandler[Type.NUM_TYPES];
+    private final @Nullable BackPressHandler[] mHandlers = new BackPressHandler[Type.NUM_TYPES];
     private final boolean mUseSystemBack;
     private boolean mHasSystemBackArm;
 
-    private final Callback<Boolean>[] mObserverCallbacks = new Callback[Type.NUM_TYPES];
+    private final @Nullable Callback<Boolean>[] mObserverCallbacks = new Callback[Type.NUM_TYPES];
     private Runnable mFallbackOnBackPressed;
     private int mLastCalledHandlerType = -1;
-    private Runnable mOnBackPressed;
+    private @Nullable Runnable mOnBackPressed;
     private Supplier<Boolean> mIsGestureNavEnabledSupplier = () -> false;
 
     /**
@@ -217,16 +221,18 @@ public class BackPressManager implements Destroyable {
     public void addHandler(BackPressHandler handler, @Type int type) {
         assert mHandlers[type] == null : "Each type can have at most one handler";
         mHandlers[type] = handler;
-        mObserverCallbacks[type] = (t) -> backPressStateChanged();
-        handler.getHandleBackPressChangedSupplier().addObserver(mObserverCallbacks[type]);
+        Callback<Boolean> observerCallback = (t) -> backPressStateChanged();
+        mObserverCallbacks[type] = observerCallback;
+        handler.getHandleBackPressChangedSupplier().addObserver(observerCallback);
         backPressStateChanged();
     }
 
     /**
      * Remove a registered handler. The methods of handler will not be called any more.
+     *
      * @param handler {@link BackPressHandler} to be removed.
      */
-    public void removeHandler(@NonNull BackPressHandler handler) {
+    public void removeHandler(BackPressHandler handler) {
         for (int i = 0; i < mHandlers.length; i++) {
             if (mHandlers[i] == handler) {
                 removeHandler(i);
@@ -241,6 +247,9 @@ public class BackPressManager implements Destroyable {
      * @param type {@link Type} to be removed.
      */
     public void removeHandler(@Type int type) {
+        assumeNonNull(mHandlers[type]);
+        assumeNonNull(mObserverCallbacks[type]);
+
         BackPressHandler handler = mHandlers[type];
         mCallback.willRemoveHandler(handler);
         handler.getHandleBackPressChangedSupplier().removeObserver(mObserverCallbacks[type]);
@@ -311,7 +320,7 @@ public class BackPressManager implements Destroyable {
     }
 
     @VisibleForTesting
-    BackPressHandler getEnabledBackPressHandler() {
+    @Nullable BackPressHandler getEnabledBackPressHandler() {
         for (int i = 0; i < mHandlers.length; i++) {
             BackPressHandler handler = mHandlers[i];
             if (handler == null) continue;
@@ -375,7 +384,7 @@ public class BackPressManager implements Destroyable {
         return false;
     }
 
-    public BackPressHandler[] getHandlersForTesting() {
+    public @Nullable BackPressHandler[] getHandlersForTesting() {
         return mHandlers;
     }
 

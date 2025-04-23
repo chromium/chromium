@@ -61,8 +61,6 @@ class VcardTabHelper : public web::DownloadTaskObserver,
       tasks_;
 
   base::WeakPtrFactory<VcardTabHelper> weak_factory_{this};
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_MODEL_VCARD_TAB_HELPER_H_

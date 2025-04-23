@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include <array>
+
 #ifndef UI_ACCESSIBILITY_AX_BIT_MAP_H_
 #define UI_ACCESSIBILITY_AX_BIT_MAP_H_
 
@@ -100,14 +102,18 @@ class AXBitMap {
   // Indicates that the enum T is true at the bit shifted value. This array
   // holds 64 enum values per position, and will contains as many entries to
   // hold all enum possible values.
-  uint64_t true_map_[static_cast<size_t>(
-      static_cast<size_t>(T::kMaxValue) / kElementsPerMapBucket + 1)];
+  std::array<uint64_t,
+             static_cast<size_t>(
+                 static_cast<size_t>(T::kMaxValue) / kElementsPerMapBucket + 1)>
+      true_map_;
 
   // Indicates that the enum T is false at the bit shifted value. This array
   // holds 64 enum values per position, and will contains as many entries to
   // hold all enum possible values.
-  uint64_t false_map_[static_cast<size_t>(
-      static_cast<size_t>(T::kMaxValue) / kElementsPerMapBucket + 1)];
+  std::array<uint64_t,
+             static_cast<size_t>(
+                 static_cast<size_t>(T::kMaxValue) / kElementsPerMapBucket + 1)>
+      false_map_;
 
   // Undefined/unset implied by not in *_true and *_false;
 };

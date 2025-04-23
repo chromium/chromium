@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.share;
 
 import android.app.Activity;
+import android.content.Context;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
@@ -43,9 +44,11 @@ import org.chromium.chrome.browser.share.android_share_sheet.TabGroupSharingCont
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.share.ShareParams;
+import org.chromium.components.browser_ui.util.AutomotiveUtils;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.feature_engagement.Tracker;
@@ -67,6 +70,11 @@ import java.util.List;
 public class ShareDelegateImplUnitTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
+    @Rule
+    public AutomotiveContextWrapperTestRule mAutomotiveContextWrapperTestRule =
+            new AutomotiveContextWrapperTestRule();
+
+    @Mock private Context mContext;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private Profile mProfile;
     @Mock private Tab mTab;
@@ -83,6 +91,7 @@ public class ShareDelegateImplUnitTest {
     private void createShareDelegate(boolean isCustomTab) {
         mShareDelegate =
                 new ShareDelegateImpl(
+                        mContext,
                         mBottomSheetController,
                         mActivityLifecycleDispatcher,
                         () -> mTab,
@@ -153,6 +162,10 @@ public class ShareDelegateImplUnitTest {
     @Test
     @Config(sdk = 34)
     public void shareWithAndroidShareSheetForU() {
+        // Set CaRMA phase 2 compliance, which guarantees the Android share sheet on automotive
+        // devices.
+        AutomotiveUtils.setCarmaPhase2ComplianceForTesting(true);
+
         Assert.assertFalse("ShareHub enabled.", mShareDelegate.isSharingHubEnabled());
 
         HistogramWatcher histogramWatcher =
@@ -177,6 +190,36 @@ public class ShareDelegateImplUnitTest {
     @Test
     public void androidShareSheetDisableNonU() {
         Assert.assertTrue("ShareHub should be enabled T-.", mShareDelegate.isSharingHubEnabled());
+    }
+
+    @Test
+    @Config(sdk = 35)
+    public void share_automotiveV_useAndroidShareSheet() {
+        mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
+        AutomotiveUtils.setCarmaPhase2ComplianceForTesting(false);
+        Assert.assertFalse(
+                "Automotive devices should be using the OS share sheet on V+.",
+                mShareDelegate.isSharingHubEnabled());
+    }
+
+    @Test
+    public void share_autoU_noCarmaCompliance_useCustomShareSheet() {
+        mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
+        AutomotiveUtils.setCarmaPhase2ComplianceForTesting(false);
+        Assert.assertTrue(
+                "Custom share sheet should still be used on U- auto devices without CaRMA"
+                        + " compliance.",
+                mShareDelegate.isSharingHubEnabled());
+    }
+
+    @Test
+    @Config(sdk = 34)
+    public void share_auto_withCarmaCompliance_useOsShareSheet() {
+        mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
+        AutomotiveUtils.setCarmaPhase2ComplianceForTesting(true);
+        Assert.assertFalse(
+                "Auto devices with CaRMA Phase 2 compliance support the OS share sheet.",
+                mShareDelegate.isSharingHubEnabled());
     }
 
     @Test

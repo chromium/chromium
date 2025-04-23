@@ -17,6 +17,7 @@ async function clickOn(element) {
 async function focusOn(element) {
   element.focus();
   await waitForRender();
+  assert_equals(document.activeElement,element,'focus should be on element');
 }
 async function hoverOver(element) {
   await waitForRender();
@@ -89,4 +90,23 @@ async function createPopoverAndInvokerForHoverTests(test, showdelayMs, hideDelay
   });
   assert_false(popover.matches(':popover-open'),'The popover should start out closed');
   return {popover, invoker, unrelated};
+}
+async function sendLoseInterestHotkey() {
+  const kEscape = '\uE00C';
+  await new test_driver.Actions()
+    .keyDown(kEscape)
+    .keyUp(kEscape)
+    .send();
+  await waitForRender();
+}
+async function sendShowInterestHotkey() {
+  const kAlt = "\uE00A";
+  const kArrowUp = '\uE013';
+  await new test_driver.Actions()
+    .keyDown(kAlt)
+    .keyDown(kArrowUp)
+    .keyUp(kArrowUp)
+    .keyUp(kAlt)
+    .send();
+  await waitForRender();
 }

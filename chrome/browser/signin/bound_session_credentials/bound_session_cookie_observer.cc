@@ -82,6 +82,11 @@ void BoundSessionCookieObserver::OnCookieChange(
       // Skip the notification as `change.value` contains the old cookie value.
       break;
 
+    // This can only happen if the expiration of the cookie was not updated in
+    // the change.
+    case net::CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE:
+      break;
+
     // Cookie removed/expired.
     // The cookie was deleted, but no more details are known.
     case net::CookieChangeCause::UNKNOWN_DELETION:

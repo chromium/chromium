@@ -140,14 +140,17 @@ void AdjustMacParamsForCurrentConfig(media::VideoCaptureParams* params,
 // frame that is backed by a `kSharedMemory` buffer type.
 class SharedMemoryBufferHandleHolder : public BufferHandleHolder {
  public:
-  explicit SharedMemoryBufferHandleHolder(base::UnsafeSharedMemoryRegion region)
-      : region_(std::move(region)) {
-    CHECK(region_.IsValid());
+  explicit SharedMemoryBufferHandleHolder(
+      const base::UnsafeSharedMemoryRegion& region)
+      : mapping_(base::MakeRefCounted<
+                 base::RefCountedData<base::WritableSharedMemoryMapping>>(
+            region.Map())) {
+    CHECK(region.IsValid());
   }
   explicit SharedMemoryBufferHandleHolder(
       media::mojom::VideoBufferHandlePtr buffer_handle)
-      : region_(std::move(buffer_handle->get_unsafe_shmem_region())) {
-    DCHECK(buffer_handle->is_unsafe_shmem_region());
+      : SharedMemoryBufferHandleHolder(
+            buffer_handle->get_unsafe_shmem_region()) {
 #if BUILDFLAG(IS_CHROMEOS)
     DCHECK(!base::SysInfo::IsRunningOnChromeOS());
 #endif
@@ -164,7 +167,7 @@ class SharedMemoryBufferHandleHolder : public BufferHandleHolder {
     const size_t mapping_size = media::VideoFrame::AllocationSize(
         buffer->frame_info->pixel_format, buffer->frame_info->coded_size);
 
-    auto mapping = region_.Map();
+    const auto& mapping = mapping_->data;
     if (!mapping.IsValid()) {
       return {};
     }
@@ -177,8 +180,7 @@ class SharedMemoryBufferHandleHolder : public BufferHandleHolder {
         mapping.GetMemoryAs<uint8_t>(), mapping.size(), frame_info->timestamp);
 
     if (frame) {
-      frame->AddDestructionObserver(
-          base::DoNothingWithBoundArgs(std::move(mapping)));
+      frame->AddDestructionObserver(base::DoNothingWithBoundArgs(mapping_));
     }
     frame->metadata().MergeMetadataFrom(frame_info->metadata);
 
@@ -186,8 +188,9 @@ class SharedMemoryBufferHandleHolder : public BufferHandleHolder {
   }
 
  private:
-  // The held shared memory region associated with this object.
-  base::UnsafeSharedMemoryRegion region_;
+  // The held shared memory mapping associated with this object.
+  scoped_refptr<base::RefCountedData<base::WritableSharedMemoryMapping>>
+      mapping_;
 };
 
 // -----------------------------------------------------------------------------
@@ -269,10 +272,6 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
 
   const gfx::GpuMemoryBufferHandle& GetGpuMemoryBufferHandle() const {
     return gpu_memory_buffer_handle_;
-  }
-
-  base::UnsafeSharedMemoryRegion TakeGpuMemoryBufferHandleRegion() {
-    return std::move(gpu_memory_buffer_handle_.region());
   }
 
  private:
@@ -473,7 +472,8 @@ class WinGpuMemoryBufferHandleHolder : public BufferHandleHolder {
       ui::ContextFactory* context_factory)
       : context_factory_(context_factory),
         gmb_holder_(std::move(buffer_handle), context_factory),
-        sh_mem_holder_(gmb_holder_.TakeGpuMemoryBufferHandleRegion()),
+        sh_mem_holder_(
+            gmb_holder_.GetGpuMemoryBufferHandle().dxgi_handle().region()),
         require_mapped_frame_callback_(
             std::move(require_mapped_frame_callback)) {
     CHECK_EQ(gmb_holder_.GetGpuMemoryBufferHandle().type,

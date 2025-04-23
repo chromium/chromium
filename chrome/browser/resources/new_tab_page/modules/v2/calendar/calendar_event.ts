@@ -64,16 +64,16 @@ export class CalendarEventElement extends CalendarEventElementBase {
     };
   }
 
-  doubleBooked: boolean;
-  event: CalendarEvent;
-  expanded: boolean;
-  index: number;
-  moduleName: string;
+  accessor doubleBooked: boolean;
+  accessor event: CalendarEvent;
+  accessor expanded: boolean;
+  accessor index: number;
+  accessor moduleName: string;
 
-  protected attachmentListClass_: string;
-  protected formattedStartTime_: string;
+  protected accessor attachmentListClass_: string;
+  protected accessor formattedStartTime_: string;
   protected intersectionObserver_: IntersectionObserver;
-  protected timeStatus_: string;
+  protected accessor timeStatus_: string;
 
   override updated(changedProperties: PropertyValues<this>) {
     if ((changedProperties.has('event') || changedProperties.has('expanded')) &&

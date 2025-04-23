@@ -137,7 +137,7 @@ InterpolationValue CSSDisplayInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSDisplayInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState&,
     ConversionCheckers& conversion_checkers) const {
   const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (!identifier_value) {

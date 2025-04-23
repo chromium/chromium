@@ -26,7 +26,7 @@ public class LegacyHelpers {
      * @param guid          The {@code guid} of the download.
      * @return              A new {@link ContentId} instance.
      */
-    public static ContentId buildLegacyContentId(boolean isOfflinePage, String guid) {
+    public static ContentId buildLegacyContentId(boolean isOfflinePage, @Nullable String guid) {
         String namespace =
                 isOfflinePage ? LEGACY_OFFLINE_PAGE_NAMESPACE : LEGACY_DOWNLOAD_NAMESPACE;
         return new ContentId(namespace, guid);

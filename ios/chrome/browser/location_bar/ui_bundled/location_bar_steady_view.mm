@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_visibility_delegate.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/badges_container_view.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_constants.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -195,12 +195,6 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
   // Make the pointer shape fit the location bar's semi-circle end shape.
   _trailingButton.pointerStyleProvider =
       CreateLiftEffectCirclePointerStyleProvider();
-
-  __weak __typeof(self) weakSelf = self;
-  CustomHighlightableButtonHighlightHandler handler = ^(BOOL highlighted) {
-    [weakSelf updateTrailingButtonWithHighlightedStatus:highlighted];
-  };
-  [_trailingButton setCustomHighlightHandler:handler];
 
   // Setup label.
   _locationLabel.lineBreakMode = NSLineBreakByTruncatingHead;
@@ -636,13 +630,6 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
 - (UIFont*)locationLabelFont {
   return LocationBarSteadyViewFont(
       self.traitCollection.preferredContentSizeCategory);
-}
-
-- (void)updateTrailingButtonWithHighlightedStatus:(BOOL)highlighted {
-  self.trailingButton.tintColor =
-      highlighted ? [UIColor colorNamed:kSolidButtonTextColor]
-                  : [UIColor colorNamed:kToolbarButtonColor];
-  _trailingButtonSpotlightView.hidden = !highlighted;
 }
 
 // Updates the `locationLabel`'s font when the device's preferred content size

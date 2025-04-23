@@ -292,12 +292,6 @@ BASE_FEATURE(kPreloadedDictionaryConditionalUse,
              "PreloadedDictionaryConditionalUse",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the `require-sri-for` CSP directive, which enables developers to
-// ensure all their external scripts have their integrity enforced.
-BASE_FEATURE(kCSPRequireSRIFor,
-             "CSPRequireSRIFor",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kVisibilityAwareResourceScheduler,
              "VisibilityAwareResourceScheduler",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -324,6 +318,15 @@ BASE_FEATURE_PARAM(int,
                    &kRendererSideContentDecoding,
                    /*name=*/"RendererSideContentDecodingPipeSize",
                    /*default_value=*/0);
+// For testing purposes only. If set to true, the creation of the Mojo data pipe
+// for the RendererSideContentDecoding feature will be forced to fail,
+// simulating an insufficient resources error (net::ERR_INSUFFICIENT_RESOURCES).
+BASE_FEATURE_PARAM(
+    bool,
+    kRendererSideContentDecodingForceMojoFailureForTesting,
+    &kRendererSideContentDecoding,
+    /*name=*/"RendererSideContentDecodingForceMojoFailureForTesting",
+    /*default_value=*/false);
 
 // This feature allows skipping TPCD mitigation checks when the cookie access
 // is tagged as being used for advertising purposes. This means that cookies

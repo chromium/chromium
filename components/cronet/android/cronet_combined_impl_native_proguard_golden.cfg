@@ -158,10 +158,6 @@
 # https://android.googlesource.com/platform/sdk/+/marshmallow-mr1-release/files/proguard-android.txt#54
 -dontwarn android.support.**
 
-# This class should be explicitly kept to avoid failure if
-# class/merging/horizontal proguard optimization is enabled.
--keep class org.chromium.base.CollectionUtil
-
 # Skip protobuf runtime check for isOnAndroidDevice().
 # A nice-to-have optimization shamelessly stolen from //third_party/protobuf/java/lite/proguard.pgcfg.
 -assumevalues class com.google.protobuf.Android {

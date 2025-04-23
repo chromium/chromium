@@ -278,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, CalledFromWebContentsInTab) {
       "_generated_background_page.html");
   content::WebContents* web_content =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(NavigateToURL(web_content, extension_context_url));
+  EXPECT_TRUE(content::NavigateToURL(web_content, extension_context_url));
 
   static constexpr char kTestScript[] = R"(
     chrome.crashReportPrivate.reportError({
@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_P(CrashReportPrivateCalledFromSwaTest,
   // Navigate to chrome://media-app which was access to |CrashReportPrivate|
   // from the |WebContents| in the web app window.
   const GURL extension_context_url("chrome://media-app");
-  EXPECT_TRUE(NavigateToURL(web_content, extension_context_url));
+  EXPECT_TRUE(content::NavigateToURL(web_content, extension_context_url));
 
   static constexpr char kTestScript[] = R"(
     chrome.crashReportPrivate.reportError({

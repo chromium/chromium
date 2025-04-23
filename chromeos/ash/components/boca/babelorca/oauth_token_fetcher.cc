@@ -16,6 +16,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/boca/babelorca/token_data_wrapper.h"
@@ -38,8 +39,9 @@ bool IsOAuthTokenFetchRetryableError(
 }  // namespace
 
 OAuthTokenFetcher::OAuthTokenFetcher(signin::IdentityManager* identity_manager,
-                                     const std::string& scope)
-    : identity_manager_(identity_manager), scope_(scope) {}
+                                     const std::string& scope,
+                                     const std::string& uma_name)
+    : identity_manager_(identity_manager), scope_(scope), uma_name_(uma_name) {}
 
 OAuthTokenFetcher::~OAuthTokenFetcher() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -76,9 +78,14 @@ void OAuthTokenFetcher::OnOAuthTokenRequestCompleted(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  static constexpr int kMaxRetries = 2;
-  static constexpr base::TimeDelta kRetryInitialBackoff =
-      base::Milliseconds(500);
+  constexpr int kMaxRetries = 2;
+  constexpr base::TimeDelta kRetryInitialBackoff = base::Milliseconds(500);
+  constexpr char kErrorUmaPathTemplate[] =
+      "Ash.Boca.Babelorca.$1.OAuthFetchError";
+  base::UmaHistogramEnumeration(
+      base::ReplaceStringPlaceholders(kErrorUmaPathTemplate, {uma_name_},
+                                      /*=offsets*/ nullptr),
+      error.state(), GoogleServiceAuthError::NUM_STATES);
   if (retry_num < kMaxRetries &&
       IsOAuthTokenFetchRetryableError(error.state())) {
     retry_timer_.Start(FROM_HERE, (retry_num + 1) * kRetryInitialBackoff,

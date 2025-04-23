@@ -100,23 +100,8 @@ AST_POLYMORPHIC_MATCHER(isInThirdPartyLocation,
                         AST_POLYMORPHIC_SUPPORTED_TYPES(clang::Decl,
                                                         clang::Stmt,
                                                         clang::TypeLoc)) {
-  clang::SourceManager& sm = Finder->getASTContext().getSourceManager();
-  std::string filename = GetFilename(sm, getRepresentativeLocation(Node),
-                                     FilenameLocationType::kSpellingLoc);
-
-  // Blink is part of the Chromium git repo, even though it contains
-  // "third_party" in its path.
-  if (filename.find("/third_party/blink/") != std::string::npos) {
-    return false;
-  }
-  // Dawn repo has started using raw_ptr.
-  if (filename.find("/third_party/dawn/") != std::string::npos) {
-    return false;
-  }
-  // Otherwise, just check if the paths contains the "third_party" substring.
-  // We don't want to rewrite content of such paths even if they are in the main
-  // Chromium git repository.
-  return filename.find("/third_party/") != std::string::npos;
+  return isNodeInThirdPartyLocation(Node,
+                                    Finder->getASTContext().getSourceManager());
 }
 
 AST_MATCHER(clang::Stmt, isInStdBitCastHeader) {
@@ -366,8 +351,7 @@ AST_MATCHER_P2(clang::InitListExpr,
     const clang::Expr* expr = init_list_expr.getInit(i);
 
     const clang::FieldDecl* field_decl = nullptr;
-    if (const clang::ImplicitValueInitExpr* implicit_value_init_expr =
-            clang::dyn_cast<clang::ImplicitValueInitExpr>(expr)) {
+    if (clang::isa<clang::ImplicitValueInitExpr>(expr)) {
       continue;  // Do not match implicit value initializers.
     } else if (const clang::DesignatedInitExpr* designated_init_expr =
                    clang::dyn_cast<clang::DesignatedInitExpr>(expr)) {

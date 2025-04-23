@@ -166,7 +166,8 @@ public class SurveyClientUnitTest {
                         false,
                         new String[0],
                         new String[0],
-                        Optional.empty());
+                        Optional.empty(),
+                        SurveyConfig.RequestedBrowserType.REGULAR);
         SurveyClientImpl client =
                 new SurveyClientImpl(
                         config,
@@ -379,7 +380,8 @@ public class SurveyClientUnitTest {
                         false,
                         new String[] {"bitField"},
                         new String[] {"stringField"},
-                        Optional.empty());
+                        Optional.empty(),
+                        SurveyConfig.RequestedBrowserType.REGULAR);
         SurveyClientImpl client =
                 new SurveyClientImpl(
                         config,
@@ -451,6 +453,7 @@ public class SurveyClientUnitTest {
                 false,
                 new String[0],
                 new String[0],
-                Optional.empty());
+                Optional.empty(),
+                SurveyConfig.RequestedBrowserType.REGULAR);
     }
 }

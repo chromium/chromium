@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.tab_ui;
 
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assertNonNull;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -21,6 +23,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 
 /** Utility methods for TabSwitcher related actions. */
+@NullMarked
 public class TabSwitcherUtils {
     /**
      * A method to navigate to tab switcher.
@@ -70,9 +73,12 @@ public class TabSwitcherUtils {
             TabGroupModelFilter tabGroupModelFilter,
             Callback<Integer> requestOpenTabGroupDialog) {
         SavedTabGroup syncGroup = tabGroupSyncService.getGroup(syncId);
+        if (syncGroup == null) return;
+
         if (syncGroup.localId == null) {
-            tabGroupUiActionHandler.openTabGroup(syncGroup.syncId);
+            tabGroupUiActionHandler.openTabGroup(assertNonNull(syncGroup.syncId));
             syncGroup = tabGroupSyncService.getGroup(syncId);
+            assert syncGroup != null;
             assert syncGroup.localId != null;
         }
 

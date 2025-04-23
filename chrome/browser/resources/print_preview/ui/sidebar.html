@@ -48,20 +48,20 @@
       disabled="[[controlsDisabled_]]"
       available class="settings-section">
   </print-preview-destination-settings>
-  <print-preview-pages-settings settings="[[settings]]"
+  <print-preview-pages-settings
       page-count="[[pageCount]]" disabled="[[controlsDisabled_]]"
       hidden$="[[!settings.pages.available]]" class="settings-section">
   </print-preview-pages-settings>
-  <print-preview-copies-settings settings="[[settings]]"
+  <print-preview-copies-settings
       capability="[[destination.capabilities.printer.copies]]"
       disabled="[[controlsDisabled_]]"
       hidden$="[[!settings.copies.available]]" class="settings-section">
   </print-preview-copies-settings>
-  <print-preview-layout-settings settings="[[settings]]"
+  <print-preview-layout-settings
       disabled="[[controlsDisabled_]]"
       hidden$="[[!settings.layout.available]]" class="settings-section">
   </print-preview-layout-settings>
-  <print-preview-color-settings settings="[[settings]]"
+  <print-preview-color-settings
       disabled="[[controlsDisabled_]]"
       hidden$="[[!settings.color.available]]" class="settings-section">
   </print-preview-color-settings>
@@ -84,22 +84,22 @@
         disabled="[[controlsDisabled_]]"
         hidden$="[[!settings.mediaType.available]]" class="settings-section">
     </print-preview-media-type-settings>
-    <print-preview-pages-per-sheet-settings settings="[[settings]]"
+    <print-preview-pages-per-sheet-settings
         disabled="[[controlsDisabled_]]"
         hidden$="[[!settings.pagesPerSheet.available]]"
         class="settings-section">
     </print-preview-pages-per-sheet-settings>
-    <print-preview-margins-settings settings="[[settings]]" state="[[state]]"
+    <print-preview-margins-settings state="[[state]]"
         disabled="[[controlsDisabled_]]"
         hidden$="[[!settings.margins.available]]"
         class="settings-section">
     </print-preview-margins-settings>
-    <print-preview-dpi-settings settings="[[settings]]"
+    <print-preview-dpi-settings
         capability="[[destination.capabilities.printer.dpi]]"
         disabled="[[controlsDisabled_]]"
         hidden$="[[!settings.dpi.available]]" class="settings-section">
     </print-preview-dpi-settings>
-    <print-preview-scaling-settings settings="[[settings]]"
+    <print-preview-scaling-settings
         disabled="[[controlsDisabled_]]" is-pdf="[[isPdf]]"
         hidden$="[[!settings.scaling.available]]"
         class="settings-section">

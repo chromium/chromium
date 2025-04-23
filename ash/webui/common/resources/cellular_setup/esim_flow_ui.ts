@@ -16,6 +16,7 @@ import {hasActiveCellularNetwork} from '//resources/ash/common/network/cellular_
 import {MojoInterfaceProviderImpl} from '//resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior} from '//resources/ash/common/network/network_listener_behavior.js';
 import {assert, assertNotReached} from '//resources/js/assert.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {ESimManagerInterface, ESimProfileProperties, EuiccRemote} from '//resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {ESimOperationResult, ProfileInstallMethod, ProfileInstallResult, ProfileState} from '//resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import type {CrosNetworkConfigInterface, NetworkStateProperties} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
@@ -466,7 +467,13 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
     this.forwardButtonLabel = this.i18n('next');
     return {
       cancel: cancelButtonStateIfEnabled,
-      forward: enableForwardBtn ? ButtonState.ENABLED : ButtonState.DISABLED,
+      forward: (enableForwardBtn ||
+                (loadTimeData.valueExists(
+                     'isESimEmptyActivationCodeSupportEnabled') &&
+                 loadTimeData.getBoolean(
+                     'isESimEmptyActivationCodeSupportEnabled'))) ?
+          ButtonState.ENABLED :
+          ButtonState.DISABLED,
     };
   }
 
@@ -668,6 +675,14 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
         this.dispatchEvent(new CustomEvent('exit-cellular-setup', {
           bubbles: true, composed: true,
         }));
+        break;
+      case EsimUiState.ACTIVATION_CODE_ENTRY:
+        if (loadTimeData.valueExists(
+                'isESimEmptyActivationCodeSupportEnabled') &&
+            loadTimeData.getBoolean(
+                'isESimEmptyActivationCodeSupportEnabled')) {
+          this.state_ = EsimUiState.SETUP_FINISH;
+        }
         break;
       default:
         assertNotReached();

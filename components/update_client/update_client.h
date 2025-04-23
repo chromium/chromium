@@ -172,20 +172,20 @@ class CrxInstaller : public base::RefCountedThreadSafe<CrxInstaller> {
   struct Result {
     Result() = default;
     explicit Result(int error, int extended_error = 0)
-        : result({.category_ = error == 0 ? ErrorCategory::kNone
-                                          : ErrorCategory::kInstall,
-                  .code_ = error,
-                  .extra_ = extended_error}) {}
+        : result({.category = error == 0 ? ErrorCategory::kNone
+                                         : ErrorCategory::kInstall,
+                  .code = error,
+                  .extra = extended_error}) {}
     explicit Result(InstallError error, int extended_error = 0)
-        : result({.category_ = error == InstallError::NONE
-                                   ? ErrorCategory::kNone
-                                   : ErrorCategory::kInstall,
-                  .code_ = static_cast<int>(error),
-                  .extra_ = extended_error}) {}
+        : result({.category = error == InstallError::NONE
+                                  ? ErrorCategory::kNone
+                                  : ErrorCategory::kInstall,
+                  .code = static_cast<int>(error),
+                  .extra = extended_error}) {}
     explicit Result(CategorizedError error) : result(error) {}
 
-    // The install is successful if and only if result.category_ is kNone.
-    // result.code_ may be non-zero for a successful install.
+    // The install is successful if and only if result.category is kNone.
+    // result.code may be non-zero for a successful install.
     CategorizedError result;
 
     // Localized text displayed to the user, if applicable.

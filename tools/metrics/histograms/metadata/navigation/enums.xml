@@ -226,7 +226,8 @@ chromium-metrics-reviews@google.com.
   <int value="69"
       label="CacheControlNoStore is present and Device Bound Session
              terminated"/>
-  <int value="70" label="Cache limit pruned"/>
+  <int value="70" label="Cache limit pruned on moderate memory pressure"/>
+  <int value="71" label="Cache limit pruned on critical memory pressure"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/public/browser/back_forward_cache.h:NotRestoredReason) -->
@@ -476,6 +477,20 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Navigation wasn't served from cache"/>
   <int value="1" label="Navigation was served from cache"/>
 </enum>
+
+<!-- LINT.IfChange(OnAcceptCHFrameReceivedReturnLocation) -->
+
+<enum name="OnAcceptCHFrameReceivedReturnLocation">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kNotEnabled"/>
+  <int value="2" label="kNoClientHintDelegate"/>
+  <int value="3" label="kNoCriticalHintsMissing"/>
+  <int value="4" label="kNoRestart"/>
+  <int value="5" label="kTooManyRestart"/>
+  <int value="6" label="kSendingErrorAborted"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/loader/navigation_url_loader_impl.cc:OnAcceptCHFrameReceivedReturnLocation) -->
 
 <enum name="OriginAgentClusterEndResult">
   <int value="0" label="Not requested and not origin-keyed"/>

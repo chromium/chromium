@@ -12,3 +12,4 @@ This is a testharness.js-based test.
 [FAIL] shared memory
   WebAssembly.Memory(): Property 'initial' is required
 Harness: the test ran to completion.
+

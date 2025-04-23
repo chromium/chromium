@@ -1,6 +1,6 @@
 android.webkit.WebView focusable focused
 ++android.view.View role_description='tree' collection hierarchical interesting item_count=2 row_count=2
-++++android.view.View role_description='tree item' checkable clickable collection_item name='Animals' state_description='Partially Checked'
+++++android.view.View role_description='tree item' checkable clickable collection_item name='Animals' checked=2
 ++++++android.view.View role_description='link' clickable focusable link interesting name='Animals'
 ++++++++android.widget.TextView name='Animals'
 ++++++android.view.View
@@ -8,7 +8,7 @@ android.webkit.WebView focusable focused
 ++++++++++android.view.View role_description='link' clickable focusable link interesting name='Domesticated'
 ++++++++++++android.widget.TextView name='Domesticated'
 ++++++++++android.view.View
-++++++++++++android.view.View role_description='tree item' checkable checked clickable collection_item name='Dog'
+++++++++++++android.view.View role_description='tree item' checkable clickable collection_item name='Dog' checked=1
 ++++++++++++++android.view.View role_description='link' clickable focusable link interesting name='Dog'
 ++++++++++++++++android.widget.TextView name='Dog'
 ++++++++++++android.view.View role_description='tree item' checkable clickable collection_item name='Cat' item_index=1 row_index=1

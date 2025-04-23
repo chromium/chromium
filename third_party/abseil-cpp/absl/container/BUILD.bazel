@@ -694,6 +694,27 @@ cc_library(
 )
 
 cc_library(
+    name = "raw_hash_set_resize_impl",
+    hdrs = ["internal/raw_hash_set_resize_impl.h"],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = ["//absl/base:config"],
+)
+
+cc_test(
+    name = "raw_hash_set_resize_impl_test",
+    srcs = ["internal/raw_hash_set_resize_impl_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":raw_hash_set_resize_impl",
+        "//absl/base:config",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_library(
     name = "raw_hash_set",
     srcs = ["internal/raw_hash_set.cc"],
     hdrs = ["internal/raw_hash_set.h"],
@@ -709,6 +730,7 @@ cc_library(
         ":hashtable_control_bytes",
         ":hashtable_debug_hooks",
         ":hashtablez_sampler",
+        ":raw_hash_set_resize_impl",
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:dynamic_annotations",
@@ -746,6 +768,7 @@ cc_test(
         ":hashtablez_sampler",
         ":node_hash_set",
         ":raw_hash_set",
+        ":raw_hash_set_resize_impl",
         ":test_allocator",
         ":test_instance_tracker",
         "//absl/base",

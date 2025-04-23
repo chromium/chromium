@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller_impl.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_view.h"
 #include "components/payments/core/currency_formatter.h"
@@ -13,6 +14,9 @@
 
 namespace autofill::payments {
 
+using ::autofill::autofill_metrics::LogBnplIssuerSelection;
+using ::autofill::autofill_metrics::LogSelectBnplIssuerDialogResult;
+using ::autofill::autofill_metrics::SelectBnplIssuerDialogResult;
 using l10n_util::GetStringFUTF16;
 using l10n_util::GetStringUTF16;
 using std::u16string;
@@ -36,15 +40,22 @@ void SelectBnplIssuerDialogControllerImpl::ShowDialog(
   cancel_callback_ = std::move(cancel_callback);
 
   dialog_view_ = std::move(create_and_show_dialog_callback).Run();
+  autofill_metrics::LogBnplSelectionDialogShown();
 }
 
 void SelectBnplIssuerDialogControllerImpl::OnIssuerSelected(BnplIssuer issuer) {
+  LogSelectBnplIssuerDialogResult(
+      SelectBnplIssuerDialogResult::kIssuerSelected);
+  LogBnplIssuerSelection(issuer.issuer_id());
+
   if (selected_issuer_callback_) {
     std::move(selected_issuer_callback_).Run(std::move(issuer));
   }
 }
 
 void SelectBnplIssuerDialogControllerImpl::OnUserCancelled() {
+  LogSelectBnplIssuerDialogResult(
+      SelectBnplIssuerDialogResult::kCancelButtonClicked);
   Dismiss();
   std::move(cancel_callback_).Run();
 }

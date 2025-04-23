@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 
 #include <algorithm>
@@ -21,6 +16,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -144,7 +140,8 @@ bool UserIdHasGooglePasskeyAuthPrefix(const std::vector<uint8_t>& user_id) {
   if (user_id.size() < kPrefix.size()) {
     return false;
   }
-  return memcmp(user_id.data(), kPrefix.data(), kPrefix.size()) == 0;
+  return UNSAFE_TODO(memcmp(user_id.data(), kPrefix.data(), kPrefix.size())) ==
+         0;
 }
 
 // Filters |passkeys| to only contain credentials that are used to authenticate
@@ -1144,8 +1141,8 @@ std::optional<int> ChromeAuthenticatorRequestDelegate::DaysSinceDate(
     const base::Time now) {
   int year, month, day_of_month;
   // sscanf will ignore trailing garbage, but we don't need to be strict here.
-  if (sscanf(formatted_date.c_str(), "%u-%u-%u", &year, &month,
-             &day_of_month) != 3) {
+  if (UNSAFE_TODO(sscanf(formatted_date.c_str(), "%u-%u-%u", &year, &month,
+                         &day_of_month)) != 3) {
     return std::nullopt;
   }
 

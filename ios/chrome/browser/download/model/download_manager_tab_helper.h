@@ -44,6 +44,9 @@ class DownloadManagerTabHelper
   // Set the current download task for this tab.
   virtual void SetCurrentDownload(std::unique_ptr<web::DownloadTask> task);
 
+  // Returns the final file path for the current download if stored locally.
+  const base::FilePath& GetDownloadTaskFinalFilePath() const;
+
   // Returns `true` after Download() was called, `false` after the task was
   // cancelled.
   bool has_download_task() const { return task_.get(); }
@@ -94,15 +97,24 @@ class DownloadManagerTabHelper
   // Displays a snackbar when download is restricted.
   void ShowRestrictDownloadSnackbar();
 
+  // Use `user_documents_path` as the download file destination.
+  void UseAvailableUserDocumentsPath(base::FilePath user_documents_path);
+
+  // Moves the downloaded file to user's Documents if it exists.
+  void MoveToUserDocumentsIfFileExists(base::FilePath task_path,
+                                       bool file_exists);
+
+  // Checks if the move has been completed.
+  void MoveComplete(bool move_completed);
+
   raw_ptr<web::WebState> web_state_ = nullptr;
   __weak id<DownloadManagerTabHelperDelegate> delegate_ = nil;
   __weak id<SnackbarCommands> snackbar_handler_ = nil;
   std::unique_ptr<web::DownloadTask> task_;
+  base::FilePath task_final_file_path_;
   bool delegate_started_ = false;
 
   base::WeakPtrFactory<DownloadManagerTabHelper> weak_ptr_factory_{this};
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_MODEL_DOWNLOAD_MANAGER_TAB_HELPER_H_

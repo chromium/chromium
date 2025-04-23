@@ -61,7 +61,7 @@ VectorIOBuffer::VectorIOBuffer(std::vector<uint8_t> vector)
   SetSpan(vector_);
 }
 
-VectorIOBuffer::VectorIOBuffer(base::span<uint8_t> span)
+VectorIOBuffer::VectorIOBuffer(base::span<const uint8_t> span)
     : VectorIOBuffer(std::vector(span.begin(), span.end())) {}
 
 VectorIOBuffer::~VectorIOBuffer() {

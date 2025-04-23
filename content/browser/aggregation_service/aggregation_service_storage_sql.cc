@@ -105,32 +105,39 @@ static constexpr base::cstring_view kReportingOriginIndexSql =
 
 bool UpgradeAggregationServiceStorageSqlSchema(sql::Database& db,
                                                sql::MetaTable& meta_table) {
-  if (meta_table.GetVersionNumber() != 1 && meta_table.GetVersionNumber() != 2)
+  if (meta_table.GetVersionNumber() != 1 &&
+      meta_table.GetVersionNumber() != 2) {
     return false;  // Migration is not supported.
+  }
 
   sql::Transaction transaction(&db);
 
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return false;
+  }
 
   if (meta_table.GetVersionNumber() == 1) {
     // == Migrate from version 1 to 2 ==
     // Create the new empty table.
 
-    if (!db.Execute(kReportRequestsCreateTableSql))
+    if (!db.Execute(kReportRequestsCreateTableSql)) {
       return false;
+    }
 
-    if (!db.Execute(kReportTimeIndexSql))
+    if (!db.Execute(kReportTimeIndexSql)) {
       return false;
+    }
 
-    if (!db.Execute(kCreationTimeIndexSql))
+    if (!db.Execute(kCreationTimeIndexSql)) {
       return false;
+    }
   }
 
   // == Migrate from version 2 to 3 ==
   // Add the new index.
-  if (!db.Execute(kReportingOriginIndexSql))
+  if (!db.Execute(kReportingOriginIndexSql)) {
     return false;
+  }
 
   return meta_table.SetVersionNumber(
              AggregationServiceStorageSql::kCurrentVersionNumber) &&
@@ -178,8 +185,9 @@ std::vector<PublicKey> AggregationServiceStorageSql::GetPublicKeys(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(network::IsUrlPotentiallyTrustworthy(url));
 
-  if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent))
+  if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent)) {
     return {};
+  }
 
   static constexpr char kGetUrlIdSql[] =
       "SELECT url_id FROM urls WHERE url = ? AND expiry_time > ?";
@@ -187,8 +195,9 @@ std::vector<PublicKey> AggregationServiceStorageSql::GetPublicKeys(
       db_.GetCachedStatement(SQL_FROM_HERE, kGetUrlIdSql));
   get_url_id_statement.BindString(0, url.spec());
   get_url_id_statement.BindTime(1, clock_->Now());
-  if (!get_url_id_statement.Step())
+  if (!get_url_id_statement.Step()) {
     return {};
+  }
 
   int64_t url_id = get_url_id_statement.ColumnInt64(0);
 
@@ -202,8 +211,9 @@ std::vector<PublicKey> AggregationServiceStorageSql::GetPublicKeys(
   // Partial results are not returned in case of any error.
   std::vector<PublicKey> result;
   while (get_keys_statement.Step()) {
-    if (result.size() >= PublicKeyset::kMaxNumberKeys)
+    if (result.size() >= PublicKeyset::kMaxNumberKeys) {
       return {};
+    }
 
     std::string id = get_keys_statement.ColumnString(0);
 
@@ -218,8 +228,9 @@ std::vector<PublicKey> AggregationServiceStorageSql::GetPublicKeys(
     result.emplace_back(std::move(id), std::move(key));
   }
 
-  if (!get_keys_statement.Succeeded())
+  if (!get_keys_statement.Succeeded()) {
     return {};
+  }
 
   return result;
 }
@@ -235,20 +246,24 @@ void AggregationServiceStorageSql::SetPublicKeys(const GURL& url,
 
   // Force the creation of the database if it doesn't exist, as we need to
   // persist the public keys.
-  if (!EnsureDatabaseOpen(DbCreationPolicy::kCreateIfAbsent))
+  if (!EnsureDatabaseOpen(DbCreationPolicy::kCreateIfAbsent)) {
     return;
+  }
 
   sql::Transaction transaction(&db_);
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return;
+  }
 
   // Replace the public keys for the url. Deleting the existing rows and
   // inserting new ones to reduce the complexity.
-  if (!ClearPublicKeysImpl(url))
+  if (!ClearPublicKeysImpl(url)) {
     return;
+  }
 
-  if (!InsertPublicKeysImpl(url, keyset))
+  if (!InsertPublicKeysImpl(url, keyset)) {
     return;
+  }
 
   transaction.Commit();
 }
@@ -257,12 +272,14 @@ void AggregationServiceStorageSql::ClearPublicKeys(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(network::IsUrlPotentiallyTrustworthy(url));
 
-  if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent))
+  if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent)) {
     return;
+  }
 
   sql::Transaction transaction(&db_);
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return;
+  }
 
   ClearPublicKeysImpl(url);
 
@@ -277,8 +294,9 @@ void AggregationServiceStorageSql::ClearPublicKeysFetchedBetween(
   CHECK(!delete_begin.is_min() || !delete_end.is_max());
 
   sql::Transaction transaction(&db_);
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return;
+  }
 
   static constexpr char kDeleteCandidateData[] =
       "DELETE FROM urls WHERE fetch_time BETWEEN ? AND ? "
@@ -294,8 +312,9 @@ void AggregationServiceStorageSql::ClearPublicKeysFetchedBetween(
     }
   }
 
-  if (!statement.Succeeded())
+  if (!statement.Succeeded()) {
     return;
+  }
 
   transaction.Commit();
 }
@@ -305,12 +324,14 @@ void AggregationServiceStorageSql::ClearPublicKeysExpiredBy(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!delete_end.is_null());
 
-  if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent))
+  if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent)) {
     return;
+  }
 
   sql::Transaction transaction(&db_);
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return;
+  }
 
   static constexpr char kDeleteUrlRangeSql[] =
       "DELETE FROM urls WHERE expiry_time <= ? "
@@ -326,8 +347,9 @@ void AggregationServiceStorageSql::ClearPublicKeysExpiredBy(
     }
   }
 
-  if (!delete_urls_statement.Succeeded())
+  if (!delete_urls_statement.Succeeded()) {
     return;
+  }
 
   transaction.Commit();
 }
@@ -348,8 +370,9 @@ bool AggregationServiceStorageSql::InsertPublicKeysImpl(
   insert_url_statement.BindTime(1, keyset.fetch_time);
   insert_url_statement.BindTime(2, keyset.expiry_time);
 
-  if (!insert_url_statement.Run())
+  if (!insert_url_statement.Run()) {
     return false;
+  }
 
   int64_t url_id = db_.GetLastInsertRowId();
 
@@ -367,8 +390,9 @@ bool AggregationServiceStorageSql::InsertPublicKeysImpl(
     insert_key_statement.BindString(1, key.id);
     insert_key_statement.BindBlob(2, key.key);
 
-    if (!insert_key_statement.Run())
+    if (!insert_key_statement.Run()) {
       return false;
+    }
   }
 
   return true;
@@ -386,11 +410,13 @@ bool AggregationServiceStorageSql::ClearPublicKeysImpl(const GURL& url) {
 
   bool has_matched_url = delete_url_statement.Step();
 
-  if (!delete_url_statement.Succeeded())
+  if (!delete_url_statement.Succeeded()) {
     return false;
+  }
 
-  if (!has_matched_url)
+  if (!has_matched_url) {
     return true;
+  }
 
   return ClearPublicKeysByUrlId(
       /*url_id=*/delete_url_statement.ColumnInt64(0));
@@ -408,20 +434,23 @@ bool AggregationServiceStorageSql::ClearPublicKeysByUrlId(int64_t url_id) {
 
 void AggregationServiceStorageSql::ClearAllPublicKeys() {
   sql::Transaction transaction(&db_);
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return;
+  }
 
   static constexpr char kDeleteAllUrlsSql[] = "DELETE FROM urls";
   sql::Statement delete_all_urls_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kDeleteAllUrlsSql));
-  if (!delete_all_urls_statement.Run())
+  if (!delete_all_urls_statement.Run()) {
     return;
+  }
 
   static constexpr char kDeleteAllKeysSql[] = "DELETE FROM keys";
   sql::Statement delete_all_keys_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kDeleteAllKeysSql));
-  if (!delete_all_keys_statement.Run())
+  if (!delete_all_keys_statement.Run()) {
     return;
+  }
 
   transaction.Commit();
 }
@@ -434,8 +463,9 @@ bool AggregationServiceStorageSql::ReportingOriginHasCapacity(
       db_.GetCachedStatement(SQL_FROM_HERE, kCountRequestSql));
   count_request_statement.BindString(0, serialized_reporting_origin);
 
-  if (!count_request_statement.Step())
+  if (!count_request_statement.Step()) {
     return false;
+  }
 
   int64_t count = count_request_statement.ColumnInt64(0);
 
@@ -453,12 +483,14 @@ void AggregationServiceStorageSql::UpdateReportForSendFailure(
     base::Time new_report_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!EnsureDatabaseOpen(DbCreationPolicy::kCreateIfAbsent))
+  if (!EnsureDatabaseOpen(DbCreationPolicy::kCreateIfAbsent)) {
     return;
+  }
 
   sql::Transaction transaction(&db_);
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return;
+  }
 
   static constexpr char kGetRequestProtoSql[] =
       "SELECT request_proto FROM report_requests WHERE request_id=?";
@@ -466,24 +498,28 @@ void AggregationServiceStorageSql::UpdateReportForSendFailure(
       db_.GetCachedStatement(SQL_FROM_HERE, kGetRequestProtoSql));
   get_request_statement.BindInt64(0, request_id.value());
 
-  if (!get_request_statement.Step())
+  if (!get_request_statement.Step()) {
     return;
+  }
 
   base::span<const uint8_t> blob = get_request_statement.ColumnBlob(0);
   proto::AggregatableReportRequest request_proto;
-  if (!request_proto.ParseFromArray(blob.data(), blob.size()))
+  if (!request_proto.ParseFromArray(blob.data(), blob.size())) {
     return;
+  }
 
-  if (request_proto.failed_send_attempts() < 0)
+  if (request_proto.failed_send_attempts() < 0) {
     return;
+  }
 
   request_proto.set_failed_send_attempts(request_proto.failed_send_attempts() +
                                          1);
 
   size_t size = request_proto.ByteSizeLong();
   std::vector<uint8_t> serialized_proto(size);
-  if (!request_proto.SerializeToArray(serialized_proto.data(), size))
+  if (!request_proto.SerializeToArray(serialized_proto.data(), size)) {
     return;
+  }
 
   static constexpr char kUpdateRequestSql[] =
       "UPDATE report_requests SET report_time=?,request_proto=? "
@@ -496,8 +532,9 @@ void AggregationServiceStorageSql::UpdateReportForSendFailure(
   update_request_statement.BindBlob(1, serialized_proto);
   update_request_statement.BindInt64(2, request_id.value());
 
-  if (!update_request_statement.Run())
+  if (!update_request_statement.Run()) {
     return;
+  }
 
   transaction.Commit();
 }
@@ -507,12 +544,14 @@ void AggregationServiceStorageSql::StoreRequest(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Force the creation of the database if it doesn't exist, as we need to
   // persist the request.
-  if (!EnsureDatabaseOpen(DbCreationPolicy::kCreateIfAbsent))
+  if (!EnsureDatabaseOpen(DbCreationPolicy::kCreateIfAbsent)) {
     return;
+  }
 
   sql::Transaction transaction(&db_);
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return;
+  }
 
   const AggregatableReportSharedInfo& shared_info = request.shared_info();
   std::string serialized_reporting_origin =
@@ -524,8 +563,9 @@ void AggregationServiceStorageSql::StoreRequest(
       "PrivacySandbox.AggregationService.Storage.Sql.StoreRequestHasCapacity",
       reporting_origin_has_capacity);
 
-  if (!reporting_origin_has_capacity)
+  if (!reporting_origin_has_capacity) {
     return;
+  }
 
   static constexpr char kStoreRequestSql[] =
       "INSERT INTO report_requests("
@@ -546,8 +586,9 @@ void AggregationServiceStorageSql::StoreRequest(
   CHECK(!serialized_request.empty());
   store_request_statement.BindBlob(3, serialized_request);
 
-  if (!store_request_statement.Run())
+  if (!store_request_statement.Run()) {
     return;
+  }
 
   transaction.Commit();
 }
@@ -556,8 +597,9 @@ void AggregationServiceStorageSql::DeleteRequest(
     AggregationServiceStorage::RequestId request_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent))
+  if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent)) {
     return;
+  }
 
   DeleteRequestImpl(request_id);
 }
@@ -578,8 +620,9 @@ std::optional<base::Time> AggregationServiceStorageSql::NextReportTimeAfter(
     base::Time strictly_after_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent))
+  if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent)) {
     return std::nullopt;
+  }
 
   return NextReportTimeAfterImpl(strictly_after_time);
 }
@@ -608,8 +651,9 @@ AggregationServiceStorageSql::GetRequestsReportingOnOrBefore(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!limit.has_value() || limit.value() > 0);
 
-  if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent))
+  if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent)) {
     return {};
+  }
 
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
@@ -657,8 +701,9 @@ AggregationServiceStorageSql::GetRequestsReportingOnOrBefore(
         .request = std::move(parsed_request.value()), .id = request_id});
   }
 
-  if (!get_requests_statement.Succeeded())
+  if (!get_requests_statement.Succeeded()) {
     return {};
+  }
 
   // In case of deserialization failures, remove the request from storage. This
   // could occur if the coordinator chosen is no longer on the allowlist. It is
@@ -681,8 +726,9 @@ AggregationServiceStorageSql::GetRequests(
     const std::vector<AggregationServiceStorage::RequestId>& ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent))
+  if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent)) {
     return {};
+  }
 
   static constexpr char kGetRequestSql[] =
       "SELECT request_id,request_proto FROM report_requests "
@@ -694,12 +740,14 @@ AggregationServiceStorageSql::GetRequests(
   for (AggregationServiceStorage::RequestId id : ids) {
     statement.Reset(/*clear_bound_vars=*/true);
     statement.BindInt64(0, *id);
-    if (!statement.Step())
+    if (!statement.Step()) {
       continue;
+    }
     std::optional<AggregatableReportRequest> parsed_request =
         AggregatableReportRequest::Deserialize(statement.ColumnBlob(1));
-    if (!parsed_request)
+    if (!parsed_request) {
       continue;
+    }
     result.push_back(AggregationServiceStorage::RequestAndId{
         .request = std::move(*parsed_request),
         .id = id,
@@ -719,8 +767,9 @@ AggregationServiceStorageSql::AdjustOfflineReportTimes(
   CHECK_GE(max_delay, base::TimeDelta());
   CHECK_LE(min_delay, max_delay);
 
-  if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent))
+  if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent)) {
     return std::nullopt;
+  }
 
   // Set the report time for all reports that should have been sent before `now`
   // to `now` + a random number of microseconds between `min_delay` and
@@ -776,16 +825,19 @@ void AggregationServiceStorageSql::ClearDataBetween(
     StoragePartition::StorageKeyMatcherFunction filter) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent))
+  if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent)) {
     return;
+  }
 
   // Treat null times as unbounded lower or upper range. This is used by
   // browsing data remover.
-  if (delete_begin.is_null())
+  if (delete_begin.is_null()) {
     delete_begin = base::Time::Min();
+  }
 
-  if (delete_end.is_null())
+  if (delete_end.is_null()) {
     delete_end = base::Time::Max();
+  }
 
   if (delete_begin.is_min() && delete_end.is_max()) {
     ClearAllPublicKeys();
@@ -810,8 +862,9 @@ void AggregationServiceStorageSql::ClearRequestsStoredBetween(
   CHECK(!delete_begin.is_min() || !delete_end.is_max() || !filter.is_null());
 
   sql::Transaction transaction(&db_);
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return;
+  }
 
   static constexpr char kSelectRequestsToDeleteSql[] =
       "SELECT request_id,reporting_origin FROM report_requests "
@@ -833,8 +886,9 @@ void AggregationServiceStorageSql::ClearRequestsStoredBetween(
     }
   }
 
-  if (!select_requests_to_delete_statement.Succeeded())
+  if (!select_requests_to_delete_statement.Succeeded()) {
     return;
+  }
 
   transaction.Commit();
 }
@@ -886,8 +940,9 @@ bool AggregationServiceStorageSql::EnsureDatabaseOpen(
     // storage needs to be used for an operation which needs to operate even on
     // an empty database.
     case DbStatus::kDeferringCreation:
-      if (creation_policy == DbCreationPolicy::kFailIfAbsent)
+      if (creation_policy == DbCreationPolicy::kFailIfAbsent) {
         return false;
+      }
       break;
     case DbStatus::kDeferringOpen:
       break;
@@ -930,15 +985,19 @@ bool AggregationServiceStorageSql::EnsureDatabaseOpen(
 }
 
 bool AggregationServiceStorageSql::InitializeSchema(bool db_empty) {
-  if (db_empty)
+  if (db_empty) {
     return CreateSchema();
+  }
 
-  if (!meta_table_.Init(&db_, kCurrentVersionNumber, kCompatibleVersionNumber))
+  if (!meta_table_.Init(&db_, kCurrentVersionNumber,
+                        kCompatibleVersionNumber)) {
     return false;
+  }
 
   int current_version = meta_table_.GetVersionNumber();
-  if (current_version == kCurrentVersionNumber)
+  if (current_version == kCurrentVersionNumber) {
     return true;
+  }
 
   if (current_version <= kDeprecatedVersionNumber ||
       meta_table_.GetCompatibleVersionNumber() > kCurrentVersionNumber ||
@@ -960,8 +1019,9 @@ bool AggregationServiceStorageSql::CreateSchema() {
   base::ElapsedThreadTimer timer;
 
   sql::Transaction transaction(&db_);
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return false;
+  }
 
   // All of the columns in this table are designed to be "const".
   // `url` is the helper server url.
@@ -975,28 +1035,32 @@ bool AggregationServiceStorageSql::CreateSchema() {
       "    url TEXT NOT NULL,"
       "    fetch_time INTEGER NOT NULL,"
       "    expiry_time INTEGER NOT NULL)";
-  if (!db_.Execute(kUrlsTableSql))
+  if (!db_.Execute(kUrlsTableSql)) {
     return false;
+  }
 
   static constexpr char kUrlsByUrlIndexSql[] =
       "CREATE UNIQUE INDEX IF NOT EXISTS urls_by_url_idx "
       "    ON urls(url)";
-  if (!db_.Execute(kUrlsByUrlIndexSql))
+  if (!db_.Execute(kUrlsByUrlIndexSql)) {
     return false;
+  }
 
   // Will be used to optimize key lookup by fetch time for data clearing (see
   // crbug.com/1231689).
   static constexpr char kFetchTimeIndexSql[] =
       "CREATE INDEX IF NOT EXISTS fetch_time_idx ON urls(fetch_time)";
-  if (!db_.Execute(kFetchTimeIndexSql))
+  if (!db_.Execute(kFetchTimeIndexSql)) {
     return false;
+  }
 
   // Will be used to optimize key lookup by expiry time for data pruning (see
   // crbug.com/1231696).
   static constexpr char kExpiryTimeIndexSql[] =
       "CREATE INDEX IF NOT EXISTS expiry_time_idx ON urls(expiry_time)";
-  if (!db_.Execute(kExpiryTimeIndexSql))
+  if (!db_.Execute(kExpiryTimeIndexSql)) {
     return false;
+  }
 
   // All of the columns in this table are designed to be "const".
   // `url_id` is the primary key of a row in the `urls` table.
@@ -1010,21 +1074,26 @@ bool AggregationServiceStorageSql::CreateSchema() {
       "    key_id TEXT NOT NULL,"
       "    key BLOB NOT NULL,"
       "    PRIMARY KEY(url_id, key_id)) WITHOUT ROWID";
-  if (!db_.Execute(kKeysTableSql))
+  if (!db_.Execute(kKeysTableSql)) {
     return false;
+  }
 
   // See constant definitions above for documentation.
-  if (!db_.Execute(kReportRequestsCreateTableSql))
+  if (!db_.Execute(kReportRequestsCreateTableSql)) {
     return false;
+  }
 
-  if (!db_.Execute(kReportTimeIndexSql))
+  if (!db_.Execute(kReportTimeIndexSql)) {
     return false;
+  }
 
-  if (!db_.Execute(kCreationTimeIndexSql))
+  if (!db_.Execute(kCreationTimeIndexSql)) {
     return false;
+  }
 
-  if (!db_.Execute(kReportingOriginIndexSql))
+  if (!db_.Execute(kReportingOriginIndexSql)) {
     return false;
+  }
 
   if (!meta_table_.Init(&db_, kCurrentVersionNumber,
                         kCompatibleVersionNumber)) {

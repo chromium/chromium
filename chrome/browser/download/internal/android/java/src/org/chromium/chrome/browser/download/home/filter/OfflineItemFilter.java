@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.download.home.filter;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.offline_items_collection.OfflineItem;
 
 import java.util.Collection;
@@ -22,6 +23,7 @@ import java.util.Set;
  * populate this class with the correctly filtered set of objects.  This constructor cannot call
  * that method as {@link #isFilteredOut(OfflineItem)} might access unconstructed subclass state.
  */
+@NullMarked
 public abstract class OfflineItemFilter
         implements OfflineItemFilterObserver, OfflineItemFilterSource {
     private final OfflineItemFilterSource mSource;

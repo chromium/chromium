@@ -118,6 +118,39 @@ struct CalcProvider : Config<CalcProvider> {
   size_t num_non_calc_inputs;
 };
 
+// A config struct for features related to contextual search in omnibox.
+struct ContextualSearch : Config<ContextualSearch> {
+  ContextualSearch();
+
+  DECLARE_FEATURE(kOmniboxContextualSuggestions);
+  DECLARE_FEATURE(kStarterPackPage);
+  DECLARE_FEATURE(kContextualZeroSuggestLensFulfillment);
+  DECLARE_FEATURE(kContextualSearchProviderAsyncSuggestInputs);
+  DECLARE_FEATURE(kSendContextualUrlSuggestParam);
+  DECLARE_FEATURE(kOmniboxContextualSearchOnFocusSuggestions);
+  DECLARE_FEATURE(kOmniboxContextualSearchActionsAtTop);
+
+  // Whether the starter pack page scope is enabled.
+  bool starter_pack_page;
+
+  // Enables fullfillment of contextual zero-prefix suggestions by delegating
+  // the logic to Lens.
+  bool contextual_zero_suggest_lens_fulfillment;
+
+  // Controls async request handling in `ContextualSearchProvider`.
+  bool csp_async_suggest_inputs;
+
+  // This specifies the value for "ctxus" param on zero suggest requests,
+  // and is left empty when that parameter is not to be included.
+  std::string contextual_url_suggest_param;
+
+  // Maximum number of contextual search suggestions for zero prefix suggest.
+  size_t contextual_zps_limit;
+
+  // Whether to show actions at top of zero suggest list: default false, bottom.
+  bool actions_at_top;
+};
+
 // If enabled, allow document provider requests when all other conditions are
 // met.
 struct DocumentProvider : Config<DocumentProvider> {
@@ -196,6 +229,14 @@ struct SearchAggregatorProvider : Config<SearchAggregatorProvider> {
   // If true, the `EnterpriseSearchAggregatorSuggestionsService` will make
   // parallel requests for each type of suggestion.
   bool multiple_requests;
+  // The specified value controls how `EnterpriseSearchAggregatorProvider` will
+  // score suggestions. The following values are supported:
+  //   "mixed": Use server-provided scores in scoped mode and client-calculated
+  //     scores in unscoped mode. This is the default behavior and is also used
+  //     if the supplied value is not one of the other options.
+  //   "server": Use server-provided scores in both scoped and unscoped mode.
+  //   "client": Use client-calculated scores in both scoped and unscoped mode.
+  std::string relevance_scoring_mode;
 
   // See comments in enterprise_search_aggregator_provider.cc
   size_t scoring_max_matches_created_per_type;

@@ -197,28 +197,28 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
     };
   }
 
-  blockAutoplayEnabled: boolean;
-  pageTitle: string;
-  private origin_: string;
-  private storedData_: string;
-  private numCookies_: string;
-  private rwsMembership_: string;
-  private rwsEnterprisePref_: chrome.settingsPrivate.PrefObject;
-  private enableExperimentalWebPlatformFeatures_: boolean;
-  private enableWebBluetoothNewPermissionsBackend_: boolean;
+  declare blockAutoplayEnabled: boolean;
+  declare pageTitle: string;
+  declare private origin_: string;
+  declare private storedData_: string;
+  declare private numCookies_: string;
+  declare private rwsMembership_: string;
+  declare private rwsEnterprisePref_: chrome.settingsPrivate.PrefObject;
+  declare private enableExperimentalWebPlatformFeatures_: boolean;
+  declare private enableWebBluetoothNewPermissionsBackend_: boolean;
   // <if expr="is_chromeos">
-  private enableSmartCardReadersContentSetting_: boolean;
+  declare private enableSmartCardReadersContentSetting_: boolean;
   // </if>
-  private autoPictureInPictureEnabled_: boolean;
-  private enableAutomaticFullscreenContentSetting_: boolean;
-  private enableHandTrackingContentSetting_: boolean;
-  private capturedSurfaceControlEnabled_: boolean;
-  private enablePermissionSiteSettingsRadioButton_: boolean;
-  private enableWebAppInstallation_: boolean;
+  declare private autoPictureInPictureEnabled_: boolean;
+  declare private enableAutomaticFullscreenContentSetting_: boolean;
+  declare private enableHandTrackingContentSetting_: boolean;
+  declare private capturedSurfaceControlEnabled_: boolean;
+  declare private enablePermissionSiteSettingsRadioButton_: boolean;
+  declare private enableWebAppInstallation_: boolean;
   private websiteUsageProxy_: WebsiteUsageBrowserProxy =
       WebsiteUsageBrowserProxyImpl.getInstance();
-  private enableKeyboardLockPrompt_: boolean;
-  private enableLocalNetworkAccessSetting_: boolean;
+  declare private enableKeyboardLockPrompt_: boolean;
+  declare private enableLocalNetworkAccessSetting_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();

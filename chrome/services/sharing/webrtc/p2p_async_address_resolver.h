@@ -34,7 +34,7 @@ class P2PAsyncAddressResolver {
   ~P2PAsyncAddressResolver();
 
   // Start address resolve process.
-  void Start(const rtc::SocketAddress& addr,
+  void Start(const webrtc::SocketAddress& addr,
              std::optional<int> address_family,
              DoneCallback done_callback);
   // Clients must unregister before exiting for cleanup.

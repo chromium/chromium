@@ -96,7 +96,7 @@ gfx::Size GetDefaultPdfMediaSizeMicrons() {
   // from `PrintingContext::UsePdfSettings()`.  This means that OOP support
   // is unnecessary in this case.
   auto printing_context(PrintingContext::Create(
-      &delegate, PrintingContext::ProcessBehavior::kOopDisabled));
+      &delegate, PrintingContext::OutOfProcessBehavior::kDisabled));
   printing_context->UsePdfSettings();
   gfx::Size pdf_media_size = printing_context->GetPdfPaperSizeDeviceUnits();
   float device_microns_per_device_unit =

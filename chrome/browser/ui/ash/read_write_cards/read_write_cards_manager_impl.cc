@@ -36,9 +36,11 @@ namespace chromeos {
 using OptInFeatures = crosapi::mojom::MagicBoostController::OptInFeatures;
 
 ReadWriteCardsManagerImpl::ReadWriteCardsManagerImpl(
+    ApplicationLocaleStorage* application_locale_storage,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
-    : quick_answers_controller_(
-          std::make_unique<QuickAnswersControllerImpl>(ui_controller_)) {
+    : quick_answers_controller_(std::make_unique<QuickAnswersControllerImpl>(
+          application_locale_storage,
+          ui_controller_)) {
   quick_answers_controller_->SetClient(
       std::make_unique<quick_answers::QuickAnswersClient>(
           shared_url_loader_factory,

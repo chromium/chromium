@@ -20,7 +20,7 @@ class CrostiniAppRestartDialogTest : public ChromeViewsTestBase {
   views::test::WidgetTest::WidgetAutoclosePtr ShowDialog() {
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          "CrostiniAppRestart");
-    crostini::ShowAppRestartDialogForTesting(GetContext());
+    crostini::AppRestartDialog::ShowForTesting(GetContext());
     return views::test::WidgetTest::WidgetAutoclosePtr(
         waiter.WaitIfNeededAndGet());
   }

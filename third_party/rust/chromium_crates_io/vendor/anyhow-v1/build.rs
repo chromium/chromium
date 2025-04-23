@@ -15,7 +15,7 @@ compile_error! {
 fn main() {
     let mut error_generic_member_access = false;
     if cfg!(feature = "std") {
-        println!("cargo:rerun-if-changed=build/probe.rs");
+        println!("cargo:rerun-if-changed=src/nightly.rs");
 
         let consider_rustc_bootstrap;
         if compile_probe(false) {
@@ -68,6 +68,7 @@ fn main() {
     };
 
     if rustc >= 80 {
+        println!("cargo:rustc-check-cfg=cfg(anyhow_build_probe)");
         println!("cargo:rustc-check-cfg=cfg(anyhow_nightly_testing)");
         println!("cargo:rustc-check-cfg=cfg(anyhow_no_core_error)");
         println!("cargo:rustc-check-cfg=cfg(anyhow_no_core_unwind_safe)");
@@ -128,7 +129,7 @@ fn compile_probe(rustc_bootstrap: bool) -> bool {
     let rustc = cargo_env_var("RUSTC");
     let out_dir = cargo_env_var("OUT_DIR");
     let out_subdir = Path::new(&out_dir).join("probe");
-    let probefile = Path::new("build").join("probe.rs");
+    let probefile = Path::new("src").join("nightly.rs");
 
     if let Err(err) = fs::create_dir(&out_subdir) {
         if err.kind() != ErrorKind::AlreadyExists {
@@ -152,6 +153,7 @@ fn compile_probe(rustc_bootstrap: bool) -> bool {
     }
 
     cmd.stderr(Stdio::null())
+        .arg("--cfg=anyhow_build_probe")
         .arg("--edition=2018")
         .arg("--crate-name=anyhow")
         .arg("--crate-type=lib")

@@ -223,7 +223,9 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
         // If the user is scrolling and the event is a cancel or up action, update scroll state and
         // return. Fling should have already cleared the gesture state. The following is for
-        // the non-fling release.
+        // the non-fling release. But user gesture intended as a fling action is often recognized
+        // as non-fling release. We compute the velocity in the GestureHandler to determine which
+        // action to take.
         if (mGestureHandler.getState() != GestureState.NONE
                 && (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL)) {
             mGestureHandler.doNonFlingRelease();
@@ -535,7 +537,9 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         boolean isMaxWidthLandscapeBottomSheet = isMaxWidthLandscapeBottomSheet();
 
         float maxWidthBottomSheetEv =
-                mActivity.getResources().getDimensionPixelSize(R.dimen.default_elevation_2);
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.custom_tabs_max_width_bottom_sheet_elev);
         float regBottomSheetEv =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation);
         float elevation = isMaxWidthLandscapeBottomSheet ? maxWidthBottomSheetEv : regBottomSheetEv;

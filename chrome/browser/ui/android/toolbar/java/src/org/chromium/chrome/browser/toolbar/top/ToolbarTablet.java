@@ -13,7 +13,6 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
@@ -42,26 +41,25 @@ import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
-import org.chromium.chrome.browser.toolbar.ButtonData;
-import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.reload_button.ReloadButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.interpolators.Interpolators;
-import org.chromium.ui.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -69,22 +67,9 @@ import java.util.function.BooleanSupplier;
 
 /** The Toolbar object for Tablet screens. */
 @SuppressLint("Instantiatable")
-public class ToolbarTablet extends ToolbarLayout
-        implements OnClickListener, View.OnLongClickListener {
+public class ToolbarTablet extends ToolbarLayout implements OnClickListener {
     private static final int ICON_FADE_IN_ANIMATION_DELAY_MS = 75;
     private static final int ICON_FADE_ANIMATION_DURATION_MS = 150;
-
-    /** Downloads page for offline access. */
-    public interface OfflineDownloader {
-        /**
-         * Trigger the download of a page.
-         *
-         * @param context Context to pull resources from.
-         * @param tab Tab containing the page to download.
-         * @param fromAppMenu Whether the download is started from the app menu.
-         */
-        void downloadPage(Context context, Tab tab, boolean fromAppMenu);
-    }
 
     private ImageButton mHomeButton;
     private ImageButton mBackButton;
@@ -93,8 +78,6 @@ public class ToolbarTablet extends ToolbarLayout
     private ImageButton mBookmarkButton;
     private ImageButton mSaveOfflineButton;
     private View mIncognitoIndicator;
-
-    private OnClickListener mBookmarkListener;
 
     private boolean mIsInTabSwitcherMode;
     private boolean mToolbarButtonsVisible;
@@ -113,7 +96,6 @@ public class ToolbarTablet extends ToolbarLayout
     private boolean mShouldAnimateButtonVisibilityChange;
     private AnimatorSet mButtonVisibilityAnimators;
     private HistoryDelegate mHistoryDelegate;
-    private OfflineDownloader mOfflineDownloader;
     private ObservableSupplier<Integer> mTabCountSupplier;
     private TabletCaptureStateToken mLastCaptureStateToken;
     private @DrawableRes int mBookmarkButtonImageRes;
@@ -153,8 +135,7 @@ public class ToolbarTablet extends ToolbarLayout
     @Override
     public void setLocationBarCoordinator(LocationBarCoordinator locationBarCoordinator) {
         mLocationBar = locationBarCoordinator;
-        final @ColorInt int color =
-                ChromeColors.getSurfaceColor(getContext(), R.dimen.default_elevation_2);
+        final @ColorInt int color = SemanticColorUtils.getColorSurfaceContainer(getContext());
         mLocationBar.getTabletCoordinator().tintBackground(color);
     }
 
@@ -166,112 +147,9 @@ public class ToolbarTablet extends ToolbarLayout
     public void onNativeLibraryReady() {
         super.onNativeLibraryReady();
         mHomeButton.setOnClickListener(this);
-        mHomeButton.setOnKeyListener(
-                (view, keyCode, keyEvent) -> {
-                    if (KeyNavigationUtil.isTab(keyEvent)) {
-                        if (mBackButtonCoordinator.isFocusable()) {
-                            return mBackButtonCoordinator.focus();
-                        } else if (mForwardButton.isFocusable()) {
-                            return mForwardButton.requestFocus();
-                        } else {
-                            return findViewById(R.id.refresh_button).requestFocus();
-                        }
-                    }
-
-                    if (KeyNavigationUtil.isBackwardTab(keyEvent)) {
-                        return findViewById(R.id.menu_button).requestFocus();
-                    }
-
-                    return false;
-                });
-
-        mBackButtonCoordinator.setOnKeyListener(
-                (view, keyCode, keyEvent) -> {
-                    if (KeyNavigationUtil.isTab(keyEvent)) {
-                        if (mForwardButton.isFocusable()) {
-                            return findViewById(R.id.forward_button).requestFocus();
-                        } else {
-                            return findViewById(R.id.refresh_button).requestFocus();
-                        }
-                    }
-
-                    if (KeyNavigationUtil.isBackwardTab(keyEvent)) {
-                        if (mHomeButton.getVisibility() == VISIBLE) {
-                            return findViewById(R.id.home_button).requestFocus();
-                        } else {
-                            return findViewById(R.id.menu_button).requestFocus();
-                        }
-                    }
-
-                    return false;
-                });
 
         mForwardButton.setOnClickListener(this);
         mForwardButton.setLongClickable(true);
-        mForwardButton.setOnKeyListener(
-                (view, keyCode, keyEvent) -> {
-                    if (KeyNavigationUtil.isTab(keyEvent)) {
-                        return findViewById(R.id.refresh_button).requestFocus();
-                    }
-
-                    if (KeyNavigationUtil.isBackwardTab(keyEvent)) {
-                        if (mBackButtonCoordinator.isFocusable()) {
-                            return mBackButtonCoordinator.focus();
-                        } else if (mHomeButton.getVisibility() == VISIBLE) {
-                            return findViewById(R.id.home_button).requestFocus();
-                        } else {
-                            return findViewById(R.id.menu_button).requestFocus();
-                        }
-                    }
-
-                    return false;
-                });
-
-        mReloadButtonCoordinator.setOnKeyListener(
-                (view, keyCode, keyEvent) -> {
-                    if (KeyNavigationUtil.isTab(keyEvent)) {
-                        return findViewById(R.id.url_bar).requestFocus();
-                    }
-
-                    if (KeyNavigationUtil.isBackwardTab(keyEvent)) {
-                        if (mForwardButton.isFocusable()) {
-                            return mForwardButton.requestFocus();
-                        } else if (mBackButtonCoordinator.isFocusable()) {
-                            return mBackButtonCoordinator.focus();
-                        } else if (mHomeButton.getVisibility() == VISIBLE) {
-                            return findViewById(R.id.home_button).requestFocus();
-                        } else {
-                            return findViewById(R.id.menu_button).requestFocus();
-                        }
-                    }
-
-                    return false;
-                });
-
-        mBookmarkButton.setOnClickListener(this);
-        mBookmarkButton.setOnLongClickListener(this);
-
-        getMenuButtonCoordinator()
-                .setOnKeyListener(
-                        (view, keyCode, keyEvent) -> {
-                            if (KeyNavigationUtil.isTab(keyEvent)) {
-                                return getCurrentTabView().requestFocus();
-                            }
-
-                            if (KeyNavigationUtil.isBackwardTab(keyEvent)) {
-                                return findViewById(R.id.url_bar).requestFocus();
-                            }
-
-                            if (KeyNavigationUtil.isActionUp(keyEvent)
-                                    && KeyNavigationUtil.isEnter(keyEvent)) {
-                                return getMenuButtonCoordinator().onEnterKeyPress();
-                            }
-
-                            return false;
-                        });
-
-        mSaveOfflineButton.setOnClickListener(this);
-        mSaveOfflineButton.setOnLongClickListener(this);
     }
 
     @Override
@@ -316,30 +194,7 @@ public class ToolbarTablet extends ToolbarLayout
         } else if (mForwardButton == v) {
             forward();
             RecordUserAction.record("MobileToolbarForward");
-        } else if (mBookmarkButton == v) {
-            if (mBookmarkListener != null) {
-                mBookmarkListener.onClick(mBookmarkButton);
-                RecordUserAction.record("MobileToolbarToggleBookmark");
-            }
-        } else if (mSaveOfflineButton == v) {
-            mOfflineDownloader.downloadPage(
-                    getContext(), getToolbarDataProvider().getTab(), /* fromAppMenu= */ false);
-            RecordUserAction.record("MobileToolbarDownloadPage");
         }
-    }
-
-    @Override
-    public boolean onLongClick(View v) {
-        String description = null;
-        Context context = getContext();
-        Resources resources = context.getResources();
-
-        if (v == mBookmarkButton) {
-            description = resources.getString(R.string.menu_bookmark);
-        } else if (v == mSaveOfflineButton) {
-            description = resources.getString(R.string.menu_download);
-        }
-        return Toast.showAnchoredToast(context, v, description);
     }
 
     @Override
@@ -554,7 +409,6 @@ public class ToolbarTablet extends ToolbarLayout
             ToggleTabStackButtonCoordinator tabSwitcherButtonCoordinator,
             HistoryDelegate historyDelegate,
             BooleanSupplier partnerHomepageEnabledSupplier,
-            OfflineDownloader offlineDownloader,
             UserEducationHelper userEducationHelper,
             ObservableSupplier<Tracker> trackerSupplier,
             ToolbarProgressBar progressBar,
@@ -567,14 +421,12 @@ public class ToolbarTablet extends ToolbarLayout
                 tabSwitcherButtonCoordinator,
                 historyDelegate,
                 partnerHomepageEnabledSupplier,
-                offlineDownloader,
                 userEducationHelper,
                 trackerSupplier,
                 progressBar,
                 reloadButtonCoordinator,
                 backButtonCoordinator);
         mHistoryDelegate = historyDelegate;
-        mOfflineDownloader = offlineDownloader;
         mReloadButtonCoordinator = reloadButtonCoordinator;
         mBackButtonCoordinator = backButtonCoordinator;
         menuButtonCoordinator.setVisibility(true);
@@ -597,7 +449,7 @@ public class ToolbarTablet extends ToolbarLayout
 
     @Override
     void setBookmarkClickHandler(OnClickListener listener) {
-        mBookmarkListener = listener;
+        mLocationBar.setBookmarkClickListener(listener);
     }
 
     @Override

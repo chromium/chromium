@@ -16,11 +16,6 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createLocalCreditCard;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Description;
@@ -32,7 +27,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -47,12 +41,10 @@ import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.IbanRecordType;
-import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.VerificationStatus;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.autofill.payments.PaymentInstrument;
-import org.chromium.components.image_fetcher.test.TestImageFetcher;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -64,8 +56,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class PersonalDataManagerTest {
-    private static final Bitmap TEST_CARD_ART_IMAGE =
-            Bitmap.createBitmap(100, 200, Bitmap.Config.ARGB_8888);
     @Rule public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
 
     private AutofillTestHelper mHelper;
@@ -73,11 +63,6 @@ public class PersonalDataManagerTest {
     @Before
     public void setUp() {
         mHelper = new AutofillTestHelper();
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        AutofillTestHelper.getPersonalDataManagerForLastUsedProfile()
-                                .setImageFetcherForTesting(
-                                        new TestImageFetcher(TEST_CARD_ART_IMAGE)));
     }
 
     @After
@@ -136,6 +121,10 @@ public class PersonalDataManagerTest {
                         .build();
         String profileOneGUID = mHelper.setProfile(profile);
         assertEquals(1, mHelper.getNumberOfProfilesForSettings());
+        assertEquals(
+                "First name should be set",
+                "John",
+                mHelper.getProfile(profileOneGUID).getInfo(FieldType.NAME_FIRST));
 
         AutofillProfile profile2 =
                 AutofillProfile.builder()
@@ -154,12 +143,18 @@ public class PersonalDataManagerTest {
 
         profile.setGUID(profileOneGUID);
         profile.setCountryCode("CA");
+        profile.setFullName("");
         mHelper.setProfile(profile);
         assertEquals(
                 "Should still have only two profiles", 2, mHelper.getNumberOfProfilesForSettings());
 
         AutofillProfile storedProfile = mHelper.getProfile(profileOneGUID);
         assertEquals(profileOneGUID, storedProfile.getGUID());
+
+        // Name full and its children should be cleared.
+        assertEquals("", storedProfile.getInfo(FieldType.NAME_FULL));
+        assertEquals("", storedProfile.getInfo(FieldType.NAME_FIRST));
+
         assertEquals("CA", storedProfile.getInfo(FieldType.ADDRESS_HOME_COUNTRY));
         assertEquals("San Francisco", storedProfile.getInfo(FieldType.ADDRESS_HOME_CITY));
         assertNotNull(mHelper.getProfile(profileTwoGUID));
@@ -380,64 +375,6 @@ public class PersonalDataManagerTest {
         CreditCard storedCardWithNickname = mHelper.getCreditCard(cardWithNicknameGuid);
         assertThat(storedCardWithoutNickname.getNickname()).isEmpty();
         assertThat(storedCardWithNickname.getNickname()).isEqualTo(nickname);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Autofill"})
-    public void testAddCreditCardWithCardArtUrl_imageDownloaded() throws TimeoutException {
-        AutofillUiUtils.CardIconSpecs cardIconSpecsLarge =
-                AutofillUiUtils.CardIconSpecs.create(
-                        ContextUtils.getApplicationContext(), ImageSize.LARGE);
-        AutofillUiUtils.CardIconSpecs cardIconSpecsSmall =
-                AutofillUiUtils.CardIconSpecs.create(
-                        ContextUtils.getApplicationContext(), ImageSize.LARGE);
-        GURL cardArtUrl = new GURL("http://google.com/test.png");
-        CreditCard cardWithCardArtUrl =
-                new CreditCard(
-                        /* guid= */ "serverGuid",
-                        /* origin= */ "",
-                        /* isLocal= */ false,
-                        "John Doe Server",
-                        "41111111111111111",
-                        /* networkAndLastFourDigits= */ "",
-                        "3",
-                        "2019",
-                        "Visa",
-                        /* issuerIconDrawableId= */ 0,
-                        /* billingAddressId= */ "",
-                        /* serverId= */ "serverId");
-        cardWithCardArtUrl.setCardArtUrl(cardArtUrl);
-
-        // Adding a server card triggers card art image fetching for all server credit cards.
-        mHelper.addServerCreditCard(cardWithCardArtUrl);
-
-        // Verify card art images are fetched in both small and large sizes.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    assertTrue(
-                            AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
-                                            TEST_CARD_ART_IMAGE,
-                                            cardIconSpecsLarge,
-                                            /* addRoundedCornersAndGreyBorder= */ true)
-                                    .sameAs(
-                                            AutofillTestHelper
-                                                    .getPersonalDataManagerForLastUsedProfile()
-                                                    .getCustomImageForAutofillSuggestionIfAvailable(
-                                                            cardArtUrl, cardIconSpecsLarge)
-                                                    .get()));
-                    assertTrue(
-                            AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
-                                            TEST_CARD_ART_IMAGE,
-                                            cardIconSpecsSmall,
-                                            /* addRoundedCornersAndGreyBorder= */ true)
-                                    .sameAs(
-                                            AutofillTestHelper
-                                                    .getPersonalDataManagerForLastUsedProfile()
-                                                    .getCustomImageForAutofillSuggestionIfAvailable(
-                                                            cardArtUrl, cardIconSpecsSmall)
-                                                    .get()));
-                });
     }
 
     @Test
@@ -1092,142 +1029,6 @@ public class PersonalDataManagerTest {
         mHelper.clearAllDataForTesting();
         assertEquals(0, mHelper.getNumberOfProfilesForSettings());
         assertEquals(0, mHelper.getNumberOfCreditCardsForSettings());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Autofill"})
-    public void testGetCardIcon_customIconUrlAvailable_customIconReturned()
-            throws TimeoutException {
-        Context context = ContextUtils.getApplicationContext();
-        AutofillUiUtils.CardIconSpecs cardIconSpecs =
-                AutofillUiUtils.CardIconSpecs.create(context, ImageSize.LARGE);
-        GURL cardArtUrl = new GURL("http://google.com/test.png");
-        CreditCard cardWithCardArtUrl =
-                new CreditCard(
-                        /* guid= */ "serverGuid",
-                        /* origin= */ "",
-                        /* isLocal= */ false,
-                        "John Doe Server",
-                        "41111111111111111",
-                        /* networkAndLastFourDigits= */ "",
-                        "3",
-                        "2019",
-                        "MasterCard",
-                        /* issuerIconDrawableId= */ R.drawable.mc_card,
-                        /* billingAddressId= */ "",
-                        /* serverId= */ "serverId");
-        cardWithCardArtUrl.setCardArtUrl(cardArtUrl);
-
-        // Adding a server card triggers card art image fetching for all server credit cards.
-        mHelper.addServerCreditCard(cardWithCardArtUrl);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    // The custom icon is already cached, and gets returned.
-                    assertTrue(
-                            AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
-                                            TEST_CARD_ART_IMAGE,
-                                            cardIconSpecs,
-                                            /* addRoundedCornersAndGreyBorder= */ true)
-                                    .sameAs(
-                                            ((BitmapDrawable)
-                                                            AutofillUiUtils.getCardIcon(
-                                                                    context,
-                                                                    AutofillTestHelper
-                                                                            .getPersonalDataManagerForLastUsedProfile(),
-                                                                    new GURL(
-                                                                            "http://google.com/test.png"),
-                                                                    R.drawable.mc_card,
-                                                                    ImageSize.LARGE,
-                                                                    /* showCustomIcon= */ true))
-                                                    .getBitmap()));
-                });
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Autofill"})
-    public void testGetCardIcon_customIconUrlUnavailable_defaultIconReturned()
-            throws TimeoutException {
-        Context context = ContextUtils.getApplicationContext();
-        CreditCard cardWithoutCardArtUrl =
-                new CreditCard(
-                        /* guid= */ "serverGuid",
-                        /* origin= */ "",
-                        /* isLocal= */ false,
-                        "John Doe Server",
-                        "41111111111111111",
-                        /* networkAndLastFourDigits= */ "",
-                        "3",
-                        "2019",
-                        "MasterCard",
-                        /* issuerIconDrawableId= */ R.drawable.mc_card,
-                        /* billingAddressId= */ "",
-                        /* serverId= */ "serverId");
-
-        // Adding a server card triggers card art image fetching for all server credit cards.
-        mHelper.addServerCreditCard(cardWithoutCardArtUrl);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    // In the absence of custom icon URL, the default icon is returned.
-                    assertTrue(
-                            ((BitmapDrawable)
-                                            AppCompatResources.getDrawable(
-                                                    context, R.drawable.mc_card))
-                                    .getBitmap()
-                                    .sameAs(
-                                            ((BitmapDrawable)
-                                                            AutofillUiUtils.getCardIcon(
-                                                                    context,
-                                                                    AutofillTestHelper
-                                                                            .getPersonalDataManagerForLastUsedProfile(),
-                                                                    new GURL(""),
-                                                                    R.drawable.mc_card,
-                                                                    ImageSize.LARGE,
-                                                                    true))
-                                                    .getBitmap()));
-                });
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Autofill"})
-    public void testGetCardIcon_customIconUrlAndDefaultIconIdUnavailable_nothingReturned()
-            throws TimeoutException {
-        CreditCard cardWithoutDefaultIconIdAndCardArtUrl =
-                new CreditCard(
-                        /* guid= */ "serverGuid",
-                        /* origin= */ "",
-                        /* isLocal= */ false,
-                        "John Doe Server",
-                        "41111111111111111",
-                        /* networkAndLastFourDigits= */ "",
-                        "3",
-                        "2019",
-                        "",
-                        /* issuerIconDrawableId= */ 0,
-                        /* billingAddressId= */ "",
-                        /* serverId= */ "serverId");
-
-        // Adding a server card triggers card art image fetching for all server credit cards.
-        mHelper.addServerCreditCard(cardWithoutDefaultIconIdAndCardArtUrl);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    // If neither the custom icon nor the default icon is available, null is
-                    // returned.
-                    assertEquals(
-                            null,
-                            AutofillUiUtils.getCardIcon(
-                                    ContextUtils.getApplicationContext(),
-                                    AutofillTestHelper.getPersonalDataManagerForLastUsedProfile(),
-                                    new GURL(""),
-                                    0,
-                                    ImageSize.LARGE,
-                                    true));
-                });
     }
 
     @Test

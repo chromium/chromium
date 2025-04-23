@@ -521,8 +521,8 @@ TEST_F(ManifestV2ExperimentManagerDisableWithReEnableUnitTest,
     }
 
     // Unload the extension so it doesn't interfere in later cases.
-    service()->UnloadExtension(extension->id(),
-                               UnloadedExtensionReason::UNINSTALL);
+    registrar()->RemoveExtension(extension->id(),
+                                 UnloadedExtensionReason::UNINSTALL);
   }
 }
 

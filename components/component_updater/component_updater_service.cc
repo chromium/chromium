@@ -19,6 +19,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
@@ -172,7 +173,7 @@ void CrxUpdateService::Start() {
       config_->InitialDelay(), config_->NextCheckDelay(),
       base::BindRepeating(
           base::IgnoreResult(&CrxUpdateService::CheckForUpdates),
-          base::Unretained(this)),
+          weak_ptr_factory_.GetWeakPtr()),
       base::DoNothing());
 }
 
@@ -386,9 +387,9 @@ void CrxUpdateService::OnDemandUpdateInternal(const std::string& id,
                             UPDATE_TYPE_COUNT);
 
   auto crx_data_callback = base::BindOnce(&CrxUpdateService::GetCrxComponents,
-                                          base::Unretained(this));
+                                          weak_ptr_factory_.GetWeakPtr());
   auto update_complete_callback = base::BindOnce(
-      &CrxUpdateService::OnUpdateComplete, base::Unretained(this),
+      &CrxUpdateService::OnUpdateComplete, weak_ptr_factory_.GetWeakPtr(),
       std::move(callback), base::TimeTicks::Now());
   switch (priority) {
     case Priority::FOREGROUND:
@@ -418,10 +419,10 @@ bool CrxUpdateService::CheckForUpdates(
   update_client_->Update(
       components_order_,
       base::BindOnce(&CrxUpdateService::GetCrxComponents,
-                     base::Unretained(this)),
+                     weak_ptr_factory_.GetWeakPtr()),
       {}, false,
       base::BindOnce(&CrxUpdateService::OnUpdateComplete,
-                     base::Unretained(this),
+                     weak_ptr_factory_.GetWeakPtr(),
                      base::BindOnce(
                          [](UpdateScheduler::OnFinishedCallback on_finished,
                             update_client::Error /*error*/) {

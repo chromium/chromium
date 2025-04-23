@@ -95,8 +95,8 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
                      const SkIRect& damage_rect,
                      bool is_opaque);
   // virtual for mocking
-  virtual void ReclaimResource(viz::ResourceId,
-                               scoped_refptr<CanvasResource>&&);
+  virtual void OnPlaceholderReleasedResource(viz::ResourceId,
+                                             scoped_refptr<CanvasResource>&&);
   void DispatchFrameSync(scoped_refptr<CanvasResource>&&,
                          base::TimeTicks commit_start_time,
                          const SkIRect& damage_rect,
@@ -113,7 +113,6 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
       WTF::Vector<viz::ReturnedResource> resources) final;
   void OnBeginFrame(const viz::BeginFrameArgs&,
                     const WTF::HashMap<uint32_t, viz::FrameTimingDetails>&,
-                    bool frame_ack,
                     WTF::Vector<viz::ReturnedResource> resources) final;
   void OnBeginFramePausedChanged(bool paused) final {}
   void ReclaimResources(WTF::Vector<viz::ReturnedResource> resources) final;
@@ -163,8 +162,8 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   virtual void PostImageToPlaceholder(scoped_refptr<CanvasResource>&&,
                                       viz::ResourceId resource_id);
 
-  void ReclaimResourceInternal(viz::ResourceId resource_id,
-                               scoped_refptr<CanvasResource>&&);
+  void ReclaimPlaceholderResource(viz::ResourceId resource_id,
+                                  scoped_refptr<CanvasResource>&&);
   void ReclaimResourceInternal(const ResourceMap::iterator&);
 
   mojo::Remote<viz::mojom::blink::CompositorFrameSink> sink_;

@@ -78,6 +78,7 @@ public class WebappActionsNotificationTest {
     @Test
     @SmallTest
     @Feature({"Webapps"})
+    @DisabledTest(message = "https://crbug.com/411465437")
     public void testNotification_openInChrome() throws Exception {
         Notification notification = getWebappNotification();
 

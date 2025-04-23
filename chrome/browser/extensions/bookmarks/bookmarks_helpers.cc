@@ -50,7 +50,8 @@ BookmarkTreeNode GetBookmarkTreeNode(bookmarks::BookmarkModel* model,
                                      bookmarks::ManagedBookmarkService* managed,
                                      const BookmarkNode* node,
                                      bool recurse,
-                                     bool only_folders) {
+                                     bool only_folders,
+                                     std::optional<size_t> visible_index) {
   // The calling code should have checked this.
   CHECK(!base::FeatureList::IsEnabled(
             kEnforceBookmarkVisibilityOnExtensionsAPI) ||
@@ -58,7 +59,7 @@ BookmarkTreeNode GetBookmarkTreeNode(bookmarks::BookmarkModel* model,
 
   BookmarkTreeNode bookmark_tree_node;
   PopulateBookmarkTreeNode(model, managed, node, recurse, only_folders,
-                           &bookmark_tree_node);
+                           visible_index, &bookmark_tree_node);
   return bookmark_tree_node;
 }
 
@@ -68,6 +69,7 @@ void PopulateBookmarkTreeNode(
     const bookmarks::BookmarkNode* node,
     bool recurse,
     bool only_folders,
+    std::optional<size_t> visible_index,
     api::bookmarks::BookmarkTreeNode* out_bookmark_tree_node) {
   DCHECK(out_bookmark_tree_node);
 
@@ -76,9 +78,10 @@ void PopulateBookmarkTreeNode(
   const BookmarkNode* parent = node->parent();
   if (parent) {
     out_bookmark_tree_node->parent_id = base::NumberToString(parent->id());
+    size_t index = visible_index.value_or(GetAPIIndexOf(*model, *node));
     out_bookmark_tree_node->index =
         base::FeatureList::IsEnabled(kEnforceBookmarkVisibilityOnExtensionsAPI)
-            ? GetAPIIndexOf(*model, *node)
+            ? index
             : static_cast<int>(parent->GetIndexOf(node).value());
   }
 
@@ -122,11 +125,16 @@ void PopulateBookmarkTreeNode(
 
   if (recurse && node->is_folder()) {
     std::vector<BookmarkTreeNode> children;
+    size_t child_visible_index = 0;
     for (const auto& child : node->children()) {
-      if (model->IsNodeVisible(*child) &&
-          (!only_folders || child->is_folder())) {
-        children.push_back(GetBookmarkTreeNode(model, managed, child.get(),
-                                               /*recurse=*/true, only_folders));
+      // Check IsNodeVisible() here to match the logic of GetAPIIndexOf().
+      if (model->IsNodeVisible(*child)) {
+        if (!only_folders || child->is_folder()) {
+          children.push_back(GetBookmarkTreeNode(model, managed, child.get(),
+                                                 /*recurse=*/true, only_folders,
+                                                 child_visible_index));
+        }
+        ++child_visible_index;
       }
     }
     out_bookmark_tree_node->children = std::move(children);

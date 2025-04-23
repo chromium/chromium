@@ -245,6 +245,14 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
                         eventDetails.closingSource);
     }
 
+    @Override
+    public void updateArchivalStatus(String syncTabGroupId, boolean archivalStatus) {
+        if (mNativePtr == 0) return;
+        assert syncTabGroupId != null;
+        TabGroupSyncServiceImplJni.get()
+                .updateArchivalStatus(mNativePtr, this, syncTabGroupId, archivalStatus);
+    }
+
     @CalledByNative
     private void clearNativePtr() {
         mNativePtr = 0;
@@ -428,5 +436,11 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
                 int localTabId,
                 int openingSource,
                 int closingSource);
+
+        void updateArchivalStatus(
+                long nativeTabGroupSyncServiceAndroid,
+                TabGroupSyncServiceImpl caller,
+                String syncTabGroupId,
+                boolean archivalStatus);
     }
 }

@@ -90,8 +90,6 @@ class ARQuickLookTabHelper
 
   // The current download task.
   std::unique_ptr<web::DownloadTask> download_task_;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_MODEL_AR_QUICK_LOOK_TAB_HELPER_H_

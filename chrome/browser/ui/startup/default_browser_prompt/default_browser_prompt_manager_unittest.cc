@@ -6,6 +6,7 @@
 
 #include <map>
 
+#include "base/run_loop.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"
@@ -76,10 +77,22 @@ class DefaultBrowserPromptManagerTest : public BrowserWithTestWindowTest {
             browser()->tab_strip_model()->GetWebContentsAt(0));
     infobar_observation_.Observe(infobar_manager);
 
-    EXPECT_CALL(infobar_manager_observer_, OnInfoBarAdded)
-        .Times(expect_infobar_exists ? 1 : 0);
-    manager()->MaybeShowPrompt();
+    base::RunLoop run_loop;
+    if (expect_infobar_exists) {
+      EXPECT_CALL(infobar_manager_observer_, OnInfoBarAdded)
+          .WillOnce(testing::Invoke(
+              [&](infobars::InfoBar* infobar) { run_loop.Quit(); }));
+    } else {
+      EXPECT_CALL(infobar_manager_observer_, OnInfoBarAdded).Times(0);
+    }
 
+    manager()->MaybeShowPrompt();
+    if (expect_infobar_exists) {
+      // The info bar shows asynchronously, after checking if Chrome can be
+      // pinned to the taskbar, so need to wait for it to be shown.
+      run_loop.Run();
+    }
+    // The decision not to show the info bar is synchronous; no need to wait.
     infobar_observation_.Reset();
   }
 

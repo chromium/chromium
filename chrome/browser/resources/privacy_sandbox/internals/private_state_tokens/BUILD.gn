@@ -11,7 +11,7 @@ build_webui("build") {
 
   static_files = [ "private_state_tokens.html" ]
 
-  non_web_component_files = [
+  ts_files = [
     "app.html.ts",
     "app.ts",
     "browser_proxy.ts",

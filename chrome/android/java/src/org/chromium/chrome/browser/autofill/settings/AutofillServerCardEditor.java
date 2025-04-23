@@ -21,6 +21,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -153,7 +154,7 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
         cardIconContainer.setImageDrawable(
                 AutofillUiUtils.getCardIcon(
                         getContext(),
-                        PersonalDataManagerFactory.getForProfile(getProfile()),
+                        AutofillImageFetcherFactory.getForProfile(getProfile()),
                         mCard.getCardArtUrl(),
                         mCard.getIssuerIconDrawableId(),
                         ImageSize.LARGE,
@@ -264,7 +265,7 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
                 new AutofillVirtualCardEnrollmentDialog(
                         getActivity(),
                         modalDialogManager,
-                        PersonalDataManagerFactory.getForProfile(getProfile()),
+                        AutofillImageFetcherFactory.getForProfile(getProfile()),
                         virtualCardEnrollmentFields,
                         getActivity()
                                 .getString(

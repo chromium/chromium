@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/win/scoped_co_mem.h"
+#include "media/audio/win/core_audio_util_win.h"
 #include "media/base/media_switches.h"
 
 using Microsoft::WRL::ComPtr;
@@ -25,14 +26,15 @@ namespace {
 bool ForEachAudioSession(
     base::RepeatingCallback<void(ComPtr<IAudioSessionControl2>& session)>
         callback) {
-  ComPtr<IMMDeviceEnumerator> device_enumerator;
-  HRESULT hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr,
-                                CLSCTX_ALL, IID_PPV_ARGS(&device_enumerator));
-  if (!SUCCEEDED(hr)) {
+  ComPtr<IMMDeviceEnumerator> device_enumerator =
+      media::CoreAudioUtil::CreateDeviceEnumerator();
+
+  if (!device_enumerator) {
     return false;
   }
   ComPtr<IMMDevice> device;
-  hr = device_enumerator->GetDefaultAudioEndpoint(eRender, eConsole, &device);
+  HRESULT hr =
+      device_enumerator->GetDefaultAudioEndpoint(eRender, eConsole, &device);
   if (!SUCCEEDED(hr)) {
     return false;
   }

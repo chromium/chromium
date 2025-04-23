@@ -257,8 +257,7 @@ void PrefetchMatchResolver::OnWillBeDestroyed(
 void PrefetchMatchResolver::OnGotInitialEligibility(
     PrefetchContainer& prefetch_container,
     PreloadingEligibility eligibility) {
-  CHECK(base::FeatureList::IsEnabled(
-      features::kPrerender2FallbackPrefetchSpecRules));
+  CHECK(features::UsePrefetchPrerenderIntegration());
 
   if (eligibility != PreloadingEligibility::kEligible) {
     MaybeUnblockForUnmatch(prefetch_container.key());

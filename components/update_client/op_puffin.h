@@ -30,8 +30,8 @@ base::OnceClosure PuffOperation(
     scoped_refptr<CrxCache> crx_cache,
     scoped_refptr<Patcher> patcher,
     base::RepeatingCallback<void(base::Value::Dict)> event_adder,
-    const std::string& id,
-    const std::string& prev_hash,
+    const std::string& old_hash,
+    const std::string& output_hash,
     const base::FilePath& patch_file,
     base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
         callback);

@@ -83,7 +83,22 @@ class CORE_EXPORT ScopedStyleResolver final
     return active_style_sheets_;
   }
 
-  // See InspectorGhostRules.
+  // When the stylesheets are quietly swapped, no invalidation takes
+  // place, but calls to ElementRuleCollector::CollectMatchingRules
+  // will "see" the swapped-in sheets, and return its result accordingly.
+  // This allows the Inspector to query an "alternate reality" which
+  // may be different from what the style engine normally observes
+  // (see InspectorGhostRules).
+  //
+  // This approach has limitations, however: name-defining at-rules
+  // such as @keyframes are generally not applied: if `other` contains
+  // any @keyframes that differ from the original stylesheets,
+  // those changes are effectively ignored.
+  //
+  // Quietly swapping stylesheets does however cause the layer map
+  // (`cascade_layer_map_`) to be rebuilt, because any CascadeLayer
+  // instances within `other` must exist in this map for rule matching
+  // to function (see `CascadeLayerSeeker`).
   void QuietlySwapActiveStyleSheets(ActiveStyleSheetVector& other);
 
   void AppendActiveStyleSheets(unsigned index, const ActiveStyleSheetVector&);

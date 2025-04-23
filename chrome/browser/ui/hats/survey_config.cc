@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/strings/string_util.h"
@@ -206,7 +207,10 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       kHatsSurveyTriggerPermissionsPrompt,
       /*presupplied_trigger_id=*/std::nullopt,
       std::vector<std::string>{
-          permissions::kPermissionsPromptSurveyHadGestureKey},
+          permissions::kPermissionsPromptSurveyHadGestureKey,
+          permissions::kPermissionPromptSurveyPreviewVisibleKey,
+          permissions::kPermissionPromptSurveyPreviewDropdownInteractedKey,
+          permissions::kPermissionPromptSurveyPreviewWasCombinedKey},
       std::vector<std::string>{
           permissions::kPermissionsPromptSurveyPromptDispositionKey,
           permissions::kPermissionsPromptSurveyPromptDispositionReasonKey,
@@ -217,7 +221,9 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
           permissions::kPermissionPromptSurveyOneTimePromptsDecidedBucketKey,
           permissions::kPermissionPromptSurveyUrlKey,
           permissions::kPermissionPromptSurveyPepcPromptPositionKey,
-          permissions::kPermissionPromptSurveyInitialPermissionStatusKey});
+          permissions::kPermissionPromptSurveyInitialPermissionStatusKey,
+          permissions::kPermissionPromptSurveyPreviewTimeToDecisionKey,
+          permissions::kPermissionPromptSurveyPreviewTimeToVisibleKey});
 
   // Privacy sandbox always on sentiment survey
   survey_configs.emplace_back(
@@ -834,10 +840,12 @@ SurveyConfig::SurveyConfig(
     const std::vector<std::string>& product_specific_bits_data_fields,
     const std::vector<std::string>& product_specific_string_data_fields,
     bool log_responses_to_uma,
-    bool log_responses_to_ukm)
+    bool log_responses_to_ukm,
+    RequestedBrowserType requested_browser_type)
     : trigger(trigger),
       product_specific_bits_data_fields(product_specific_bits_data_fields),
       product_specific_string_data_fields(product_specific_string_data_fields),
+      requested_browser_type(requested_browser_type),
       survey_feature(feature) {
   enabled = base::FeatureList::IsEnabled(*feature);
   if (!enabled) {
@@ -872,6 +880,11 @@ SurveyConfig::SurveyConfig(
 
   user_prompted =
       base::FeatureParam<bool>(feature, "user_prompted", false).Get();
+
+#if BUILDFLAG(IS_ANDROID)
+  CHECK(requested_browser_type == RequestedBrowserType::kRegular)
+      << "HaTS on Android supports only RequestedBrowserType::kRegular";
+#endif
 }
 
 // static

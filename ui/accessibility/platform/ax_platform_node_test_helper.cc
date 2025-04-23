@@ -14,7 +14,8 @@ int AXPlatformNodeTestHelper::GetTreeSize(AXPlatformNode* ax_node) {
     return 0;
   int count = 1;
   AXPlatformNodeDelegate* delegate = ax_node->GetDelegate();
-  for (size_t i = 0; i < delegate->GetChildCount(); ++i) {
+  for (size_t i = 0, child_count = delegate->GetChildCount(); i < child_count;
+       ++i) {
     AXPlatformNode* child_node =
         AXPlatformNode::FromNativeViewAccessible(delegate->ChildAtIndex(i));
     count += GetTreeSize(child_node);

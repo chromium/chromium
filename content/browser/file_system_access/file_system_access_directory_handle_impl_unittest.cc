@@ -473,7 +473,7 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, GetChildURL_CustomBucket) {
   const auto custom_bucket = storage::BucketLocator(
       storage::BucketId(1),
       blink::StorageKey::CreateFromStringForTesting("http://example/"),
-      blink::mojom::StorageType::kTemporary, /*is_default=*/false);
+      /*is_default=*/false);
   auto custom_handle =
       GetHandleWithPermissions(dir, /*read=*/true, /*write=*/true,
                                /*url_bucket_override=*/custom_bucket);

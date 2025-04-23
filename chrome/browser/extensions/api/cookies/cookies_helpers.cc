@@ -437,8 +437,8 @@ CookiePartitionKeyCollectionFromApiPartitionKey(
     return net::CookiePartitionKeyCollection();
   }
 
-  return net::CookiePartitionKeyCollection::FromOptional(
-      net_partition_key.value());
+  return net::CookiePartitionKeyCollection(
+      std::move(net_partition_key).value());
 }
 
 MatchFilter::MatchFilter(GetAll::Params::Details* details) : details_(details) {

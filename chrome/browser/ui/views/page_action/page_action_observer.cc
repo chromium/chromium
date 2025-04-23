@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
 
@@ -17,6 +18,7 @@ page_actions::PageActionState ModelToState(
   return page_actions::PageActionState{
       .action_id = action_id,
       .showing = model.GetVisible(),
+      .chip_showing = model.GetShowSuggestionChip() && model.GetVisible(),
   };
 }
 }  // namespace
@@ -66,9 +68,14 @@ void PageActionObserverImpl::OnPageActionModelChanged(
 
   if (new_page_action_state.showing && !page_action_.showing) {
     base_->OnPageActionIconShown(new_page_action_state);
-  }
-  if (!new_page_action_state.showing && page_action_.showing) {
+  } else if (!new_page_action_state.showing && page_action_.showing) {
     base_->OnPageActionIconHidden(new_page_action_state);
+  }
+
+  if (new_page_action_state.chip_showing && !page_action_.chip_showing) {
+    base_->OnPageActionChipShown(new_page_action_state);
+  } else if (!new_page_action_state.chip_showing && page_action_.chip_showing) {
+    base_->OnPageActionChipHidden(new_page_action_state);
   }
 
   page_action_ = new_page_action_state;

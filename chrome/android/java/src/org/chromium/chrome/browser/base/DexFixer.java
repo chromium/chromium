@@ -81,14 +81,15 @@ public class DexFixer {
         if (reason > DexFixerReason.NOT_NEEDED) {
             Log.w(TAG, "Triggering dex compile. Reason=%d", reason);
             try {
-                String cmd = "/system/bin/cmd package compile -r shared ";
+                StringBuilder cmdBuilder =
+                        new StringBuilder("/system/bin/cmd package compile -r shared ");
                 if (reason == DexFixerReason.NOT_READABLE && BundleUtils.isBundle()) {
                     // Isolated processes need only access the base split.
                     String apkBaseName = new File(appInfo.sourceDir).getName();
-                    cmd += String.format("--split %s ", apkBaseName);
+                    cmdBuilder.append("--split ").append(apkBaseName).append(" ");
                 }
-                cmd += ContextUtils.getApplicationContext().getPackageName();
-                runtime.exec(cmd);
+                cmdBuilder.append(ContextUtils.getApplicationContext().getPackageName());
+                runtime.exec(cmdBuilder.toString());
             } catch (IOException e) {
                 // Don't crash.
             }

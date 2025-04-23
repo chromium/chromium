@@ -36,6 +36,11 @@ enum ShareExtensionItemReceived {
   READINGLIST_ENTRY,
   BOOKMARK_ENTRY,
   OPEN_IN_CHROME_ENTRY,
+  OPEN_IN_CHROME_INCOGNITO_ENTRY,
+  IMAGE_SEARCH_ENTRY,
+  TEXT_SEARCH_ENTRY,
+  INCOGNITO_IMAGE_SEARCH_ENTRY,
+  INCOGNITO_TEXT_SEARCH_ENTRY,
   SHARE_EXTENSION_ITEM_RECEIVED_COUNT
 };
 
@@ -57,6 +62,27 @@ ShareExtensionSource SourceIDFromSource(NSString* source) {
 void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
   UMA_HISTOGRAM_ENUMERATION("IOS.ShareExtension.ReceivedEntry", type,
                             SHARE_EXTENSION_ITEM_RECEIVED_COUNT);
+}
+
+bool IsItemReceivedURL(app_group::ShareExtensionItemType type) {
+  return type == app_group::OPEN_IN_CHROME_ITEM ||
+         type == app_group::OPEN_IN_CHROME_INCOGNITO_ITEM ||
+         type == app_group::BOOKMARK_ITEM ||
+         type == app_group::READING_LIST_ITEM;
+}
+
+// Return true if a recived item (represented by its `GURL`, `Date`, `Type` and
+// source is valid. An item is either a URL, an image or a text. Images and
+// texts have an empty URL hence the use of `IsItemReceivedURL`.
+bool IsReceivedItemValid(GURL entryGURL,
+                         NSDate* entryDate,
+                         NSNumber* entryType,
+                         NSString* entrySource) {
+  app_group::ShareExtensionItemType type =
+      static_cast<app_group::ShareExtensionItemType>([entryType integerValue]);
+  return !((!entryGURL.is_valid() && IsItemReceivedURL(type)) || !entrySource ||
+           !entryDate || !entryType ||
+           (!entryGURL.SchemeIsHTTPOrHTTPS() && IsItemReceivedURL(type)));
 }
 
 }  // namespace
@@ -250,8 +276,7 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
   NSString* entrySource = base::apple::ObjCCast<NSString>(
       [entry objectForKey:app_group::kShareItemSource]);
 
-  if (!entryGURL.is_valid() || !entrySource || !entryDate || !entryType ||
-      !entryGURL.SchemeIsHTTPOrHTTPS()) {
+  if (!IsReceivedItemValid(entryGURL, entryDate, entryType, entrySource)) {
     if (completion) {
       completion();
     }
@@ -313,6 +338,26 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
       LogHistogramReceivedItem(OPEN_IN_CHROME_ENTRY);
       // Open URL command is sent directly by the extension. No processing is
       // needed here.
+      break;
+    }
+    case app_group::OPEN_IN_CHROME_INCOGNITO_ITEM: {
+      LogHistogramReceivedItem(OPEN_IN_CHROME_INCOGNITO_ENTRY);
+      break;
+    }
+    case app_group::IMAGE_SEARCH_ITEM: {
+      LogHistogramReceivedItem(IMAGE_SEARCH_ENTRY);
+      break;
+    }
+    case app_group::TEXT_SEARCH_ITEM: {
+      LogHistogramReceivedItem(TEXT_SEARCH_ENTRY);
+      break;
+    }
+    case app_group::INCOGNITO_IMAGE_SEARCH_ITEM: {
+      LogHistogramReceivedItem(INCOGNITO_IMAGE_SEARCH_ENTRY);
+      break;
+    }
+    case app_group::INCOGNITO_TEXT_SEARCH_ITEM: {
+      LogHistogramReceivedItem(INCOGNITO_TEXT_SEARCH_ENTRY);
       break;
     }
   }

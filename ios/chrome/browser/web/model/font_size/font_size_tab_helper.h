@@ -130,8 +130,6 @@ class FontSizeTabHelper : public web::WebFramesManager::Observer,
   // Holds references to NSNotification callback observer.
   id notification_observer_;
 
-  WEB_STATE_USER_DATA_KEY_DECL();
-
   base::WeakPtrFactory<FontSizeTabHelper> weak_factory_;
 };
 

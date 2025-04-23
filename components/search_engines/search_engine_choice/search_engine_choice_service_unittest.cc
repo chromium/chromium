@@ -18,6 +18,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "components/country_codes/country_codes.h"
@@ -40,6 +41,7 @@
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_engines_test_environment.h"
+#include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
@@ -81,8 +83,6 @@ class SearchEngineChoiceServiceTest : public SearchEngineChoiceServiceTestBase {
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 TEST_F(SearchEngineChoiceServiceTest, GuestSessionDsePropagation) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      switches::kSearchEngineChoiceGuestExperience};
   InitService({.force_reset = true,
                .is_profile_eligible_for_dse_guest_propagation = true});
 
@@ -119,8 +119,6 @@ TEST_F(SearchEngineChoiceServiceTest, GuestSessionDsePropagation) {
 
 TEST_F(SearchEngineChoiceServiceTest,
        UpdatesDefaultSearchEngineManagerForGuestMode) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      switches::kSearchEngineChoiceGuestExperience};
   InitService({.force_reset = true,
                .is_profile_eligible_for_dse_guest_propagation = true});
 
@@ -700,6 +698,8 @@ TEST_F(SearchEngineChoiceServiceTest, NoRepromptForSyntaxError) {
   pref_service()->SetInt64(
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
       kPreviousTimestamp);
+  pref_service()->SetString(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion, "1.0.0.0");
 
   // Trigger the creation of the service, which should check for the reprompt.
   search_engine_choice_service();
@@ -719,6 +719,28 @@ TEST_F(SearchEngineChoiceServiceTest, NoRepromptForSyntaxError) {
       RepromptResult::kInvalidDictionary, 1);
 }
 
+// Test that the user is not reprompted when no persisted metadata indicates any
+// choice-related activity took place.
+TEST_F(SearchEngineChoiceServiceTest, NoOpWhenNoChoiceMetadataPresent) {
+  ASSERT_EQ(switches::kSearchEngineChoiceNoRepromptString,
+            switches::kSearchEngineChoiceTriggerRepromptParams.Get());
+
+  // Trigger the creation of the service, which should check for the reprompt.
+  search_engine_choice_service();
+
+  // The user should not be reprompted, no associated histogram recorded.
+  histogram_tester_.ExpectTotalCount(
+      search_engines::kSearchEngineChoiceWipeReasonHistogram, 0);
+  histogram_tester_.ExpectTotalCount(
+      search_engines::kSearchEngineChoiceRepromptSpecificCountryHistogram, 0);
+  histogram_tester_.ExpectTotalCount(
+      search_engines::kSearchEngineChoiceRepromptWildcardHistogram, 0);
+  histogram_tester_.ExpectTotalCount(
+      search_engines::kSearchEngineChoiceRepromptHistogram, 0);
+  histogram_tester_.ExpectTotalCount(
+      search_engines::kSearchEngineChoiceRepromptHistogram, 0);
+}
+
 // Test that the user is not reprompted by default.
 TEST_F(SearchEngineChoiceServiceTest, NoRepromptByDefault) {
   ASSERT_EQ(switches::kSearchEngineChoiceNoRepromptString,
@@ -729,6 +751,8 @@ TEST_F(SearchEngineChoiceServiceTest, NoRepromptByDefault) {
   pref_service()->SetInt64(
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
       kPreviousTimestamp);
+  pref_service()->SetString(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion, "1.0.0.0");
 
   // Trigger the creation of the service, which should check for the reprompt.
   search_engine_choice_service();
@@ -775,13 +799,157 @@ TEST_F(SearchEngineChoiceServiceTest, RepromptForMissingChoiceVersion) {
       prefs::kDefaultSearchProviderChoiceScreenCompletionVersion));
   histogram_tester_.ExpectUniqueSample(
       search_engines::kSearchEngineChoiceWipeReasonHistogram,
-      SearchEngineChoiceWipeReason::kMissingChoiceVersion, 1);
+      SearchEngineChoiceWipeReason::kMissingMetadataVersion, 1);
   histogram_tester_.ExpectTotalCount(
       search_engines::kSearchEngineChoiceRepromptSpecificCountryHistogram, 0);
   histogram_tester_.ExpectTotalCount(
       search_engines::kSearchEngineChoiceRepromptWildcardHistogram, 0);
   histogram_tester_.ExpectTotalCount(
       search_engines::kSearchEngineChoiceRepromptHistogram, 0);
+}
+
+// The user is reprompted if the timestamp preference is missing.
+TEST_F(SearchEngineChoiceServiceTest, RepromptForMissingTimestamp) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      switches::kSearchEngineChoiceTrigger,
+      {{switches::kSearchEngineChoiceTriggerRepromptParams.name, "{}"}});
+  ASSERT_EQ("{}", switches::kSearchEngineChoiceTriggerRepromptParams.Get());
+
+  // Initialize the version, but not the timestamp.
+  pref_service()->SetString(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion, "1.0.0.0");
+
+  // Trigger the creation of the service, which should check for the reprompt.
+  search_engine_choice_service();
+
+  // The user should be reprompted.
+  EXPECT_FALSE(pref_service()->HasPrefPath(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
+  EXPECT_FALSE(pref_service()->HasPrefPath(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion));
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::kSearchEngineChoiceWipeReasonHistogram,
+      SearchEngineChoiceWipeReason::kInvalidMetadata, 1);
+  histogram_tester_.ExpectTotalCount(
+      search_engines::kSearchEngineChoiceRepromptSpecificCountryHistogram, 0);
+  histogram_tester_.ExpectTotalCount(
+      search_engines::kSearchEngineChoiceRepromptWildcardHistogram, 0);
+  histogram_tester_.ExpectTotalCount(
+      search_engines::kSearchEngineChoiceRepromptHistogram, 0);
+}
+
+struct DeviceRestoreTestParam {
+  std::string test_suffix;
+  bool restore_detected_in_current_session;
+  bool choice_predates_restore;
+  bool is_feature_enabled;
+  bool expect_choice_info_wipe;
+};
+
+class SearchEngineChoiceServiceDeviceRestoreTest
+    : public SearchEngineChoiceServiceTest,
+      public testing::WithParamInterface<DeviceRestoreTestParam> {
+ public:
+  SearchEngineChoiceServiceDeviceRestoreTest() {
+    if (GetParam().is_feature_enabled) {
+      scoped_feature_list_.InitAndEnableFeature(
+          switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection);
+    }
+  }
+
+  void PopulateLazyFactories(
+      SearchEnginesTestEnvironment::ServiceFactories& lazy_factories,
+      InitServiceArgs args) override {
+    lazy_factories.search_engine_choice_service_factory =
+        base::BindLambdaForTesting(
+            [args](SearchEnginesTestEnvironment& environment) {
+              return std::make_unique<SearchEngineChoiceService>(
+                  std::make_unique<FakeSearchEngineChoiceServiceClient>(
+                      args.variation_country_id,
+                      args.is_profile_eligible_for_dse_guest_propagation,
+                      GetParam().restore_detected_in_current_session,
+                      GetParam().choice_predates_restore),
+                  environment.pref_service(), &environment.local_state(),
+                  environment.regional_capabilities_service(),
+                  environment.prepopulate_data_resolver());
+            });
+  }
+
+  static std::string GetTestSuffix(
+      const testing::TestParamInfo<DeviceRestoreTestParam>& info) {
+    return info.param.test_suffix;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SearchEngineChoiceServiceDeviceRestoreTest,
+    ::testing::ValuesIn({
+        DeviceRestoreTestParam{.test_suffix = "WipeForPreexistingChoice",
+                               .restore_detected_in_current_session = true,
+                               .choice_predates_restore = true,
+                               .is_feature_enabled = true,
+                               .expect_choice_info_wipe = true},
+        DeviceRestoreTestParam{.test_suffix = "NoWipeForLateDetection",
+                               .restore_detected_in_current_session = false,
+                               .choice_predates_restore = true,
+                               .is_feature_enabled = true,
+                               .expect_choice_info_wipe = false},
+        DeviceRestoreTestParam{.test_suffix = "NoWipeForNewChoice",
+                               .restore_detected_in_current_session = true,
+                               .choice_predates_restore = false,
+                               .is_feature_enabled = true,
+                               .expect_choice_info_wipe = false},
+        DeviceRestoreTestParam{.test_suffix = "NoWipeForFeatureDisabled",
+                               .restore_detected_in_current_session = true,
+                               .choice_predates_restore = true,
+                               .is_feature_enabled = false,
+                               .expect_choice_info_wipe = false},
+    }),
+    &SearchEngineChoiceServiceDeviceRestoreTest::GetTestSuffix);
+
+TEST_P(SearchEngineChoiceServiceDeviceRestoreTest, RepromptOnRestoreDetection) {
+  ASSERT_EQ(switches::kSearchEngineChoiceNoRepromptString,
+            switches::kSearchEngineChoiceTriggerRepromptParams.Get());
+
+  SetChoiceCompletionMetadata(*pref_service(),
+                              {base::Time::Now(), base::Version("1.0.0.0")});
+
+  // Trigger the creation of the service, which should check for the reprompt.
+  search_engine_choice_service();
+
+  if (GetParam().expect_choice_info_wipe) {
+    EXPECT_FALSE(pref_service()->HasPrefPath(
+        prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
+    histogram_tester_.ExpectUniqueSample(
+        search_engines::kSearchEngineChoiceWipeReasonHistogram,
+        SearchEngineChoiceWipeReason::kDeviceRestored, 1);
+    histogram_tester_.ExpectTotalCount(
+        search_engines::kSearchEngineChoiceRepromptHistogram, 0);
+  } else {
+    EXPECT_TRUE(pref_service()->HasPrefPath(
+        prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
+    histogram_tester_.ExpectTotalCount(
+        search_engines::kSearchEngineChoiceWipeReasonHistogram, 0);
+    histogram_tester_.ExpectBucketCount(
+        search_engines::kSearchEngineChoiceRepromptHistogram,
+        RepromptResult::kNoReprompt, 1);
+  }
+
+  histogram_tester_.ExpectTotalCount(
+      search_engines::kSearchEngineChoiceRepromptSpecificCountryHistogram, 0);
+  histogram_tester_.ExpectTotalCount(
+      search_engines::kSearchEngineChoiceRepromptWildcardHistogram, 0);
+  histogram_tester_.ExpectBucketCount(
+      search_engines::kSearchEngineChoiceRepromptHistogram,
+      RepromptResult::kInvalidDictionary, 0);
 }
 
 struct RepromptTestParam {
@@ -893,37 +1061,41 @@ TEST_P(SearchEngineChoiceUtilsParamTest, Reprompt) {
 
 constexpr RepromptTestParam kRepromptTestParams[] = {
     // Reprompt all countries with the wildcard.
-    {SearchEngineChoiceWipeReason::kReprompt, RepromptResult::kReprompt,
-     RepromptResult::kNoDictionaryKey, "1.0.0.0", R"( {"*":"1.0.0.1"} )"},
+    {SearchEngineChoiceWipeReason::kFinchBasedReprompt,
+     RepromptResult::kReprompt, RepromptResult::kNoDictionaryKey, "1.0.0.0",
+     R"( {"*":"1.0.0.1"} )"},
     // Reprompt works with all version components.
-    {SearchEngineChoiceWipeReason::kReprompt, RepromptResult::kReprompt,
-     RepromptResult::kNoDictionaryKey, "1.0.0.100", R"( {"*":"1.0.1.0"} )"},
-    {SearchEngineChoiceWipeReason::kReprompt, RepromptResult::kReprompt,
-     RepromptResult::kNoDictionaryKey, "1.0.200.0", R"( {"*":"1.1.0.0"} )"},
-    {SearchEngineChoiceWipeReason::kReprompt, RepromptResult::kReprompt,
-     RepromptResult::kNoDictionaryKey, "1.300.0.0", R"( {"*":"2.0.0.0"} )"},
-    {SearchEngineChoiceWipeReason::kReprompt, RepromptResult::kReprompt,
-     RepromptResult::kNoDictionaryKey, "10.10.1.1",
+    {SearchEngineChoiceWipeReason::kFinchBasedReprompt,
+     RepromptResult::kReprompt, RepromptResult::kNoDictionaryKey, "1.0.0.100",
+     R"( {"*":"1.0.1.0"} )"},
+    {SearchEngineChoiceWipeReason::kFinchBasedReprompt,
+     RepromptResult::kReprompt, RepromptResult::kNoDictionaryKey, "1.0.200.0",
+     R"( {"*":"1.1.0.0"} )"},
+    {SearchEngineChoiceWipeReason::kFinchBasedReprompt,
+     RepromptResult::kReprompt, RepromptResult::kNoDictionaryKey, "1.300.0.0",
+     R"( {"*":"2.0.0.0"} )"},
+    {SearchEngineChoiceWipeReason::kFinchBasedReprompt,
+     RepromptResult::kReprompt, RepromptResult::kNoDictionaryKey, "10.10.1.1",
      R"( {"*":"30.45.678.9100"} )"},
     // Reprompt a specific country.
-    {SearchEngineChoiceWipeReason::kReprompt, std::nullopt,
+    {SearchEngineChoiceWipeReason::kFinchBasedReprompt, std::nullopt,
      RepromptResult::kReprompt, "1.0.0.0", R"( {"BE":"1.0.0.1"} )"},
     // Reprompt for params inclusive of current version
-    {SearchEngineChoiceWipeReason::kReprompt, std::nullopt,
+    {SearchEngineChoiceWipeReason::kFinchBasedReprompt, std::nullopt,
      RepromptResult::kReprompt, "1.0.0.0", R"( {"BE":"CURRENT_VERSION"} )"},
     // Reprompt when the choice version is malformed.
-    {SearchEngineChoiceWipeReason::kInvalidChoiceVersion, std::nullopt,
+    {SearchEngineChoiceWipeReason::kInvalidMetadataVersion, std::nullopt,
      std::nullopt, "Blah", ""},
     // Reprompt when both the country and the wild card are specified, as long
     // as one of them qualifies.
-    {SearchEngineChoiceWipeReason::kReprompt, std::nullopt,
+    {SearchEngineChoiceWipeReason::kFinchBasedReprompt, std::nullopt,
      RepromptResult::kReprompt, "1.0.0.0",
      R"( {"*":"1.0.0.1","BE":"1.0.0.1"} )"},
-    {SearchEngineChoiceWipeReason::kReprompt, std::nullopt,
+    {SearchEngineChoiceWipeReason::kFinchBasedReprompt, std::nullopt,
      RepromptResult::kReprompt, "1.0.0.0",
      R"( {"*":"FUTURE_VERSION","BE":"1.0.0.1"} )"},
     // Still works with irrelevant parameters for other countries.
-    {SearchEngineChoiceWipeReason::kReprompt, std::nullopt,
+    {SearchEngineChoiceWipeReason::kFinchBasedReprompt, std::nullopt,
      RepromptResult::kReprompt, "1.0.0.0",
      R"(
        {

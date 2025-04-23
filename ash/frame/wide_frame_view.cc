@@ -97,9 +97,6 @@ WideFrameView::WideFrameView(views::Widget* target)
     : target_(target),
       frame_context_menu_controller_(
           std::make_unique<FrameContextMenuController>(target_, this)) {
-  // WideFrameView is owned by its client, not by Views.
-  SetOwnedByWidget(false);
-
   aura::Window* target_window = target->GetNativeWindow();
   target_window->AddObserver(this);
   // Use the HeaderView itself as a frame view because WideFrameView is
@@ -133,7 +130,7 @@ WideFrameView::WideFrameView(views::Widget* target)
   window->SetProperty(kHideInOverviewKey, true);
   window->SetProperty(kForceVisibleInMiniViewKey, true);
   window->SetEventTargeter(std::make_unique<WideFrameTargeter>(header_view()));
-  set_owned_by_client();
+  set_owned_by_client(OwnedByClientPassKey());
   WindowState::Get(window)->set_allow_set_bounds_direct(true);
 
   paint_as_active_subscription_ =

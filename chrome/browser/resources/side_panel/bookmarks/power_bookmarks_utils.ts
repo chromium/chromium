@@ -4,8 +4,9 @@
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-export function getFolderLabel(folder: chrome.bookmarks.BookmarkTreeNode|
-    undefined): string {
+import type {BookmarksTreeNode} from './bookmarks.mojom-webui.js';
+
+export function getFolderLabel(folder: BookmarksTreeNode|undefined): string {
   if (folder && folder.id !== loadTimeData.getString('otherBookmarksId') &&
     folder.id !== loadTimeData.getString('mobileBookmarksId')) {
     return folder.title;

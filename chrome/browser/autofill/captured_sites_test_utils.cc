@@ -717,17 +717,24 @@ bool WebPageReplayServerWrapper::Stop() {
     bool did_terminate = false;
     if (!start_as_replay_) {
 #if BUILDFLAG(IS_POSIX)
-      // For Replay sessions, we can terminate the WPR process immediately as
-      // we don't Record sessions, we want to try and send a SIGINT to close and
-      // write the WPR archive file gracefully. If that fails, we will Terminate
-      // via Process::Terminate which will send SIGTERM and then SIGKILL.
-      did_terminate = kill(web_page_replay_server_.Handle(), SIGINT) == 0;
-      if (!did_terminate) {
-        ADD_FAILURE() << "Failed to close a recording WPR server cleanly!";
+      bool error_when_terminating_record_mode = false;
+      // For Replay sessions, this function can terminate the WPR process
+      // immediately as it doesn't need to write the archive file. In Record
+      // sessions, this function will try to send a SIGINT and use
+      // `WaitForExit()` to close and write the WPR archive file gracefully. If
+      // this fails, the function will terminate via Process::Terminate which
+      // will send SIGTERM and then SIGKILL.
+      if (kill(web_page_replay_server_.Handle(), SIGINT) != 0) {
+        ADD_FAILURE() << "Failed to send SIGINT to a recording WPR server!";
+        error_when_terminating_record_mode = true;
+      } else if (!web_page_replay_server_.WaitForExit(nullptr)) {
+        ADD_FAILURE() << "Failed to wait for a recording WPR server to exit!";
+        error_when_terminating_record_mode = true;
       }
+      did_terminate = !error_when_terminating_record_mode;
 #else
       ADD_FAILURE()
-          << "Clean termination of recrording WPR server is only supported on "
+          << "Clean termination of recording WPR server is only supported on "
              "OS_POSIX. New archive may not be saved properly.";
 #endif
     }

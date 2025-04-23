@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar.menu_button;
 
 import android.content.res.ColorStateList;
+import android.view.View.OnKeyListener;
 
 import androidx.annotation.NonNull;
 
@@ -55,6 +56,8 @@ class MenuButtonProperties {
     public static final WritableObjectPropertyKey<ThemeProperty> THEME =
             new WritableObjectPropertyKey<>(true);
     public static final WritableFloatPropertyKey TRANSLATION_X = new WritableFloatPropertyKey();
+    public static final WritableObjectPropertyKey<OnKeyListener> ON_KEY_LISTENER =
+            new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -67,6 +70,7 @@ class MenuButtonProperties {
                 STATE_SUPPLIER,
                 SHOW_UPDATE_BADGE,
                 THEME,
-                TRANSLATION_X
+                TRANSLATION_X,
+                ON_KEY_LISTENER
             };
 }

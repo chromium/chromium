@@ -132,7 +132,7 @@ ScriptResource* ScriptResource::CreateForTest(
       request, options, decoder_options, isolate, kNoStreaming,
       /*v8_compile_hints_producer=*/nullptr,
       /*v8_compile_hints_consumer=*/nullptr,
-      v8_compile_hints::MagicCommentMode::kNever, script_type);
+      v8_compile_hints::MagicCommentMode::kNone, script_type);
 }
 
 ScriptResource::ScriptResource(

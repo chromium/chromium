@@ -27,54 +27,35 @@ constexpr int kChromeRefreshSeparatorHeight = 16;
 constexpr int kChromeRefreshTabVerticalPadding = 6;
 constexpr int kChromeRefreshTabHorizontalPadding = 8;
 
-class ChromeRefresh2023TabStyle : public TabStyle {
- public:
-  ~ChromeRefresh2023TabStyle() override = default;
-  int GetStandardWidth() const override;
-  int GetStandardSplitWidth() const override;
-  int GetPinnedWidth() const override;
-  int GetMinimumActiveWidth() const override;
-  int GetMinimumInactiveWidth() const override;
-  int GetTopCornerRadius() const override;
-  int GetBottomCornerRadius() const override;
-  int GetTabOverlap() const override;
-  gfx::Size GetPreviewImageSize() const override;
-  gfx::Size GetSeparatorSize() const override;
-  gfx::Insets GetSeparatorMargins() const override;
-  int GetSeparatorCornerRadius() const override;
-  int GetDragHandleExtension(int height) const override;
-  SkColor GetTabBackgroundColor(
-      TabSelectionState state,
-      bool hovered,
-      bool frame_active,
-      const ui::ColorProvider& color_provider) const override;
-  gfx::Insets GetContentsInsets() const override;
-  float GetSelectedTabOpacity() const override;
-};
+// The standard tab width is 232 DIP, excluding separators and overlap.
+constexpr int kTabWidth = 232;
 
 }  // namespace
 
 TabStyle::~TabStyle() = default;
 
-int ChromeRefresh2023TabStyle::GetStandardWidth() const {
-  // The standard tab width is 240 DIP including both separators.
-  constexpr int kTabWidth = 240;
-  // The overlap includes one separator, so subtract it here.
-  return kTabWidth + GetTabOverlap() - GetSeparatorSize().width();
+int TabStyle::GetStandardHeight() const {
+  return GetLayoutConstant(TAB_STRIP_HEIGHT);
 }
 
-int ChromeRefresh2023TabStyle::GetStandardSplitWidth() const {
-  // TODO(agale): Update to a more precise calculation.
-  return GetStandardWidth() / 2;
+int TabStyle::GetStandardWidth() const {
+  // The full width includes two extensions with the bottom corner radius.
+  return kTabWidth + 2 * GetBottomCornerRadius();
 }
 
-int ChromeRefresh2023TabStyle::GetPinnedWidth() const {
+int TabStyle::GetStandardSplitWidth() const {
+  // Split tabs appear as half width with one bottom extension. They also must
+  // include half the tab overlap as the tabs fill the space between them.
+  return kTabWidth / 2 + GetBottomCornerRadius() + GetTabOverlap() / 2;
+}
+
+int TabStyle::GetPinnedWidth() const {
   constexpr int kTabPinnedContentWidth = 24;
   return kTabPinnedContentWidth + GetContentsInsets().left() +
          GetContentsInsets().right();
 }
 
-int ChromeRefresh2023TabStyle::GetMinimumActiveWidth() const {
+int TabStyle::GetMinimumActiveWidth() const {
   const int close_button_size = GetLayoutConstant(TAB_CLOSE_BUTTON_SIZE);
   const gfx::Insets insets = GetContentsInsets();
   const int min_active_width =
@@ -89,7 +70,13 @@ int ChromeRefresh2023TabStyle::GetMinimumActiveWidth() const {
   return min_active_width;
 }
 
-int ChromeRefresh2023TabStyle::GetMinimumInactiveWidth() const {
+int TabStyle::GetMinimumActiveSplitWidth() const {
+  // Split tabs take over half of the overlap space between them so they can
+  // appear larger.
+  return GetMinimumActiveWidth() / 2 + GetTabOverlap() / 2;
+}
+
+int TabStyle::GetMinimumInactiveWidth() const {
   // Allow tabs to shrink until they appear to be 16 DIP wide excluding
   // outer corners.
   constexpr int kInteriorWidth = 16;
@@ -109,15 +96,15 @@ int ChromeRefresh2023TabStyle::GetMinimumInactiveWidth() const {
   return min_inactive_width;
 }
 
-int ChromeRefresh2023TabStyle::GetTopCornerRadius() const {
+int TabStyle::GetTopCornerRadius() const {
   return 10;
 }
 
-int ChromeRefresh2023TabStyle::GetBottomCornerRadius() const {
+int TabStyle::GetBottomCornerRadius() const {
   return 12;
 }
 
-int ChromeRefresh2023TabStyle::GetTabOverlap() const {
+int TabStyle::GetTabOverlap() const {
   // The overlap removes the width and the margins of the separator.
   const float total_separator_width = GetSeparatorMargins().left() +
                                       GetSeparatorSize().width() +
@@ -125,33 +112,33 @@ int ChromeRefresh2023TabStyle::GetTabOverlap() const {
   return 2 * GetBottomCornerRadius() - total_separator_width;
 }
 
-gfx::Size ChromeRefresh2023TabStyle::GetPreviewImageSize() const {
+gfx::Size TabStyle::GetPreviewImageSize() const {
   constexpr float kTabHoverCardPreviewImageAspectRatio = 16.0f / 9.0f;
   const int width = GetStandardWidth();
   return gfx::Size(width, width / kTabHoverCardPreviewImageAspectRatio);
 }
 
-gfx::Size ChromeRefresh2023TabStyle::GetSeparatorSize() const {
+gfx::Size TabStyle::GetSeparatorSize() const {
   return gfx::Size(kChromeRefreshSeparatorThickness,
                    kChromeRefreshSeparatorHeight);
 }
 
-gfx::Insets ChromeRefresh2023TabStyle::GetSeparatorMargins() const {
+gfx::Insets TabStyle::GetSeparatorMargins() const {
   return gfx::Insets::TLBR(GetLayoutConstant(TAB_STRIP_PADDING),
                            kChromeRefreshSeparatorHorizontalMargin,
                            GetLayoutConstant(TAB_STRIP_PADDING),
                            kChromeRefreshSeparatorHorizontalMargin);
 }
 
-int ChromeRefresh2023TabStyle::GetSeparatorCornerRadius() const {
+int TabStyle::GetSeparatorCornerRadius() const {
   return GetSeparatorSize().width() / 2;
 }
 
-int ChromeRefresh2023TabStyle::GetDragHandleExtension(int height) const {
+int TabStyle::GetDragHandleExtension(int height) const {
   return 6;
 }
 
-SkColor ChromeRefresh2023TabStyle::GetTabBackgroundColor(
+SkColor TabStyle::GetTabBackgroundColor(
     const TabSelectionState state,
     const bool hovered,
     const bool frame_active,
@@ -184,7 +171,7 @@ SkColor ChromeRefresh2023TabStyle::GetTabBackgroundColor(
   }
 }
 
-gfx::Insets ChromeRefresh2023TabStyle::GetContentsInsets() const {
+gfx::Insets TabStyle::GetContentsInsets() const {
   return gfx::Insets::TLBR(
       kChromeRefreshTabVerticalPadding + GetLayoutConstant(TAB_STRIP_PADDING),
       GetBottomCornerRadius() + kChromeRefreshTabHorizontalPadding,
@@ -192,14 +179,13 @@ gfx::Insets ChromeRefresh2023TabStyle::GetContentsInsets() const {
       GetBottomCornerRadius() + kChromeRefreshTabHorizontalPadding);
 }
 
-float ChromeRefresh2023TabStyle::GetSelectedTabOpacity() const {
+float TabStyle::GetSelectedTabOpacity() const {
   return kDefaultSelectedTabOpacity;
 }
 
 // static
 const TabStyle* TabStyle::Get() {
-  static TabStyle* const tab_style =
-      static_cast<TabStyle*>(new ChromeRefresh2023TabStyle());
+  static TabStyle* const tab_style = static_cast<TabStyle*>(new TabStyle());
 
   return tab_style;
 }

@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.download.home.list;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.util.Pair;
 import android.view.View;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.home.StableIds;
 import org.chromium.components.offline_items_collection.OfflineItem;
 
@@ -18,6 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Date;
 
 /** An abstract class that represents a variety of possible list items to show in downloads home. */
+@NullMarked
 public abstract class ListItem {
     private static final long SECTION_HEADER_HASH_CODE_OFFSET = 1000;
 
@@ -175,7 +179,8 @@ public abstract class ListItem {
 
         @VisibleForTesting
         static long generateStableId(OfflineItem item) {
-            return (((long) item.id.hashCode()) << 32) + (item.creationTimeMs & 0x0FFFFFFFF);
+            return (((long) assumeNonNull(item.id).hashCode()) << 32)
+                    + (item.creationTimeMs & 0x0FFFFFFFF);
         }
     }
 }

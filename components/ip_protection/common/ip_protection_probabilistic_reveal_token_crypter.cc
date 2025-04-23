@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/sequence_checker.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "third_party/abseil-cpp/absl/status/statusor.h"
 #include "third_party/private-join-and-compute/src/crypto/context.h"
 #include "third_party/private-join-and-compute/src/crypto/ec_group.h"
@@ -124,6 +125,7 @@ void IpProtectionProbabilisticRevealTokenCrypter::ClearTokens() {
 
 absl::StatusOr<ProbabilisticRevealToken>
 IpProtectionProbabilisticRevealTokenCrypter::Randomize(size_t i) const {
+  base::TimeTicks randomization_start_time = base::TimeTicks::Now();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (i >= ciphertext_.size()) {
     return absl::InvalidArgumentError("invalid index");
@@ -136,6 +138,8 @@ IpProtectionProbabilisticRevealTokenCrypter::Randomize(size_t i) const {
                    randomized_ciphertext.u.ToBytesCompressed());
   ASSIGN_OR_RETURN(randomized_token.e,
                    randomized_ciphertext.e.ToBytesCompressed());
+  Telemetry().ProbabilisticRevealTokenRandomizationTime(
+      base::TimeTicks::Now() - randomization_start_time);
   return randomized_token;
 }
 

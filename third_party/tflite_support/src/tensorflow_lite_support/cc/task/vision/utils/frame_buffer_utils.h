@@ -16,13 +16,13 @@ limitations under the License.
 #ifndef TENSORFLOW_LITE_SUPPORT_CC_TASK_VISION_UTILS_FRAME_BUFFER_UTILS_H_
 #define TENSORFLOW_LITE_SUPPORT_CC_TASK_VISION_UTILS_FRAME_BUFFER_UTILS_H_
 
+#include <cstdint>
 #include <memory>
 #include <vector>
 
 #include "absl/status/status.h"  // from @com_google_absl
 #include "absl/types/optional.h"  // from @com_google_absl
 #include "absl/types/variant.h"  // from @com_google_absl
-#include "tensorflow_lite_support/cc/port/integral_types.h"
 #include "tensorflow_lite_support/cc/task/vision/core/frame_buffer.h"
 #include "tensorflow_lite_support/cc/task/vision/proto/bounding_box_proto_inc.h"
 #include "tensorflow_lite_support/cc/task/vision/utils/frame_buffer_utils_interface.h"
@@ -322,7 +322,7 @@ class FrameBufferUtils {
 
   // Returns Plane struct based on one dimension buffer and its metadata. If
   // an error occurred, it will return an empty vector.
-  std::vector<FrameBuffer::Plane> GetPlanes(const uint8* buffer,
+  std::vector<FrameBuffer::Plane> GetPlanes(const uint8_t* buffer,
                                             FrameBuffer::Dimension dimension,
                                             FrameBuffer::Format format);
 

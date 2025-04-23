@@ -96,8 +96,8 @@ PrerenderNoVarySearchHintCommitDeferringCondition::
   if (waiting_on_headers_) {
     waiting_on_headers_ = false;
     prerender_host.OnWaitingForHeadersFinished(
-        GetNavigationHandle(), PrerenderHost::WaitingForHeadersFinishedReason::
-                                   kMaybeNavigationCancelled);
+        PrerenderHost::WaitingForHeadersFinishedReason::
+            kMaybeNavigationCancelled);
   }
 }
 
@@ -236,7 +236,7 @@ void PrerenderNoVarySearchHintCommitDeferringCondition::OnHeadersReceived() {
       }
     }
     CHECK(reason.has_value());
-    prerender_host.OnWaitingForHeadersFinished(GetNavigationHandle(), *reason);
+    prerender_host.OnWaitingForHeadersFinished(*reason);
   }
 
   // We don't need the timer anymore.
@@ -268,7 +268,6 @@ void PrerenderNoVarySearchHintCommitDeferringCondition::OnHostDestroyed(
       // the associated prerender's headers.
       waiting_on_headers_ = false;
       prerender_host.OnWaitingForHeadersFinished(
-          GetNavigationHandle(),
           PrerenderHost::WaitingForHeadersFinishedReason::kHostDestroyed);
     }
   } else {
@@ -301,7 +300,6 @@ void PrerenderNoVarySearchHintCommitDeferringCondition::
     // Let the `prerender_host` know that this navigation is done waiting on the
     // associated prerender's headers.
     prerender_host.OnWaitingForHeadersFinished(
-        GetNavigationHandle(),
         PrerenderHost::WaitingForHeadersFinishedReason::kTimeoutElapsed);
   }
 

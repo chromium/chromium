@@ -570,6 +570,15 @@ export class SettingsCupsEditPrinterDialogElement extends
     return !this.isOnline_ ||
         (this.pendingPrinter_ && this.pendingPrinter_.isManaged);
   }
+
+  /**
+   * @return Returns true if the printer is managed and the custom PPD is not
+   * set.
+   */
+  private shouldHidePpdTextbox(): boolean {
+    return this.pendingPrinter_ && this.pendingPrinter_.isManaged &&
+        this.userPPD_.length === 0;
+  }
 }
 
 declare global {

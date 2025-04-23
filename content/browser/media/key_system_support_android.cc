@@ -243,6 +243,7 @@ class CheckCdmCompatibility {
       std::move(cdm_capability_cb_)
           .Run(base::unexpected(
               media::CdmCapabilityQueryStatus::kNoMediaDrmSupport));
+      delete this;
       return;
     }
 
@@ -258,9 +259,11 @@ class CheckCdmCompatibility {
   // is not supported.
   void OnServiceClosed() {
     DVLOG(1) << "IsKeySystemSupported failed for " << key_system_;
-    std::move(cdm_capability_cb_)
-        .Run(base::unexpected(
-            media::CdmCapabilityQueryStatus::kDisconnectionError));
+    if (cdm_capability_cb_) {
+      std::move(cdm_capability_cb_)
+          .Run(base::unexpected(
+              media::CdmCapabilityQueryStatus::kDisconnectionError));
+    }
     delete this;
   }
 

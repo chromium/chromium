@@ -255,8 +255,10 @@
         hide-back-button="[[shouldHideBackButton_(activeFolderPath_.*)]]"
         disable-back-button="[[disableBackButton_(
             activeFolderPath_.*, editing_)]]">
-      <h1 slot="heading">[[getActiveFolderLabel_(activeFolderPath_.*)]]</h1>
-
+      <h1 slot="heading">
+        [[getActiveFolderLabel_(
+             bookmarksTreeViewEnabled_, compact_, activeFolderPath_.*)]]
+      </h1>
       <div aria-hidden="true" slot="metadata">
         [[getSortLabel_(activeSortIndex_)]]
       </div>
@@ -360,9 +362,7 @@
                       "[[shoppingCollectionFolderId_]]"
                   context-menu-bookmark="[[contextMenuBookmark_]]"
                   draggable="[[canDrag_]]"
-                  can-drag="[[canDrag_]]"
-                  bookmarks-service="[[bookmarksService_]]"
-                  key-arrow-navigation-service="[[keyArrowNavigationService_]]">
+                  can-drag="[[canDrag_]]">
               </power-bookmark-row>
             </template>
           </iron-list>

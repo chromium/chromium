@@ -57,10 +57,10 @@ export class PrivacySandboxDialogNoticeStepElement extends
     };
   }
 
-  private expanded_: boolean;
-  private siteSuggestedAdsLearnMoreExpanded_: boolean;
-  private adMeasurementLearnMoreExpanded_: boolean;
-  private hideNoticePage_: boolean;
+  declare private expanded_: boolean;
+  declare private siteSuggestedAdsLearnMoreExpanded_: boolean;
+  declare private adMeasurementLearnMoreExpanded_: boolean;
+  declare private hideNoticePage_: boolean;
 
   private onNoticeSiteSuggestedAdsLearnMoreExpanded_(
       newValue: boolean, oldValue: boolean) {

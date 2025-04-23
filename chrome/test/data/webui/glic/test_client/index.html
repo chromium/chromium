@@ -67,6 +67,10 @@ found in the LICENSE file.
     border: thick double black;
     background-image: linear-gradient(cyan, fuchsia);
   }
+  .favicon {
+    width: 16px;
+    height: 16px;
+  }
   #content {
     overflow-y: scroll;
     position: absolute;
@@ -159,6 +163,15 @@ found in the LICENSE file.
       color: #c8a2c8;
     }
   }
+
+  .scrollToSelector {
+    margin-top: 16px;
+  }
+
+  select.scrollToNodeSelect {
+    width: 300px;
+    margin-left: 4px;
+  }
 </style>
 <div id="pageHeader">
   <h1>Test Web Client</h1>
@@ -244,7 +257,7 @@ found in the LICENSE file.
   <div>
     <h4>Focused Tab V1</h4>
     <label>Focused Tab Url: </label><input id="focusedUrl" type="text" /> <br />
-    <label>Favicon: </label><img id="focusedFavicon" />
+    <label>Favicon: </label><img class="favicon" id="focusedFavicon" />
     <span id="focusedTabLogs"></span>
     <div>
       <label>Enable setContextAccessIndicator
@@ -255,7 +268,7 @@ found in the LICENSE file.
   <div>
     <h4>Focused Tab V2</h4>
     <label>Focused Tab Url: </label><input id="focusedUrlV2" type="text" /> <br />
-    <label>Favicon: </label><img id="focusedFaviconV2" />
+    <label>Favicon: </label><img class="favicon" id="focusedFaviconV2" />
     <span id="focusedTabLogsV2"></span>
     <div>
       <label>Enable setContextAccessIndicator
@@ -307,7 +320,7 @@ found in the LICENSE file.
     </label>
   </div>
   <div>
-    <img id="faviconImg" />
+    <img class="favicon" id="faviconImg" />
   </div>
   <div id="screenshot">
     <img id="screenshotImg" />
@@ -390,23 +403,32 @@ found in the LICENSE file.
 <div class="section">
   <h1>Desktop Screenshot</h1>
   <button id="desktopScreenshot">Capture</button>
+  <button id="panelScreenshot">Capture Panel</button>
   <span id="desktopScreenshotErrorReason"></span>
   <img id="desktopScreenshotImg" />
 </div>
 <div class="section">
   <h1>Scroll-To and Highlight</h1>
   <div>
+    <button id="scrollToFetchAPCBn">Fetch AnnotatedPageContent</button>
+    <div style="margin-top:4px;">Document ID: <span id="scrollToDocumentId">null</span></div>
+  </div>
+  <div class="scrollToSelector">
     <h2>
       Exact Text Selector
     </h2>
     <input id="scrollToExactText" type="text" placeholder="Add exact text to scroll to and highlight">
+    <div><label>Search Range Start Node</label><select disabled id="scrollToExactTextSearchStart"
+        class="scrollToNodeSelect"></select></div>
   </div>
-  <div>
+  <div class="scrollToSelector">
     <h2>
       Text Fragment Selector
     </h2>
     <input id="scrollToTextFragmentTextStart" type="text" placeholder="textStart">
     <input id="scrollToTextFragmentTextEnd" type="text" placeholder="textEnd">
+    <div><label>Search Range Start Node</label><select disabled id="scrollToTextFragmentSearchStart"
+        class="scrollToNodeSelect"></select></div>
   </div>
   <button id="scrollToBn" style="margin-top: 12px;">Scroll!</button>
 </div>
@@ -421,8 +443,10 @@ found in the LICENSE file.
 </div>
 <div class="section">
   <h1>Responsiveness Check</h1>
-  <button id="busyWork3s">Start 3 seconds busy work</button>
-  <button id="busyWork8s">Start 8 seconds busy work</button>
+  <label for="hangDuration">Hang Duration (seconds):</label>
+  <input type="number" id="hangDuration" value="11" step="any" min="0">
+  <button id="hang">Hang</button>
+
 </div>
 <div class="section">
   <h1>Mic Start Permissions Flow Demo</h1>

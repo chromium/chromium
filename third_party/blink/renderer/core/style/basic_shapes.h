@@ -68,7 +68,9 @@ class CORE_EXPORT BasicShape : public GarbageCollected<BasicShape> {
     return GetType() == other.GetType();
   }
 
-  virtual Path GetPath(const gfx::RectF&, float zoom) const = 0;
+  virtual Path GetPath(const gfx::RectF&,
+                       float zoom,
+                       float path_scale) const = 0;
   bool operator==(const BasicShape& o) const {
     return IsSameType(o) && IsEqualAssumingSameType(o);
   }
@@ -161,7 +163,7 @@ class BasicShapeWithCenterAndRadii : public BasicShape {
 
   virtual Path GetPathFromCenter(const gfx::PointF&,
                                  const gfx::RectF&,
-                                 float) const = 0;
+                                 float path_scale) const = 0;
 
  protected:
   BasicShapeCenterCoordinate center_x_;
@@ -190,7 +192,7 @@ class CORE_EXPORT BasicShapeCircle final : public BasicShapeWithCenterAndRadii {
                                  const gfx::SizeF& box_size) const;
   void SetRadius(BasicShapeRadius radius) { radius_ = radius; }
 
-  Path GetPath(const gfx::RectF&, float) const override;
+  Path GetPath(const gfx::RectF&, float, float) const override;
   Path GetPathFromCenter(const gfx::PointF&,
                          const gfx::RectF&,
                          float) const override;
@@ -224,7 +226,7 @@ class BasicShapeEllipse final : public BasicShapeWithCenterAndRadii {
   void SetRadiusX(BasicShapeRadius radius_x) { radius_x_ = radius_x; }
   void SetRadiusY(BasicShapeRadius radius_y) { radius_y_ = radius_y; }
 
-  Path GetPath(const gfx::RectF&, float) const override;
+  Path GetPath(const gfx::RectF&, float, float) const override;
   Path GetPathFromCenter(const gfx::PointF&,
                          const gfx::RectF&,
                          float) const override;
@@ -259,7 +261,7 @@ class BasicShapePolygon final : public BasicShape {
     values_.push_back(y);
   }
 
-  Path GetPath(const gfx::RectF&, float) const override;
+  Path GetPath(const gfx::RectF&, float, float) const override;
 
   WindRule GetWindRule() const { return wind_rule_; }
 
@@ -285,7 +287,7 @@ class BasicShapeInset final : public BasicShape {
   BasicShapeInset() = default;
 
   ShapeType GetType() const override { return kBasicShapeInsetType; }
-  Path GetPath(const gfx::RectF&, float) const override;
+  Path GetPath(const gfx::RectF&, float, float) const override;
 
   const Length& Top() const { return top_; }
   const Length& Right() const { return right_; }

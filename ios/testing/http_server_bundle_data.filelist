@@ -20,6 +20,7 @@ data/http_server_files/destination.html
 data/http_server_files/download_test_page.html
 data/http_server_files/email_signup_form.html
 data/http_server_files/fullscreen.html
+data/http_server_files/full_address_form.html
 data/http_server_files/generic.pkpass
 data/http_server_files/green.pdf
 data/http_server_files/history.html

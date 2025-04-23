@@ -53,11 +53,13 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCore {
   struct DepthSensingConfiguration {
     std::vector<device::mojom::XRDepthUsage> depth_usage_preference;
     std::vector<device::mojom::XRDepthDataFormat> depth_data_format_preference;
+    std::vector<device::mojom::XRDepthType> depth_type_request;
 
     DepthSensingConfiguration(
         std::vector<device::mojom::XRDepthUsage> depth_usage_preference,
         std::vector<device::mojom::XRDepthDataFormat>
-            depth_data_format_preference);
+            depth_data_format_preference,
+        std::vector<device::mojom::XRDepthType> depth_type_request);
     ~DepthSensingConfiguration();
 
     DepthSensingConfiguration(const DepthSensingConfiguration& other);

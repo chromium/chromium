@@ -306,14 +306,11 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // Sharing ANGLE's Vulkan queue is not supported on WebView.
   aw_feature_overrides.DisableFeature(::features::kVulkanFromANGLE);
 
-  // Viz has no internal differentiation for WebView. We will roll out these
-  // combined features separately.
-  aw_feature_overrides.DisableFeature(
-      ::features::kDrawImmediatelyWhenInteractive);
-  aw_feature_overrides.DisableFeature(
-      ::features::kAckOnSurfaceActivationWhenInteractive);
-
   // Partitioned :visited links history is not supported on WebView.
   aw_feature_overrides.DisableFeature(
       blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks);
+
+  // Disable draw cutout edge-to-edge on WebView. Safe area insets are not
+  // handled correctly when WebView is drawing edge-to-edge.
+  aw_feature_overrides.DisableFeature(features::kDrawCutoutEdgeToEdge);
 }

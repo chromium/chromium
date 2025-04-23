@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <string.h>
 
+#include <array>
 #include <limits>
 
 #include "base/check_op.h"
@@ -92,19 +93,6 @@ static uint64_t ReadBits(BitReader* reader, int num_bits) {
   return value;
 }
 
-const int kAc3FrameSizeTable[38][3] = {
-  { 128, 138, 192 }, { 128, 140, 192 }, { 160, 174, 240 }, { 160, 176, 240 },
-  { 192, 208, 288 }, { 192, 210, 288 }, { 224, 242, 336 }, { 224, 244, 336 },
-  { 256, 278, 384 }, { 256, 280, 384 }, { 320, 348, 480 }, { 320, 350, 480 },
-  { 384, 416, 576 }, { 384, 418, 576 }, { 448, 486, 672 }, { 448, 488, 672 },
-  { 512, 556, 768 }, { 512, 558, 768 }, { 640, 696, 960 }, { 640, 698, 960 },
-  { 768, 834, 1152 }, { 768, 836, 1152 }, { 896, 974, 1344 },
-  { 896, 976, 1344 }, { 1024, 1114, 1536 }, { 1024, 1116, 1536 },
-  { 1280, 1392, 1920 }, { 1280, 1394, 1920 }, { 1536, 1670, 2304 },
-  { 1536, 1672, 2304 }, { 1792, 1950, 2688 }, { 1792, 1952, 2688 },
-  { 2048, 2228, 3072 }, { 2048, 2230, 3072 }, { 2304, 2506, 3456 },
-  { 2304, 2508, 3456 }, { 2560, 2768, 3840 }, { 2560, 2770, 3840 }
-};
 
 // Checks for an ADTS AAC container.
 static bool CheckAac(const uint8_t* buffer, int buffer_size) {
@@ -152,6 +140,22 @@ static bool CheckAc3(const uint8_t* buffer, int buffer_size) {
   // (http://www.atsc.org/cms/standards/A52-2012(12-17).pdf)
 
   // AC3 container looks like syncinfo | bsi | audblk * 6 | aux | check.
+  static constexpr std::array<std::array<const int, 3>, 38> kAc3FrameSizeTable =
+      {{
+          {128, 138, 192},    {128, 140, 192},    {160, 174, 240},
+          {160, 176, 240},    {192, 208, 288},    {192, 210, 288},
+          {224, 242, 336},    {224, 244, 336},    {256, 278, 384},
+          {256, 280, 384},    {320, 348, 480},    {320, 350, 480},
+          {384, 416, 576},    {384, 418, 576},    {448, 486, 672},
+          {448, 488, 672},    {512, 556, 768},    {512, 558, 768},
+          {640, 696, 960},    {640, 698, 960},    {768, 834, 1152},
+          {768, 836, 1152},   {896, 974, 1344},   {896, 976, 1344},
+          {1024, 1114, 1536}, {1024, 1116, 1536}, {1280, 1392, 1920},
+          {1280, 1394, 1920}, {1536, 1670, 2304}, {1536, 1672, 2304},
+          {1792, 1950, 2688}, {1792, 1952, 2688}, {2048, 2228, 3072},
+          {2048, 2230, 3072}, {2304, 2506, 3456}, {2304, 2508, 3456},
+          {2560, 2768, 3840}, {2560, 2770, 3840},
+      }};
   RCHECK(buffer_size > 6);
 
   int offset = 0;
@@ -278,13 +282,6 @@ static bool CheckCaf(const uint8_t* buffer, int buffer_size) {
   return true;
 }
 
-static bool kSamplingFrequencyValid[16] = { false, true, true, true, false,
-                                            false, true, true, true, false,
-                                            false, true, true, true, false,
-                                            false };
-static bool kExtAudioIdValid[8] = { true, false, true, false, false, false,
-                                    true, false };
-
 // Additional checks for a DTS container.
 static bool CheckDts(const uint8_t* buffer, int buffer_size) {
   // Reference: ETSI TS 102 114 V1.3.1 (2011-08)
@@ -316,6 +313,9 @@ static bool CheckDts(const uint8_t* buffer, int buffer_size) {
 
     // Verify core audio sampling frequency is an allowed value.
     size_t sampling_freq_index = ReadBits(&reader, 4);
+    static constexpr std::array<bool, 16> kSamplingFrequencyValid = {
+        false, true,  true,  true, false, false, true,  true,
+        true,  false, false, true, true,  true,  false, false};
     RCHECK(sampling_freq_index < std::size(kSamplingFrequencyValid));
     RCHECK(kSamplingFrequencyValid[sampling_freq_index]);
 
@@ -330,6 +330,9 @@ static bool CheckDts(const uint8_t* buffer, int buffer_size) {
 
     // Verify extension audio descriptor flag is an allowed value.
     size_t audio_id_index = ReadBits(&reader, 3);
+    static constexpr std::array<bool, 8> kExtAudioIdValid = {
+        true, false, true, false, false, false, true, false};
+
     RCHECK(audio_id_index < std::size(kExtAudioIdValid));
     RCHECK(kExtAudioIdValid[audio_id_index]);
 
@@ -352,7 +355,7 @@ static bool CheckDV(const uint8_t* buffer, int buffer_size) {
 
   int offset = 0;
   int current_sequence_number = -1;
-  int last_block_number[6] = {};
+  std::array<int, 6> last_block_number = {};
   while (offset + 11 < buffer_size) {
     BitReader reader(buffer + offset, 11);
 
@@ -1029,22 +1032,6 @@ enum MPEGLayer {
   LAYER_1
 };
 
-static int kSampleRateTable[4][4] = { { 11025, 12000, 8000, 0 },   // v2.5
-                                      { 0, 0, 0, 0 },              // not used
-                                      { 22050, 24000, 16000, 0 },  // v2
-                                      { 44100, 48000, 32000, 0 }   // v1
-};
-
-static int kBitRateTableV1L1[16] = { 0, 32, 64, 96, 128, 160, 192, 224, 256,
-                                     288, 320, 352, 384, 416, 448, 0 };
-static int kBitRateTableV1L2[16] = { 0, 32, 48, 56, 64, 80, 96, 112, 128, 160,
-                                     192, 224, 256, 320, 384, 0 };
-static int kBitRateTableV1L3[16] = { 0, 32, 40, 48, 56, 64, 80, 96, 112, 128,
-                                     160, 192, 224, 256, 320, 0 };
-static int kBitRateTableV2L1[16] = { 0, 32, 48, 56, 64, 80, 96, 112, 128, 144,
-                                     160, 176, 192, 224, 256, 0 };
-static int kBitRateTableV2L23[16] = { 0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96,
-                                      112, 128, 144, 160, 0 };
 
 static bool ValidMpegAudioFrameHeader(const uint8_t* header,
                                       int header_size,
@@ -1083,20 +1070,41 @@ static bool ValidMpegAudioFrameHeader(const uint8_t* header,
   // For Layer I files = (12 * BitRate / SampleRate + Padding) * 4
   // For others = 144 * BitRate / SampleRate + Padding
   // Unfortunately, BitRate and SampleRate are coded.
+  static constexpr std::array<std::array<int, 4>, 4> kSampleRateTable = {{
+      {11025, 12000, 8000, 0},   // v2.5
+      {0, 0, 0, 0},              // not used
+      {22050, 24000, 16000, 0},  // v2
+      {44100, 48000, 32000, 0}   // v1
+      ,
+  }};
+
   int sampling_rate = kSampleRateTable[version][sampling_index];
   int bitrate;
   if (version == VERSION_1) {
-    if (layer == LAYER_1)
+    if (layer == LAYER_1) {
+      static constexpr std::array<int, 16> kBitRateTableV1L1 = {
+          0,   32,  64,  96,  128, 160, 192, 224,
+          256, 288, 320, 352, 384, 416, 448, 0};
       bitrate = kBitRateTableV1L1[bitrate_index];
-    else if (layer == LAYER_2)
+    } else if (layer == LAYER_2) {
+      static constexpr std::array<int, 16> kBitRateTableV1L2 = {
+          0, 32, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 384, 0};
       bitrate = kBitRateTableV1L2[bitrate_index];
-    else
+    } else {
+      static constexpr std::array<int, 16> kBitRateTableV1L3 = {
+          0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 0};
       bitrate = kBitRateTableV1L3[bitrate_index];
+    }
   } else {
-    if (layer == LAYER_1)
+    if (layer == LAYER_1) {
+      static constexpr std::array<int, 16> kBitRateTableV2L1 = {
+          0, 32, 48, 56, 64, 80, 96, 112, 128, 144, 160, 176, 192, 224, 256, 0};
       bitrate = kBitRateTableV2L1[bitrate_index];
-    else
+    } else {
+      static constexpr std::array<int, 16> kBitRateTableV2L23 = {
+          0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160, 0};
       bitrate = kBitRateTableV2L23[bitrate_index];
+    }
   }
   if (layer == LAYER_1)
     *framesize = ((12000 * bitrate) / sampling_rate + padding) * 4;
@@ -1219,7 +1227,8 @@ static int GetElementId(BitReader* reader) {
   // return -1 as a tag that won't be expected.
   if (reader->bits_available() >= 8) {
     int num_bits_to_read = 0;
-    static int prefix[] = { 0x80, 0x4000, 0x200000, 0x10000000 };
+    static auto prefix =
+        std::to_array<int>({0x80, 0x4000, 0x200000, 0x10000000});
     for (int i = 0; i < 4; ++i) {
       num_bits_to_read += 7;
       if (ReadBits(reader, 1) == 1) {

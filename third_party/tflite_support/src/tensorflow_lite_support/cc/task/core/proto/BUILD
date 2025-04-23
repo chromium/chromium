@@ -1,5 +1,9 @@
 load("//tensorflow_lite_support/cc/port:build_defs.bzl", "support_py_proto_library")
 
+# Placeholder: load java_lite_proto_library
+# Placeholder: load proto_library
+load("//third_party/protobuf/build_defs:kt_jvm_proto_library.bzl", "kt_jvm_lite_proto_library")
+
 package(
     default_visibility = [
         "//visibility:public",
@@ -98,5 +102,10 @@ cc_proto_library(
 
 java_lite_proto_library(
     name = "base_options_java_proto_lite",
+    deps = [":base_options_proto"],
+)
+
+kt_jvm_lite_proto_library(
+    name = "base_options_kt_proto_lite",
     deps = [":base_options_proto"],
 )

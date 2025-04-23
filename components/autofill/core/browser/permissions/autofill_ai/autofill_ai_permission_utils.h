@@ -26,6 +26,8 @@ enum class AutofillAiAction {
   kIphForOptIn,
   // List existing AutofillAI data in settings.
   kListEntityInstancesInSettings,
+  // Log data to the `ModelQualityLogsService`.
+  kLogToMqls,
   // Opt into (and out of) the AutofillAI feature.
   kOptIn,
   // Trigger a run of the server classification model.

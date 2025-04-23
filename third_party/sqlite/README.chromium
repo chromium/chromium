@@ -1,9 +1,9 @@
 Name: sqlite
-URL: https://sqlite.org/
-Version: 3.46.0
+URL: https://github.com/sqlite/sqlite
+Revision: DEPS
+Version: 3.49.1
 CPEPrefix: cpe:/a:sqlite:sqlite:3.45.2
-Included In Release: Yes
-Security Critical: Yes
+Security Critical: yes
 Shipped: yes
 License: blessing
 License File: LICENSE
@@ -13,4 +13,4 @@ https://chromium.googlesource.com/chromium/deps/sqlite. Generally the stock
 upstream release branch is used, but occasionally unreleased upstream bug
 fixes are backported to the release branch.
 
-The official upstream SQLite Git mirror is at https://github.com/sqlite/sqlite.
+The SQLite homepage is https://sqlite.org/.

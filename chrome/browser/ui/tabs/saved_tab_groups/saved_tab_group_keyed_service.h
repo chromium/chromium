@@ -38,7 +38,6 @@ namespace tab_groups {
 
 class SavedTabGroupModel;
 class SavedTabGroupModelListener;
-class SharedTabGroupAccountDataSyncBridge;
 class TabGroupSyncBridgeMediator;
 class TabGroupSyncMetricsLogger;
 class TabGroupSyncServiceProxy;
@@ -203,6 +202,13 @@ class SavedTabGroupKeyedService : public KeyedService,
   // Records the Unsaved TabGroup count and the Tab count per Unsaved TabGroup.
   void RecordTabGroupMetrics();
 
+  // Returns whether a given groups' cache guid doesnt match the current device.
+  bool IsRemoteDevice(const std::optional<std::string>& cache_guid) const;
+
+  // Record metrics similar to TabGroupSyncService when the model is
+  // initialized.
+  void RecordStartupMetrics();
+
   // Helper function to log a tab group event in histograms. This is implemented
   // in the same way as TabGroupSyncServiceImpl.
   void LogEvent(TabGroupEvent event,
@@ -225,10 +231,6 @@ class SavedTabGroupKeyedService : public KeyedService,
 
   // Stores SavedTabGroup data to the disk and to sync if enabled.
   std::unique_ptr<TabGroupSyncBridgeMediator> sync_bridge_mediator_;
-
-  // Sync bridge for shared tab group account data.
-  std::unique_ptr<SharedTabGroupAccountDataSyncBridge>
-      shared_tab_group_account_data_bridge_;
 
   // Helper class for logging metrics.
   std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger_;

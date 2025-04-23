@@ -15,8 +15,6 @@ mojom("gl") {
 
   parser_deps = [ "//components/viz/common:buildflags" ]
 
-  deps = [ "//gpu/ipc/common:gmb_interface" ]
-
   public_deps = [
     "//gpu/ipc/common:interfaces",
     "//gpu/ipc/common:surface_handle",

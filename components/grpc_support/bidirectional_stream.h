@@ -28,13 +28,18 @@ class WrappedIOBuffer;
 namespace grpc_support {
 
 // An adapter to net::BidirectionalStream.
-// Created and configured from any thread. Start, ReadData, WriteData and
-// Destroy can be called on any thread (including network thread), and post
-// calls to corresponding {Start|ReadData|WriteData|Destroy}OnNetworkThread to
-// the network thread. The object is always deleted on network thread. All
-// callbacks into the Delegate are done on the network thread.
-// The app is expected to initiate the next step like ReadData or Destroy.
-// Public methods can be called on any thread.
+//
+// The app is expected to initiate the next step like ReadData.
+//
+// Threading notes:
+// * Created and configured from any thread.
+// * All callbacks into the Delegate are done on the network thread.
+// * Public methods can be called on any thread.  In particular, Start,
+//   ReadData, and WriteData can be called on any thread (including network
+//   thread), and will post calls to the corresponding
+//   {Start|ReadData|WriteData}OnNetworkThread to the network thread.
+// * Owner of `BidirectionalStream` needs to ensure that the object is destroyed
+//   on the network thread.
 class BidirectionalStream : public net::BidirectionalStream::Delegate {
  public:
   class Delegate {
@@ -103,9 +108,6 @@ class BidirectionalStream : public net::BidirectionalStream::Delegate {
   // Cancels the request. The OnCanceled callback is invoked when request is
   // caneceled, and not other callbacks are invoked afterwards..
   void Cancel();
-
-  // Releases all resources for the request and deletes the object itself.
-  void Destroy();
 
  private:
   // States of BidirectionalStream are tracked in |read_state_| and
@@ -199,7 +201,6 @@ class BidirectionalStream : public net::BidirectionalStream::Delegate {
   void FlushOnNetworkThread();
   void SendFlushingWriteData();
   void CancelOnNetworkThread();
-  void DestroyOnNetworkThread();
 
   bool IsOnNetworkThread();
   void PostToNetworkThread(const base::Location& from_here,

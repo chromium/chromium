@@ -18,7 +18,7 @@
 #include "third_party/webrtc/p2p/base/ice_switch_reason.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_switch_proposal.h"
 
-namespace cricket {
+namespace webrtc {
 
 // Pretty prints a connection object for tests.
 inline void PrintTo(const Connection* conn, std::ostream* os) {
@@ -69,10 +69,6 @@ inline void PrintTo(const IceControllerInterface::SwitchResult& result,
   *os << "]";
 }
 
-}  // namespace cricket
-
-namespace webrtc {
-
 // Pretty prints an RTCError for tests.
 inline void PrintTo(const RTCErrorType error, std::ostream* os) {
   *os << ToString(error);
@@ -91,10 +87,10 @@ using ::testing::UnorderedPointwise;
 
 }  // unnamed namespace
 
-// Tests the equality of a blink::IceConnection and a cricket::Connection.
+// Tests the equality of a blink::IceConnection and a webrtc::Connection.
 MATCHER_P(ConnectionEq,
           /* const blink::IceConnection& arg, */
-          /* const cricket::Connection* */ conn,
+          /* const webrtc::Connection* */ conn,
           base::StrCat({negation ? "doesn't match " : "matches ",
                         PrintToString(conn)})) {
   return conn != nullptr && arg.id() == conn->id() &&
@@ -111,10 +107,10 @@ MATCHER_P(ConnectionEq,
 }
 
 // Tests the equality of two optionals containing a blink::IceConnection and a
-// cricket::Connection each.
+// webrtc::Connection each.
 MATCHER_P(ConnectionOptionalsEq,
           /* const std::optional<blink::IceConnection> arg, */
-          /* const std::optional<cricket::Connection*> */ conn,
+          /* const std::optional<webrtc::Connection*> */ conn,
           "") {
   if (arg.has_value()) {
     return ExplainMatchResult(ConnectionEq(conn.value_or(nullptr)), arg.value(),
@@ -123,10 +119,10 @@ MATCHER_P(ConnectionOptionalsEq,
   return !conn.has_value() || conn.value() == nullptr;
 }
 
-// Helper to test the equality of a (blink::IceConnection, cricket::Connection)
+// Helper to test the equality of a (blink::IceConnection, webrtc::Connection)
 // tuple using ConnectionEq for use with container matchers.
 MATCHER(CricketBlinkConnectionTupleEq,
-        /* std::tuple<const blink::IceConnection&, const cricket::Connection*>
+        /* std::tuple<const blink::IceConnection&, const webrtc::Connection*>
            arg, */
         "") {
   return ExplainMatchResult(ConnectionEq(std::get<1>(arg)), std::get<0>(arg),
@@ -134,13 +130,13 @@ MATCHER(CricketBlinkConnectionTupleEq,
 }
 
 // Tests the equality of two sequences containing blink::IceConnection and
-// cricket::Connection objects each, ignoring null cricket::Connections and
+// webrtc::Connection objects each, ignoring null webrtc::Connections and
 // ordering.
 MATCHER_P(ConnectionSequenceEq,
           /* std::vector<blink::IceConnection> arg, */
-          /* std::vector<const cricket::Connection*> */ connections,
+          /* std::vector<const webrtc::Connection*> */ connections,
           "") {
-  std::vector<const cricket::Connection*> non_null_connections;
+  std::vector<const webrtc::Connection*> non_null_connections;
   std::ranges::copy_if(connections, std::back_inserter(non_null_connections),
                        [](auto conn) { return conn != nullptr; });
   return ExplainMatchResult(
@@ -148,10 +144,10 @@ MATCHER_P(ConnectionSequenceEq,
       arg, result_listener);
 }
 
-// Tests the equality of a blink::IcePingProposal and a cricket::PingResult.
+// Tests the equality of a blink::IcePingProposal and a webrtc::PingResult.
 MATCHER_P2(PingProposalEq,
            /* const blink::IcePingProposal& arg, */
-           /* const cricket::IceControllerInterface::PingResult& */ result,
+           /* const webrtc::IceControllerInterface::PingResult& */ result,
            /* bool */ reply_expected,
            base::StrCat({negation ? "doesn't match " : "matches ",
                          PrintToString(result)})) {
@@ -167,21 +163,21 @@ MATCHER_P2(PingProposalEq,
 }
 
 // Tests the equality of a blink::IceRecheckEvent and a
-// cricket::IceRecheckEvent.
+// webrtc::IceRecheckEvent.
 MATCHER_P(RecheckEventEq,
           /* const blink::IceRecheckEvent& arg, */
-          /* const cricket::IceRecheckEvent& */ event,
+          /* const webrtc::IceRecheckEvent& */ event,
           base::StrCat({negation ? "doesn't match " : "matches ",
                         PrintToString(event)})) {
   return blink::ConvertFromWebrtcIceSwitchReason(event.reason) == arg.reason &&
          event.recheck_delay_ms == arg.recheck_delay_ms;
 }
 
-// Tests the equality of a blink::IceSwitchProposal and a cricket::SwitchResult.
+// Tests the equality of a blink::IceSwitchProposal and a webrtc::SwitchResult.
 MATCHER_P3(SwitchProposalEq,
            /* const blink::IceSwitchProposal& arg, */
-           /* const cricket::IceSwitchReason */ reason,
-           /* const cricket::IceControllerInterface::SwitchResult& */ result,
+           /* const webrtc::IceSwitchReason */ reason,
+           /* const webrtc::IceControllerInterface::SwitchResult& */ result,
            /* bool */ reply_expected,
            base::StrCat({negation ? "doesn't match " : "matches ",
                          PrintToString(result)})) {
@@ -210,10 +206,10 @@ MATCHER_P3(SwitchProposalEq,
 }
 
 // Tests the equality of a blink::IceOruneProposal and a collection of
-// cricket::Connections selected for pruning.
+// webrtc::Connections selected for pruning.
 MATCHER_P2(PruneProposalEq,
            /* const blink::IcePruneProposal& arg, */
-           /* std::vector<const cricket::Connection*> */ connections,
+           /* std::vector<const webrtc::Connection*> */ connections,
            /* bool */ reply_expected,
            base::StrCat({negation ? "doesn't match " : "matches ",
                          PrintToString(connections)})) {

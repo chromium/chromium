@@ -87,6 +87,7 @@ public class PasswordManagerUtilBridge {
      *
      * @return true if both Google Play Services and Google Play Store are installed.
      */
+    @CalledByNative
     public static boolean isGooglePlayServicesUpdatable() {
         return PackageUtils.isPackageInstalled("com.google.android.gms")
                 && PasswordManagerUtilBridge.isPlayStoreAppPresent();

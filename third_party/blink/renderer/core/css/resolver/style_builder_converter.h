@@ -109,7 +109,6 @@ class StyleBuilderConverterBase {
       const CSSToLengthConversionData&,
       FontDescription::Size parent_size,
       const Document*);
-  static DynamicRangeLimit ConvertDynamicRangeLimit(const CSSValue&);
   static FontSizeAdjust ConvertFontSizeAdjust(const StyleResolverState&,
                                               const CSSValue&);
   static scoped_refptr<FontPalette> ConvertFontPalette(const CSSLengthResolver&,
@@ -130,7 +129,7 @@ class StyleBuilderConverter {
   static LengthBox ConvertClip(StyleResolverState&, const CSSValue&);
   static ClipPathOperation* ConvertClipPath(StyleResolverState&,
                                             const CSSValue&);
-  static DynamicRangeLimit ConvertDynamicRangeLimit(StyleResolverState&,
+  static DynamicRangeLimit ConvertDynamicRangeLimit(const StyleResolverState&,
                                                     const CSSValue&);
   static StyleSVGResource* ConvertElementReference(StyleResolverState&,
                                                    const CSSValue&,
@@ -207,8 +206,8 @@ class StyleBuilderConverter {
                                             const CSSValue&);
   static NGGridTrackList ConvertGridTrackSizeList(StyleResolverState&,
                                                   const CSSValue&);
-  static std::optional<Length> ConvertMasonrySlack(const StyleResolverState&,
-                                                   const CSSValue&);
+  static std::optional<Length> ConvertItemTolerance(const StyleResolverState&,
+                                                    const CSSValue&);
   static StyleHyphenateLimitChars ConvertHyphenateLimitChars(
       StyleResolverState&,
       const CSSValue&);

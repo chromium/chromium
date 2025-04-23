@@ -4,10 +4,14 @@
 
 #include "chrome/browser/ui/webui/management/management_ui_handler_chromeos.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/check_is_test.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
+#include "chrome/browser/ash/floating_sso/floating_sso_service.h"
+#include "chrome/browser/ash/floating_sso/floating_sso_service_factory.h"
+#include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/net/secure_dns_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -38,6 +42,7 @@
 #include "chrome/browser/ui/webui/management/management_ui_handler_chromeos.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/proxy/proxy_config_handler.h"
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
@@ -418,6 +423,31 @@ bool IsCloudDestination(policy::local_user_files::FileSaveDestination dest) {
          dest == policy::local_user_files::FileSaveDestination::kOneDrive;
 }
 
+bool IsActiveProfile(const Profile* profile) {
+  const auto* active_user = user_manager::UserManager::Get()->GetActiveUser();
+  if (!active_user) {
+    return false;
+  }
+  auto* active_browser_context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(active_user);
+  if (!active_browser_context) {
+    return false;
+  }
+  return profile == Profile::FromBrowserContext(active_browser_context);
+}
+
+bool IsFloatingSsoEnabled(Profile* profile) {
+  if (!ash::features::IsFloatingSsoAllowed()) {
+    return false;
+  }
+  ash::floating_sso::FloatingSsoService* floating_sso_service =
+      ash::floating_sso::FloatingSsoServiceFactory::GetForProfile(profile);
+  if (!floating_sso_service) {
+    return false;
+  }
+  return floating_sso_service->IsFloatingSsoEnabled();
+}
+
 }  // namespace
 
 ManagementUIHandlerChromeOS::ManagementUIHandlerChromeOS(Profile* profile)
@@ -611,6 +641,16 @@ void ManagementUIHandlerChromeOS::AddMonitoredNetworkPrivacyDisclosure(
                 showMonitoredNetworkDisclosure);
 }
 
+void ManagementUIHandlerChromeOS::AddDeskSyncNotice(
+    Profile* profile,
+    base::Value::Dict* response) {
+  const bool are_windows_synced =
+      IsActiveProfile(profile) &&
+      ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled();
+  response->Set("showWindowsNoticeForDeskSync", are_windows_synced);
+  response->Set("showCookiesNoticeForDeskSync", IsFloatingSsoEnabled(profile));
+}
+
 void ManagementUIHandlerChromeOS::RegisterPrefChange(
     PrefChangeRegistrar& pref_registrar) {
   ManagementUIHandler::RegisterPrefChange(pref_registrar);
@@ -630,6 +670,7 @@ base::Value::Dict ManagementUIHandlerChromeOS::GetContextualManagedData(
   base::Value::Dict response;
   AddUpdateRequiredEolInfo(&response);
   AddMonitoredNetworkPrivacyDisclosure(&response);
+  AddDeskSyncNotice(profile, &response);
 
   if (enterprise_manager.empty()) {
     response.Set(

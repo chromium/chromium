@@ -31,6 +31,7 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -1299,6 +1300,14 @@ bool Browser::IsTabModalPopup() const {
   return is_tab_modal_popup_;
 }
 
+bool Browser::CanShowCallToAction() const {
+  return !showing_call_to_action_;
+}
+
+std::unique_ptr<ScopedWindowCallToAction> Browser::ShowCallToAction() {
+  return std::make_unique<ScopedWindowCallToActionImpl>(this);
+}
+
 void Browser::DidBecomeActive() {
   if (!is_active_) {
     is_active_ = true;
@@ -2270,6 +2279,10 @@ bool Browser::ShouldFocusLocationBarByDefault(WebContents* source) {
          url.host_piece() == chrome::kChromeUINewTabHost) ||
         (virtual_url.SchemeIs(content::kChromeUIScheme) &&
          virtual_url.host_piece() == chrome::kChromeUINewTabHost)) {
+      return true;
+    }
+
+    if (url.spec() == chrome::kChromeUISplitViewNewTabPageURL) {
       return true;
     }
   }
@@ -3830,4 +3843,15 @@ BackgroundContents* Browser::CreateBackgroundContents(
       std::string());  // No extra headers.
 
   return contents;
+}
+
+Browser::ScopedWindowCallToActionImpl::ScopedWindowCallToActionImpl(
+    Browser* browser)
+    : browser_(browser->weak_factory_.GetWeakPtr()) {
+  DCHECK(!browser_->showing_call_to_action_);
+  browser_->showing_call_to_action_ = true;
+}
+
+Browser::ScopedWindowCallToActionImpl::~ScopedWindowCallToActionImpl() {
+  browser_->showing_call_to_action_ = false;
 }

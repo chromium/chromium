@@ -53,9 +53,8 @@ class MockFetchContext : public FetchContext {
       const KURL&,
       const ResourceLoaderOptions&,
       ReportingDisposition,
-      base::optional_ref<const ResourceRequest::RedirectInfo> redirect_info,
-      FetchParameters::HasPreloadedResponseCandidate
-          has_preloaded_response_candidate) const override {
+      base::optional_ref<const ResourceRequest::RedirectInfo> redirect_info)
+      const override {
     return std::nullopt;
   }
   std::optional<ResourceRequestBlockedReason>

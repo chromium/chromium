@@ -158,8 +158,7 @@ void ExtensionInfoGenerator::FillExtensionInfo(
   // Dependent extensions.
   if (extension.is_shared_module()) {
     std::unique_ptr<ExtensionSet> dependent_extensions =
-        extension_system_->extension_service()
-            ->shared_module_service()
+        SharedModuleService::Get(browser_context_)
             ->GetDependentExtensions(&extension);
     for (const scoped_refptr<const Extension>& dependent :
          *dependent_extensions) {

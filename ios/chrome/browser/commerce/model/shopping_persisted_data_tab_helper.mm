@@ -278,5 +278,3 @@ void ShoppingPersistedDataTabHelper::ParseProto(
 void ShoppingPersistedDataTabHelper::ResetPriceDrop() {
   price_drop_ = nullptr;
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(ShoppingPersistedDataTabHelper)

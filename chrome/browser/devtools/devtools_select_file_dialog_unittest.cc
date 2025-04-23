@@ -7,7 +7,6 @@
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -26,8 +25,6 @@ class DevToolsSelectFileDialogTest : public content::RenderViewHostTestHarness {
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
-    testing_local_state_.Get()->SetBoolean(prefs::kAllowFileSelectionDialogs,
-                                           true);
   }
 
   void TearDown() override {

@@ -66,6 +66,8 @@ class WidgetResizeWaiter : public views::WidgetObserver {
   base::RunLoop run_loop_;
 };
 
+}  // namespace
+
 class WebDialogBrowserTest : public InProcessBrowserTest {
  public:
   WebDialogBrowserTest() = default;
@@ -102,7 +104,7 @@ void WebDialogBrowserTest::SetUpOnMainThread() {
   auto view = std::make_unique<views::WebDialogView>(
       browser()->profile(), delegate,
       std::make_unique<ChromeWebContentsHandler>());
-  view->SetOwnedByWidget(true);
+  view->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
   gfx::NativeView parent_view =
       browser()->tab_strip_model()->GetActiveWebContents()->GetNativeView();
   view_ = view.get();
@@ -122,8 +124,6 @@ void WebDialogBrowserTest::SimulateEscapeKey() {
         false, false));
   }
 }
-
-}  // namespace
 
 // Windows has some issues resizing windows. An off by one problem, and a
 // minimum size that seems too big. See http://crbug.com/52602.

@@ -35,6 +35,10 @@ extern const base::FeatureParam<int> kNudgeCapCountPerDomain;
 // before the next nudge can be shown.
 extern const base::FeatureParam<int> kMinPageCountBetweenNudges;
 
+// The minimum time between two consecutive nudges. Prevents excessive nudges
+// during a short burst of navigations.
+extern const base::FeatureParam<base::TimeDelta> kMinTimeBetweenNudges;
+
 // Limit on how many recently visited domains should be kept track of. This is
 // used to implement nudge constraints per-domain per 24 hour period.
 extern const base::FeatureParam<int> kVisitedDomainsLimit;

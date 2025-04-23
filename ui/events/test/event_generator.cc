@@ -341,19 +341,42 @@ void EventGenerator::PressTouchId(
   Dispatch(&touchev);
 }
 
-void EventGenerator::MoveTouch(const gfx::Point& point) {
-  MoveTouchId(point, 0);
+void EventGenerator::MoveTouch(const gfx::Point& point, int count) {
+  MoveTouchId(point, 0, count);
 }
 
-void EventGenerator::MoveTouchId(const gfx::Point& point, int touch_id) {
-  SetCurrentScreenLocation(point);
-  ui::TouchEvent touchev = CreateTestTouchEvent(
-      ui::EventType::kTouchMoved, GetLocationInCurrentRoot(), touch_id, flags_,
-      ui::EventTimeForNow());
-  Dispatch(&touchev);
+void EventGenerator::MoveTouchId(const gfx::Point& point,
+                                 int touch_id,
+                                 int count) {
+  // Tracks the location of last `SetCurrentScreenLocation` in the loop.
+  gfx::Point expected_current_location = current_screen_location_;
 
-  if (!grab_)
-    UpdateCurrentDispatcher(point);
+  const gfx::Point start_point = current_screen_location_;
+  const gfx::Vector2dF diff(point - start_point);
+  for (float i = 1; i <= count; i++) {
+    gfx::Vector2dF step(diff);
+    step.Scale(i / count);
+    gfx::Point move_point = start_point + gfx::ToRoundedVector2d(step);
+    if (!grab_) {
+      UpdateCurrentDispatcher(move_point);
+    }
+
+    // Changing `current_screen_location_` in nested `MoveTouchId` under
+    // `Dispatch` is not supported.
+    CHECK_EQ(expected_current_location, current_screen_location_);
+
+    // Update current location before dispatching because some tests (e.g.
+    // apps grid view dragging related) calculate the next touch position
+    // during the dispatch.
+    SetCurrentScreenLocation(move_point);
+    expected_current_location = move_point;
+
+    delegate()->ConvertPointToTarget(current_target_, &move_point);
+    ui::TouchEvent touchev =
+        CreateTestTouchEvent(ui::EventType::kTouchMoved, move_point, touch_id,
+                             flags_, ui::EventTimeForNow());
+    Dispatch(&touchev);
+  }
 }
 
 void EventGenerator::ReleaseTouch() {

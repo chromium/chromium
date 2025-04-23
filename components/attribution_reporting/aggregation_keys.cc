@@ -51,8 +51,9 @@ void RecordAggregatableKeysPerSource(base::HistogramBase::Sample32 count) {
 
 // static
 std::optional<AggregationKeys> AggregationKeys::FromKeys(Keys keys) {
-  if (!IsValid(keys))
+  if (!IsValid(keys)) {
     return std::nullopt;
+  }
 
   return AggregationKeys(std::move(keys));
 }
@@ -60,13 +61,15 @@ std::optional<AggregationKeys> AggregationKeys::FromKeys(Keys keys) {
 // static
 base::expected<AggregationKeys, SourceRegistrationError>
 AggregationKeys::FromJSON(const base::Value* value) {
-  if (!value)
+  if (!value) {
     return AggregationKeys();
+  }
 
   const base::Value::Dict* dict = value->GetIfDict();
-  if (!dict)
+  if (!dict) {
     return base::unexpected(
         SourceRegistrationError::kAggregationKeysDictInvalid);
+  }
 
   const size_t num_keys = dict->size();
 

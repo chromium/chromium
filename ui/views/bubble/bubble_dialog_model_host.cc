@@ -851,6 +851,7 @@ BubbleDialogModelHost::BubbleDialogModelHost(
               base::BindRepeating(&BubbleDialogModelHost::OnContentsViewChanged,
                                   base::Unretained(this)))),
       theme_observer_(this, contents_view_) {
+  SetOwnedByWidget(OwnedByWidgetPassKey());
   model_->set_host(DialogModelHost::GetPassKey(), this);
 
   // Dialog callbacks can safely refer to |model_|, they can't be called after
@@ -1141,7 +1142,7 @@ void BubbleDialogModelHost::UpdateWindowIcon(
       model_->dark_mode_icon(DialogModelHost::GetPassKey());
   if (!dark_mode_icon.IsEmpty() &&
       color_utils::IsDark(
-          background_color().ConvertToSkColor(color_provider))) {
+          background_color().ResolveToSkColor(color_provider))) {
     SetIcon(dark_mode_icon);
     return;
   }

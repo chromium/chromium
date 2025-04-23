@@ -6,6 +6,7 @@
 #define COMPONENTS_SUBRESOURCE_FILTER_CORE_COMMON_TEST_RULESET_UTILS_H_
 
 #include <stdint.h>
+
 #include <string>
 #include <string_view>
 #include <vector>

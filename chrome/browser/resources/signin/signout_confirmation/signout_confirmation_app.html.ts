@@ -8,11 +8,17 @@ import type {SignoutConfirmationAppElement} from './signout_confirmation_app.js'
 
 export function getHtml(this: SignoutConfirmationAppElement) {
   // clang-format off
-  return html`
+  return html`<!--_html_template_start_-->
 <div id="signoutConfirmationDialog">
   <div id="header">
     <h1 id="title">${this.data_.dialogTitle}</h1>
-    <div id="subtitle">${this.data_.dialogSubtitle}</div>
+    <div id="subtitle">
+      <p>${this.data_.dialogSubtitle}</p>
+      <p id="extensionsAdditionalText"
+          ?hidden="${!this.showExtensionsAdditionalText_()}">
+        $i18n{unsyncedDataWithAccountExtensions}
+      </p>
+    </div>
   </div>
   ${this.showExtensionsSection_() ? html`
     <extensions-section .accountExtensions="${this.data_.accountExtensions}">
@@ -28,6 +34,7 @@ export function getHtml(this: SignoutConfirmationAppElement) {
       ${this.data_.cancelButtonLabel}
     </cr-button>
   </div>
-</div>`;
+</div>
+<!--_html_template_end_-->`;
   // clang-format on
 }

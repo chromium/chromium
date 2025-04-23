@@ -509,8 +509,10 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
     CHECK(!prefetch_type.IsRendererInitiated());
 
     auto prefetch_container = std::make_unique<PrefetchContainer>(
-        *web_contents(), prefetch_url, prefetch_type, referrer,
-        std::move(referring_origin), /*no_vary_search_hint=*/std::nullopt,
+        *web_contents(), prefetch_url, prefetch_type,
+        test::kPreloadingEmbedderHistgramSuffixForTesting, referrer,
+        std::move(referring_origin),
+        /*no_vary_search_hint=*/std::nullopt,
         PreloadPipelineInfo::Create(
             /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
         /*attempt=*/nullptr);
@@ -526,7 +528,8 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
       std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
       base::TimeDelta ttl_in_sec = base::Seconds(/* 10 minutes */ 60 * 10)) {
     return browser_context()->StartBrowserPrefetchRequest(
-        url, true, no_vary_search_data, additional_headers,
+        url, test::kPreloadingEmbedderHistgramSuffixForTesting, true,
+        no_vary_search_data, additional_headers,
         std::move(request_status_listener), ttl_in_sec,
         /*should_append_variations_header=*/true);
   }
@@ -8124,7 +8127,7 @@ TEST_P(PrefetchServiceTest,
       "NoEmbedderSuffix",
       0, 1);
   histogram_tester.ExpectUniqueSample(
-      "Prefetch.PrefetchContainer.AddedToHeaderDeterminedSuccesfully."
+      "Prefetch.PrefetchContainer.AddedToHeaderDeterminedSuccessfully."
       "Embedder.NoEmbedderSuffix",
       kHeaderLatency, 1);
   histogram_tester.ExpectUniqueSample(

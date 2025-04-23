@@ -43,7 +43,7 @@ build_webui("build") {
     "policy/cr_tooltip_icon.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "cr_auto_img/cr_auto_img.ts",
     "cr_container_shadow_mixin.ts",
     "cr_lazy_render/cr_lazy_render.ts",

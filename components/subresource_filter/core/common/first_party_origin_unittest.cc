@@ -70,7 +70,8 @@ TEST(FirstPartyOriginTest, MixedFirstAndThirdParties) {
 
 TEST(FirstPartyOriginTest, EmptyHostUrls) {
   const char* const kUrls[] = {
-      "data:text/plain,example.com", "data:text/plain,another.example.com",
+      "data:text/plain,example.com",
+      "data:text/plain,another.example.com",
       "data:text/plain;base64,ABACABA",
   };
 

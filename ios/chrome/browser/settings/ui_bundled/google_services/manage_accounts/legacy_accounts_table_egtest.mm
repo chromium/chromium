@@ -75,6 +75,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
   config.features_disabled.push_back(kIdentityDiscAccountMenu);
+  config.features_disabled.push_back(kSeparateProfilesForManagedAccounts);
 
   return config;
 }

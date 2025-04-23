@@ -62,7 +62,7 @@ public class TabThumbnailViewRenderTest {
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID)
-                    .setRevision(6)
+                    .setRevision(7)
                     .build();
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

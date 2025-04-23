@@ -1332,9 +1332,11 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerOnceOnly) {
 
   AnimationTrigger::RangeBoundary* normal =
       MakeGarbageCollected<AnimationTrigger::RangeBoundary>("normal");
+  AnimationTrigger::RangeBoundary* auto_offset =
+      MakeGarbageCollected<AnimationTrigger::RangeBoundary>("auto");
   TestAnimationTrigger(trigger, V8AnimationTriggerType(Type::Enum::kOnce),
                        /* expect_view_timeline */ std::nullopt, normal, normal,
-                       normal, normal);
+                       auto_offset, auto_offset);
 }
 
 TEST_P(CSSAnimationsTriggerTest, AnimationTriggerViewOnly) {
@@ -1376,9 +1378,11 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerViewOnly) {
   AnimationTrigger* trigger = animation->trigger();
   AnimationTrigger::RangeBoundary* normal =
       MakeGarbageCollected<AnimationTrigger::RangeBoundary>("normal");
+  AnimationTrigger::RangeBoundary* auto_offset =
+      MakeGarbageCollected<AnimationTrigger::RangeBoundary>("auto");
   TestAnimationTrigger(trigger, V8AnimationTriggerType(Type::Enum::kOnce),
-                       /* expect_view_timeline */ true, normal, normal, normal,
-                       normal);
+                       /* expect_view_timeline */ true, normal, normal,
+                       auto_offset, auto_offset);
 }
 
 TEST_P(CSSAnimationsTriggerTest, AnimationTriggerScrollOnce) {
@@ -1424,12 +1428,12 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerScrollOnce) {
       MakeRangeOffsetBoundary(std::nullopt, 25);
   AnimationTrigger::RangeBoundary* pct75 =
       MakeRangeOffsetBoundary(std::nullopt, 75);
-  AnimationTrigger::RangeBoundary* normal =
-      MakeGarbageCollected<AnimationTrigger::RangeBoundary>("normal");
+  AnimationTrigger::RangeBoundary* auto_offset =
+      MakeGarbageCollected<AnimationTrigger::RangeBoundary>("auto");
 
   TestAnimationTrigger(trigger, V8AnimationTriggerType(Type::Enum::kOnce),
-                       /* expect_view_timeline */ false, pct25, pct75, normal,
-                       normal);
+                       /* expect_view_timeline */ false, pct25, pct75,
+                       auto_offset, auto_offset);
 }
 
 TEST_P(CSSAnimationsTriggerTest, AnimationTriggerViewAlternate) {
@@ -1476,12 +1480,12 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerViewAlternate) {
       MakeRangeOffsetBoundary(V8TimelineRange::Enum::kContain, 10);
   AnimationTrigger::RangeBoundary* contain90 =
       MakeRangeOffsetBoundary(V8TimelineRange::Enum::kContain, 90);
-  AnimationTrigger::RangeBoundary* normal =
-      MakeGarbageCollected<AnimationTrigger::RangeBoundary>("normal");
+  AnimationTrigger::RangeBoundary* auto_offset =
+      MakeGarbageCollected<AnimationTrigger::RangeBoundary>("auto");
 
   TestAnimationTrigger(trigger, V8AnimationTriggerType(Type::Enum::kAlternate),
                        /* expect_view_timeline */ true, contain10, contain90,
-                       normal, normal);
+                       auto_offset, auto_offset);
 }
 
 TEST_P(CSSAnimationsTriggerTest, AnimationTriggerViewRepeat) {

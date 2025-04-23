@@ -46,9 +46,10 @@ class ArrowBubbleDrawable extends Drawable implements Drawable.Callback {
 
     /**
      * Constructs an {@link ArrowBubbleDrawable} instance.
-     * @param context  Context to draw resources from.
+     *
+     * @param context Context to draw resources from.
      * @param isRoundBubble Whether the bubble should be round.
-     **/
+     */
     public ArrowBubbleDrawable(Context context, boolean isRoundBubble) {
         mContext = context;
         mIsRoundBubble = isRoundBubble;

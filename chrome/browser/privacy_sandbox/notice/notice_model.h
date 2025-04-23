@@ -5,16 +5,12 @@
 #ifndef CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_MODEL_H_
 #define CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_MODEL_H_
 
-#include <absl/container/flat_hash_map.h>
-
 #include "base/memory/raw_ptr.h"
-#include "components/privacy_sandbox/privacy_sandbox_notice.mojom.h"
-#include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
-
-class PrefService;
+#include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
 
 namespace privacy_sandbox {
 class NoticeApi;
+
 // Types of notices that can be shown.
 enum class NoticeType {
   kNotice,   // This type of notice requires a user to have acknowledged it.
@@ -56,15 +52,14 @@ class Notice {
   Notice* SetPreReqApis(const std::vector<NoticeApi*>& apis);
   Notice* SetFeature(const base::Feature* feature);
 
-  // Return true if the notice had a fulfillment action taken on it.
-  bool WasFulfilled(PrivacySandboxNoticeStorage* notice_storage,
-                    PrefService* pref_service);
+  bool WasFulfilled();
 
   // Accessors.
   const std::vector<raw_ptr<NoticeApi>>& GetTargetApis();
   const std::vector<raw_ptr<NoticeApi>>& GetPreReqApis();
   NoticeId GetNoticeId();
-  const base::Feature* GetFeature();
+  const base::Feature* GetFeature() const;
+  const char* GetStorageName() const;
 
   // Gets the type of notice.
   virtual NoticeType GetNoticeType();
@@ -73,22 +68,22 @@ class Notice {
   // performed on this notice.
   void UpdateTargetApiResults(notice::mojom::PrivacySandboxNoticeEvent event);
 
-  // Determines if an `event` is one of the FulfillEvents, both enabled or
-  // disable events are considered.
-  bool IsFulfillmentEvent(notice::mojom::PrivacySandboxNoticeEvent event);
-
   // TODO(crbug.com/392612108) NoticeViews should also implement a function to
   // guard against a notice showing in certain conditions, even if it is the
   // only one that fulfills a certain Api. Example of this: Measurement Only
   // notice showing for the wrong group of users: Over 18 for example.
 
  private:
-  // TODO(crbug.com/392612108): Add a feature for every notice here, we will
-  // use the associated string/name for pref setting.
-  virtual const std::set<notice::mojom::PrivacySandboxNoticeEvent>&
-  EnablementFulfillEvents();
-  virtual const std::set<notice::mojom::PrivacySandboxNoticeEvent>&
-  DisablementFulfillEvents();
+  // Evaluates the outcome of a notice event.
+  // Return value semantics:
+  // - `has_value()` is true if the event is a fulfillment event.
+  // - `value()` is `true` for positive actions (Ack/OptIn) and `false` for
+  // negative (OptOut).
+  // - `std::nullopt` is returned for non-fulfillment events.
+  // Asserts (NOTREACHED) if the event is unexpected for the Notice.
+  virtual std::optional<bool> EvaluateNoticeEvent(
+      notice::mojom::PrivacySandboxNoticeEvent event);
+
   NoticeId notice_id_;
   std::vector<raw_ptr<NoticeApi>> target_apis_;
   std::vector<raw_ptr<NoticeApi>> pre_req_apis_;
@@ -101,10 +96,8 @@ class Consent : public Notice {
   NoticeType GetNoticeType() override;
 
  private:
-  const std::set<notice::mojom::PrivacySandboxNoticeEvent>&
-  EnablementFulfillEvents() override;
-  const std::set<notice::mojom::PrivacySandboxNoticeEvent>&
-  DisablementFulfillEvents() override;
+  std::optional<bool> EvaluateNoticeEvent(
+      notice::mojom::PrivacySandboxNoticeEvent event) override;
 };
 
 class NoticeApi {
@@ -132,8 +125,7 @@ class NoticeApi {
   void CanBeFulfilledBy(Notice* notice);
 
   // Returns whether the api was fulfilled.
-  bool IsFulfilled(PrivacySandboxNoticeStorage* notice_storage,
-                   PrefService* pref_service);
+  bool IsFulfilled();
 
   // Callbacks.
   NoticeApi* SetEligibilityCallback(
@@ -144,37 +136,6 @@ class NoticeApi {
   std::vector<Notice*> linked_notices_;
   base::RepeatingCallback<EligibilityLevel()> eligibility_callback_;
   base::OnceCallback<void(bool)> result_callback_;
-};
-
-using NoticeMap = absl::flat_hash_map<NoticeId, std::unique_ptr<Notice>>;
-class NoticeCatalog {
- public:
-  NoticeCatalog();
-  ~NoticeCatalog();
-
-  // Accessors.
-  const std::vector<std::unique_ptr<NoticeApi>>& GetNoticeApis();
-  const NoticeMap& GetNoticeMap();
-
-  // Registers a new notice api.
-  NoticeApi* RegisterAndRetrieveNewApi();
-
-  // Registers a new notice.
-  Notice* RegisterAndRetrieveNewNotice(
-      std::unique_ptr<Notice> (*notice_creator)(NoticeId),
-      NoticeId notice_id);
-
-  // Registers a group of notices with the same requirements to be shown (for
-  // ex. Topics can have TopicsClankBrApp, TopicsDesktop and TopicsClankCCT)
-  void RegisterNoticeGroup(
-      std::unique_ptr<Notice> (*notice_creator)(NoticeId),
-      std::vector<std::pair<NoticeId, const base::Feature*>>&& notice_ids,
-      std::vector<NoticeApi*>&& target_apis,
-      std::vector<NoticeApi*>&& pre_req_apis = {});
-
- private:
-  std::vector<std::unique_ptr<NoticeApi>> apis_;
-  NoticeMap notices_;
 };
 
 }  // namespace privacy_sandbox

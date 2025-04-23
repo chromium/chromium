@@ -91,6 +91,7 @@ public class QuickDeleteTabsFilterTest {
         doReturn(mTabModelMock).when(mTabGroupModelFilterMock).getTabModel();
         when(mTabModelMock.getTabRemover()).thenReturn(mTabRemoverMock);
         when(mTabModelMock.getComprehensiveModel()).thenReturn(mComprehensiveModel);
+        when(mTabModelMock.getProfile()).thenReturn(mProfileMock);
         mQuickDeleteTabsFilter = new QuickDeleteTabsFilter(mTabGroupModelFilterMock);
     }
 

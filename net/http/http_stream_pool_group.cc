@@ -138,7 +138,7 @@ bool HttpStreamPool::Group::CanStartJob(Job* job) {
 
 void HttpStreamPool::Group::OnJobComplete(Job* job) {
   paused_jobs_.erase(job);
-  notified_paused_jobs_.erase(job);
+  resumed_jobs_.erase(job);
 
   if (attempt_manager_) {
     attempt_manager_->OnJobComplete(job);
@@ -288,7 +288,7 @@ bool HttpStreamPool::Group::CloseOneIdleStreamSocket() {
 }
 
 size_t HttpStreamPool::Group::ConnectingStreamSocketCount() const {
-  return attempt_manager_ ? attempt_manager_->InFlightAttemptCount() : 0;
+  return attempt_manager_ ? attempt_manager_->TcpBasedAttemptCount() : 0;
 }
 
 size_t HttpStreamPool::Group::ActiveStreamSocketCount() const {
@@ -321,11 +321,9 @@ void HttpStreamPool::Group::FlushWithError(
 
 void HttpStreamPool::Group::Refresh(std::string_view net_log_close_reason_utf8,
                                     StreamSocketCloseReason cancel_reason) {
-  // TODO(crbug.com/381742472): Should we do anything for paused
-  // jobs/preconnects?
   ++generation_;
   if (attempt_manager_) {
-    attempt_manager_->CancelInFlightAttempts(cancel_reason);
+    attempt_manager_->CancelTcpBasedAttempts(cancel_reason);
   }
   CleanupIdleStreamSockets(CleanupMode::kForce, net_log_close_reason_utf8);
 }
@@ -339,19 +337,23 @@ void HttpStreamPool::Group::CancelJobs(int error) {
   if (!paused_jobs_.empty()) {
     CancelPausedJob(error);
   }
-  // TODO(crbug.com/381742472): Need to cancel paused preconnects when we
-  // support paused preconnects.
   if (attempt_manager_) {
     attempt_manager_->CancelJobs(error);
   }
 }
 
+void HttpStreamPool::Group::EnsureAttemptManager() {
+  if (attempt_manager_) {
+    return;
+  }
+  attempt_manager_ =
+      std::make_unique<AttemptManager>(this, http_network_session()->net_log());
+}
+
 void HttpStreamPool::Group::OnAttemptManagerComplete() {
   CHECK(attempt_manager_);
 
-  // TODO(crbug.com/381742472): Need to handle paused preconnects when we
-  // support paused preconnects.
-  const bool should_start_new_attempt_manager =
+  const bool should_resume_paused_job =
       attempt_manager_->is_failing() && !paused_jobs_.empty();
 
   attempt_manager_.reset();
@@ -360,8 +362,7 @@ void HttpStreamPool::Group::OnAttemptManagerComplete() {
     std::move(on_attempt_manager_complete_callback_for_testing_).Run();
   }
 
-  if (should_start_new_attempt_manager) {
-    EnsureAttemptManager();
+  if (should_resume_paused_job) {
     ResumePausedJob();
   } else {
     MaybeComplete();
@@ -375,8 +376,7 @@ base::Value::Dict HttpStreamPool::Group::GetInfoAsValue() const {
   dict.Set("handed_out_socket_count",
            static_cast<int>(HandedOutStreamSocketCount()));
   dict.Set("paused_job_count", static_cast<int>(PausedJobCount()));
-  dict.Set("notified_paused_job_count",
-           static_cast<int>(notified_paused_jobs_.size()));
+  dict.Set("resumed_job_count", static_cast<int>(resumed_jobs_.size()));
   dict.Set("attempt_manager_alive", !!attempt_manager_);
   if (attempt_manager_) {
     dict.Set("attempt_state", attempt_manager_->GetInfoAsValue());
@@ -420,7 +420,8 @@ void HttpStreamPool::Group::ResumePausedJob() {
     return;
   }
 
-  if (paused_jobs_.empty()) {
+  raw_ptr<Job> job = ExtractOnePausedJob();
+  if (!job) {
     return;
   }
 
@@ -429,8 +430,6 @@ void HttpStreamPool::Group::ResumePausedJob() {
       FROM_HERE,
       base::BindOnce(&Group::ResumePausedJob, weak_ptr_factory_.GetWeakPtr()));
 
-  raw_ptr<Job> job =
-      std::move(paused_jobs_.extract(paused_jobs_.begin())).value();
   job->Resume();
 }
 
@@ -459,7 +458,7 @@ HttpStreamPool::Job* HttpStreamPool::Group::ExtractOnePausedJob() {
   raw_ptr<Job> job =
       std::move(paused_jobs_.extract(paused_jobs_.begin())).value();
   Job* job_raw_ptr = job.get();
-  notified_paused_jobs_.emplace(std::move(job));
+  resumed_jobs_.emplace(std::move(job));
   return job_raw_ptr;
 }
 
@@ -489,19 +488,9 @@ void HttpStreamPool::Group::CleanupIdleStreamSockets(
   MaybeCompleteLater();
 }
 
-void HttpStreamPool::Group::EnsureAttemptManager() {
-  if (attempt_manager_) {
-    return;
-  }
-  attempt_manager_ =
-      std::make_unique<AttemptManager>(this, http_network_session()->net_log());
-}
-
 bool HttpStreamPool::Group::CanComplete() const {
-  // TODO(crbug.com/381742472): Check paused preconnects once we support
-  // paused preconnects.
   return ActiveStreamSocketCount() == 0 && paused_jobs_.empty() &&
-         notified_paused_jobs_.empty() && !attempt_manager_;
+         resumed_jobs_.empty() && !attempt_manager_;
 }
 
 void HttpStreamPool::Group::MaybeComplete() {

@@ -93,8 +93,7 @@ class WorkerNode : public TypedNode<WorkerNode> {
   virtual resource_attribution::WorkerContext GetResourceContext() const = 0;
 
   // Returns the URL of the worker script. This is the final response URL which
-  // takes into account redirections. Note that for dedicated workers, this will
-  // be empty unless the PlzDedicatedWorker feature is enabled.
+  // takes into account redirections.
   virtual const GURL& GetURL() const = 0;
 
   // Returns the worker's security origin. This will be set even if GetURL() is
@@ -199,9 +198,7 @@ class WorkerNodeObserver : public base::CheckedObserver {
   // Notifications of property changes.
 
   // Invoked when the final url of the worker script has been determined, which
-  // happens when the script has finished loading. Note that for dedicated
-  // workers, this won't be called unless the PlzDedicatedWorker feature is
-  // enabled.
+  // happens when the script has finished loading.
   virtual void OnFinalResponseURLDetermined(const WorkerNode* worker_node) {}
 
   // Invoked before |client_frame_node| becomes a client of |worker_node|. This

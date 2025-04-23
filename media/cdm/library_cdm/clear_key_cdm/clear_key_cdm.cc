@@ -126,13 +126,13 @@ static std::string GetUnitTestResultMessage(bool success) {
 // |keys_vector| is only valid for the lifetime of |keys_info| because it
 // contains pointers into the latter.
 void ConvertCdmKeysInfo(const media::CdmKeysInfo& keys_info,
-                        std::vector<cdm::KeyInformation>* keys_vector) {
+                        std::vector<cdm::KeyInformation_2>* keys_vector) {
   keys_vector->reserve(keys_info.size());
   for (const auto& key_info : keys_info) {
-    cdm::KeyInformation key = {};
+    cdm::KeyInformation_2 key = {};
     key.key_id = key_info->key_id.data();
     key.key_id_size = key_info->key_id.size();
-    key.status = ToCdmKeyStatus(key_info->status);
+    key.status = ToCdmKeyStatus_2(key_info->status);
     key.system_code = key_info->system_code;
     keys_vector->push_back(key);
   }
@@ -369,12 +369,13 @@ void ClearKeyCdm::GetStatusForPolicy(uint32_t promise_id,
   const cdm::HdcpVersion kDeviceHdcpVersion = cdm::kHdcpVersion2_0;
 
   if (policy.min_hdcp_version <= kDeviceHdcpVersion) {
-    cdm_host_proxy_->OnResolveKeyStatusPromise(promise_id, cdm::kUsable);
+    cdm_host_proxy_->OnResolveKeyStatusPromise(promise_id,
+                                               cdm::KeyStatus_2::kUsable);
     return;
   }
 
-  cdm_host_proxy_->OnResolveKeyStatusPromise(promise_id,
-                                             cdm::kOutputRestricted);
+  cdm_host_proxy_->OnResolveKeyStatusPromise(
+      promise_id, cdm::KeyStatus_2::kOutputRestricted);
 }
 
 void ClearKeyCdm::CreateSessionAndGenerateRequest(
@@ -834,13 +835,15 @@ void ClearKeyCdm::OnQueryOutputProtectionStatus(
   // Note that this does not modify any keys, so if the caller does not check
   // the 'keystatuschange' event, nothing will happen as decoding will continue
   // to work.
-  cdm::KeyStatus key_status = cdm::kInternalError;
+  cdm::KeyStatus_2 key_status = cdm::KeyStatus_2::kInternalError;
   if (result == cdm::kQuerySucceeded) {
-    key_status = (link_mask & cdm::kLinkTypeNetwork) ? cdm::kOutputRestricted
-                                                     : cdm::kUsable;
+    key_status = (link_mask & cdm::kLinkTypeNetwork)
+                     ? cdm::KeyStatus_2::kOutputRestricted
+                     : cdm::KeyStatus_2::kUsable;
   }
+
   const uint8_t kDummyKeyId[] = {'d', 'u', 'm', 'm', 'y'};
-  std::vector<cdm::KeyInformation> keys_vector = {
+  std::vector<cdm::KeyInformation_2> keys_vector = {
       {kDummyKeyId, std::size(kDummyKeyId), key_status, 0}};
   cdm_host_proxy_->OnSessionKeysChange(last_session_id_.data(),
                                        last_session_id_.length(), false,
@@ -888,10 +891,13 @@ void ClearKeyCdm::OnSessionKeysChange(const std::string& session_id,
   // Crash if the special key ID "crash" is present.
   const std::vector<uint8_t> kCrashKeyId{'c', 'r', 'a', 's', 'h'};
   for (const auto& key_info : keys_info) {
-    CHECK(key_info->key_id != kCrashKeyId) << "Crash on special crash key ID.";
+    if (key_info->key_id == kCrashKeyId) {
+      DVLOG(1) << __func__ << "Crash on special crash key ID.";
+      base::ImmediateCrash();
+    }
   }
 
-  std::vector<cdm::KeyInformation> keys_vector;
+  std::vector<cdm::KeyInformation_2> keys_vector;
   ConvertCdmKeysInfo(keys_info, &keys_vector);
   cdm_host_proxy_->OnSessionKeysChange(session_id.data(), session_id.length(),
                                        has_additional_usable_key,

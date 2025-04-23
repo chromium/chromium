@@ -429,6 +429,28 @@ def _CheckStyleESLint(input_api, output_api):
 
   return results
 
+def _CheckUIGraphicsBeginImageContextWithOptions(input_api, output_api):
+    """ Checks that UIGraphicsBeginImageContextWithOptions is not used"""
+    deprecated_regex = input_api.re.compile(
+        r'UIGraphicsBeginImageContextWithOptions\(')
+
+    errors = []
+    for f in input_api.AffectedFiles():
+        if (not f.LocalPath().endswith('.mm')):
+            continue
+        for line_num, line in f.ChangedContents():
+            if deprecated_regex.search(line):
+                errors.append('%s:%s' % (f.LocalPath(), line_num))
+
+    if not errors:
+        return []
+    error_message = '\n'.join([
+        'UIGraphicsBeginImageContextWithOptions is deprecated, use '
+        'UIGraphicsImageRenderer instead.'
+    ] + errors) + '\n'
+
+    return [output_api.PresubmitError(error_message)]
+
 def CheckChange(input_api, output_api):
     results = []
     results.extend(_CheckBugInToDo(input_api, output_api))
@@ -442,6 +464,8 @@ def CheckChange(input_api, output_api):
     results.extend(_CheckNotUsingNSUserDefaults(input_api, output_api))
     results.extend(_CheckNewColorIntroduction(input_api, output_api))
     results.extend(_CheckStyleESLint(input_api, output_api))
+    results.extend(
+        _CheckUIGraphicsBeginImageContextWithOptions(input_api, output_api))
     return results
 
 def CheckChangeOnUpload(input_api, output_api):

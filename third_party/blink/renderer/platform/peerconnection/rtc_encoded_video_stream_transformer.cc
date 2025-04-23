@@ -38,7 +38,7 @@ const size_t kMaxBufferedFrames = 60;
 
 // This delegate class exists to work around the fact that
 // RTCEncodedVideoStreamTransformer cannot derive from webrtc::RefCountedObject
-// and post tasks referencing itself as an rtc::scoped_refptr. Instead,
+// and post tasks referencing itself as an webrtc::scoped_refptr. Instead,
 // RTCEncodedVideoStreamTransformer creates a delegate using
 // webrtc::RefCountedObject and posts tasks referencing the delegate, which
 // invokes the RTCEncodedVideoStreamTransformer via callbacks.
@@ -65,7 +65,7 @@ class RTCEncodedVideoStreamTransformerDelegate
 
   // webrtc::FrameTransformerInterface
   void RegisterTransformedFrameSinkCallback(
-      rtc::scoped_refptr<webrtc::TransformedFrameCallback>
+      webrtc::scoped_refptr<webrtc::TransformedFrameCallback>
           send_frame_to_sink_callback,
       uint32_t ssrc) override {
     transformer_broker_->RegisterTransformedFrameSinkCallback(
@@ -144,7 +144,7 @@ RTCEncodedVideoStreamTransformer::Broker::Broker(
 
 void RTCEncodedVideoStreamTransformer::Broker::
     RegisterTransformedFrameSinkCallback(
-        rtc::scoped_refptr<webrtc::TransformedFrameCallback>
+        webrtc::scoped_refptr<webrtc::TransformedFrameCallback>
             send_frame_to_sink_callback,
         uint32_t ssrc) {
   base::AutoLock locker(transformer_lock_);
@@ -228,7 +228,7 @@ RTCEncodedVideoStreamTransformer::~RTCEncodedVideoStreamTransformer() {
 }
 
 void RTCEncodedVideoStreamTransformer::RegisterTransformedFrameSinkCallback(
-    rtc::scoped_refptr<webrtc::TransformedFrameCallback> callback,
+    webrtc::scoped_refptr<webrtc::TransformedFrameCallback> callback,
     uint32_t ssrc) {
   base::AutoLock locker(sink_lock_);
 
@@ -377,7 +377,7 @@ bool RTCEncodedVideoStreamTransformer::HasTransformedFrameSinkCallback(
   return false;
 }
 
-rtc::scoped_refptr<webrtc::FrameTransformerInterface>
+webrtc::scoped_refptr<webrtc::FrameTransformerInterface>
 RTCEncodedVideoStreamTransformer::Delegate() {
   return delegate_;
 }

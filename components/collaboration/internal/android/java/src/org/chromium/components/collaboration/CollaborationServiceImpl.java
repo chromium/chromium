@@ -41,12 +41,8 @@ public class CollaborationServiceImpl implements CollaborationService {
     }
 
     @Override
-    public void startJoinFlow(
-            CollaborationControllerDelegate delegate,
-            GURL url,
-            @CollaborationServiceJoinEntryPoint int entry) {
-        CollaborationServiceImplJni.get()
-                .startJoinFlow(mNativePtr, delegate.getNativePtr(), url, entry);
+    public void startJoinFlow(CollaborationControllerDelegate delegate, GURL url) {
+        CollaborationServiceImplJni.get().startJoinFlow(mNativePtr, delegate.getNativePtr(), url);
     }
 
     @Override
@@ -112,10 +108,7 @@ public class CollaborationServiceImpl implements CollaborationService {
                 long nativeCollaborationServiceAndroid, CollaborationServiceImpl caller);
 
         void startJoinFlow(
-                long nativeCollaborationServiceAndroid,
-                long delegateNativePtr,
-                GURL url,
-                int entry);
+                long nativeCollaborationServiceAndroid, long delegateNativePtr, GURL url);
 
         void startShareOrManageFlow(
                 long nativeCollaborationServiceAndroid,

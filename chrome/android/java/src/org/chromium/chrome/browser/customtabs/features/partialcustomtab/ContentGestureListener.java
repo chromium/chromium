@@ -27,12 +27,6 @@ import java.util.function.BooleanSupplier;
  * and setting the event target appropriately to the tab window or the content view.
  */
 class ContentGestureListener extends GestureDetector.SimpleOnGestureListener {
-    /**
-     * The base duration of the settling animation of the sheet. 218 ms is a spec for material
-     * design (this is the minimum time a user is guaranteed to pay attention to something).
-     */
-    private static final long BASE_ANIMATION_DURATION_MS = 218;
-
     static final float MIN_VERTICAL_SCROLL_SLOPE = 2.0f;
 
     /** The targets that can handle MotionEvents. */
@@ -75,7 +69,9 @@ class ContentGestureListener extends GestureDetector.SimpleOnGestureListener {
     /** Perform non-fling release. */
     public void doNonFlingRelease() {
         mVelocityTracker.computeCurrentVelocity(FLING_VELOCITY_PIXELS_PER_MS);
-        mCallback.onDragEnd(getFlingDistance(mVelocityTracker.getYVelocity()));
+
+        // Set the distance to zero not to perform resizing for flinging on web contents area.
+        mCallback.onDragEnd(0);
         mState = GestureState.NONE;
     }
 
@@ -165,7 +161,9 @@ class ContentGestureListener extends GestureDetector.SimpleOnGestureListener {
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
         if (e1 == null || mState != GestureState.DRAG_TAB) return false;
-        mCallback.onDragEnd(getFlingDistance(velocityY));
+
+        // Set the distance to zero not to perform resizing for flinging on web contents area.
+        mCallback.onDragEnd(0);
         mState = GestureState.NONE;
         return true;
     }
@@ -173,11 +171,6 @@ class ContentGestureListener extends GestureDetector.SimpleOnGestureListener {
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
         return false; // Let the content view consume single taps.
-    }
-
-    private int getFlingDistance(float velocity) {
-        // This includes conversion from seconds to ms.
-        return (int) (velocity * BASE_ANIMATION_DURATION_MS / 2000f);
     }
 
     int getStateForTesting() {

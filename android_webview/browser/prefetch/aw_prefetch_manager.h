@@ -32,6 +32,11 @@ inline constexpr int32_t ABSOLUTE_MAX_PREFETCHES = 20;
 // request was unsuccessful (i.e. there is no key for the prefetch).
 inline constexpr int NO_PREFETCH_KEY = -1;
 
+// The suffix used for generating `//content` prefetch internal histogram names
+// recorded per trigger.
+// TODO(crbug.com/379140429): Merge this with prerender one.
+inline constexpr char AW_PREFETCH_METRICS_SUFFIX[] = "WebView";
+
 // Manages prefetch operations for this Profile.
 // Lifetime: Profile
 class AwPrefetchManager {

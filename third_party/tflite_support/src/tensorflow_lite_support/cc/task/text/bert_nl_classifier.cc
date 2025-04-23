@@ -75,7 +75,8 @@ StatusOr<std::vector<core::Category>> BertNLClassifier::Postprocess(
   for (const auto& name : kValidScoreTensorNames) {
     const TfLiteTensor* scores = FindTensorByName(
       output_tensors, GetMetadataExtractor()->GetOutputTensorMetadata(),
-      name);
+      options_->has_output_tensor_name() ? options_->output_tensor_name()
+                                         : name);
     if (scores) {
       // optional labels extracted from metadata
       return BuildResults(scores, /*labels=*/nullptr);

@@ -6583,7 +6583,7 @@ class SitePerProcessWebViewTest : public WebViewTest {
 
       return load_observer.last_navigation_succeeded();
     } else {
-      return NavigateToURL(guest->web_contents(), url);
+      return content::NavigateToURL(guest->web_contents(), url);
     }
   }
 };

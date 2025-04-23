@@ -37,6 +37,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.ui.test.util.DeviceRestriction;
 
@@ -48,7 +50,8 @@ import java.util.concurrent.TimeoutException;
 @EnableFeatures({ChromeFeatureList.ALLOW_NEW_INCOGNITO_TAB_INTENTS})
 public class IncognitoTabLauncherTest {
     @Rule
-    public final ChromeTabbedActivityTestRule mActivityRule = new ChromeTabbedActivityTestRule();
+    public final FreshCtaTransitTestRule mActivityRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Test
     @Feature("Incognito")

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var result = false;
+var count = 0;
 var bounds = {top: 0, left: 0, width: 0, height: 0};
 
 chrome.windows.onBoundsChanged.addListener(function(window) {
-  result = true;
+  ++count;
   bounds.top = window.top;
   bounds.left = window.left;
   bounds.width = window.width;
@@ -16,7 +16,7 @@ chrome.windows.onBoundsChanged.addListener(function(window) {
 chrome.test.sendMessage('ready', function (actualBounds) {
   var actualBounds = JSON.parse(actualBounds);
 
-  chrome.test.assertTrue(result);
+  chrome.test.assertEq(1, count);
   chrome.test.assertEq(bounds.top, actualBounds.top);
   chrome.test.assertEq(bounds.left, actualBounds.left);
   chrome.test.assertEq(bounds.width, actualBounds.width);

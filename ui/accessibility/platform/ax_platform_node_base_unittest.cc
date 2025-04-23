@@ -559,7 +559,7 @@ TEST_F(AXPlatformNodeTest, CompareTo) {
   // comparable.
   AXPlatformNodeDelegate detached_delegate;
   AXPlatformNode::Pointer detached_node =
-      AXPlatformNode::Create(&detached_delegate);
+      AXPlatformNode::Create(detached_delegate);
   EXPECT_EQ(std::nullopt,
             n1->CompareTo(static_cast<AXPlatformNodeBase&>(*detached_node)));
   detached_node = nullptr;

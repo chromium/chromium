@@ -66,6 +66,11 @@ PrivateKey::~PrivateKey() = default;
 PrivateKey::PrivateKey(PrivateKey&& other) = default;
 PrivateKey::PrivateKey(const PrivateKey& other)
     : key_(bssl::UpRef(const_cast<PrivateKey&>(other).key())) {}
+PrivateKey& PrivateKey::operator=(PrivateKey&& other) = default;
+PrivateKey& PrivateKey::operator=(const PrivateKey& other) {
+  key_ = bssl::UpRef(const_cast<PrivateKey&>(other).key());
+  return *this;
+}
 
 // static
 PrivateKey PrivateKey::GenerateRsa2048() {
@@ -163,6 +168,11 @@ PublicKey::~PublicKey() = default;
 PublicKey::PublicKey(PublicKey&& other) = default;
 PublicKey::PublicKey(const PublicKey& other)
     : key_(bssl::UpRef(const_cast<PublicKey&>(other).key())) {}
+PublicKey& PublicKey::operator=(PublicKey&& other) = default;
+PublicKey& PublicKey::operator=(const PublicKey& other) {
+  key_ = bssl::UpRef(const_cast<PublicKey&>(other).key());
+  return *this;
+}
 
 // static
 PublicKey PublicKey::FromPrivateKey(const PrivateKey& key) {

@@ -24,9 +24,13 @@ PhysicalDeviceRecoveryFactor::PhysicalDeviceRecoveryFactor(
 }
 PhysicalDeviceRecoveryFactor::~PhysicalDeviceRecoveryFactor() = default;
 
+LocalRecoveryFactorType PhysicalDeviceRecoveryFactor::GetRecoveryFactorType()
+    const {
+  return LocalRecoveryFactorType::kPhysicalDevice;
+}
+
 void PhysicalDeviceRecoveryFactor::AttemptRecovery(
-    TrustedVaultConnection* connection,
-    bool connection_requests_throttled,
+    TrustedVaultThrottlingConnection* connection,
     AttemptRecoveryCallback cb,
     AttemptRecoveryFailureCallback failure_cb) {
   auto* per_user_vault = GetPrimaryAccountVault();
@@ -42,7 +46,7 @@ void PhysicalDeviceRecoveryFactor::AttemptRecovery(
     return;
   }
 
-  if (connection_requests_throttled) {
+  if (connection->AreRequestsThrottled(*primary_account_)) {
     base::BindPostTaskToCurrentDefault(
         base::BindOnce(
             std::move(failure_cb),
@@ -83,6 +87,11 @@ void PhysicalDeviceRecoveryFactor::AttemptRecovery(
   CHECK(ongoing_request_);
 }
 
+bool PhysicalDeviceRecoveryFactor::IsRegistered() {
+  auto* per_user_vault = GetPrimaryAccountVault();
+  return per_user_vault->local_device_registration_info().device_registered();
+}
+
 void PhysicalDeviceRecoveryFactor::MarkAsNotRegistered() {
   auto* per_user_vault = GetPrimaryAccountVault();
   per_user_vault->mutable_local_device_registration_info()
@@ -103,9 +112,9 @@ void PhysicalDeviceRecoveryFactor::ClearRegistrationAttemptInfo(
 }
 
 TrustedVaultDeviceRegistrationStateForUMA
-PhysicalDeviceRecoveryFactor::MaybeRegister(TrustedVaultConnection* connection,
-                                            bool connection_requests_throttled,
-                                            RegisterCallback cb) {
+PhysicalDeviceRecoveryFactor::MaybeRegister(
+    TrustedVaultThrottlingConnection* connection,
+    RegisterCallback cb) {
   auto* per_user_vault = GetPrimaryAccountVault();
 
   if (per_user_vault->local_device_registration_info().device_registered()) {
@@ -121,7 +130,7 @@ PhysicalDeviceRecoveryFactor::MaybeRegister(TrustedVaultConnection* connection,
     return TrustedVaultDeviceRegistrationStateForUMA::kLocalKeysAreStale;
   }
 
-  if (connection_requests_throttled) {
+  if (connection->AreRequestsThrottled(*primary_account_)) {
     return TrustedVaultDeviceRegistrationStateForUMA::kThrottledClientSide;
   }
 

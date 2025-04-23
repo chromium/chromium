@@ -386,6 +386,7 @@ source_set("unit_tests") {
     "hls/multivariant_playlist_unittest.cc",
     "hls/playlist_test_builder.h",
     "hls/playlist_unittest.cc",
+    "hls/rendition_group_unittest.cc",
     "hls/rendition_manager_unittest.cc",
     "hls/segment_stream_unittest.cc",
     "hls/tags_unittest.cc",

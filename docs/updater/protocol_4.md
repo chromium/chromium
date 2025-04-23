@@ -711,23 +711,24 @@ A pipeline object has the following members:
 A operation object describes one of many operations to be performed in order to
 produce, process, and eventually install a update.
 
-It has
-the following members:
+It has the following members:
  *  `type`: The type of operation to execute, represented as a string. This can
     be any of the operations provided by `acceptformat` to the
     [Request Object](#request-object-update-check-request).
 
 For `type == "download"`: Download a payload.
  *  `size`: The size in bytes of the payload requested for download.
+    This field is required and must be a value greater than 0.
  *  `out`: A `hash` object containing the expected hash of the downloaded
-    bytes.
+    bytes. This field is required.
  *  `urls`: The ordered list of `url` objects from which this payload may be
     obtained. Clients must attempt to download from each URL of the appropriate
     type in the specified order, falling back to the next URL if a TCP or HTTP
     error is encountered. A 4xx or 5xx HTTP response qualifies as an error that
     justifies a fallback. A successful download of a file that fails to hash to
     the provided `outhash_sha256` or has an unexpected size also qualifies.
-    Other network errors may also qualify.
+    Other network errors may also qualify. This field is required to be set and
+    contain at least one url for the operation to be processed properly.
 
 For `type == "xz"`: Decompress an xz file produced by the previous operation.
     The file is compressed using the
@@ -737,16 +738,22 @@ For `type == "zucc"`: Apply a differential Zucchini patch produced by a
     previous operation to a cached payload. The patch is generated using
     [Zucchini](https://chromium.googlesource.com/chromium/src.git/+/main/components/zucchini/README.md).
  *  `previous`: A `hash` object representing the file to apply this patch to.
+    This field is required.
+ *  `out`: A `hash` object representing the file produced from this patch. This
+    field is required.
 
 For `type == "puff"`: Apply a differential Puffin patch produced by a previous
     operation to a payload stored in the cache. The patch is generated using
     [Puffin](https://chromium.googlesource.com/chromium/src.git/+/main/third_party/puffin/README.md).
  *  `previous`: A `hash` object representing the file to apply this patch to.
+    This field is required.
+ *  `out`: A `hash` object representing the file produced from this patch. This
+    field is required.
 
 For `type == "crx3"`: Decompress a CRX3 package produced by the previous
     operation and install it.
  *  `in`: A `hash` object containing the expected hash of the CRX3 to be
-    installed.
+    installed. This field is required.
  *  `path`: The path to a payload or directory, relative to the root of the CRX
     archive. This may be left blank in cases where execution after install is
     not necessary.
@@ -833,9 +840,10 @@ attmpted as part of this update session. All events have the following members:
      *   4: An uninstall session.
      *   14: A `download` operation.
      *   60: An `xz` operation.
-     *   61: A `zucchini` patch application operation.
-     *   62: A `puffin` patch application operation.
+     *   61: A `zucc` patch application operation.
+     *   62: A `puff` patch application operation.
      *   63: A `crx3` package installation operation.
+     *   64: An unknown operation.
      *   41: An app command completion event.
      *   42: A `run` operation.
  *   `eventresult`: The outcome of the operation. Default: 0. Known values:
@@ -890,7 +898,7 @@ For `eventtype == 14` events:
      pipeline.
  *   `url`: The URL from which the download was attempted.
 
-For `eventtype == 60, 61, 62, or 63` events:
+For `eventtype == 60, 61, 62, 63, or 64` events:
  *   All the members of `eventtype == 3` events.
  *   `pipeline_id`: The `pipeline_id` set in the request for this operation's
      pipeline.

@@ -11,6 +11,7 @@
 #include "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #include "ios/public/provider/chrome/browser/user_feedback/user_feedback_sender.h"
 
+enum class AccountMenuAccessPoint;
 class GURL;
 @class OpenNewTabCommand;
 @class ShowSigninCommand;
@@ -59,6 +60,9 @@ enum class TabGridOpeningMode {
     showPasswordIssuesWithWarningType:(password_manager::WarningType)warningType
                              referrer:(password_manager::PasswordCheckReferrer)
                                           referrer;
+
+// Shows the Settings UI if nothing else is displayed.
+- (void)maybeShowSettingsFromViewController;
 
 // TODO(crbug.com/41352590) : Do not pass baseViewController through dispatcher.
 // Shows the Settings UI, presenting from `baseViewController`.
@@ -164,13 +168,10 @@ enum class TabGridOpeningMode {
 - (void)showSignin:(ShowSigninCommand*)command
     baseViewController:(UIViewController*)baseViewController;
 
-// Shows the account menu. On scenes with regular width, the account menu
-// appears as a popover near the `anchorView`, if provided. If
-// `skipIfUINotAvailable` is true, then this command is ignored if there is
-// already a UI being presented.
-- (void)showAccountMenuWithAnchorView:(UIView*)anchorView
-                 skipIfUINotAvailable:(BOOL)skipIfUINotAvailable
-                           completion:(void (^)())completion;
+// Shows the account menu. `fromWeb` should be true if it’s requested by a web
+// page. On scenes with regular width, the account menu appears as a popover.
+// This command is ignored if there is already a UI being presented.
+- (void)showAccountMenuFromAccessPoint:(AccountMenuAccessPoint)accessPoint;
 
 // TODO(crbug.com/41352590) : Do not pass baseViewController through dispatcher.
 // Shows the consistency promo UI that allows users to sign in to Chrome using

@@ -14,13 +14,14 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/strings/stringprintf.h"
 #include "base/token.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
@@ -33,7 +34,7 @@
 #include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
 #include "media/capture/video/video_capture_device_client.h"
 #include "media/capture/video/video_capture_metrics.h"
-#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
+#include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "content/browser/compositor/image_transport_factory.h"
@@ -201,7 +202,6 @@ VideoCaptureController::VideoCaptureController(
       device_launcher_(std::move(device_launcher)),
       emit_log_message_cb_(std::move(emit_log_message_cb)),
       device_launch_observer_(nullptr),
-      state_(blink::VIDEO_CAPTURE_STATE_STARTING),
       has_received_frames_(false) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 }
@@ -255,7 +255,7 @@ void VideoCaptureController::AddClient(
   }
 
   // Signal error in case device is already in error state.
-  if (state_ == blink::VIDEO_CAPTURE_STATE_ERROR) {
+  if (state_ == State::kError) {
     event_handler->OnError(
         id,
         media::VideoCaptureError::kVideoCaptureControllerIsAlreadyInErrorState);
@@ -267,16 +267,15 @@ void VideoCaptureController::AddClient(
     return;
 
   // If the device has reported OnStarted event, report it to this client here.
-  if (state_ == blink::VIDEO_CAPTURE_STATE_STARTED)
+  if (state_ == State::kStarted) {
     event_handler->OnStarted(id);
+  }
 
   std::unique_ptr<ControllerClient> client =
       std::make_unique<ControllerClient>(id, event_handler, session_id, params);
   // If we already have gotten frame_info from the device, repeat it to the new
   // client.
-  if (state_ != blink::VIDEO_CAPTURE_STATE_ERROR) {
-    controller_clients_.push_back(std::move(client));
-  }
+  controller_clients_.push_back(std::move(client));
 }
 
 base::UnguessableToken VideoCaptureController::RemoveClient(
@@ -444,7 +443,7 @@ void VideoCaptureController::OnFrameReadyInBuffer(
       frame.buffer_id, frame.frame_feedback_id, std::move(frame.frame_info),
       &frame_context);
 
-  if (state_ != blink::VIDEO_CAPTURE_STATE_ERROR) {
+  if (state_ != State::kError) {
     // Inform all active clients of the frames.
     for (const auto& client : controller_clients_) {
       if (client->session_closed || client->paused)
@@ -551,7 +550,7 @@ void VideoCaptureController::OnBufferRetired(int buffer_id) {
 
 void VideoCaptureController::OnError(media::VideoCaptureError error) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  state_ = blink::VIDEO_CAPTURE_STATE_ERROR;
+  state_ = State::kError;
   PerformForClientsWithOpenSession(base::BindRepeating(&CallOnError, error));
 }
 
@@ -601,7 +600,7 @@ void VideoCaptureController::OnLog(const std::string& message) {
 void VideoCaptureController::OnStarted() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   EmitLogMessage(__func__, 3);
-  state_ = blink::VIDEO_CAPTURE_STATE_STARTED;
+  state_ = State::kStarted;
   PerformForClientsWithOpenSession(base::BindRepeating(&CallOnStarted));
 }
 

@@ -22,6 +22,7 @@
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/payment_app_provider_util.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -200,7 +201,9 @@ void InstallablePaymentAppCrawler::OnPaymentMethodManifestParsed(
 
     if (permission_controller
             ->GetPermissionResultForOriginWithoutContext(
-                blink::PermissionType::PAYMENT_HANDLER,
+                content::PermissionDescriptorUtil::
+                    CreatePermissionDescriptorForPermissionType(
+                        blink::PermissionType::PAYMENT_HANDLER),
                 url::Origin::Create(web_app_manifest_url))
             .status != blink::mojom::PermissionStatus::GRANTED) {
       // Do not download the web app manifest if it is blocked.

@@ -58,7 +58,6 @@ class WebNavigationBrowserAgent
 
  private:
   friend class BrowserUserData<WebNavigationBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit WebNavigationBrowserAgent(Browser* browser);
 

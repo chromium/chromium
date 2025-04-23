@@ -22,6 +22,7 @@
 #include "remoting/host/desktop_geometry.h"
 #include "remoting/host/linux/x11_display_util.h"
 #include "remoting/host/linux/x11_util.h"
+#include "ui/base/glib/gsettings.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/randr.h"
@@ -57,7 +58,7 @@ DesktopResizerX11::DesktopResizerX11()
   RandR()->SelectInput({RootWindow(), x11::RandR::NotifyMask::ScreenChange});
 
   gnome_display_config_.Init();
-  registry_ = TakeGObject(g_settings_new("org.gnome.desktop.interface"));
+  registry_ = ui::GSettingsNew("org.gnome.desktop.interface");
 }
 
 DesktopResizerX11::~DesktopResizerX11() = default;
@@ -213,7 +214,8 @@ void DesktopResizerX11::SetResolutionForOutput(
   // Check to see if GNOME is using automatic-scaling. If the value is non-zero,
   // the user prefers a particular scaling, so don't adjust the
   // text-scaling-factor here.
-  if (g_settings_get_uint(registry_.get(), "scaling-factor") == 0U) {
+  if (registry_ &&
+      g_settings_get_uint(registry_.get(), "scaling-factor") == 0U) {
     // Start the timer to update the text-scaling-factor. Any previously
     // started timer will be cancelled.
     requested_dpi_ = resolution.dpi().x();
@@ -268,7 +270,8 @@ void DesktopResizerX11::OnGnomeDisplayConfigReceived(
            << ", GNOME scale = " << monitor.scale
            << ", calculated text-scaling = " << text_scaling_factor;
 
-  if (!g_settings_set_double(registry_.get(), "text-scaling-factor",
+  if (!registry_ ||
+      !g_settings_set_double(registry_.get(), "text-scaling-factor",
                              text_scaling_factor)) {
     // Just log a warning - failure is expected if the value falls outside the
     // interval [0.5, 3.0].

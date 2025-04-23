@@ -94,6 +94,7 @@ std::optional<PasswordStoreChangeList> MaybeRecordPasswordDeletionViaSync(
 
 }  // namespace
 
+// TODO(410526044): Make sure `os_crypt_async` is not null.
 PasswordStoreBuiltInBackend::PasswordStoreBuiltInBackend(
     std::unique_ptr<LoginDatabase> login_db,
     syncer::WipeModelUponSyncDisabledBehavior

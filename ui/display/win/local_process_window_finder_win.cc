@@ -52,7 +52,7 @@ LocalProcessWindowFinder::LocalProcessWindowFinder(const gfx::Point& screen_loc,
                                                    ScreenWin* screen_win,
                                                    const std::set<HWND>& ignore)
     : BaseWindowFinderWin(ignore), screen_win_(screen_win) {
-  screen_loc_ = display::win::ScreenWin::DIPToScreenPoint(screen_loc);
+  screen_loc_ = display::win::GetScreenWin()->DIPToScreenPoint(screen_loc);
   EnumThreadWindows(GetCurrentThreadId(), WindowCallbackProc, as_lparam());
 }
 

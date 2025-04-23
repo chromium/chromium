@@ -123,40 +123,6 @@ std::string GetUserSalt(const AccountId& account_id) {
   return {};
 }
 
-std::unique_ptr<views::Widget> CreateAuthDialogWidget(
-    std::unique_ptr<views::View> contents_view) {
-  views::Widget::InitParams params(
-      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
-      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.delegate = new views::WidgetDelegate();
-  params.show_state = ui::mojom::WindowShowState::kNormal;
-
-  ShellWindowId parent_window_id =
-      Shell::Get()->session_controller()->GetSessionState() ==
-              session_manager::SessionState::ACTIVE
-          ? kShellWindowId_SystemModalContainer
-          : kShellWindowId_LockSystemModalContainer;
-  params.parent = Shell::GetPrimaryRootWindow()->GetChildById(parent_window_id);
-
-  params.autosize = true;
-  params.name = "AuthDialogWidget";
-
-  params.delegate->SetInitiallyFocusedView(contents_view.get());
-  //  ModalType::kSystem is used to get a semi-transparent background behind the
-  //  local authentication request view, when it is used directly on a widget.
-  //  The overlay consumes all the inputs from the user, so that they can only
-  //  interact with the local authentication request view while it is visible.
-  params.delegate->SetModalType(ui::mojom::ModalType::kSystem);
-  params.delegate->SetOwnedByWidget(true);
-
-  auto widget = std::make_unique<views::Widget>();
-  widget->Init(std::move(params));
-  widget->SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
-  widget->SetContentsView(std::move(contents_view));
-  return widget;
-}
-
 const char* LocalAuthenticationWithPinStateToString(
     LocalAuthenticationWithPinControllerImpl::LocalAuthenticationWithPinState
         state) {
@@ -245,7 +211,37 @@ bool LocalAuthenticationWithPinControllerImpl::ShowWidget(
       account_id_, title_, description_, available_factors_);
   contents_view_ = contents_view.get();
 
-  widget_ = CreateAuthDialogWidget(std::move(contents_view));
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+  params.delegate = new views::WidgetDelegate();
+  params.show_state = ui::mojom::WindowShowState::kNormal;
+
+  ShellWindowId parent_window_id =
+      Shell::Get()->session_controller()->GetSessionState() ==
+              session_manager::SessionState::ACTIVE
+          ? kShellWindowId_SystemModalContainer
+          : kShellWindowId_LockSystemModalContainer;
+  params.parent = Shell::GetPrimaryRootWindow()->GetChildById(parent_window_id);
+
+  params.autosize = true;
+  params.name = "AuthDialogWidget";
+
+  params.delegate->SetInitiallyFocusedView(contents_view.get());
+  //  ModalType::kSystem is used to get a semi-transparent background behind the
+  //  local authentication request view, when it is used directly on a widget.
+  //  The overlay consumes all the inputs from the user, so that they can only
+  //  interact with the local authentication request view while it is visible.
+  params.delegate->SetModalType(ui::mojom::ModalType::kSystem);
+  params.delegate->SetOwnedByWidget(
+      views::WidgetDelegate::OwnedByWidgetPassKey());
+
+  widget_ = std::make_unique<views::Widget>();
+  widget_->Init(std::move(params));
+  widget_->SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
+  widget_->SetContentsView(std::move(contents_view));
+
   contents_view_observer_.Observe(contents_view_);
   contents_view_->AddObserver(this);
   SetState(LocalAuthenticationWithPinState::kInitialized);

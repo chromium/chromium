@@ -81,6 +81,8 @@ extern const base::FeatureParam<base::TimeDelta>
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBocaOnTaskMuteArcAudio);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBocaOnTaskPod);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kBocaOnTaskUnmuteBrowserTabsOnUnlock);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kBocaLockedModeCustomCountdownDuration);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<base::TimeDelta>
@@ -93,6 +95,8 @@ extern const base::FeatureParam<base::TimeDelta>
     kBocaStudentHeartbeatPeriodicJobIntervalInSeconds;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBocaSpotlight);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBocaNetworkRestriction);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kBocaClientTypeForSpeechRecognition);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCameraSuperResSupported);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCrosSwitcher);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBorealisBigGl);
@@ -174,6 +178,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kCryptohomeRecoveryByDefaultForEnterprise);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kDeferConciergeStartup);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kDemoModeAppResetWindowContainer);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kDemoModeSignIn);
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -271,6 +277,8 @@ enum class EolIncentiveParam { kNoOffer, kOffer, kOfferWithWarning };
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<EolIncentiveParam> kEolIncentiveParam;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEolIncentiveSettings);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kESimEmptyActivationCodeSupported);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kExoHapticFeedbackSupport);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kExoLinuxDmabufV4);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kExoLinuxDmabufModifiers);
@@ -886,6 +894,10 @@ BASE_DECLARE_FEATURE(kShimlessRMA3pDiagnosticsDevMode);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kShimlessRMA3pDiagnosticsAllowPermissionPolicy);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kShimlessRMAHardwareValidationSkip);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kShimlessRMADynamicDeviceInfoInputs);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kShortcutStateMachines);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kShowBluetoothDebugLogToggle);
@@ -1017,7 +1029,6 @@ BASE_DECLARE_FEATURE(kWelcomeTourV3);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kWifiConnectMacAddressRandomization);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kWifiConcurrency);
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kWifiDirect);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kWifiSyncAllowDeletes);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kWifiSyncAndroid);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kWifiSyncApplyDeletes);
@@ -1070,6 +1081,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaCustomPollingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaOnTaskMuteArcAudioEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaOnTaskPodEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsBocaOnTaskUnmuteBrowserTabsOnUnlockEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsBocaLockedModeCustomCountdownDurationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsBocaStudentHeartbeatEnabled();
@@ -1077,6 +1090,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsBocaStudentHeartbeatCustomIntervalEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaSpotlightEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaNetworkRestrictionEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsBocaClientTypeForSpeechRecognitionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBrightnessControlInSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeEducationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -1099,6 +1114,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsCryptauthAttestationSyncingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDeepLinkingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDemoModeAppLandscapeLockedEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDemoModeAppResetWindowContainerEnable();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDemoModeSignInEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDemoModeWallpaperUpdateEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDemoModeSignInFileCleanupEnabled();
@@ -1228,6 +1244,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHomeButtonWithTextEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHostnameSettingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsInstantHotspotRebrandEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsInputNoiseCancellationUiEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsESimEmptyActivationCodeSupportEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsInternalServerSideSpeechRecognitionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -1378,6 +1395,10 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShimlessRMA3pDiagnosticsDevModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsShimlessRMA3pDiagnosticsAllowPermissionPolicyEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsShimlessRMAHardwareValidationSkipEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsShimlessRMADynamicDeviceInfoInputsEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsShowSharingUserInLauncherContinueSectionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSnoopingProtectionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsStoreOwnerKeyInPrivateSlotEnabled();
@@ -1435,7 +1456,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWelcomeTourForceUserEligibilityEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWelcomeTourHoldbackEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWelcomeTourV3Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWifiConcurrencyEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWifiDirectEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWifiSyncAndroidEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWindowSplittingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWmModeEnabled();

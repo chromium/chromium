@@ -18,7 +18,6 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -32,6 +31,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/install_flag.h"
 #include "extensions/browser/pending_extension_info.h"
+#include "extensions/browser/pending_extension_manager.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
@@ -80,20 +80,17 @@ std::string SyncExtensionHelper::InstallExtension(Profile* profile,
   if (!extension.get()) {
     NOTREACHED() << "Could not install extension " << name;
   }
-  extensions::ExtensionSystem::Get(profile)
-      ->extension_service()
-      ->OnExtensionInstalled(extension.get(), syncer::StringOrdinal(),
-                             extensions::kInstallFlagInstallImmediately);
+  extensions::ExtensionRegistrar::Get(profile)->OnExtensionInstalled(
+      extension.get(), syncer::StringOrdinal(),
+      extensions::kInstallFlagInstallImmediately);
   return extension->id();
 }
 
 void SyncExtensionHelper::UninstallExtension(Profile* profile,
                                              const std::string& name) {
-  extensions::ExtensionSystem::Get(profile)
-      ->extension_service()
-      ->UninstallExtension(crx_file::id_util::GenerateId(name),
-                           extensions::UNINSTALL_REASON_SYNC,
-                           nullptr /* error */);
+  extensions::ExtensionRegistrar::Get(profile)->UninstallExtension(
+      crx_file::id_util::GenerateId(name), extensions::UNINSTALL_REASON_SYNC,
+      nullptr /* error */);
 }
 
 std::vector<std::string> SyncExtensionHelper::GetInstalledExtensionNames(

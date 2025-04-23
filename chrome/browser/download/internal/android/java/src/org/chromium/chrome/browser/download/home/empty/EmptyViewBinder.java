@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.download.home.empty;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
@@ -12,6 +13,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
  * A helper {@link ViewBinder} responsible for gluing {@link EmptyProperties} to
  * {@link EmptyView}.
  */
+@NullMarked
 class EmptyViewBinder implements ViewBinder<PropertyModel, EmptyView, PropertyKey> {
     @Override
     public void bind(PropertyModel model, EmptyView view, PropertyKey propertyKey) {

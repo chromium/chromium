@@ -27,15 +27,20 @@ api::bookmarks::BookmarkTreeNode GetBookmarkTreeNode(
     bookmarks::ManagedBookmarkService* managed,
     const bookmarks::BookmarkNode* node,
     bool recurse,
-    bool only_folders);
+    bool only_folders,
+    std::optional<size_t> visible_index = std::nullopt);
 
 // Populates |out_bookmark_tree_node| with given |node|.
+// |visible_index| is the index position of this node among only the visible
+// siblings in its parent folder, if not provided, will use GetAPIIndexOf() to
+// calculate the index.
 void PopulateBookmarkTreeNode(
     bookmarks::BookmarkModel* model,
     bookmarks::ManagedBookmarkService* managed,
     const bookmarks::BookmarkNode* node,
     bool recurse,
     bool only_folders,
+    std::optional<size_t> visible_index,
     api::bookmarks::BookmarkTreeNode* out_bookmark_tree_node);
 
 // Adds a JSON representation of |node| to the JSON |nodes|.

@@ -13,9 +13,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /** Communicates between CookieControlsController (C++ backend) and PageInfoView (Java UI). */
 @JNINamespace("content_settings")
 @NullMarked
@@ -102,56 +99,16 @@ public class CookieControlsBridge {
         return CookieControlsBridgeJni.get().isCookieControlsEnabled(handle);
     }
 
-    /** Container for the struct defined in tracking_protection_feature.h on the C++ side. */
-    public static class TrackingProtectionFeature {
-        // The feature that this struct applies to.
-        public @TrackingProtectionFeatureType int featureType;
-        // If enforced then how (by policy, setting, etc).
-        public @CookieControlsEnforcement int enforcement;
-        // The status of the feature (whether it's allowed, blocked, limited, etc).
-        public @TrackingProtectionBlockingStatus int status;
-
-        public TrackingProtectionFeature(
-                @TrackingProtectionFeatureType int featureType,
-                @CookieControlsEnforcement int enforcement,
-                @TrackingProtectionBlockingStatus int status) {
-            this.featureType = featureType;
-            this.enforcement = enforcement;
-            this.status = status;
-        }
-    }
-
-    @CalledByNative
-    private static List<TrackingProtectionFeature> createTpFeatureList() {
-        return new ArrayList<TrackingProtectionFeature>();
-    }
-
-    @CalledByNative
-    private static void createTpFeatureAndAddToList(
-            List<TrackingProtectionFeature> list,
-            @TrackingProtectionFeatureType int featureType,
-            @CookieControlsEnforcement int enforcement,
-            @TrackingProtectionBlockingStatus int status) {
-        TrackingProtectionFeature feature =
-                new TrackingProtectionFeature(featureType, enforcement, status);
-
-        if (list != null) list.add(feature);
-    }
-
     @CalledByNative
     private void onStatusChanged(
             boolean controlsVisible,
             boolean protectionsOn,
             @CookieControlsEnforcement int enforcement,
             @CookieBlocking3pcdStatus int blockingStatus,
-            long expiration,
-            List<TrackingProtectionFeature> features) {
+            long expiration) {
         // Old cookies API.
         mObserver.onStatusChanged(
                 controlsVisible, protectionsOn, enforcement, blockingStatus, expiration);
-        // New Tracking Protection API.
-        mObserver.onTrackingProtectionStatusChanged(
-                controlsVisible, protectionsOn, expiration, features);
     }
 
     @CalledByNative

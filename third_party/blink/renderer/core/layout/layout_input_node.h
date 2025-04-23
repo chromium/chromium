@@ -21,6 +21,7 @@
 
 namespace blink {
 
+class BlockNode;
 class ComputedStyle;
 class Document;
 class LayoutObject;
@@ -194,10 +195,6 @@ class CORE_EXPORT LayoutInputNode {
   bool CreatesNewFormattingContext() const {
     return IsBlock() && box_->CreatesNewFormattingContext();
   }
-
-  // Returns true if this node should pass its percentage resolution block-size
-  // to its children. Typically only quirks-mode, auto block-size, block nodes.
-  bool UseParentPercentageResolutionBlockSizeForChildren() const;
 
   // Returns intrinsic sizing information for replaced elements.
   // ComputeReplacedSize can use it to compute actual replaced size.

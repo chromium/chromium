@@ -281,6 +281,9 @@ void NetExportFileWriter::GetFilePathToCompletedLog(
 
 std::string NetExportFileWriter::CaptureModeToString(
     net::NetLogCaptureMode capture_mode) {
+  if (capture_mode == net::NetLogCaptureMode::kHeavilyRedacted) {
+    return "HEAVILY_REDACTED";
+  }
   if (capture_mode == net::NetLogCaptureMode::kDefault)
     return "STRIP_PRIVATE_DATA";
   if (capture_mode == net::NetLogCaptureMode::kIncludeSensitive)

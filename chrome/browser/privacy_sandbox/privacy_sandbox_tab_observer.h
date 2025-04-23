@@ -17,7 +17,8 @@ class PrivacySandboxTabObserver : public content::WebContentsObserver {
 
  private:
   // content::WebContentsObserver:
-  void PrimaryPageChanged(content::Page& page) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
   // Returns whether we're visiting a new tab page.
   bool IsNewTabPage();

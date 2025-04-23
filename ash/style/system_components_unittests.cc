@@ -77,6 +77,8 @@ std::unique_ptr<views::Widget> CreateSystemDialogWidget(
   return dialog_widget;
 }
 
+}  // namespace
+
 // WidgetWithSystemUIComponentView ---------------------------------------------
 
 // A WidgetDelegateView with given component as the only content.
@@ -101,8 +103,6 @@ std::unique_ptr<views::Widget> CreateWidgetWithComponent(
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       new WidgetWithSystemUIComponentView(std::move(component)));
 }
-
-}  // namespace
 
 using SystemComponentsTest = AshTestBase;
 

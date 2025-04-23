@@ -6,6 +6,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_request_helper.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -14,14 +15,22 @@
 using signin_metrics::AccessPoint;
 using signin_metrics::PromoAction;
 
+@interface InstantSigninMediator () <AuthenticationFlowRequestHelper>
+@end
+
 @implementation InstantSigninMediator {
   AuthenticationFlow* _authenticationFlow;
   AccessPoint _accessPoint;
+  ChangeProfileContinuationProvider _continuationProvider;
 }
 
-- (instancetype)initWithAccessPoint:(signin_metrics::AccessPoint)accessPoint {
+- (instancetype)initWithAccessPoint:(signin_metrics::AccessPoint)accessPoint
+               continuationProvider:(const ChangeProfileContinuationProvider&)
+                                        continuationProvider {
   self = [super init];
   if (self) {
+    CHECK(continuationProvider);
+    _continuationProvider = continuationProvider;
     _accessPoint = accessPoint;
   }
   return self;
@@ -34,30 +43,26 @@ using signin_metrics::PromoAction;
   CHECK(!_authenticationFlow);
   _authenticationFlow = authenticationFlow;
   signin_metrics::RecordSigninUserActionForAccessPoint(_accessPoint);
-  __weak __typeof(self) weakSelf = self;
-  [_authenticationFlow
-      startSignInWithCompletion:^(SigninCoordinatorResult result) {
-        [weakSelf signInFlowCompletedForSignInOnlyWithResult:result];
-      }];
+  _authenticationFlow.requestHelper = self;
+  [_authenticationFlow startSignIn];
 }
 
 - (void)disconnect {
-  CHECK(!_authenticationFlow, base::NotFatalUntil::M138);
-}
-
-- (void)interrupt {
-  CHECK(_authenticationFlow);
   [_authenticationFlow interrupt];
 }
 
-#pragma mark - Private
+#pragma mark - AuthenticationFlowRequestHelper
 
-// Called when the sign-in flow is over.
-- (void)signInFlowCompletedForSignInOnlyWithResult:
+- (void)authenticationFlowDidSignInInSameProfileWithResult:
     (SigninCoordinatorResult)result {
-  CHECK(_authenticationFlow);
   _authenticationFlow = nil;
   [self.delegate instantSigninMediator:self didSigninWithResult:result];
+}
+
+- (ChangeProfileContinuation)authenticationFlowWillChangeProfile {
+  _authenticationFlow = nil;
+  [self.delegate instantSigninMediatorWillSwitchProfile:self];
+  return _continuationProvider.Run();
 }
 
 @end

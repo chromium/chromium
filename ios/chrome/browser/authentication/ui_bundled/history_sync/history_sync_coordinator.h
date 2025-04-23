@@ -12,6 +12,7 @@
 namespace history_sync {
 enum class HistorySyncSkipReason;
 }
+enum class SigninContextStyle;
 namespace signin_metrics {
 enum class AccessPoint : int;
 }  // namespace signin_metrics
@@ -49,6 +50,7 @@ enum class AccessPoint : int;
                             firstRun:(BOOL)firstRun
                        showUserEmail:(BOOL)showUserEmail
                           isOptional:(BOOL)isOptional
+                        contextStyle:(SigninContextStyle)contextStyle
                          accessPoint:(signin_metrics::AccessPoint)accessPoint
     NS_DESIGNATED_INITIALIZER;
 

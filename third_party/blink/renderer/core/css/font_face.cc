@@ -75,6 +75,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -161,8 +162,8 @@ FontFace* FontFace::Create(ExecutionContext* context,
   if (!src || !src->IsValueList()) {
     font_face->SetError(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kSyntaxError,
-        "The source provided ('" + source +
-            "') could not be parsed as a value list."));
+        WTF::StrCat({"The source provided ('", source,
+                     "') could not be parsed as a value list."})));
   }
 
   font_face->InitCSSFontFace(context, *src);

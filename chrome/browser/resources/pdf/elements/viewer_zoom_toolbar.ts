@@ -41,8 +41,6 @@ export class ViewerZoomToolbarElement extends CrLitElement {
     return {
       keyboardNavigationActive_: {type: Boolean},
 
-      pdfCr23Enabled: {type: Boolean},
-
       visible_: {
         type: Boolean,
         reflect: true,
@@ -51,7 +49,6 @@ export class ViewerZoomToolbarElement extends CrLitElement {
   }
 
   protected accessor keyboardNavigationActive_: boolean = false;
-  protected accessor pdfCr23Enabled: boolean = false;
   private accessor visible_: boolean = false;
 
   override firstUpdated() {
@@ -62,10 +59,6 @@ export class ViewerZoomToolbarElement extends CrLitElement {
 
   isVisible(): boolean {
     return this.visible_;
-  }
-
-  protected iconsetName_(): string {
-    return this.pdfCr23Enabled ? 'pdf-cr23' : 'pdf';
   }
 
   private onFocus_(): void {

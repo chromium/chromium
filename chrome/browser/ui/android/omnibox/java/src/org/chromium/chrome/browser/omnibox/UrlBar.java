@@ -428,12 +428,19 @@ public class UrlBar extends AutocompleteEditText {
 
     @Override
     protected void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
-        super.onTextChanged(text, start, lengthBefore, lengthAfter);
-
         if (mShouldSendTypingStartedEvent && lengthAfter > 0) {
             mTypingStartedListener.ifPresent(Runnable::run);
             mShouldSendTypingStartedEvent = false;
         }
+
+        // Do not move this to the top of the method!
+        // Make sure to emit the "TypingStarted" signal ahead of "onTextChanged", to allow the
+        // Autocomplete session to begin.
+        // This is particularly important on large form factor devices with physical keyboard and
+        // precision pointer devices attached, where the UrlBar comes prefocused on NTP, but the
+        // session remains inactive until typing begins.
+        // See crbug.com/410642190
+        super.onTextChanged(text, start, lengthBefore, lengthAfter);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             // Due to crbug.com/1103555, Autofill had to be disabled on the UrlBar to work around

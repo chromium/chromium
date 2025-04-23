@@ -115,9 +115,6 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 std::array<uint8_t, crypto::kSHA256Length> CreateSHA256Hash(
     std::string_view data);
 
-COMPONENT_EXPORT(DEVICE_FIDO)
-std::string_view ConvertToStringView(base::span<const uint8_t> data);
-
 // Convert byte array into GUID formatted string as defined by RFC 4122.
 // As we are converting 128 bit UUID, |bytes| must be have length of 16.
 // https://tools.ietf.org/html/rfc4122
@@ -137,18 +134,6 @@ bool CopyCBORBytestring(std::array<uint8_t, N>* out,
   }
   const std::vector<uint8_t> bytestring = it->second.GetBytestring();
   return ExtractArray(bytestring, /*pos=*/0, out);
-}
-
-constexpr std::array<uint8_t, 4> Uint32LittleEndian(uint32_t value) {
-  return {static_cast<uint8_t>(value), static_cast<uint8_t>(value >> 8),
-          static_cast<uint8_t>(value >> 16), static_cast<uint8_t>(value >> 24)};
-}
-
-constexpr std::array<uint8_t, 8> Uint64LittleEndian(uint64_t value) {
-  return {static_cast<uint8_t>(value),       static_cast<uint8_t>(value >> 8),
-          static_cast<uint8_t>(value >> 16), static_cast<uint8_t>(value >> 24),
-          static_cast<uint8_t>(value >> 32), static_cast<uint8_t>(value >> 40),
-          static_cast<uint8_t>(value >> 48), static_cast<uint8_t>(value >> 56)};
 }
 
 }  // namespace fido_parsing_utils

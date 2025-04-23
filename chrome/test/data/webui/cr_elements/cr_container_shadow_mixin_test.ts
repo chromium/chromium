@@ -39,10 +39,15 @@ suite('CrContainerShadowBehavior', function() {
     }
 
     static get properties() {
-      return {showBottomShadow: Boolean};
+      return {
+        showBottomShadow: {
+          type: Boolean,
+          value: false,
+        },
+      };
     }
 
-    showBottomShadow: boolean = false;
+    declare showBottomShadow: boolean;
   }
 
   customElements.define(TestElement.is, TestElement);

@@ -27,8 +27,8 @@
 #error VS 2017 Update 3.2 or higher is required
 #endif
 
-#if !defined(NTDDI_WIN10_NI)
-#error Windows 10.0.22621.0 SDK or higher required.
+#if !defined(NTDDI_WIN11_GE)
+#error Windows 10.0.26100.0 SDK or higher required.
 #endif
 
 namespace base {
@@ -212,6 +212,10 @@ OSInfo::OSInfo(const _OSVERSIONINFOEXW& version_info,
       case PRODUCT_BUSINESS_N:
       case PRODUCT_IOTENTERPRISE:
       case PRODUCT_IOTENTERPRISES:
+      // PRODUCT_SERVERRDSH (0xAF) has been reused for Windows 10/11 Enterprise
+      // Multi-Session, a client OS with multi-session support, commonly used
+      // with Azure Virtual Desktop.
+      case PRODUCT_SERVERRDSH:
         version_type_ = SUITE_ENTERPRISE;
         break;
       case PRODUCT_PRO_FOR_EDUCATION:

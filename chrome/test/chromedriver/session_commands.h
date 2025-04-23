@@ -200,6 +200,12 @@ Status ExecuteRemoveVirtualPressureSource(Session* session,
                                           const base::Value::Dict& params,
                                           std::unique_ptr<base::Value>* value);
 
+// Sets Protected Audience k-anonymity status.
+Status ExecuteSetProtectedAudienceKAnonymity(
+    Session* session,
+    const base::Value::Dict& params,
+    std::unique_ptr<base::Value>* value);
+
 // Forwards a BiDi command to BiDiMapper
 Status ForwardBidiCommand(Session* session,
                           const base::Value::Dict& params,

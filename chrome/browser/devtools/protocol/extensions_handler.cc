@@ -13,7 +13,6 @@
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/protocol/extensions.h"
 #include "chrome/browser/devtools/protocol/protocol.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -21,7 +20,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/storage/storage_area_namespace.h"
 #include "extensions/browser/api/storage/storage_utils.h"
-#include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_util.h"
 
 namespace {
@@ -181,8 +180,7 @@ void ExtensionsHandler::LoadUnpacked(
   content::BrowserContext* context = ProfileManager::GetLastUsedProfile();
   DCHECK(context);
   scoped_refptr<extensions::UnpackedInstaller> installer(
-      extensions::UnpackedInstaller::Create(
-          extensions::ExtensionSystem::Get(context)->extension_service()));
+      extensions::UnpackedInstaller::Create(context));
   installer->set_be_noisy_on_failure(false);
   installer->set_completion_callback(
       base::BindOnce(&ExtensionsHandler::OnLoaded, weak_factory_.GetWeakPtr(),
@@ -228,12 +226,10 @@ void ExtensionsHandler::Uninstall(const protocol::String& id,
 
   std::u16string error;
   bool initiated =
-      extensions::ExtensionSystem::Get(context)
-          ->extension_service()
-          ->UninstallExtension(
-              id, extensions::UNINSTALL_REASON_USER_INITIATED, &error,
-              base::BindOnce(&ExtensionsHandler::OnUninstalled,
-                             weak_factory_.GetWeakPtr(), std::move(callback)));
+      extensions::ExtensionRegistrar::Get(context)->UninstallExtension(
+          id, extensions::UNINSTALL_REASON_USER_INITIATED, &error,
+          base::BindOnce(&ExtensionsHandler::OnUninstalled,
+                         weak_factory_.GetWeakPtr(), std::move(callback)));
   if (!initiated) {
     std::move(callback)->sendFailure(protocol::Response::ServerError(
         "Uninstall failed. Reason: " + base::UTF16ToUTF8(error)));

@@ -570,8 +570,12 @@ float Layer::GetCombinedOpacity() const {
   return opacity;
 }
 
-void Layer::SetBackdropFilterBounds(const gfx::RRectF& bounds) {
+void Layer::SetBackdropFilterBounds(const SkPath& bounds) {
   cc_layer_->SetBackdropFilterBounds(bounds);
+}
+
+void Layer::SetBackdropFilterBounds(const gfx::RRectF& bounds) {
+  SetBackdropFilterBounds(SkPath::RRect(SkRRect(bounds)));
 }
 
 void Layer::ClearBackdropFilterBounds() {

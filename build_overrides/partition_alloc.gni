@@ -111,6 +111,8 @@ if (is_win && is_component_build && (!use_custom_libcxx || libcxx_is_shared)) {
   use_allocator_shim_default = false
 }
 
+shim_supports_sized_dealloc_default = use_sized_deallocation
+
 use_partition_alloc_as_malloc_default =
     use_allocator_shim_default && _is_partition_alloc_everywhere_platform &&
     !_disable_partition_alloc_everywhere

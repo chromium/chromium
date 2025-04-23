@@ -101,7 +101,9 @@ void SignalsAggregatorImpl::GetSignals(const SignalsAggregationRequest& request,
     return;
   }
 
-  const auto permission = permission_service_->CanCollectSignals();
+  const auto permission = (request.trigger == Trigger::kSignalsReport)
+                              ? permission_service_->CanCollectReportSignals()
+                              : permission_service_->CanCollectSignals();
   LogUserPermissionChecked(permission);
   if (permission != UserPermission::kGranted &&
       permission != UserPermission::kMissingConsent) {

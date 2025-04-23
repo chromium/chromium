@@ -8,7 +8,10 @@ import android.view.View;
 
 import androidx.annotation.IdRes;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Feature related utilities for Hub. */
+@NullMarked
 public class HubUtils {
     /**
      * Returns the height of the hub search box's calculated container.

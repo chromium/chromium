@@ -18,7 +18,7 @@ group("build") {
 }
 
 accessibility_common_dir =
-    "$root_out_dir/resources/chromeos/accessibility/accessibility_common"
+    "$root_out_dir/resources/chromeos/accessibility/accessibility_common/mv2"
 
 # Directory where typescript build will occur.
 ts_build_staging_dir = "$target_gen_dir/ts_build_staging"
@@ -124,7 +124,7 @@ ts_library("ts_build") {
 
     # For type-checking purposes, map vision_bundle.mjs to the definition file
     # in third_party/.
-    "chrome-extension://egfdjlfmgnehecnclamagfafdccgfndp/accessibility_common/third_party/mediapipe_task_vision/vision_bundle.mjs|" + rebase_path(
+    "chrome-extension://egfdjlfmgnehecnclamagfafdccgfndp/accessibility_common/mv2/third_party/mediapipe_task_vision/vision_bundle.mjs|" + rebase_path(
             "$mediapipe_dir/vision.d.ts",
             target_gen_dir),
   ]
@@ -200,12 +200,12 @@ source_set("browser_tests") {
     "$root_out_dir/chrome_200_percent.pak",
     "$root_out_dir/locales/en-US.pak",
     "$root_out_dir/resources.pak",
-    "$root_out_dir/resources/chromeos/accessibility/accessibility_common/",
+    "$root_out_dir/resources/chromeos/accessibility/accessibility_common/mv2/",
 
     "$root_out_dir/test_data/chrome/browser/resources/chromeos/accessibility/accessibility_common/",
 
     # The test uses data from the original location, not the copied one.
-    "//chrome/browser/resources/chromeos/accessibility/accessibility_common/",
+    "//chrome/browser/resources/chromeos/accessibility/accessibility_common/mv2/",
     "//chrome/browser/resources/chromeos/accessibility/common/",
   ]
   data += js2gtest_js_libraries
@@ -282,7 +282,7 @@ action("pumpkin_test_files") {
   ]
 
   args = [
-    "--dest-dir=resources/chromeos/accessibility/accessibility_common/third_party/pumpkin",
+    "--dest-dir=resources/chromeos/accessibility/accessibility_common/mv2/third_party/pumpkin",
     rebase_path("../../common/testing/fake_pumpkin_dlc.tar.xz", root_build_dir),
     string_join(",", files_to_extract),
     out_dir,
@@ -302,7 +302,7 @@ action("facegaze_test_files") {
   ]
 
   args = [
-    "--dest-dir=resources/chromeos/accessibility/accessibility_common/third_party/mediapipe_task_vision",
+    "--dest-dir=resources/chromeos/accessibility/accessibility_common/mv2/third_party/mediapipe_task_vision",
     rebase_path("../../common/testing/fake_facegaze_assets_dlc.tar.xz",
                 root_build_dir),
     string_join(",", files_to_extract),

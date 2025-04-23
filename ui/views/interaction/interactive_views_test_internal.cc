@@ -19,11 +19,13 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/focus/widget_focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/interaction/interaction_test_util_mouse.h"
 #include "ui/views/interaction/widget_focus_observer.h"
 #include "ui/views/native_window_tracker.h"
 #include "ui/views/test/widget_test.h"
@@ -297,8 +299,10 @@ void InteractiveViewsTestPrivate::DoTestTearDown() {
   InteractiveTestPrivate::DoTestTearDown();
 }
 
-gfx::NativeWindow InteractiveViewsTestPrivate::GetWindowHintFor(
-    ui::TrackedElement* el) {
+InteractionTestUtilMouse::GestureParams
+InteractiveViewsTestPrivate::GetGestureParamsForStep(
+    ui::TrackedElement* el,
+    const ui::InteractionSequence* seq) {
   // See if the native window can be extracted directly from the element.
   gfx::NativeWindow window = GetNativeWindowFromElement(el);
 
@@ -317,7 +321,8 @@ gfx::NativeWindow InteractiveViewsTestPrivate::GetWindowHintFor(
     result.first->second.SetWindow(window);
   }
 
-  return window;
+  return InteractionTestUtilMouse::GestureParams(
+      window, seq->IsCurrentStepImmediateForTesting());
 }
 
 gfx::NativeWindow InteractiveViewsTestPrivate::GetNativeWindowFromElement(

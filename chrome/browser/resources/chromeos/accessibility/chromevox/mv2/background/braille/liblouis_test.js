@@ -10,7 +10,7 @@
 // Include test fixture.
 GEN_INCLUDE(['../../testing/chromevox_e2e_test_base.js']);
 
-ChromeVoxLibLouisTest = class extends ChromeVoxE2ETest {
+ChromeVoxMV2LibLouisTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
@@ -38,7 +38,7 @@ function assertEqualsUint8Array(expected, actual) {
 }
 
 AX_TEST_F(
-    'ChromeVoxLibLouisTest', 'TranslateComputerBraille', async function() {
+    'ChromeVoxMV2LibLouisTest', 'TranslateComputerBraille', async function() {
       const [cells, textToBraille, brailleToText] =
           await this.translate('en-us-comp8.ctb', 'Hello!');
       assertEqualsUint8Array([0x53, 0x11, 0x07, 0x07, 0x15, 0x2e], cells);
@@ -46,7 +46,7 @@ AX_TEST_F(
       assertEqualsJSON([0, 1, 2, 3, 4, 5], brailleToText);
     });
 
-AX_TEST_F('ChromeVoxLibLouisTest', 'MAYBE_CheckAllTables', async function() {
+AX_TEST_F('ChromeVoxMV2LibLouisTest', 'MAYBE_CheckAllTables', async function() {
   const tables = await new Promise(resolve => BrailleTable.getAll(resolve));
   for (const table of tables) {
     const translator = await this.liblouis.getTranslator(table.fileNames);
@@ -63,14 +63,16 @@ AX_TEST_F('ChromeVoxLibLouisTest', 'MAYBE_CheckAllTables', async function() {
 `);
 
 AX_TEST_F(
-    'ChromeVoxLibLouisTest', 'BackTranslateComputerBraille', async function() {
+    'ChromeVoxMV2LibLouisTest', 'BackTranslateComputerBraille',
+    async function() {
       const cells = new Uint8Array([0x53, 0x11, 0x07, 0x07, 0x15, 0x2e]);
       const text = await this.backTranslate('en-us-comp8.ctb', cells.buffer);
       assertEquals('Hello!', text);
     });
 
 AX_TEST_F(
-    'ChromeVoxLibLouisTest', 'TranslateGermanGrade2Braille', async function() {
+    'ChromeVoxMV2LibLouisTest', 'TranslateGermanGrade2Braille',
+    async function() {
       // This is one of the moderately large tables.
       const [cells, textToBraille, brailleToText] =
           await this.translate('de-g2.ctb', 'München');
@@ -80,14 +82,14 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxLibLouisTest', 'TranslateSpaceIsNotDropped', async function() {
+    'ChromeVoxMV2LibLouisTest', 'TranslateSpaceIsNotDropped', async function() {
       const [cells, textToBraille, brailleToText] =
           await this.translate('en-ueb-g2.ctb', ' ');
       assertEqualsUint8Array([0x0], cells);
     });
 
 AX_TEST_F(
-    'ChromeVoxLibLouisTest', 'BackTranslateGermanComputerBraille',
+    'ChromeVoxMV2LibLouisTest', 'BackTranslateGermanComputerBraille',
     async function() {
       const cells = new Uint8Array([0xb3]);
       const text = await this.backTranslate('de-de-comp8.ctb', cells.buffer);
@@ -95,7 +97,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxLibLouisTest',
+    'ChromeVoxMV2LibLouisTest',
     'BackTranslateUSEnglishGrade2PreservesTrailingSpace', async function() {
       // A full braille cell (dots 1-6) is 'for' when backtranslated.
       const cells = new Uint8Array([0b111111, 0]);
@@ -104,20 +106,21 @@ AX_TEST_F(
       assertEquals('for ', text);
     });
 
-AX_TEST_F('ChromeVoxLibLouisTest', 'BackTranslateEmptyCells', async function() {
-  const text =
-      await this.backTranslate('de-de-comp8.ctb', new Uint8Array().buffer);
-  assertNotEquals(null, text);
-  assertEquals(0, text.length);
-});
+AX_TEST_F(
+    'ChromeVoxMV2LibLouisTest', 'BackTranslateEmptyCells', async function() {
+      const text =
+          await this.backTranslate('de-de-comp8.ctb', new Uint8Array().buffer);
+      assertNotEquals(null, text);
+      assertEquals(0, text.length);
+    });
 
-AX_TEST_F('ChromeVoxLibLouisTest', 'GetInvalidTranslator', async function() {
+AX_TEST_F('ChromeVoxMV2LibLouisTest', 'GetInvalidTranslator', async function() {
   console.log('Expecting an error from liblouis');
   const translator = await this.liblouis.getTranslator('nonexistant-table');
   assertEquals(null, translator);
 });
 
-AX_TEST_F('ChromeVoxLibLouisTest', 'KeyEventStaticData', async function() {
+AX_TEST_F('ChromeVoxMV2LibLouisTest', 'KeyEventStaticData', async function() {
   const [cells, textToBraille, brailleToText] = await this.translate(
       'en-us-comp8.ctb', 'abcdefghijklmnopqrstuvwxyz 0123456789');
   // A-Z.

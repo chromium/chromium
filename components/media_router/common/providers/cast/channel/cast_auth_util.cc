@@ -41,23 +41,6 @@ BASE_FEATURE(kEnforceSHA256Checking,
              "CastSHA256Enforced",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enforce cast fallback CRL revocation when enabled.
-// If disabled, fallback CRL will be ignored. If the feature is enabled,  it
-// overrides kEnforceRevocationChecking.
-BASE_FEATURE(kEnforceFallbackCRLRevocationChecking,
-             "CastFallbackCRLRevocation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enforce certificate revocation when enabled.
-// If disabled, any revocation failures are ignored.
-//
-// This flags only controls the enforcement. Revocation is checked regardless.
-//
-// This flag tracks the changes necessary to fully enforce revocation.
-BASE_FEATURE(kEnforceRevocationChecking,
-             "CastCertificateRevocation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
 
 const char kParseErrorPrefix[] = "Failed to parse auth message: ";
@@ -507,19 +490,10 @@ AuthResult VerifyCredentialsImpl(const AuthResponse& response,
 
 AuthResult VerifyCredentials(const AuthResponse& response,
                              const std::string& signature_input) {
-  base::Time now = base::Time::Now();
-  cast_crypto::CRLPolicy policy = cast_crypto::CRLPolicy::CRL_REQUIRED;
-  if (!base::FeatureList::IsEnabled(kEnforceRevocationChecking)) {
-    policy = cast_crypto::CRLPolicy::CRL_OPTIONAL;
-  }
-  if (base::FeatureList::IsEnabled(kEnforceFallbackCRLRevocationChecking)) {
-    if (policy == cast_crypto::CRLPolicy::CRL_REQUIRED) {
-      policy = cast_crypto::CRLPolicy::CRL_REQUIRED_WITH_FALLBACK;
-    } else {
-      policy = cast_crypto::CRLPolicy::CRL_OPTIONAL_WITH_FALLBACK;
-    }
-  }
-  return VerifyCredentialsImpl(response, signature_input, policy, nullptr, now);
+  return VerifyCredentialsImpl(
+      response, signature_input,
+      cast_crypto::CRLPolicy::CRL_REQUIRED_WITH_FALLBACK, nullptr,
+      base::Time::Now());
 }
 
 AuthResult VerifyCredentialsForTest(const AuthResponse& response,

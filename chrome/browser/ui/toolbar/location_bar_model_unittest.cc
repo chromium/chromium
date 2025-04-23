@@ -25,8 +25,8 @@
 #include "ui/gfx/text_elider.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension_builder.h"
 #endif
 
@@ -182,7 +182,7 @@ void LocationBarModelTest::SetUp() {
       extensions::ExtensionBuilder("Test")
           .SetID("fooooooooooooooooooooooooooooooo")
           .Build();
-  extension_system->extension_service()->AddExtension(extension.get());
+  extensions::ExtensionRegistrar::Get(profile())->AddExtension(extension.get());
 #endif
 }
 

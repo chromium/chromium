@@ -8,14 +8,14 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 
 Group::Group(size_t limit,
-             GroupIdLimitsAndCounts group_id_limits_and_counts,
+             std::map<omnibox::GroupId, size_t> group_id_limits,
              bool is_default)
-    : limit_(limit),
-      group_id_limits_and_counts_(group_id_limits_and_counts),
-      is_default_(is_default) {}
-
-Group::Group(size_t limit, omnibox::GroupId group_id)
-    : Group(limit, GroupIdLimitsAndCounts{{group_id, {limit}}}) {}
+    : limit_(limit), is_default_(is_default) {
+  for (const auto& [group_id, group_id_limit] : group_id_limits) {
+    group_id_limits_and_counts_[group_id] = {.limit = group_id_limit,
+                                             .count = 0};
+  }
+}
 
 Group::Group(const Group& group) = default;
 Group& Group::operator=(const Group& group) = default;

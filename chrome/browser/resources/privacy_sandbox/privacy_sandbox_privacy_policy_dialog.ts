@@ -33,7 +33,7 @@ export class PrivacySandboxPrivacyPolicyDialogElement extends CrLitElement {
     };
   }
 
-  shouldShow: boolean = false;
+  accessor shouldShow: boolean = false;
   private privacyPolicyPageClickStartTime_: number;
   private privacyPolicyPageLoadEndTime_: number;
 

@@ -42,8 +42,6 @@ struct CONTENT_EXPORT BtmServerRedirectInfo {
 struct CONTENT_EXPORT BtmNavigationInfo {
   // Precondition: `navigation_handle.HasCommitted()` must be `true`.
   explicit BtmNavigationInfo(NavigationHandle& navigation_handle);
-  BtmNavigationInfo(const BtmNavigationInfo&);
-  BtmNavigationInfo& operator=(const BtmNavigationInfo&);
   BtmNavigationInfo(BtmNavigationInfo&&);
   BtmNavigationInfo& operator=(BtmNavigationInfo&&);
   ~BtmNavigationInfo();
@@ -58,8 +56,8 @@ struct CONTENT_EXPORT BtmNavigationInfo {
 
 class CONTENT_EXPORT BtmPageVisitObserver : public WebContentsObserver {
  public:
-  using VisitCallback = base::RepeatingCallback<void(const BtmPageVisitInfo&,
-                                                     const BtmNavigationInfo&)>;
+  using VisitCallback =
+      base::RepeatingCallback<void(BtmPageVisitInfo, BtmNavigationInfo)>;
 
   // The arguments to `VisitCallback`.
   struct VisitTuple {

@@ -115,8 +115,8 @@ class BluetoothPairingBlueZ {
   device::BluetoothDevice::PairingDelegate* GetPairingDelegate() const;
 
  private:
-  // Internal method to reset the current set of callbacks because a new
-  // request has arrived that supersedes them.
+  // Internal method to run the current set of callbacks with canceled state
+  // because a new request has arrived that supersedes them.
   void ResetCallbacks();
 
   // Internal method to respond to the relevant callback for a RejectPairing

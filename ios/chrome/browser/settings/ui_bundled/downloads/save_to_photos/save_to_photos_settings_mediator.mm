@@ -138,22 +138,14 @@
 }
 
 - (void)onAccountsOnDeviceChanged {
-  [self handleIdentityListChanged];
+  [self updateConsumers];
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
-  [self handleIdentityUpdated];
+  [self updateConsumers];
 }
 
 #pragma mark - Private
-
-- (void)handleIdentityListChanged {
-  [self updateConsumers];
-}
-
-- (void)handleIdentityUpdated {
-  [self updateConsumers];
-}
 
 // The Save to Photos settings UI will be displayed or removed depending on
 // whether the application's current state is configured to support Save to

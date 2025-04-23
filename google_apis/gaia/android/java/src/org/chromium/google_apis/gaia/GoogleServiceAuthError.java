@@ -5,6 +5,7 @@
 package org.chromium.google_apis.gaia;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 
@@ -24,5 +25,14 @@ public class GoogleServiceAuthError {
     @CalledByNative
     public @GoogleServiceAuthErrorState int getState() {
         return mState;
+    }
+
+    public boolean isTransientError() {
+        return GoogleServiceAuthErrorJni.get().isTransientError(mState);
+    }
+
+    @NativeMethods
+    interface Natives {
+        boolean isTransientError(@GoogleServiceAuthErrorState int state);
     }
 }

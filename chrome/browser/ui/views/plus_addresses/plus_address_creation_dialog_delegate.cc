@@ -445,8 +445,6 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
                                   /*autosize=*/true),
       controller_(controller),
       web_contents_(web_contents) {
-  // This delegate is owned & deleted by the PlusAddressCreationController.
-  SetOwnedByWidget(false);
   RegisterDeleteDelegateCallback(
       RegisterDeleteCallbackPassKey(),
       base::BindOnce(

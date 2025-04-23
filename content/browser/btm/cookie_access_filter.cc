@@ -4,6 +4,8 @@
 
 #include "content/browser/btm/cookie_access_filter.h"
 
+#include <string>
+
 #include "content/browser/btm/btm_utils.h"
 
 namespace content {
@@ -86,6 +88,15 @@ bool CookieAccessFilter::Filter(const std::vector<GURL>& urls,
   // Otherwise, fill the entire result vector with kUnknown and return false.
   std::fill(result.begin(), result.end(), BtmDataAccessType::kUnknown);
   return false;
+}
+
+std::vector<GURL> CookieAccessFilter::GetUrlsForDebuging() const {
+  std::vector<GURL> urls;
+  for (const CookieAccess& access : accesses_) {
+    urls.push_back(access.url);
+  }
+
+  return urls;
 }
 
 }  // namespace content

@@ -27,9 +27,9 @@ bool StructTraits<storage::mojom::BucketInfoDataView, storage::BucketInfo>::
     return false;
   }
 
-  *out = storage::BucketInfo(storage::BucketId(data.id()), storage_key,
-                             data.type(), name, expiration, data.quota(),
-                             data.persistent(), data.durability());
+  *out = storage::BucketInfo(storage::BucketId(data.id()), storage_key, name,
+                             expiration, data.quota(), data.persistent(),
+                             data.durability());
   return true;
 }
 

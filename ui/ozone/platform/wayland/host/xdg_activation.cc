@@ -7,6 +7,7 @@
 #include <xdg-activation-v1-client-protocol.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -42,6 +43,8 @@ class XdgActivation::TokenRequest {
   void InitiateRequest();
 
  private:
+  wl_surface* DetermineSurface(const std::optional<wl::Serial>& serial) const;
+
   // xdg_activation_token_v1_listener callbacks:
   static void OnTokenReceived(void* data,
                               xdg_activation_token_v1* activation_token,
@@ -158,28 +161,47 @@ void XdgActivation::TokenRequest::InitiateRequest() {
       .done = &OnTokenReceived};
   xdg_activation_token_v1_add_listener(token_.get(), &kXdgActivationListener,
                                        this);
+
+  auto serial = connection_->serial_tracker().GetSerial(
+      {wl::SerialType::kTouchPress, wl::SerialType::kMousePress,
+       wl::SerialType::kMouseEnter, wl::SerialType::kKeyPress});
+  if (serial.has_value()) {
+    xdg_activation_token_v1_set_serial(token_.get(), serial->value,
+                                       connection_->seat()->wl_object());
+  }
+  if (auto* surface = DetermineSurface(serial)) {
+    xdg_activation_token_v1_set_surface(token_.get(), surface);
+  }
+  xdg_activation_token_v1_commit(token_.get());
+}
+
+wl_surface* XdgActivation::TokenRequest::DetermineSurface(
+    const std::optional<wl::Serial>& serial) const {
+  WaylandWindow const* window = nullptr;
+  auto* const window_manager = connection_->window_manager();
+
   // The spec isn't clear about what types of surfaces should be used as
   // the requestor surface, but all implementations of xdg_activation_v1
   // known to date accept the currently keyboard focused surface for
   // activation. Update if needed once the upstream issue gets fixed:
   // https://gitlab.freedesktop.org/wayland/wayland-protocols/-/issues/129
-  const WaylandWindow* const keyboard_focused_window =
-      connection_->window_manager()->GetCurrentKeyboardFocusedWindow();
-  wl_surface* const keyboard_focused_surface =
-      keyboard_focused_window
-          ? keyboard_focused_window->root_surface()->surface()
-          : nullptr;
-  if (keyboard_focused_surface) {
-    xdg_activation_token_v1_set_surface(token_.get(), keyboard_focused_surface);
+  if (!serial.has_value()) {
+    window = window_manager->GetCurrentActiveWindow();
+  } else {
+    switch (serial->type) {
+      case wl::SerialType::kMouseEnter:
+      case wl::SerialType::kMousePress:
+        window = window_manager->GetCurrentPointerFocusedWindow();
+        break;
+      case wl::SerialType::kTouchPress:
+        window = window_manager->GetCurrentTouchFocusedWindow();
+        break;
+      case wl::SerialType::kKeyPress:
+        window = window_manager->GetCurrentKeyboardFocusedWindow();
+        break;
+    }
   }
-  if (auto serial = connection_->serial_tracker().GetSerial(
-          {wl::SerialType::kTouchPress, wl::SerialType::kMousePress,
-           wl::SerialType::kMouseEnter, wl::SerialType::kKeyPress});
-      serial.has_value()) {
-    xdg_activation_token_v1_set_serial(token_.get(), serial->value,
-                                       connection_->seat()->wl_object());
-  }
-  xdg_activation_token_v1_commit(token_.get());
+  return window ? window->root_surface()->surface() : nullptr;
 }
 
 void XdgActivation::TokenRequest::OnTimeout() {

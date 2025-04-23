@@ -7,8 +7,11 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/tabs/inactive_window_mouse_event_controller.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -28,7 +31,6 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
-
 // static
 int AccountSelectionView::GetBrandIconMinimumSize(
     blink::mojom::RpMode rp_mode) {
@@ -95,7 +97,16 @@ void FedCmAccountSelectionView::ShowDialogWidget() {
     scoped_ignore_input_events_ =
         web_contents()->IgnoreInputEvents(std::nullopt);
   } else {
-    tab_accept_mouse_events_ = tab_->AcceptMouseEventsWhileWindowInactive();
+    if (tab_) {
+      if (tabs::TabFeatures* features = tab_->GetTabFeatures()) {
+        if (tabs::
+                InactiveWindowMouseEventController* inactive_event_controller =
+                    features->inactive_window_mouse_event_controller()) {
+          tab_accept_mouse_events_ =
+              inactive_event_controller->AcceptMouseEventsWhileWindowInactive();
+        }
+      }
+    }
   }
 
   if (accounts_widget_shown_callback_) {

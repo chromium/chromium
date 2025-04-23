@@ -54,10 +54,11 @@ swarming.task_triggerers(
 # "project:<project that defines the bucket>"), so we enumerate projects
 # (besides "project:chromium" itself) that are allowed to use Chromium CI pools
 # in their Buildbucket configs (which are currently only per-milestone Chromium
-# projects).
+# projects and GPU-related projects which share builder and testing capacity
+# with Chromium).
 swarming.pool_realm(
     name = "pools/ci",
-    user_projects = [details.project for details in ACTIVE_MILESTONES.values()],
+    user_projects = ["dawn"] + [details.project for details in ACTIVE_MILESTONES.values()],
     owner_groups = [
         "mdb/chrome-infra-eng",
     ],
@@ -82,7 +83,7 @@ swarming.task_triggerers(
 # The tasks here are also triggered via Buildbucket. See comment above.
 swarming.pool_realm(
     name = "pools/try",
-    user_projects = [details.project for details in ACTIVE_MILESTONES.values()],
+    user_projects = ["dawn"] + [details.project for details in ACTIVE_MILESTONES.values()],
     owner_groups = [
         "mdb/chrome-infra-eng",
     ],

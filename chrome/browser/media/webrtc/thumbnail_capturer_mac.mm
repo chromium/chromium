@@ -675,7 +675,7 @@ void ThumbnailCapturerMac::OnCapturedFrame(
 
   // The image has been captured, pass it on to the consumer as a DesktopFrame.
   std::unique_ptr<webrtc::DesktopFrame> frame =
-      webrtc::CreateDesktopFrameFromCGImage(rtc::AdoptCF(cg_image.get()));
+      webrtc::CreateDesktopFrameFromCGImage(webrtc::AdoptCF(cg_image.get()));
   consumer_->OnRecurrentCaptureResult(Result::SUCCESS, std::move(frame),
                                       source_id);
 }

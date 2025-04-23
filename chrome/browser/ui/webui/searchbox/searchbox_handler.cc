@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/base64url.h"
 #include "base/containers/contains.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -29,8 +30,10 @@
 #include "third_party/omnibox_proto/answer_data.pb.h"
 #include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition_utils.h"
+#include "ui/gfx/image/image.h"
 
 namespace {
 
@@ -94,8 +97,12 @@ const char* kJourneysIconResourceName =
     "//resources/cr_components/searchbox/icons/journeys.svg";
 const char* kPageIconResourceName =
     "//resources/cr_components/searchbox/icons/page.svg";
+const char* kPageSparkIconResourceName =
+    "//resources/cr_components/searchbox/icons/page_spark.svg";
 const char* kPedalsIconResourceName = "//theme/current-channel-logo";
 const char* kSearchIconResourceName = "//resources/images/icon_search.svg";
+const char* kSearchSparkIconResourceName =
+    "//resources/cr_components/searchbox/icons/search_spark.svg";
 const char* kSparkIconResourceName =
     "//resources/cr_components/searchbox/icons/spark.svg";
 const char* kStarActiveIconResourceName =
@@ -321,13 +328,18 @@ std::vector<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
         match.type == AutocompleteMatchType::CALCULATOR ||
         match.answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED;
     for (const auto& action : match.actions) {
+      std::string icon_url;
+      if (action->GetIconImage().IsEmpty()) {
+        icon_url = SearchboxHandler::ActionVectorIconToResourceName(
+            action->GetVectorIcon());
+      } else {
+        icon_url = webui::GetBitmapDataUrl(action->GetIconImage().AsBitmap());
+      }
       const OmniboxAction::LabelStrings& label_strings =
           action->GetLabelStrings();
       mojom_match->actions.emplace_back(searchbox::mojom::Action::New(
           label_strings.accessibility_hint, label_strings.hint,
-          label_strings.suggestion_contents,
-          SearchboxHandler::ActionVectorIconToResourceName(
-              action->GetVectorIcon())));
+          label_strings.suggestion_contents, icon_url));
     }
     mojom_match->a11y_label = AutocompleteMatchType::ToAccessibilityLabel(
         match, match.contents, line, 0,
@@ -593,6 +605,9 @@ std::string SearchboxHandler::ActionVectorIconToResourceName(
       icon.name == omnibox::kJourneysChromeRefreshIcon.name) {
     return kJourneysIconResourceName;
   }
+  if (icon.name == omnibox::kPageSparkIcon.name) {
+    return kPageSparkIconResourceName;
+  }
   if (icon.name == omnibox::kPedalIcon.name ||
       icon.name == omnibox::kProductChromeRefreshIcon.name) {
     return kPedalsIconResourceName;
@@ -618,6 +633,9 @@ std::string SearchboxHandler::ActionVectorIconToResourceName(
     return kShareIconResourceName;
   }
 #endif
+  if (icon.name == omnibox::kSearchSparkIcon.name) {
+    return kSearchSparkIconResourceName;
+  }
   if (icon.name == omnibox::kSparkIcon.name) {
     return kSparkIconResourceName;
   }

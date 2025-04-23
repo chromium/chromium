@@ -8,7 +8,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -24,6 +26,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -37,19 +40,27 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.MultiThumbnailCardProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
+import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.TestActivity;
 
@@ -65,13 +76,17 @@ public class StripDragShadowViewUnitTest {
     @Captor private ArgumentCaptor<FaviconImageCallback> mGetFaviconCallbackCaptor;
     @Captor private ArgumentCaptor<Callback<Bitmap>> mGetThumbnailCallbackCaptor;
 
+    @Mock private BrowserControlsStateProvider mMockBrowserControlsStateProvider;
     @Mock private MultiThumbnailCardProvider mMockMultiThumbnailCardProvider;
     @Mock private Supplier<TabContentManager> mMockTabContentManagerSupplier;
     @Mock private Supplier<LayerTitleCache> mMockLayerTitleCacheSupplier;
+    @Mock private TabModelSelector mMockTabModelSelector;
     @Mock private StripDragShadowView.ShadowUpdateHost mMockShadowUpdateHost;
 
     @Mock private TabContentManager mMockTabContentManager;
     @Mock private LayerTitleCache mMockLayerTitleCache;
+    @Mock private TabGroupModelFilterProvider mMockTabGroupModelFilterProvider;
+    @Mock private TabGroupModelFilter mMockTabGroupModelFilter;
     @Mock private Tab mMockTab;
     @Mock private Bitmap mMockThumbnailBitmap;
     @Mock private Bitmap mMockOriginalFaviconBitmap;
@@ -100,8 +115,13 @@ public class StripDragShadowViewUnitTest {
 
         when(mMockTabContentManagerSupplier.get()).thenReturn(mMockTabContentManager);
         when(mMockLayerTitleCacheSupplier.get()).thenReturn(mMockLayerTitleCache);
+        when(mMockTabModelSelector.getTabGroupModelFilterProvider())
+                .thenReturn(mMockTabGroupModelFilterProvider);
+        when(mMockTabGroupModelFilterProvider.getTabGroupModelFilter(anyBoolean()))
+                .thenReturn(mMockTabGroupModelFilter);
 
         when(mMockTab.getId()).thenReturn(TAB_ID);
+        when(mMockTab.getTabGroupId()).thenReturn(Token.createRandom());
 
         mStripDragShadowView =
                 (StripDragShadowView)
@@ -109,10 +129,11 @@ public class StripDragShadowViewUnitTest {
                                 .getLayoutInflater()
                                 .inflate(R.layout.strip_drag_shadow_view, null);
         mStripDragShadowView.initialize(
-                /* browserControlsStateProvider= */ null,
+                mMockBrowserControlsStateProvider,
                 mMockMultiThumbnailCardProvider,
                 mMockTabContentManagerSupplier,
                 mMockLayerTitleCacheSupplier,
+                mMockTabModelSelector,
                 mMockShadowUpdateHost);
 
         mCardView = mStripDragShadowView.findViewById(R.id.card_view);
@@ -147,13 +168,28 @@ public class StripDragShadowViewUnitTest {
     }
 
     @Test
-    public void testUpdate_LayoutSize() {
+    @Config(qualifiers = "w640dp-h360dp")
+    public void testUpdate_LayoutSize_Landscape() {
         mStripDragShadowView.prepareForTabDrag(mMockTab, 0);
 
         int expectedWidth = StripDragShadowView.WIDTH_DP;
         int expectedHeight =
                 TabUtils.deriveGridCardHeight(
-                        expectedWidth, mActivity, /* browserControlsStateProvider= */ null);
+                        expectedWidth, mActivity, mMockBrowserControlsStateProvider);
+        LayoutParams layoutParams = mStripDragShadowView.getLayoutParams();
+        assertEquals("Unexpected view width.", expectedWidth, layoutParams.width);
+        assertEquals("Unexpected view height.", expectedHeight, layoutParams.height);
+    }
+
+    @Test
+    @Config(qualifiers = "w360dp-h640dp")
+    public void testUpdate_LayoutSize_Portrait() {
+        mStripDragShadowView.prepareForTabDrag(mMockTab, 0);
+
+        int expectedHeight = StripDragShadowView.HEIGHT_DP;
+        int expectedWidth =
+                TabUtils.deriveGridCardWidth(
+                        expectedHeight, mActivity, mMockBrowserControlsStateProvider);
         LayoutParams layoutParams = mStripDragShadowView.getLayoutParams();
         assertEquals("Unexpected view width.", expectedWidth, layoutParams.width);
         assertEquals("Unexpected view height.", expectedHeight, layoutParams.height);
@@ -250,31 +286,98 @@ public class StripDragShadowViewUnitTest {
     }
 
     @Test
-    public void testSetIncognito() {
-        boolean incognito = true;
-        when(mMockTab.isIncognito()).thenReturn(incognito);
+    public void testUpdate_TabTitle() {
+        String expectedTitle = "tab";
+        when(mMockLayerTitleCache.getUpdatedTitle(any(), anyString())).thenReturn(expectedTitle);
 
         mStripDragShadowView.prepareForTabDrag(mMockTab, 0);
 
+        assertEquals("Unexpected tab title.", expectedTitle, mTitleView.getText());
+    }
+
+    @Test
+    public void testUpdate_GroupTitle() {
+        String expectedTitle = "group";
+        when(mMockLayerTitleCache.getUpdatedGroupTitle(any(), anyString(), anyBoolean()))
+                .thenReturn(expectedTitle);
+
+        mStripDragShadowView.prepareForGroupDrag(mMockTab, 0);
+
+        assertEquals("Unexpected group title.", expectedTitle, mTitleView.getText());
+    }
+
+    @Test
+    public void testUpdate_TabTinting_Standard() {
+        testUpdate_TabTinting(/* incognito= */ false);
+    }
+
+    @Test
+    public void testUpdate_TabTinting_Incognito() {
+        testUpdate_TabTinting(/* incognito= */ true);
+    }
+
+    private void testUpdate_TabTinting(boolean incognito) {
+        when(mMockTab.isIncognitoBranded()).thenReturn(incognito);
+        mStripDragShadowView.prepareForTabDrag(mMockTab, 0);
+
+        // Verify card color
         @ColorRes
         int expectedBackgroundColor =
-                TabUiThemeUtil.getTabStripContainerColor(
-                        mActivity,
-                        incognito,
-                        /* foreground= */ true,
-                        /* isPlaceholder= */ false,
-                        /* isHovered= */ false);
+                TabUiThemeUtil.getTabStripSelectedTabColor(mActivity, incognito);
         assertEquals(
-                "Unexpected drag shadow color.",
+                "Unexpected card color.",
                 expectedBackgroundColor,
                 mCardView.getBackgroundTintList().getDefaultColor());
 
+        // Verify text color
         @ColorRes
-        int expectedTitleColor =
+        int expectedTextColor =
                 AppCompatResources.getColorStateList(
-                                mActivity, R.color.compositor_tab_title_bar_text_incognito)
+                                mActivity,
+                                incognito
+                                        ? R.color.compositor_tab_title_bar_text_incognito
+                                        : R.color.compositor_tab_title_bar_text)
                         .getDefaultColor();
+        assertEquals("Unexpected text color.", expectedTextColor, mTitleView.getCurrentTextColor());
+    }
+
+    @Test
+    public void testUpdate_GroupTinting_Standard() {
+        testUpdate_GroupTinting(/* incognito= */ false);
+    }
+
+    @Test
+    public void testUpdate_GroupTinting_Incognito() {
+        testUpdate_GroupTinting(/* incognito= */ true);
+    }
+
+    private void testUpdate_GroupTinting(boolean incognito) {
+        @TabGroupColorId int colorId = TabGroupColorId.GREY;
+        when(mMockTab.isIncognitoBranded()).thenReturn(incognito);
+        when(mMockTabGroupModelFilter.getTabGroupColorWithFallback(anyInt())).thenReturn(colorId);
+        mStripDragShadowView.prepareForGroupDrag(mMockTab, 0);
+
+        // Verify card color
+        @ColorInt
+        int expectedGroupColor =
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
+                        mActivity, colorId, incognito);
         assertEquals(
-                "Unexpected title color", expectedTitleColor, mTitleView.getCurrentTextColor());
+                "Unexpected card color.",
+                expectedGroupColor,
+                mCardView.getBackgroundTintList().getDefaultColor());
+
+        // Verify thumbnail color
+        verify(mMockMultiThumbnailCardProvider)
+                .setMiniThumbnailPlaceholderColor(
+                        TabUiThemeUtil.getMiniThumbnailPlaceholderColorForGroup(
+                                mActivity, incognito, expectedGroupColor));
+
+        // Verify text color
+        @ColorInt
+        int expectedTextColor =
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemTextColor(
+                        mActivity, colorId, incognito);
+        assertEquals("Unexpected text color.", expectedTextColor, mTitleView.getCurrentTextColor());
     }
 }

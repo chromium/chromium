@@ -48,11 +48,14 @@ const Property* FindDescriptor(const char* str, unsigned int len) {
 
 template <typename CharacterType>
 static AtRuleDescriptorID AsAtRuleDescriptorID(
-    const CharacterType* descriptor_name,
-    unsigned length) {
+    base::span<const CharacterType> descriptor) {
+  // The span size can't be larger then the maximum `unsigned` value because it
+  // comes from a StringView.
+  unsigned length = static_cast<unsigned>(descriptor.size());
   if (length == 0) {
     return AtRuleDescriptorID::Invalid;
   }
+  const CharacterType* descriptor_name = descriptor.data();
   if (length >= 3 && descriptor_name[0] == '-' && descriptor_name[1] == '-') {
     return AtRuleDescriptorID::Variable;
   }
@@ -83,10 +86,9 @@ static AtRuleDescriptorID AsAtRuleDescriptorID(
 }  // namespace
 
 AtRuleDescriptorID AsAtRuleDescriptorID(StringView string) {
-  unsigned length = string.length();
   return string.Is8Bit()
-             ? AsAtRuleDescriptorID(string.Characters8(), length)
-             : AsAtRuleDescriptorID(string.Characters16(), length);
+             ? AsAtRuleDescriptorID(string.Span8())
+             : AsAtRuleDescriptorID(string.Span16());
 }
 
 CSSPropertyID AtRuleDescriptorIDAsCSSPropertyID(AtRuleDescriptorID id) {

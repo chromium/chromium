@@ -94,6 +94,10 @@ _GN_ARGS = [
     'use_siso=true',
 ]
 
+_NO_SERVER = [
+    'android_static_analysis="on"',
+]
+
 _SERVER = [
     'android_static_analysis="build_server"',
 ]
@@ -172,14 +176,14 @@ _BENCHMARKS = [
         from_string='INVALID_WINDOW_INDEX = -1',
         to_string='INVALID_WINDOW_INDEX = -<sub>',
         change_file=
-        'chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManager.java',  # pylint: disable=line-too-long
+        'chrome/browser/tabwindow/android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManager.java',  # pylint: disable=line-too-long
     ),
     Benchmark(
         name='module_internal_nosig',
         from_string='"TabModelSelector',
         to_string='"DifferentUnique<sub>String',
         change_file=
-        'chrome/browser/tabmodel/internal/android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManagerImpl.java',  # pylint: disable=line-too-long
+        'chrome/browser/tabwindow/internal/android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManagerImpl.java',  # pylint: disable=line-too-long
     ),
     Benchmark(
         name='base_nosig',
@@ -544,7 +548,9 @@ def main():
         level=level, format='%(levelname).1s %(relativeCreated)6d %(message)s')
 
     gn_args = _GN_ARGS
-    if not args.no_server:
+    if args.no_server:
+        gn_args += _NO_SERVER
+    else:
         gn_args += _SERVER
     if not args.no_incremental_install:
         gn_args += _INCREMENTAL_INSTALL

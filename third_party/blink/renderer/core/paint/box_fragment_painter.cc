@@ -1331,8 +1331,18 @@ void BoxFragmentPainter::PaintBoxDecorationBackgroundWithDecorationData(
 void BoxFragmentPainter::PaintGapDecorations(const PaintInfo& paint_info,
                                              const PhysicalRect& paint_rect) {
   if (const GapGeometry* gap_geometry = box_fragment_.GapGeometry()) {
-    PaintGaps(kForRows, paint_info, paint_rect, *gap_geometry);
+    EGapRulePaintOrder paint_order = box_fragment_.Style().GapRulePaintOrder();
+    // `gap-rule-paint-order` dictates whether to paint the columns over the
+    // rows, or the rows over the columns. The default is to paint the rows over
+    // the columns.
+    if (paint_order == EGapRulePaintOrder::kColumnOverRow) {
+      PaintGaps(kForRows, paint_info, paint_rect, *gap_geometry);
+      PaintGaps(kForColumns, paint_info, paint_rect, *gap_geometry);
+      return;
+    }
+
     PaintGaps(kForColumns, paint_info, paint_rect, *gap_geometry);
+    PaintGaps(kForRows, paint_info, paint_rect, *gap_geometry);
   }
 }
 
@@ -1348,31 +1358,27 @@ void BoxFragmentPainter::PaintGaps(GridTrackSizingDirection track_direction,
       PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
   BoxSide box_side = BoxSideFromGridDirection(style, track_direction);
 
-  Color rule_color;
-  RuleBreak rule_break;
-  Length rule_outset;
+  GapDataList<StyleColor> rule_colors;
   GapDataList<EBorderStyle> rule_styles;
   GapDataList<int> rule_widths;
+  RuleBreak rule_break;
+  Length rule_outset;
 
-  // TODO(crbug.com/357648037): We are currently only painting gaps with a
-  // single color, but we should update this to paint with all values
-  // potentially set by the author.
   if (track_direction == kForColumns) {
-    rule_color =
-        LayoutObject::ResolveColor(style, GetCSSPropertyColumnRuleColor());
+    rule_colors = style.ColumnRuleColor();
     rule_styles = style.ColumnRuleStyle();
     rule_widths = style.ColumnRuleWidth();
     rule_break = style.ColumnRuleBreak();
     rule_outset = style.ColumnRuleOutset();
   } else {
-    rule_color =
-        LayoutObject::ResolveColor(style, GetCSSPropertyRowRuleColor());
+    rule_colors = style.RowRuleColor();
     rule_styles = style.RowRuleStyle();
     rule_widths = style.RowRuleWidth();
     rule_break = style.RowRuleBreak();
     rule_outset = style.RowRuleOutset();
   }
 
+  rule_colors.ExpandValues();
   rule_styles.ExpandValues();
   rule_widths.ExpandValues();
 
@@ -1514,8 +1520,12 @@ void BoxFragmentPainter::PaintGaps(GridTrackSizingDirection track_direction,
       LayoutUnit decoration_end_offset =
           LayoutUnit(end_width / 2.0f) - end_outset;
 
-      EBorderStyle rule_style =
-          rule_styles.GetGapDecorationForGapIndex(gap_index, gaps.size());
+      StyleColor rule_color =
+          rule_colors.GetGapDecorationForGapIndex(gap_index, gaps.size());
+      Color resolved_rule_color = style.VisitedDependentGapColor(
+          rule_color, style, /*is_column_rule=*/track_direction == kForColumns);
+      EBorderStyle rule_style = ComputedStyle::CollapsedBorderStyle(
+          rule_styles.GetGapDecorationForGapIndex(gap_index, gaps.size()));
       LayoutUnit rule_thickness = LayoutUnit(
           rule_widths.GetGapDecorationForGapIndex(gap_index, gaps.size()));
       if (track_direction == kForColumns) {
@@ -1545,9 +1555,9 @@ void BoxFragmentPainter::PaintGaps(GridTrackSizingDirection track_direction,
       PhysicalRect gap_rect = converter.ToPhysical(gap_logical);
       gap_rect.offset += paint_rect.offset;
 
-      BoxBorderPainter::DrawBoxSide(paint_info.context,
-                                    ToPixelSnappedRect(gap_rect), box_side,
-                                    rule_color, rule_style, auto_dark_mode);
+      BoxBorderPainter::DrawBoxSide(
+          paint_info.context, ToPixelSnappedRect(gap_rect), box_side,
+          resolved_rule_color, rule_style, auto_dark_mode);
       start = end;
     }
   }

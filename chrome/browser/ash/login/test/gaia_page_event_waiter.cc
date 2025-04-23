@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/test/gaia_page_event_waiter.h"
 
+#include "base/check.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
@@ -11,9 +12,12 @@
 
 namespace ash {
 
-GaiaPageEventWaiter::GaiaPageEventWaiter(const std::string& authenticator_id,
+GaiaPageEventWaiter::GaiaPageEventWaiter(content::WebContents* web_contents,
+                                         const std::string& authenticator_id,
                                          const std::string& event)
-    : message_queue_(LoginDisplayHost::default_host()->GetOobeWebContents()) {
+    : message_queue_(web_contents) {
+  CHECK(web_contents);
+
   std::string js =
       R"((function() {
             var authenticator = $AuthenticatorId;
@@ -30,7 +34,7 @@ GaiaPageEventWaiter::GaiaPageEventWaiter(const std::string& authenticator_id,
   event_done_ = base::StrCat({event, "_Done"});
   base::ReplaceSubstringsAfterOffset(&js, 0, "$Done", event_done_);
 
-  test::OobeJS().Evaluate(js);
+  test::JSChecker(web_contents).Evaluate(js);
 }
 
 GaiaPageEventWaiter::~GaiaPageEventWaiter() {

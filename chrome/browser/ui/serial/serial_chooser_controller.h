@@ -43,10 +43,6 @@ class SerialChooserController final
 
   const device::mojom::SerialPortInfo& GetPortForTest(size_t index) const;
 
-  // Retrieves a list of serial devices from the serial port manager and updates
-  // the view's entries.
-  void GetDevices();
-
   // permissions::ChooserController:
   bool ShouldShowHelpButton() const override;
   std::u16string GetNoOptionsText() const override;
@@ -84,6 +80,10 @@ class SerialChooserController final
                              bool powered) override;
 
  private:
+  // Retrieves a list of serial devices from the serial port manager and updates
+  // the view's entries.
+  void GetDevices();
+
   void OnGetDevices(std::vector<device::mojom::SerialPortInfoPtr> ports);
   bool DisplayDevice(const device::mojom::SerialPortInfo& port) const;
   void AddMessageToConsole(blink::mojom::ConsoleMessageLevel level,

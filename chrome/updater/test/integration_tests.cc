@@ -44,6 +44,7 @@
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 #include "chrome/enterprise_companion/global_constants.h"
 #include "chrome/enterprise_companion/installer_paths.h"
+#include "chrome/updater/branded_constants.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/device_management/dm_policy_builder_for_testing.h"
 #include "chrome/updater/ipc/ipc_support.h"
@@ -180,6 +181,22 @@ void ExpectPingRequest(
                          R"(  ])"
                          R"(}})",
                          app_id.c_str()));
+}
+
+void ExpectInstallEvent(ScopedServer& test_server, const std::string& app_id) {
+  test_server.ExpectOnce({request::GetContentMatcher({base::StringPrintf(
+                             R"(.*"appid":"%s".*"eventtype":2.*)", app_id)})},
+                         base::StringPrintf(")]}'\n"
+                                            R"({"response":{)"
+                                            R"(  "protocol":"3.1",)"
+                                            R"(  "app":[)"
+                                            R"(    {)"
+                                            R"(      "appid":"%s",)"
+                                            R"(      "status":"ok")"
+                                            R"(    })"
+                                            R"(  ])"
+                                            R"(}})",
+                                            app_id));
 }
 
 base::FilePath GetInstallerPath(const std::string& installer) {
@@ -924,6 +941,7 @@ TEST_P(IntegrationLowerVersionTest, OverinstallWorking) {
 
   // After two wakes, the new updater is active.
   ScopedServer test_server(test_commands_);
+  ExpectInstallEvent(test_server, kQualificationAppId);
   ASSERT_NO_FATAL_FAILURE(
       ExpectUpdateSequence(&test_server, kQualificationAppId, "",
                            UpdateService::Priority::kBackground,
@@ -1013,12 +1031,14 @@ TEST_F(IntegrationTest, SelfUninstallOutdatedUpdater) {
 
 TEST_F(IntegrationTest, QualifyUpdater) {
   ScopedServer test_server(test_commands_);
+  ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(SetupFakeUpdaterLowerVersion());
   ASSERT_NO_FATAL_FAILURE(ExpectVersionNotActive(kUpdaterVersion));
 
+  ExpectInstallEvent(test_server, kQualificationAppId);
   ASSERT_NO_FATAL_FAILURE(
       ExpectUpdateSequence(&test_server, kQualificationAppId, "",
                            UpdateService::Priority::kBackground,
@@ -1086,10 +1106,11 @@ TEST_P(IntegrationCleanupOldVersionTest, VariousArchitectures) {
 }
 
 TEST_F(IntegrationTest, SelfUpdate) {
-  ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
   ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
 
+  ScopedServer test_server(test_commands_);
   base::Version next_version(base::StringPrintf("%s1", kUpdaterVersion));
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
       &test_server, kUpdaterAppId, "", UpdateService::Priority::kBackground,
@@ -1105,11 +1126,11 @@ TEST_F(IntegrationTest, SelfUpdate) {
 }
 
 TEST_F(IntegrationTest, SelfUpdateWithWakeAll) {
-  ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
   ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
 
   base::Version next_version(base::StringPrintf("%s1", kUpdaterVersion));
+  ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
       &test_server, kUpdaterAppId, "", UpdateService::Priority::kBackground,
       base::Version(kUpdaterVersion), next_version));
@@ -1219,13 +1240,16 @@ TEST_F(IntegrationTest, ReportsActive) {
   ASSERT_GE(TestTimeouts::action_timeout(), base::Seconds(18));
   base::test::ScopedRunLoopTimeout timeout(FROM_HERE,
                                            TestTimeouts::action_timeout());
-
   ScopedServer test_server(test_commands_);
+
+  ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
 
   // Register apps test1 and test2. Expect pings for each.
+  ExpectInstallEvent(test_server, "test1");
   ASSERT_NO_FATAL_FAILURE(InstallApp("test1"));
+  ExpectInstallEvent(test_server, "test2");
   ASSERT_NO_FATAL_FAILURE(InstallApp("test2"));
 
   // Set test1 to be active and do a background updatecheck.
@@ -1273,9 +1297,11 @@ TEST_F(IntegrationTest, CheckForUpdate_UpdaterNotInstalled) {
 
 TEST_F(IntegrationTest, CheckForUpdate) {
   ScopedServer test_server(test_commands_);
+  ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
 
   const std::string kAppId("test");
+  ExpectInstallEvent(test_server, kAppId);
   ASSERT_NO_FATAL_FAILURE(InstallApp(kAppId));
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateCheckSequence(
       &test_server, kAppId, UpdateService::Priority::kForeground,
@@ -1287,11 +1313,12 @@ TEST_F(IntegrationTest, CheckForUpdate) {
 }
 
 TEST_F(IntegrationTest, UpdateBadHash) {
-  ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
-
   const std::string kAppId("test");
   ASSERT_NO_FATAL_FAILURE(InstallApp(kAppId));
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+
+  ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequenceBadHash(
       &test_server, kAppId, "", UpdateService::Priority::kBackground,
       base::Version("0.1"), base::Version("1")));
@@ -1302,12 +1329,11 @@ TEST_F(IntegrationTest, UpdateBadHash) {
 }
 
 TEST_F(IntegrationTest, UpdateErrorStatus) {
-  ScopedServer test_server(test_commands_);
-
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp1, /*install_v1=*/true));
 
+  ScopedServer test_server(test_commands_);
   for (const char* app_response_status :
        {"noupdate", "error-internal", "error-hash", "error-osnotsupported",
         "error-hwnotsupported", "error-unsupportedprotocol"}) {
@@ -1341,12 +1367,12 @@ TEST_F(IntegrationTest, UpdateErrorStatus) {
 }
 
 TEST_F(IntegrationTest, UpdateApp) {
-  ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
 
   const std::string kAppId("test");
   ASSERT_NO_FATAL_FAILURE(InstallApp(kAppId));
   base::Version v1("1");
+  ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
       &test_server, kAppId, "", UpdateService::Priority::kBackground,
       base::Version("0.1"), v1));
@@ -1415,9 +1441,11 @@ TEST_F(IntegrationTest, SendPing) {
 TEST_F(IntegrationTest, GZipUpdateResponses) {
   ScopedServer test_server(test_commands_);
   test_server.set_gzip_response(true);
+  ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
 
   const std::string kAppId("test");
+  ExpectInstallEvent(test_server, kAppId);
   ASSERT_NO_FATAL_FAILURE(InstallApp(kAppId));
   base::Version v1("1");
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
@@ -1443,6 +1471,7 @@ TEST_F(IntegrationTest, GZipUpdateResponses) {
 
 TEST_F(IntegrationTest, UpdateAppSucceedsEvenAfterDeletingInterfaces) {
   ScopedServer test_server(test_commands_);
+  ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
   ASSERT_TRUE(WaitForUpdaterExit());
 
@@ -1480,6 +1509,7 @@ TEST_F(IntegrationTest, UpdateAppSucceedsEvenAfterDeletingInterfaces) {
   ASSERT_FALSE(AreComInterfacesPresent(scope, false));
 
   const std::string kAppId("test");
+  ExpectInstallEvent(test_server, kAppId);
   ASSERT_NO_FATAL_FAILURE(InstallApp(kAppId));
   base::Version v1("1");
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
@@ -1514,6 +1544,7 @@ class IntegrationMetainstallerTest
   }
 
   void TearDown() override {
+    ExpectInstallEvent(*test_server_, kUpdaterAppId);
     ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
     ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
     ASSERT_NO_FATAL_FAILURE(Uninstall());
@@ -1569,6 +1600,7 @@ class IntegrationMetainstallerLangTest
   }
 
   void TearDown() override {
+    ExpectInstallEvent(*test_server_, kUpdaterAppId);
     ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
     ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
     ASSERT_NO_FATAL_FAILURE(Uninstall());
@@ -1606,7 +1638,9 @@ TEST_P(IntegrationMetainstallerLangTest, Test) {
 TEST_F(IntegrationTest, NoCheckWhenLastCheckedRecently) {
   ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(SetLastChecked(base::Time::Now() - base::Minutes(5)));
+  ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
+  ExpectInstallEvent(test_server, "test");
   ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
@@ -1615,11 +1649,13 @@ TEST_F(IntegrationTest, NoCheckWhenLastCheckedRecently) {
 
 TEST_F(IntegrationTest, NoCheckWhenLastCheckedRecentlyPolicy) {
   ScopedServer test_server(test_commands_);
+  ExpectInstallEvent(test_server, kUpdaterAppId);
   base::Value::Dict dict_policies;
   dict_policies.Set("autoupdatecheckperiodminutes", 60 * 18);
   ASSERT_NO_FATAL_FAILURE(SetLastChecked(base::Time::Now() - base::Hours(12)));
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
   ASSERT_NO_FATAL_FAILURE(SetDictPolicies(dict_policies));
+  ExpectInstallEvent(test_server, "test");
   ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
@@ -1634,8 +1670,10 @@ TEST_F(IntegrationTest, NoCheckWhenSuppressed) {
   dict_policies.Set("updatessuppressedstarthour", (now.hour - 1 + 24) % 24);
   dict_policies.Set("updatessuppressedstartmin", 0);
   dict_policies.Set("updatessuppresseddurationmin", 120);
+  ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
   ASSERT_NO_FATAL_FAILURE(SetDictPolicies(dict_policies));
+  ExpectInstallEvent(test_server, "test");
   ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
@@ -1646,6 +1684,7 @@ TEST_F(IntegrationTest, InstallUpdaterAndApp) {
   ScopedServer test_server(test_commands_);
   const std::string kAppId("test");
   const base::Version v1("1");
+  ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
       &test_server, kAppId, "", UpdateService::Priority::kForeground,
       base::Version({0, 0, 0, 0}), v1));
@@ -1665,6 +1704,7 @@ TEST_F(IntegrationTest, InstallUpdaterAndTwoApps) {
   const std::string kAppId("test");
   const std::string kAppId2("test2");
   const base::Version v1("1");
+  ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
       &test_server, kAppId, "", UpdateService::Priority::kForeground,
       base::Version({0, 0, 0, 0}), v1));
@@ -1694,6 +1734,7 @@ TEST_F(IntegrationTest, ChangeTag) {
   ScopedServer test_server(test_commands_);
   const std::string kAppId("test");
   const base::Version v1("1");
+  ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
       &test_server, kAppId, "", UpdateService::Priority::kForeground,
       base::Version({0, 0, 0, 0}), v1));
@@ -1812,6 +1853,7 @@ TEST_F(IntegrationTest, KSAdminXattrTagBrandNoXattrFailure) {
 TEST_F(IntegrationTest, InstallId) {
   ScopedServer test_server(test_commands_);
   const std::string kAppId("test");
+  ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
       &test_server, kAppId, "", UpdateService::Priority::kForeground,
       base::Version({0, 0, 0, 0}), base::Version("1"), false, false,
@@ -1863,7 +1905,9 @@ TEST_P(IntegrationSansInstallIdTest, Test) {
 
 TEST_F(IntegrationTest, MultipleWakesOneNetRequest) {
   ScopedServer test_server(test_commands_);
+  ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
 
   // Only one sequence visible to the server despite multiple wakes.
   ASSERT_NO_FATAL_FAILURE(ExpectNoUpdateSequence(&test_server, kUpdaterAppId));
@@ -1876,7 +1920,9 @@ TEST_F(IntegrationTest, MultipleWakesOneNetRequest) {
 
 TEST_F(IntegrationTest, MultipleUpdateAllsMultipleNetRequests) {
   ScopedServer test_server(test_commands_);
+  ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
 
   ASSERT_NO_FATAL_FAILURE(ExpectNoUpdateSequence(&test_server, kUpdaterAppId));
   ASSERT_NO_FATAL_FAILURE(UpdateAll());
@@ -1915,10 +1961,14 @@ INSTANTIATE_TEST_SUITE_P(UseLegacyInstallApp,
 
 TEST_P(IntegrationGetAppStatesTest, Test) {
   ScopedServer test_server(test_commands_);
+  ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
 
   const std::string kAppId("test");
   const base::Version v1("0.1");
+  if (!UseLegacyInstallApp()) {
+    ExpectInstallEvent(test_server, kAppId);
+  }
   ASSERT_NO_FATAL_FAILURE(InstallAppId(kAppId));
 
   if (!UseLegacyInstallApp()) {
@@ -1945,12 +1995,14 @@ TEST_P(IntegrationGetAppStatesTest, Test) {
 
 TEST_F(IntegrationTest, GetAppStates_AppIdsAlwaysLowercase) {
   ScopedServer test_server(test_commands_);
+  ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
 
   base::Value::Dict expected_app_states;
   for (const std::string appid :
        {"test1", "TEST2", "Test3", "TeSt4", "tEsT5"}) {
     const base::Version v1("0.1");
+    ExpectInstallEvent(test_server, appid);
     ASSERT_NO_FATAL_FAILURE(InstallApp(appid));
 
     ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(appid, v1));
@@ -1972,7 +2024,6 @@ TEST_F(IntegrationTest, GetAppStates_AppIdsAlwaysLowercase) {
 }
 
 TEST_F(IntegrationTest, CreateCorrectAndIncorrectScopeProxies) {
-  ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
 
   const std::string kAppId("test");
@@ -1981,6 +2032,7 @@ TEST_F(IntegrationTest, CreateCorrectAndIncorrectScopeProxies) {
 
   ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));
 
+  ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateCheckSequence(
       &test_server, kAppId, UpdateService::Priority::kForeground, v1,
       base::Version("1")));
@@ -2062,6 +2114,7 @@ TEST_P(IntegrationLowerVersionTest, SelfUpdateFromOldReal) {
   ASSERT_NO_FATAL_FAILURE(RunWakeActive(0));
 
   // Qualify the new instance.
+  ExpectInstallEvent(test_server, kQualificationAppId);
   ASSERT_NO_FATAL_FAILURE(
       ExpectUpdateSequence(&test_server, kQualificationAppId, "",
                            UpdateService::Priority::kBackground,
@@ -2089,6 +2142,7 @@ TEST_P(IntegrationLowerVersionTest, UninstallIfUnusedSelfAndOldReal) {
   ASSERT_NO_FATAL_FAILURE(RunWakeActive(0));
 
   // Qualify the new instance.
+  ExpectInstallEvent(test_server, kQualificationAppId);
   ASSERT_NO_FATAL_FAILURE(
       ExpectUpdateSequence(&test_server, kQualificationAppId, "",
                            UpdateService::Priority::kBackground,
@@ -2156,10 +2210,12 @@ TEST_F(IntegrationTest, IdleServerExits) {
 
 TEST_F(IntegrationTest, SameVersionUpdate) {
   ScopedServer test_server(test_commands_);
+  ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
 
   const std::string app_id = "test-appid";
+  ExpectInstallEvent(test_server, app_id);
   ASSERT_NO_FATAL_FAILURE(InstallApp(app_id));
 
   const std::string response = base::StringPrintf(
@@ -2197,12 +2253,14 @@ TEST_F(IntegrationTest, SameVersionUpdate) {
 
 TEST_F(IntegrationTest, InstallDataIndex) {
   ScopedServer test_server(test_commands_);
+  ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
 
   const std::string app_id = "test-appid";
   const std::string install_data_index = "test-install-data-index";
 
+  ExpectInstallEvent(test_server, app_id);
   ASSERT_NO_FATAL_FAILURE(InstallApp(app_id));
 
   const std::string response = base::StringPrintf(
@@ -2295,11 +2353,11 @@ TEST_F(IntegrationTest, CrashUsageStatsEnabled) {
 #if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
   GTEST_SKIP() << "Crash tests disabled for Win ASAN.";
 #else
-  ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_TRUE(WaitForUpdaterExit());
 
+  ScopedServer test_server(test_commands_);
   const std::string response;
   test_server.ExpectOnce(
       {
@@ -2482,6 +2540,7 @@ INSTANTIATE_TEST_SUITE_P(CecaExperimentFlag,
 TEST_P(IntegrationTestDeviceManagement, Nothing) {}
 
 TEST_P(IntegrationTestDeviceManagement, PolicyFetchBeforeInstall) {
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install(GetInstallSwitches()));
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
 
@@ -2538,6 +2597,7 @@ TEST_P(IntegrationTestDeviceManagement, PolicyFetchBeforeInstall) {
 TEST_F(IntegrationTestDeviceManagementBase,
        FallbackToOutOfProcessNetworkFetcher) {
   ASSERT_NO_FATAL_FAILURE(InstallBrokenEnterpriseCompanionApp());
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install(/*switches=*/{}));
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
 
@@ -2581,7 +2641,82 @@ TEST_F(IntegrationTestDeviceManagementBase,
 }
 #endif  // BUILDFLAG(IS_MAC)
 
+TEST_F(IntegrationTestDeviceManagementBase,
+       PolicyFetchFailedButAppInstalledAnyway) {
+  ASSERT_NO_FATAL_FAILURE(InstallBrokenEnterpriseCompanionApp());
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
+  ASSERT_NO_FATAL_FAILURE(Install(/*switches=*/{}));
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+
+  DMPushEnrollmentToken(kEnrollmentToken);
+
+  // Policy fetch failure should not block the app installation.
+  test_server_->ExpectOnce({}, "", net::HTTP_INTERNAL_SERVER_ERROR);
+#if BUILDFLAG(IS_MAC)
+  // Mac has an out-of-process fallback fetcher.
+  test_server_->ExpectOnce({}, "", net::HTTP_INTERNAL_SERVER_ERROR);
+#endif  // BUILDFLAG(IS_MAC)
+
+  ASSERT_NO_FATAL_FAILURE(ExpectAppsUpdateSequence(
+      UpdaterScope::kSystem, test_server_.get(),
+      /*request_attributes=*/{},
+      {
+          AppUpdateExpectation(
+              kApp1.GetInstallCommandLineArgs(/*install_v1=*/true), kApp1.appid,
+              base::Version({0, 0, 0, 0}), kApp1.v1,
+              /*is_install=*/true,
+              /*should_update=*/true, false, "", "",
+              GetInstallerPath(kApp1.v1_crx)),
+      }));
+  ASSERT_NO_FATAL_FAILURE(InstallAppViaService(kApp1.appid));
+  ASSERT_NO_FATAL_FAILURE(ExpectRegistered(kApp1.appid));
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(UninstallBrokenEnterpriseCompanionApp());
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTestDeviceManagementBase,
+       PolicyFetchFailedButAppUpdatedAnyway) {
+  ASSERT_NO_FATAL_FAILURE(InstallBrokenEnterpriseCompanionApp());
+
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
+  ASSERT_NO_FATAL_FAILURE(Install(/*switches=*/{}));
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ExpectInstallEvent(*test_server_, kApp1.appid);
+  ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp1, /*install_v1=*/true));
+  ExpectAppInstalled(kApp1.appid, kApp1.v1);
+
+  DMPushEnrollmentToken(kEnrollmentToken);
+  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
+                                            kEnrollmentToken, kDMToken);
+
+  // Policy fetch failure should not block the app update.
+  test_server_->ExpectOnce({}, "", net::HTTP_INTERNAL_SERVER_ERROR);
+#if BUILDFLAG(IS_MAC)
+  // Mac has an out-of-process fallback fetcher.
+  test_server_->ExpectOnce({}, "", net::HTTP_INTERNAL_SERVER_ERROR);
+#endif  // BUILDFLAG(IS_MAC)
+
+  ExpectAppsUpdateSequence(
+      UpdaterScope::kSystem, test_server_.get(),
+      /*request_attributes=*/{},
+      {AppUpdateExpectation(
+          kApp1.GetInstallCommandLineArgs(/*install_v1=*/false), kApp1.appid,
+          kApp1.v1, kApp1.v2,
+          /*is_install=*/false,
+          /*should_update=*/true, false, "", "",
+          GetInstallerPath(kApp1.v2_crx))});
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kApp1.appid, kApp1.v2));
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(UninstallBrokenEnterpriseCompanionApp());
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
 TEST_P(IntegrationTestDeviceManagement, AppInstall) {
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install(GetInstallSwitches()));
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
 
@@ -2648,6 +2783,7 @@ TEST_P(IntegrationTestDeviceManagement, AppInstall) {
 }
 
 TEST_P(IntegrationTestDeviceManagement, ForceInstall) {
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install(GetInstallSwitches()));
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
 
@@ -2697,6 +2833,7 @@ TEST_P(IntegrationTestDeviceManagement, ForceInstall) {
 }
 
 TEST_P(IntegrationTestDeviceManagement, QualifyUpdaterWhenUpdateDisabled) {
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install(GetInstallSwitches()));
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -2710,6 +2847,7 @@ TEST_P(IntegrationTestDeviceManagement, QualifyUpdaterWhenUpdateDisabled) {
   // Disable global update via CBCM.
   DMPushEnrollmentToken(kEnrollmentToken);
 
+  ExpectInstallEvent(*test_server_, kQualificationAppId);
   ExpectDeviceManagementRegistrationRequest(test_server_.get(),
                                             kEnrollmentToken, kDMToken);
   ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
@@ -2742,6 +2880,7 @@ TEST_P(IntegrationTestDeviceManagement, QualifyUpdaterWhenUpdateDisabled) {
 
 TEST_P(IntegrationTestDeviceManagement,
        QualifyUpdaterWhenNextCheckDelayIsZero) {
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install(GetInstallSwitches()));
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -2755,6 +2894,7 @@ TEST_P(IntegrationTestDeviceManagement,
   // Set update check period to zero via CBCM.
   DMPushEnrollmentToken(kEnrollmentToken);
 
+  ExpectInstallEvent(*test_server_, kQualificationAppId);
   ExpectDeviceManagementRegistrationRequest(test_server_.get(),
                                             kEnrollmentToken, kDMToken);
   ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
@@ -2785,6 +2925,7 @@ TEST_P(IntegrationTestDeviceManagement,
 // During the updater's installation and periodic tasks, the enterprise
 // companion app should not be installed if the device is not cloud managed.
 TEST_P(IntegrationTestDeviceManagement, FetchPolicy_SkipCompanionAppInstall) {
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install(GetInstallSwitches()));
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -2809,6 +2950,7 @@ TEST_F(IntegrationTestDeviceManagementBase,
                 /*server_keep_alive_time=*/base::Seconds(3),
                 /*ceca_connection_timeout=*/base::Seconds(1));
   ASSERT_NO_FATAL_FAILURE(InstallBrokenEnterpriseCompanionApp());
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(
       ExpectBrokenEnterpriseCompanionAppOTAInstallSequence());
 
@@ -2840,6 +2982,7 @@ TEST_F(IntegrationTestDeviceManagementBase,
 TEST_F(IntegrationTestDeviceManagementBase,
        FetchPolicy_FallbackFromCompanionApp) {
   ASSERT_NO_FATAL_FAILURE(InstallBrokenEnterpriseCompanionApp());
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(
       ExpectBrokenEnterpriseCompanionAppOTAInstallSequence());
 
@@ -2888,6 +3031,7 @@ TEST_F(IntegrationTestDeviceManagementBase,
 #if !defined(ADDRESS_SANITIZER)
 TEST_F(IntegrationTestDeviceManagementBase,
        UninstallCompanionAppWhenUninstallUpdater) {
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
       test_server_.get(), kApp1.appid, "", UpdateService::Priority::kForeground,
       base::Version({0, 0, 0, 0}), kApp1.v1));
@@ -2901,6 +3045,12 @@ TEST_F(IntegrationTestDeviceManagementBase,
       /*additional_switches=*/{}));
   ASSERT_TRUE(WaitForUpdaterExit());
 
+#if BUILDFLAG(IS_MAC)
+  // On macOS only, InstallEnterpriseCompanionApp() generates an install event.
+  // This is a quirk of the test helper; when O4 auto-installs the companion
+  // app, it sends an install event on all platforms.
+  ExpectInstallEvent(*test_server_, enterprise_companion::kCompanionAppId);
+#endif
   ASSERT_NO_FATAL_FAILURE(InstallEnterpriseCompanionApp());
 
   // Uninstall ping for the app.
@@ -2920,6 +3070,7 @@ TEST_F(IntegrationTestDeviceManagementBase,
 #if BUILDFLAG(IS_WIN)
 // RuntimeEnrollmentToken is supported on Windows only.
 TEST_P(IntegrationTestDeviceManagement, RuntimeEnrollmentToken) {
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
   if (ceca_experiment_enabled_) {
     ASSERT_NO_FATAL_FAILURE(
         ExpectEnterpriseCompanionAppOTAInstallSequence(test_server_.get()));
@@ -2949,6 +3100,10 @@ TEST_P(IntegrationTestDeviceManagement, RuntimeEnrollmentToken) {
 // This test depends on platform policy overriding cloud policy, which is not
 // the default on POSIX. Therefore, this test is Windows only.
 TEST_P(IntegrationTestDeviceManagement, AppUpdateConflictPolicies) {
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
+  ExpectInstallEvent(*test_server_, kApp1.appid);
+  ExpectInstallEvent(*test_server_, kApp2.appid);
+  ExpectInstallEvent(*test_server_, kApp3.appid);
   if (ceca_experiment_enabled_) {
     ASSERT_NO_FATAL_FAILURE(
         ExpectEnterpriseCompanionAppOTAInstallSequence(test_server_.get()));
@@ -3017,6 +3172,8 @@ TEST_P(IntegrationTestDeviceManagement, AppUpdateConflictPolicies) {
 }
 
 TEST_P(IntegrationTestDeviceManagement, IPolicyStatus) {
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
+  ExpectInstallEvent(*test_server_, kApp1.appid);
   if (ceca_experiment_enabled_) {
     ASSERT_NO_FATAL_FAILURE(
         ExpectEnterpriseCompanionAppOTAInstallSequence(test_server_.get()));
@@ -3148,8 +3305,12 @@ class IntegrationTestCloudPolicyOverridesPlatformPolicy
 
 TEST_P(IntegrationTestCloudPolicyOverridesPlatformPolicy, UseCloudPolicy) {
   ASSERT_NO_FATAL_FAILURE(InstallBrokenEnterpriseCompanionApp());
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install(/*switches=*/{}));
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ExpectInstallEvent(*test_server_, kApp1.appid);
+  ExpectInstallEvent(*test_server_, kApp2.appid);
+  ExpectInstallEvent(*test_server_, kApp3.appid);
   ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp1, /*install_v1=*/true));
   ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp2, /*install_v1=*/true));
   ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp3, /*install_v1=*/true));
@@ -3232,16 +3393,18 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(IntegrationTestDeviceManagement, RollbackToTargetVersion) {
   constexpr char kTargetVersionPrefix[] = "1.0.";
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
+  ASSERT_NO_FATAL_FAILURE(Install(GetInstallSwitches()));
+  ExpectInstallEvent(*test_server_, kApp1.appid);
+  ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp1, /*install_v1=*/false));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kApp1.appid, kApp1.v2));
 
   if (ceca_experiment_enabled_) {
     ASSERT_NO_FATAL_FAILURE(
         ExpectEnterpriseCompanionAppOTAInstallSequence(test_server_.get()));
   }
-  ASSERT_NO_FATAL_FAILURE(Install(GetInstallSwitches()));
-  ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp1, /*install_v1=*/false));
-
-  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
-  ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kApp1.appid, kApp1.v2));
 
   DMPushEnrollmentToken(kEnrollmentToken);
   ExpectDeviceManagementRegistrationRequestFromDefaultPolicyAgent(
@@ -3276,7 +3439,9 @@ TEST_P(IntegrationTestDeviceManagement, RollbackToTargetVersion) {
 
 TEST_F(IntegrationTestDeviceManagementBase, DMTokenDeletion) {
   ASSERT_NO_FATAL_FAILURE(InstallBrokenEnterpriseCompanionApp());
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install(/*switches=*/{}));
+  ExpectInstallEvent(*test_server_, kApp1.appid);
   ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp1, /*install_v1=*/true));
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kApp1.appid, kApp1.v1));
@@ -3314,7 +3479,9 @@ TEST_F(IntegrationTestDeviceManagementBase, DMTokenDeletion) {
 
 TEST_F(IntegrationTestDeviceManagementBase, DMTokenInvalidation) {
   ASSERT_NO_FATAL_FAILURE(InstallBrokenEnterpriseCompanionApp());
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install(/*switches=*/{}));
+  ExpectInstallEvent(*test_server_, kApp1.appid);
   ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp1, /*install_v1=*/true));
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kApp1.appid, kApp1.v1));
@@ -3352,7 +3519,9 @@ TEST_F(IntegrationTestDeviceManagementBase, DMTokenInvalidation) {
 
 TEST_F(IntegrationTestDeviceManagementBase, PublicKeyRotation) {
   ASSERT_NO_FATAL_FAILURE(InstallBrokenEnterpriseCompanionApp());
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install(/*switches=*/{}));
+  ExpectInstallEvent(*test_server_, kApp1.appid);
   ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp1, /*install_v1=*/false));
 
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
@@ -3530,6 +3699,7 @@ class IntegrationTestUserInSystem : public IntegrationTest {
 TEST_F(IntegrationTestUserInSystem, ElevatedInstallOfUserUpdaterAndApp) {
   const std::string kAppId("test");
   const base::Version v1("1");
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(ExpectUserInstallSequence(
       test_server_.get(), kAppId, "", UpdateService::Priority::kForeground,
       base::Version({0, 0, 0, 0}), v1));
@@ -3545,15 +3715,19 @@ TEST_F(IntegrationTestUserInSystem, ElevatedInstallOfUserUpdaterAndApp) {
 }
 
 TEST_F(IntegrationTestUserInSystem, TagNonInterference) {
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(InstallUserUpdater());
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_NO_FATAL_FAILURE(ExpectUserUpdaterInstalled());
 
+  ExpectInstallEvent(*test_server_, "test_app");
   base::Version v("1.0.0.0");
   ASSERT_NO_FATAL_FAILURE(InstallApp("test_app", v));
   ExpectAppVersion("test_app", v);
   ExpectAppTag("test_app", "");
+  ExpectInstallEvent(*test_server_, "test_app");
   ASSERT_NO_FATAL_FAILURE(InstallUserApp("test_app", v));
   ExpectUserAppVersion("test_app", v);
   ExpectUserAppTag("test_app", "");
@@ -3629,6 +3803,7 @@ TEST_F(IntegrationTest, CRURegistrationFindsTag) {
   base::ScopedTempFile xc_path;
   ASSERT_TRUE(xc_path.Create());
 
+  ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
       &test_server, kAppId, "", UpdateService::Priority::kForeground,
       base::Version({0, 0, 0, 0}), v1));
@@ -3733,6 +3908,7 @@ TEST_F(IntegrationTest, FallbackToOutOfProcessFetcher) {
   // Injects an HTTP error before each network fetch to activate the fallback
   // fetcher. The installation should still succeed.
   ScopedServer test_server(test_commands_);
+  ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
       &test_server, kAppId1, "", UpdateService::Priority::kForeground,
       base::Version({0, 0, 0, 0}), v1, /*do_fault_injection=*/true));
@@ -3815,6 +3991,7 @@ TEST_F(IntegrationTest, CRURegistrationInstallsUpdater) {
     GTEST_SKIP();
   }
   ScopedServer test_server(test_commands_);
+  ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(ExpectRegistrationTestAppUserUpdaterInstallSuccess());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
 
@@ -3827,6 +4004,7 @@ TEST_F(IntegrationTest, CRURegistrationIdempotentInstallSuccess) {
     GTEST_SKIP();
   }
   ScopedServer test_server(test_commands_);
+  ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
 
@@ -3842,9 +4020,12 @@ TEST_F(IntegrationTest, CRURegistrationRegister) {
     GTEST_SKIP();
   }
   ScopedServer test_server(test_commands_);
+  ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
 
+  ExpectInstallEvent(test_server,
+                     "org.chromium.CRURegistration.testing.RegisterMe");
   ASSERT_NO_FATAL_FAILURE(ExpectRegistrationTestAppRegisterSuccess());
   ExpectAppVersion("org.chromium.CRURegistration.testing.RegisterMe",
                    base::Version({1, 0, 0, 0}));
@@ -3858,6 +4039,9 @@ TEST_F(IntegrationTest, CRURegistrationInstallAndRegister) {
     GTEST_SKIP();
   }
   ScopedServer test_server(test_commands_);
+  ExpectInstallEvent(test_server, kUpdaterAppId);
+  ExpectInstallEvent(test_server,
+                     "org.chromium.CRURegistration.testing.RegisterMe");
   ASSERT_NO_FATAL_FAILURE(ExpectRegistrationTestAppInstallAndRegisterSuccess());
   ExpectInstalled();
   ExpectAppVersion("org.chromium.CRURegistration.testing.RegisterMe",
@@ -3882,7 +4066,6 @@ TEST_F(IntegrationTest, CRURegistrationReportsActive) {
   base::test::ScopedRunLoopTimeout timeout(FROM_HERE,
                                            TestTimeouts::action_timeout());
 
-  ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
 
@@ -3894,6 +4077,7 @@ TEST_F(IntegrationTest, CRURegistrationReportsActive) {
   ASSERT_NO_FATAL_FAILURE(ExpectCRURegistrationMarksActive("test1"));
   ASSERT_NO_FATAL_FAILURE(ExpectActive("test1"));
   ASSERT_NO_FATAL_FAILURE(ExpectNotActive("test2"));
+  ScopedServer test_server(test_commands_);
   test_server.ExpectOnce(
       {request::GetUpdaterUserAgentMatcher(),
        request::GetContentMatcher(
@@ -3918,7 +4102,9 @@ TEST_F(IntegrationTest, CRURegistrationReportsActive) {
 #if !defined(ADDRESS_SANITIZER)
 
 TEST_F(IntegrationTestUserInSystem, CRURegistrationRegistersApp) {
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(InstallUserUpdater());
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
@@ -3926,6 +4112,7 @@ TEST_F(IntegrationTestUserInSystem, CRURegistrationRegistersApp) {
   base::ScopedTempFile xc_file;
   ASSERT_TRUE(xc_file.Create());
 
+  ExpectInstallEvent(*test_server_, "test");
   ExpectCRURegistrationRegisters("test", xc_file.path(), "0.0.0.1");
   ExpectUserAppVersion("test", base::Version({0, 0, 0, 1}));
   ExpectNotRegistered("test");
@@ -3937,7 +4124,9 @@ TEST_F(IntegrationTestUserInSystem, CRURegistrationRegistersApp) {
 }
 
 TEST_F(IntegrationTestUserInSystem, CRURegistrationUpdatesVersion) {
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(InstallUserUpdater());
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
@@ -3945,6 +4134,7 @@ TEST_F(IntegrationTestUserInSystem, CRURegistrationUpdatesVersion) {
   base::ScopedTempFile xc_file;
   ASSERT_TRUE(xc_file.Create());
 
+  ExpectInstallEvent(*test_server_, "test");
   InstallUserApp("test", base::Version({0, 0, 0, 1}));
   ExpectCRURegistrationRegisters("test", xc_file.path(), "0.0.0.2");
   ExpectUserAppVersion("test", base::Version({0, 0, 0, 2}));
@@ -3957,7 +4147,9 @@ TEST_F(IntegrationTestUserInSystem, CRURegistrationUpdatesVersion) {
 }
 
 TEST_F(IntegrationTestUserInSystem, CRURegistrationCannotRegisterMissingAppID) {
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(InstallUserUpdater());
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
@@ -4003,7 +4195,9 @@ class IntegrationTestKSAdminUserInSystem : public IntegrationTestUserInSystem {
 };
 
 TEST_F(IntegrationTestKSAdminUserInSystem, KSAdminNoAppNoTagNoMatterWhat) {
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(InstallUserUpdater());
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
@@ -4042,7 +4236,9 @@ class IntegrationTestKSAdminFourApps
       return;
     }
 
+    ExpectInstallEvent(*test_server_, kUpdaterAppId);
     ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
+    ExpectInstallEvent(*test_server_, kUpdaterAppId);
     ASSERT_NO_FATAL_FAILURE(InstallUserUpdater());
     ASSERT_TRUE(WaitForUpdaterExit());
     ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
@@ -4050,24 +4246,28 @@ class IntegrationTestKSAdminFourApps
 
     base::Version v("1.0.0.0");
 
+    ExpectInstallEvent(*test_server_, kSystemAppID);
     ASSERT_NO_FATAL_FAILURE(InstallApp(kSystemAppID, v));
     ASSERT_NO_FATAL_FAILURE(SetAppTag(kSystemAppID, kSystemAppTag));
     ASSERT_TRUE(system_app_xcfile_.Create());
     ASSERT_NO_FATAL_FAILURE(
         SetExistenceCheckerPath(kSystemAppID, system_app_xcfile_.path()));
 
+    ExpectInstallEvent(*test_server_, kRepeatAppID);
     ASSERT_NO_FATAL_FAILURE(InstallApp(kRepeatAppID, v));
     ASSERT_NO_FATAL_FAILURE(SetAppTag(kRepeatAppID, kRepeatAppSystemTag));
     ASSERT_TRUE(repeat_app_system_xcfile_.Create());
     ASSERT_NO_FATAL_FAILURE(SetExistenceCheckerPath(
         kRepeatAppID, repeat_app_system_xcfile_.path()));
 
+    ExpectInstallEvent(*test_server_, kUserAppID);
     ASSERT_NO_FATAL_FAILURE(InstallUserApp(kUserAppID, v));
     ASSERT_NO_FATAL_FAILURE(SetUserAppTag(kUserAppID, kUserAppTag));
     ASSERT_TRUE(user_app_xcfile_.Create());
     ASSERT_NO_FATAL_FAILURE(
         SetUserAppExistenceCheckerPath(kUserAppID, user_app_xcfile_.path()));
 
+    ExpectInstallEvent(*test_server_, kRepeatAppID);
     ASSERT_NO_FATAL_FAILURE(InstallUserApp(kRepeatAppID, v));
     ASSERT_NO_FATAL_FAILURE(SetUserAppTag(kRepeatAppID, kRepeatAppUserTag));
     ASSERT_TRUE(repeat_app_user_xcfile_.Create());
@@ -4338,6 +4538,7 @@ TEST_F(IntegrationTest, NoSelfUpdateIfOemMode) {
   };
 
   ScopedServer test_server(test_commands_);
+  ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install({kOemSwitch}));
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -4352,6 +4553,7 @@ TEST_F(IntegrationTest, SelfUpdateIfNoAuditModeWithOemSwitch) {
     GTEST_SKIP();
   }
   ScopedServer test_server(test_commands_);
+  ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install({kOemSwitch}));
   base::Version next_version(base::StringPrintf("%s1", kUpdaterVersion));
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
@@ -4374,6 +4576,7 @@ TEST_F(IntegrationTest, SelfUpdateIfOemModeMoreThan72Hours) {
   };
 
   ScopedServer test_server(test_commands_);
+  ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install({kOemSwitch}));
   ASSERT_NO_FATAL_FAILURE(RewindOemState72PlusHours());
   base::Version next_version(base::StringPrintf("%s1", kUpdaterVersion));
@@ -4409,6 +4612,7 @@ TEST_F(IntegrationTest,
 
 TEST_F(IntegrationTest, Handoff) {
   ScopedServer test_server(test_commands_);
+  ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
 
   const std::string kAppId("test");
@@ -4426,6 +4630,7 @@ TEST_F(IntegrationTest, Handoff) {
 
 TEST_F(IntegrationTest, ForceInstallApp) {
   ScopedServer test_server(test_commands_);
+  ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
 
   base::Value::Dict dict_policies;
@@ -4458,6 +4663,7 @@ TEST_F(IntegrationTest, NeedsAdminPrefers) {
   ScopedServer test_server(test_commands_);
   const std::string kAppId("test");
   const base::Version v1("1");
+  ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
       &test_server, kAppId, "", UpdateService::Priority::kForeground,
       base::Version({0, 0, 0, 0}), v1));
@@ -4490,6 +4696,9 @@ class IntegrationLegacyAppCommandWebTest
     }
 
     test_server_ = std::make_unique<ScopedServer>(test_commands_);
+    if (GetParam().version > base::Version("137.0.0.0")) {
+      ExpectInstallEvent(*test_server_, kUpdaterAppId);
+    }
     ASSERT_NO_FATAL_FAILURE(
         SetupRealUpdater(GetParam().updater_setup_path, switches()));
   }
@@ -4518,6 +4727,9 @@ INSTANTIATE_TEST_SUITE_P(IntegrationLegacyAppCommandWebTestCases,
 
 TEST_P(IntegrationLegacyAppCommandWebTest, NoUsageStats_NoPing) {
   const char kAppId[] = "test1";
+  if (GetParam().version > base::Version("137.0.0.0")) {
+    ExpectInstallEvent(*test_server_, kAppId);
+  }
   ASSERT_NO_FATAL_FAILURE(InstallApp(kAppId));
 
   base::Value::List parameters;
@@ -4529,6 +4741,9 @@ TEST_P(IntegrationLegacyAppCommandWebTest, NoUsageStats_NoPing) {
 TEST_P(IntegrationLegacyAppCommandWebTest, UsageStatsEnabled_ExpectPing) {
   const std::string kAppId("test");
   // Enable usagestats.
+  if (GetParam().version > base::Version("137.0.0.0")) {
+    ExpectInstallEvent(*test_server_, kAppId);
+  }
   InstallApp(kAppId, base::Version("0.1"));
   ASSERT_EQ(
       base::win::RegKey(
@@ -4647,6 +4862,9 @@ INSTANTIATE_TEST_SUITE_P(IntegrationLegacyPolicyStatusTestCases,
 
 TEST_P(IntegrationLegacyPolicyStatusTest, Test) {
   const std::string kAppId("test");
+  if (GetParam().version > base::Version("137.0.0.0")) {
+    ExpectInstallEvent(*test_server_, kAppId);
+  }
   ASSERT_NO_FATAL_FAILURE(InstallApp(kAppId));
   base::Version v1("1");
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
@@ -4719,6 +4937,7 @@ TEST_F(IntegrationTest, AppLogoUrl) {
 
   const std::string kAppId("googletest");
   const base::Version v1("1");
+  ExpectInstallEvent(test_update_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
       &test_update_server, kAppId, "", UpdateService::Priority::kForeground,
       base::Version({0, 0, 0, 0}), v1));
@@ -4754,6 +4973,7 @@ TEST_F(IntegrationTest, BundleNameShowsUpInUI) {
   const std::string kAppId("test");
   const std::string kAppName("Test%20App");
   const base::Version v1("1");
+  ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
       &test_server, kAppId, "", UpdateService::Priority::kForeground,
       base::Version({0, 0, 0, 0}), v1));
@@ -4871,6 +5091,7 @@ TEST_F(IntegrationTest, ExpectPingAndErrorUIWhenGetSetupLockFails) {
   ScopedServer test_update_server(test_commands_);
   const std::string kAppId("googletest");
   const base::Version v1("1");
+  ExpectInstallEvent(test_update_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
       &test_update_server, kAppId, "", UpdateService::Priority::kForeground,
       base::Version({0, 0, 0, 0}), v1));
@@ -4926,6 +5147,9 @@ class IntegrationLegacyUpdate3WebNewInstallTest
     }
 
     test_server_ = std::make_unique<ScopedServer>(test_commands_);
+    if (GetParam().version > base::Version("137.0.0.0")) {
+      ExpectInstallEvent(*test_server_, kUpdaterAppId);
+    }
     ASSERT_NO_FATAL_FAILURE(SetupRealUpdater(GetParam().updater_setup_path));
   }
 
@@ -5012,6 +5236,12 @@ class IntegrationLegacyUpdate3WebTest
     }
 
     test_server_ = std::make_unique<ScopedServer>(test_commands_);
+    if (GetSetup().version > base::Version("137.0.0.0")) {
+      ExpectInstallEvent(*test_server_, kUpdaterAppId);
+      if (!UseLegacyInstallApp()) {
+        ExpectInstallEvent(*test_server_, kAppId);
+      }
+    }
     ASSERT_NO_FATAL_FAILURE(SetupRealUpdater(GetSetup().updater_setup_path));
     ASSERT_NO_FATAL_FAILURE(UseLegacyInstallApp() ? LegacyInstallApp(kAppId)
                                                   : InstallApp(kAppId));
@@ -5142,6 +5372,7 @@ class IntegrationTestMsi : public IntegrationTest {
   }
 
   void InstallMsiWithVersion(const base::Version& version) {
+    ExpectInstallEvent(*test_server_, kMsiAppId);
     InstallApp(kMsiAppId, version);
     base::FilePath msi_path;
     ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &msi_path));
@@ -5187,6 +5418,7 @@ class IntegrationTestMsi : public IntegrationTest {
 };
 
 TEST_F(IntegrationTestMsi, Install) {
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
 
@@ -5209,6 +5441,7 @@ TEST_F(IntegrationTestMsi, Install) {
 
 TEST_F(IntegrationTestMsi, InstallViaCommandLine) {
   const base::FilePath crx_path = GetInstallerPath(kMsiCrx);
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ExpectAppsUpdateSequence(
       UpdaterScope::kSystem, test_server_.get(),
       /*request_attributes=*/{},
@@ -5230,6 +5463,7 @@ TEST_F(IntegrationTestMsi, InstallViaCommandLine) {
 }
 
 TEST_F(IntegrationTestMsi, Upgrade) {
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   InstallMsiWithVersion(kMsiInitialVersion);
@@ -5555,6 +5789,9 @@ TEST_P(IntegrationInstallerResultsTest, TestCases) {
   const bool always_launch_cmd =
       GetTestCase().always_launch_cmd.value_or(false);
 
+  if (GetSetup().version > base::Version("137.0.0.0")) {
+    ExpectInstallEvent(*test_server_, kUpdaterAppId);
+  }
   if (!GetTestCase().interactive_install && !always_launch_cmd) {
     ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
     ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
@@ -5660,6 +5897,9 @@ TEST_P(IntegrationInstallerResultsTest, OnDemandTestCases) {
       !GetTestCase().error_code ||
       GetTestCase().error_code == ERROR_SUCCESS_REBOOT_REQUIRED;
 
+  if (GetSetup().version > base::Version("137.0.0.0")) {
+    ExpectInstallEvent(*test_server_, kUpdaterAppId);
+  }
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdater(GetSetup().updater_setup_path));
   ASSERT_NO_FATAL_FAILURE(InstallApp(kMsiAppId, base::Version({0, 0, 0, 0})));
 
@@ -5707,6 +5947,9 @@ TEST_P(IntegrationInstallerResultsNewInstallsTest, OnDemandCancel) {
 
   const base::FilePath crx_relative_path = GetInstallerPath(kMsiCrx);
 
+  if (GetParam().version > base::Version("137.0.0.0")) {
+    ExpectInstallEvent(*test_server_, kUpdaterAppId);
+  }
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdater(GetParam().updater_setup_path));
   ASSERT_NO_FATAL_FAILURE(InstallApp(kMsiAppId, base::Version({0, 0, 0, 0})));
 
@@ -5744,7 +5987,9 @@ TEST_P(IntegrationInstallerResultsNewInstallsTest, OnDemandCancel) {
 
 TEST_F(IntegrationTestDeviceManagementBase, NamedProxy) {
   ASSERT_NO_FATAL_FAILURE(InstallBrokenEnterpriseCompanionApp());
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install(/*switches=*/{}));
+  ExpectInstallEvent(*test_server_, kApp1.appid);
   ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp1, /*install_v1=*/false));
 
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
@@ -5784,7 +6029,9 @@ TEST_F(IntegrationTestDeviceManagementBase, NamedProxy) {
 
 TEST_F(IntegrationTestDeviceManagementBase, PacScript) {
   ASSERT_NO_FATAL_FAILURE(InstallBrokenEnterpriseCompanionApp());
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install(/*switches=*/{}));
+  ExpectInstallEvent(*test_server_, kApp1.appid);
   ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp1, /*install_v1=*/false));
 
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());

@@ -36,6 +36,8 @@ class OnDeviceModelAdaptationMetadata {
   OnDeviceModelAdaptationMetadata(const OnDeviceModelAdaptationMetadata&);
   ~OnDeviceModelAdaptationMetadata();
 
+  bool operator==(const OnDeviceModelAdaptationMetadata& other) const;
+
   const on_device_model::AdaptationAssetPaths* asset_paths() const {
     return base::OptionalToPtr(asset_paths_);
   }
@@ -84,6 +86,9 @@ class OnDeviceModelAdaptationLoader
  private:
   friend class OnDeviceModelAdaptationLoaderTest;
 
+  // Removes any registration for model updates.
+  void Unregister();
+
   // OptimizationTargetModelObserver:
   void OnModelUpdated(
       optimization_guide::proto::OptimizationTarget optimization_target,
@@ -105,24 +110,19 @@ class OnDeviceModelAdaptationLoader
   ModelBasedCapabilityKey feature_;
   proto::OptimizationTarget target_;
 
-  // The model spec of the latest base model, received from the component
-  // state manager.
-  std::optional<OnDeviceBaseModelSpec> base_model_spec_;
-
+  // The model provider to observe for updates to model adaptations.
+  raw_ptr<OptimizationGuideModelProvider> model_provider_;
+  base::WeakPtr<OnDeviceModelComponentStateManager>
+      on_device_component_state_manager_;
+  raw_ptr<PrefService> local_state_;
   OnLoadFn on_load_fn_;
 
   base::ScopedObservation<OnDeviceModelComponentStateManager,
                           OnDeviceModelComponentStateManager::Observer>
       component_state_manager_observation_{this};
 
-  base::WeakPtr<OnDeviceModelComponentStateManager>
-      on_device_component_state_manager_;
-
-  raw_ptr<PrefService> local_state_;
-
-  // The model provider to observe for updates to model adaptations.
-  raw_ptr<OptimizationGuideModelProvider> model_provider_;
-  bool registered_with_model_provider_ = false;
+  // The compatibility spec that we've registered for adaptations with.
+  std::optional<OnDeviceBaseModelSpec> registered_spec_;
 
   // Background thread where file processing should be performed.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;

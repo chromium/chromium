@@ -26,35 +26,31 @@ namespace client_update_protocol {
 
 namespace {
 
-std::string GetPublicKeyForTesting() {
-  // How to generate this key:
-  //   openssl ecparam -genkey -name prime256v1 -out ecpriv.pem
-  //   openssl ec -in ecpriv.pem -pubout -out ecpub.pem
-
-  static const char kCupEcdsaTestKey_Base64[] =
-      "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEJNOjKyN6UHyUGkGow+xCmQthQXUo"
-      "9sd7RIXSpVIM768UlbGb/5JrnISjSYejCc/pxQooI6mJTzWL3pZb5TA1DA==";
-
-  std::string result;
-  if (!base::Base64Decode(std::string(kCupEcdsaTestKey_Base64), &result))
-    return std::string();
-
-  return result;
-}
+// How to generate this key:
+//   openssl ecparam -genkey -name prime256v1 -out ecpriv.pem
+//   openssl ec -in ecpriv.pem -pubout -out ecpub.pem
+// and use xxd -i to convert it to comma-separated hex.
+//
+// If you change this key, you will also need to change all the test data.
+constexpr auto kCupEcdsaTestKey = std::to_array<uint8_t>({
+    0x30, 0x59, 0x30, 0x13, 0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02,
+    0x01, 0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x03, 0x01, 0x07, 0x03,
+    0x42, 0x00, 0x04, 0x24, 0xd3, 0xa3, 0x2b, 0x23, 0x7a, 0x50, 0x7c, 0x94,
+    0x1a, 0x41, 0xa8, 0xc3, 0xec, 0x42, 0x99, 0x0b, 0x61, 0x41, 0x75, 0x28,
+    0xf6, 0xc7, 0x7b, 0x44, 0x85, 0xd2, 0xa5, 0x52, 0x0c, 0xef, 0xaf, 0x14,
+    0x95, 0xb1, 0x9b, 0xff, 0x92, 0x6b, 0x9c, 0x84, 0xa3, 0x49, 0x87, 0xa3,
+    0x09, 0xcf, 0xe9, 0xc5, 0x0a, 0x28, 0x23, 0xa9, 0x89, 0x4f, 0x35, 0x8b,
+    0xde, 0x96, 0x5b, 0xe5, 0x30, 0x35, 0x0c,
+});
 
 }  // end namespace
 
 class CupEcdsaTest : public testing::Test {
  protected:
-  void SetUp() override {
-    cup_ = Ecdsa::Create(8, GetPublicKeyForTesting());
-    ASSERT_TRUE(cup_.get());
-  }
-
-  Ecdsa& CUP() { return *cup_; }
+  Ecdsa& CUP() { return cup_; }
 
  private:
-  std::unique_ptr<Ecdsa> cup_;
+  Ecdsa cup_{8, kCupEcdsaTestKey};
 };
 
 TEST_F(CupEcdsaTest, SignRequest) {

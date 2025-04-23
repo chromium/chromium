@@ -37,7 +37,6 @@
 #include "base/timer/elapsed_timer.h"
 #include "media/mojo/mojom/media_player.mojom-blink.h"
 #include "media/renderers/remote_playback_client_wrapper.h"
-#include "third_party/blink/public/common/media/display_type.h"
 #include "third_party/blink/public/platform/web_audio_source_provider_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -433,6 +432,10 @@ class CORE_EXPORT HTMLMediaElement
   // the correct execution context.
   ExecutionContext* GetExecutionContextForPlayer() const;
 
+  // WebAudio audio destination node is connected. The HTMLMediaElement could
+  // stop the sink at this time if it is still playing.
+  void ConnectToDestinationReady();
+
  protected:
   // Assert the correct order of the children in shadow dom when DCHECK is on.
   static void AssertShadowRootChildren(ShadowRoot&);
@@ -573,7 +576,7 @@ class CORE_EXPORT HTMLMediaElement
   bool WasAlwaysMuted() final;
   bool HasNativeControls() final;
   bool IsAudioElement() final;
-  DisplayType GetDisplayType() const override;
+  WebMediaPlayer::DisplayType GetDisplayType() const override;
   media::RemotePlaybackClientWrapper* RemotePlaybackClientWrapper() final {
     return this;
   }
@@ -891,6 +894,9 @@ class CORE_EXPORT HTMLMediaElement
   bool is_remote_rendering_ = false;
   // Whether the media content is encrypted.
   bool is_encrypted_media_ = false;
+
+  // Whether webaudio destination is connected.
+  bool is_audio_destination_connected_ = false;
   WebString remote_device_friendly_name_;
   std::optional<media::AudioCodec> audio_codec_ = std::nullopt;
   std::optional<media::VideoCodec> video_codec_ = std::nullopt;
@@ -952,12 +958,20 @@ class CORE_EXPORT HTMLMediaElement
     void SetClient(AudioSourceProviderClient*) override;
     void ProvideInput(AudioBus*, int frames_to_process) override;
 
+    void ConnectToDestinationReady() override;
+
     void Trace(Visitor*) const;
 
    private:
     base::Lock provide_input_lock;
     scoped_refptr<WebAudioSourceProviderImpl> web_audio_source_provider_
         GUARDED_BY(provide_input_lock);
+
+    // Resampling case, connect to the destination can be called before
+    // `audio_source_provider_` is ready. We have to call it during
+    // `audio_source_provider_` assignment.
+    bool connection_to_destination_ready_ = false;
+
     Member<AudioClientImpl> client_;
   };
 

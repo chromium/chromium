@@ -193,12 +193,17 @@ std::u16string SavedTabGroupButton::GetAccessibleNameForButton() const {
           ? l10n_util::GetStringUTF16(IDS_SAVED_GROUP_AX_LABEL_OPENED)
           : l10n_util::GetStringUTF16(IDS_SAVED_GROUP_AX_LABEL_CLOSED);
 
+  const std::u16string& shared_state =
+      is_shared_ ? l10n_util::GetStringUTF16(IDS_SAVED_GROUP_AX_LABEL_SHARED)
+                 : u"";
+
   const std::u16string saved_group_acessible_name =
       GetText().empty()
           ? l10n_util::GetStringFUTF16(
-                IDS_GROUP_AX_LABEL_UNNAMED_SAVED_GROUP_FORMAT, opened_state)
+                IDS_GROUP_AX_LABEL_UNNAMED_SAVED_GROUP_FORMAT, shared_state,
+                opened_state)
           : l10n_util::GetStringFUTF16(
-                IDS_GROUP_AX_LABEL_NAMED_SAVED_GROUP_FORMAT,
+                IDS_GROUP_AX_LABEL_NAMED_SAVED_GROUP_FORMAT, shared_state,
                 std::u16string(GetText()), opened_state);
   return saved_group_acessible_name;
 }

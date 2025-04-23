@@ -125,8 +125,8 @@ Length::Length(scoped_refptr<const CalculationValue> calc)
 Length Length::BlendMixedTypes(const Length& from,
                                double progress,
                                ValueRange range) const {
-  DCHECK(from.IsSpecified());
-  DCHECK(IsSpecified());
+  DCHECK(from.CanConvertToCalculation());
+  DCHECK(CanConvertToCalculation());
   return Length(
       AsCalculationValue()->Blend(*from.AsCalculationValue(), progress, range));
 }
@@ -168,12 +168,12 @@ scoped_refptr<const CalculationValue> Length::AsCalculationValue() const {
 Length Length::SubtractFromOneHundredPercent() const {
   if (IsPercent())
     return Length::Percent(100 - Percent());
-  DCHECK(IsSpecified());
+  DCHECK(CanConvertToCalculation());
   return Length(AsCalculationValue()->SubtractFromOneHundredPercent());
 }
 
 Length Length::Add(const Length& other) const {
-  CHECK(IsSpecified());
+  CHECK(CanConvertToCalculation());
   if (IsFixed() && other.IsFixed()) {
     return Length::Fixed(Pixels() + other.Pixels());
   }

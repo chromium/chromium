@@ -7,6 +7,7 @@
 #include <array>
 #include <optional>
 
+#include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
@@ -55,7 +56,8 @@ PersonalizationSection::~PersonalizationSection() = default;
 
 void PersonalizationSection::AddLoadTimeData(
     content::WebUIDataSource* html_source) {
-  auto* user = BrowserContextHelper::Get()->GetUserByBrowserContext(profile());
+  const auto& user = CHECK_DEREF(
+      BrowserContextHelper::Get()->GetUserByBrowserContext(profile()));
   const bool kIsGuest = IsGuestModeActive(user);
 
   webui::LocalizedString kWallpaperLocalizedStrings[] = {

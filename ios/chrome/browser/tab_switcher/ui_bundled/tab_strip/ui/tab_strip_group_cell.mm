@@ -397,6 +397,8 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
   _notificationDotView.translatesAutoresizingMaskIntoConstraints = NO;
   _notificationDotView.layer.cornerRadius =
       TabStripGroupItemConstants.notificationDotSize / 2;
+  _notificationDotView.accessibilityIdentifier =
+      TabStripGroupItemConstants.notificationDotAccessibilityIdentifier;
   [_titleContainer addSubview:_notificationDotView];
 
   _notificationDotViewTrailingConstraint = [_notificationDotView.trailingAnchor

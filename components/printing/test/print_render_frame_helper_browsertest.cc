@@ -1900,7 +1900,9 @@ class PrintRenderFrameHelperPreviewTest
                  static_cast<int>(mojom::MarginType::kDefaultMargins))
             .Set(kSettingPagesPerSheet, 1)
             .Set(kSettingPreviewModifiable, true)
+#if BUILDFLAG(IS_CHROMEOS)
             .Set(kSettingPreviewIsFromArc, false)
+#endif
             .Set(kSettingHeaderFooterEnabled, false)
             .Set(kSettingShouldPrintBackgrounds, false)
             .Set(kSettingShouldPrintSelectionOnly, false);

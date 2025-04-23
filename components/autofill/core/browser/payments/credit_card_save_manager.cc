@@ -444,9 +444,9 @@ void CreditCardSaveManager::AttemptToOfferCvcUploadSave(
   show_save_prompt_.reset();
 
   show_save_prompt_ = !DetermineAndLogCvcSaveStrikeDatabaseBlockDecision();
-  // TODO(crbug.com/40931101): Refactor ConfirmSaveCreditCardToCloud to change
+  // TODO(crbug.com/40931101): Refactor ShowSaveCreditCardToCloud to change
   // legal_message_lines_ to optional.
-  client_->GetPaymentsAutofillClient()->ConfirmSaveCreditCardToCloud(
+  client_->GetPaymentsAutofillClient()->ShowSaveCreditCardToCloud(
       card_save_candidate_, legal_message_lines_,
       payments::PaymentsAutofillClient::SaveCreditCardOptions()
           .with_show_prompt(show_save_prompt_.value())
@@ -720,7 +720,7 @@ void CreditCardSaveManager::OfferCardLocalSave() {
       card_save_type =
           payments::PaymentsAutofillClient::CardSaveType::kCardSaveWithCvc;
     }
-    client_->GetPaymentsAutofillClient()->ConfirmSaveCreditCardLocally(
+    client_->GetPaymentsAutofillClient()->ShowSaveCreditCardLocally(
         card_save_candidate_,
         payments::PaymentsAutofillClient::SaveCreditCardOptions()
             // TODO(crbug.com/40280819): Refactor SaveCreditCardOptions.
@@ -738,7 +738,7 @@ void CreditCardSaveManager::OfferCardLocalSave() {
 }
 
 void CreditCardSaveManager::OfferCvcLocalSave() {
-  client_->GetPaymentsAutofillClient()->ConfirmSaveCreditCardLocally(
+  client_->GetPaymentsAutofillClient()->ShowSaveCreditCardLocally(
       card_save_candidate_,
       payments::PaymentsAutofillClient::SaveCreditCardOptions()
           .with_show_prompt(show_save_prompt_.value_or(false))
@@ -781,7 +781,7 @@ void CreditCardSaveManager::OfferCardUploadSave(ukm::SourceId ukm_source_id) {
       card_save_type =
           payments::PaymentsAutofillClient::CardSaveType::kCardSaveWithCvc;
     }
-    client_->GetPaymentsAutofillClient()->ConfirmSaveCreditCardToCloud(
+    client_->GetPaymentsAutofillClient()->ShowSaveCreditCardToCloud(
         upload_request_.card, legal_message_lines_,
         payments::PaymentsAutofillClient::SaveCreditCardOptions()
             .with_has_multiple_legal_lines(legal_message_lines_.size() > 1)

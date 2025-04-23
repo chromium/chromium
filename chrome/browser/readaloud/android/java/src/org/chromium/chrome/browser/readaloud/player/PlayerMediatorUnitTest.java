@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.readaloud.ReadAloudPrefsJni;
 import org.chromium.chrome.browser.readaloud.testing.MockPrefServiceHelper;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackModeSelectionEnablementStatus;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.Player;
@@ -83,7 +84,8 @@ public class PlayerMediatorUnitTest {
     private ObservableSupplierImpl<List<PlaybackVoice>> mVoicesSupplier;
     private ObservableSupplierImpl<String> mSelectedVoiceIdSupplier;
     private ObservableSupplierImpl<Boolean> mHighlightingEnabledSupplier;
-    private ObservableSupplierImpl<Boolean> mPlaybackModeSelectorEnabledSupplier;
+    private ObservableSupplierImpl<PlaybackModeSelectionEnablementStatus>
+            mPlaybackModeSelectorEnabledSupplier;
     @Captor private ArgumentCaptor<PlaybackListener> mPlaybackListenerCaptor;
     public UserActionTester mUserActionTester;
 
@@ -168,7 +170,8 @@ public class PlayerMediatorUnitTest {
         mHighlightingEnabledSupplier = new ObservableSupplierImpl<>();
         mHighlightingEnabledSupplier.set(true);
         mPlaybackModeSelectorEnabledSupplier = new ObservableSupplierImpl<>();
-        mPlaybackModeSelectorEnabledSupplier.set(false);
+        mPlaybackModeSelectorEnabledSupplier.set(
+                PlaybackModeSelectionEnablementStatus.FEATURE_DISABLED);
         ReadAloudPrefsJni.setInstanceForTesting(mPrefsNative);
         mMockPrefServiceHelper = new MockPrefServiceHelper();
         mPlaybackData = new TestPlaybackData();
@@ -598,9 +601,12 @@ public class PlayerMediatorUnitTest {
 
     @Test
     public void testObservePlaybackModeSelectionEnabled() {
-        mPlaybackModeSelectorEnabledSupplier.set(true);
+        mPlaybackModeSelectorEnabledSupplier.set(
+                PlaybackModeSelectionEnablementStatus.MODE_SELECTION_ENABLED);
 
-        assertEquals(true, mModel.get(PlayerProperties.PLAYBACK_MODE_SELECTION_ENABLED));
+        assertEquals(
+                PlaybackModeSelectionEnablementStatus.MODE_SELECTION_ENABLED.getValue(),
+                mModel.get(PlayerProperties.PLAYBACK_MODE_SELECTION_ENABLED));
     }
 
     @Test

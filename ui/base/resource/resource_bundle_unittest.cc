@@ -98,7 +98,7 @@ void AddCustomChunk(std::string_view custom_chunk,
   // Expect an IHDR chunk next. It starts with a length.
   auto ihdr_chunk = base::as_byte_span(*bitmap_data).subspan(chunk_offset);
   uint32_t ihdr_chunk_length =
-      base::numerics::U32FromBigEndian(ihdr_chunk.first<sizeof(uint32_t)>());
+      base::U32FromBigEndian(ihdr_chunk.first<sizeof(uint32_t)>());
   auto ihdr_type =
       ihdr_chunk.subspan<sizeof(uint32_t), std::size(kPngIHDRChunkType)>();
   EXPECT_TRUE(ihdr_type == kPngIHDRChunkType);

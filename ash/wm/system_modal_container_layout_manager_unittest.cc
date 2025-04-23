@@ -68,6 +68,26 @@ bool AllRootWindowsHaveModalBackgrounds() {
       kShellWindowId_SystemModalContainer);
 }
 
+class TransientWindowObserver : public aura::WindowObserver {
+ public:
+  TransientWindowObserver() : destroyed_(false) {}
+
+  TransientWindowObserver(const TransientWindowObserver&) = delete;
+  TransientWindowObserver& operator=(const TransientWindowObserver&) = delete;
+
+  ~TransientWindowObserver() override = default;
+
+  bool destroyed() const { return destroyed_; }
+
+  // Overridden from aura::WindowObserver:
+  void OnWindowDestroyed(aura::Window* window) override { destroyed_ = true; }
+
+ private:
+  bool destroyed_;
+};
+
+}  // namespace
+
 class TestWindow : public views::WidgetDelegateView {
  public:
   explicit TestWindow(bool modal) {
@@ -122,26 +142,6 @@ class EventTestWindow : public TestWindow {
  private:
   int mouse_presses_;
 };
-
-class TransientWindowObserver : public aura::WindowObserver {
- public:
-  TransientWindowObserver() : destroyed_(false) {}
-
-  TransientWindowObserver(const TransientWindowObserver&) = delete;
-  TransientWindowObserver& operator=(const TransientWindowObserver&) = delete;
-
-  ~TransientWindowObserver() override = default;
-
-  bool destroyed() const { return destroyed_; }
-
-  // Overridden from aura::WindowObserver:
-  void OnWindowDestroyed(aura::Window* window) override { destroyed_ = true; }
-
- private:
-  bool destroyed_;
-};
-
-}  // namespace
 
 class SystemModalContainerLayoutManagerTest : public AshTestBase {
  public:

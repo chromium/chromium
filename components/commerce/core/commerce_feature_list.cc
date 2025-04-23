@@ -370,6 +370,12 @@ extern const char kShopCardArm1[] = "arm_1";
 extern const char kShopCardArm2[] = "arm_2";
 extern const char kShopCardArm3[] = "arm_3";
 extern const char kShopCardArm4[] = "arm_4";
+// Regular Tab Resumption with same impression limits as ShopCard
+// (max 3 impressions). So ShopCard variations of Tab Resumption can
+// be conclusively benchmarked against regular Tab Resumption.
+extern const char kShopCardArm5[] = "arm_5";
+extern const char kShopCardFrontPosition[] = "shop_card_front";
+extern const char kShopCardMaxImpressions[] = "max_impressions";
 
 const char kProductSpecificationsSetValidForClusteringTimeParam[] =
     "set-valid-for-clustering-time";

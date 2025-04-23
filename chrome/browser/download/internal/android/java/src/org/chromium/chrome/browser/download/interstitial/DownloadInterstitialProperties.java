@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.download.interstitial;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.home.list.ListProperties;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -18,6 +19,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
  * Extends the properties defined in {@link ListProperties} to facilitate the logic for an entire UI
  * containing a download ListItem.
  */
+@NullMarked
 interface DownloadInterstitialProperties extends ListProperties {
     /**
      * Keeps track of the state of the DownloadInterstitial. This may be different to the state of

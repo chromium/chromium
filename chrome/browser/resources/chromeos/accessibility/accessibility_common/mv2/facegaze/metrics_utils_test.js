@@ -4,7 +4,7 @@
 
 GEN_INCLUDE(['facegaze_test_base.js']);
 
-FaceGazeMetricsUtilsTest = class extends FaceGazeTestBase {
+FaceGazeMV2MetricsUtilsTest = class extends FaceGazeTestBase {
   /** @override */
   testGenPreamble() {
     super.testGenPreamble();
@@ -14,7 +14,7 @@ FaceGazeMetricsUtilsTest = class extends FaceGazeTestBase {
   }
 };
 
-AX_TEST_F('FaceGazeMetricsUtilsTest', 'FaceLandmarkerLatency', function() {
+AX_TEST_F('FaceGazeMV2MetricsUtilsTest', 'FaceLandmarkerLatency', function() {
   const utils = this.getFaceGaze().metricsUtils_;
   assertEquals(0, utils.latencies_.length);
 

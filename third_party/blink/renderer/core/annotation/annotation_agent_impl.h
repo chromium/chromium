@@ -7,6 +7,8 @@
 
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom-blink.h"
+#include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
@@ -136,6 +138,10 @@ class CORE_EXPORT AnnotationAgentImpl final
   void ProcessAttachmentFinished();
 
   bool IsRemoved() const;
+
+  mojom::blink::ScrollBehavior ComputeScrollIntoViewBehavior(
+      const PhysicalRect& bounding_box,
+      const mojom::blink::ScrollIntoViewParams& params) const;
 
   // Mojo bindings to the remote host and this' remote. These are always
   // connected as a pair and disconnecting one will cause the other to be

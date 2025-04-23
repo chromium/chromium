@@ -83,10 +83,6 @@ storage::FileSystemContext* TestStoragePartition::GetFileSystemContext() {
   return file_system_context_;
 }
 
-storage::DatabaseTracker* TestStoragePartition::GetDatabaseTracker() {
-  return database_tracker_;
-}
-
 DOMStorageContext* TestStoragePartition::GetDOMStorageContext() {
   return dom_storage_context_;
 }

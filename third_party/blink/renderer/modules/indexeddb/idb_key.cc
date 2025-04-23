@@ -23,16 +23,12 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
 
 #include <algorithm>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -162,9 +158,9 @@ int IDBKey::Compare(const IDBKey* other) const {
       }
       return CompareNumbers(array_.size(), other->array_.size());
     case mojom::IDBKeyType::Binary:
-      if (int result = memcmp(
+      if (int result = UNSAFE_TODO(memcmp(
               binary_->data.data(), other->binary_->data.data(),
-              std::min(binary_->data.size(), other->binary_->data.size()))) {
+              std::min(binary_->data.size(), other->binary_->data.size())))) {
         return result < 0 ? -1 : 1;
       }
       return CompareNumbers(binary_->data.size(), other->binary_->data.size());

@@ -8,7 +8,7 @@ GEN_INCLUDE(['../../../common/testing/mock_accessibility_private.js']);
 /**
  * Automatic clicks feature using accessibility common extension browser tests.
  */
-AutoclickE2ETest = class extends E2ETestBase {
+AutoclickMV2E2ETest = class extends E2ETestBase {
   async setUpDeferred() {
     this.mockAccessibilityPrivate = new MockAccessibilityPrivate();
     chrome.accessibilityPrivate = this.mockAccessibilityPrivate;
@@ -63,7 +63,7 @@ AutoclickE2ETest = class extends E2ETestBase {
 };
 
 AX_TEST_F(
-    'AutoclickE2ETest', 'HighlightsRootWebAreaIfNotScrollable',
+    'AutoclickMV2E2ETest', 'HighlightsRootWebAreaIfNotScrollable',
     async function() {
       const root = await this.runWithLoadedTree(
           'data:text/html;charset=utf-8,<p>Cats rock!</p>');
@@ -82,7 +82,7 @@ AX_TEST_F(
       this.assertSameRect(focusRings[0].rects[0], expected);
     });
 
-AX_TEST_F('AutoclickE2ETest', 'HighlightsScrollableDiv', async function() {
+AX_TEST_F('AutoclickMV2E2ETest', 'HighlightsScrollableDiv', async function() {
   const root = await this.runWithLoadedTree(
       'data:text/html;charset=utf-8,' +
       '<div style="width:100px;height:100px;overflow:scroll">' +
@@ -108,7 +108,7 @@ AX_TEST_F('AutoclickE2ETest', 'HighlightsScrollableDiv', async function() {
   this.assertSameRect(focusRings[0].rects[0], expected);
 });
 
-AX_TEST_F('AutoclickE2ETest', 'RemovesAndAddsAutoclick', async function() {
+AX_TEST_F('AutoclickMV2E2ETest', 'RemovesAndAddsAutoclick', async function() {
   const root = await this.runWithLoadedTree(
       'data:text/html;charset=utf-8,<p>Cats rock!</p>');
   // Turn on screen magnifier so that when we turn off autoclick, the

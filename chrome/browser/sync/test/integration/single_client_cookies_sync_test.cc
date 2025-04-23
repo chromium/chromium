@@ -14,6 +14,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/ash/floating_sso/cookie_sync_conversions.h"
 #include "chrome/browser/ash/floating_sso/cookie_sync_test_util.h"
 #include "chrome/browser/ash/floating_sso/floating_sso_service.h"
 #include "chrome/browser/ash/floating_sso/floating_sso_service_factory.h"
@@ -35,6 +36,7 @@ using ash::floating_sso::CreatePredefinedCookieSpecificsForTest;
 using ash::floating_sso::FloatingSsoService;
 using ash::floating_sso::FloatingSsoServiceFactory;
 using ash::floating_sso::FloatingSsoSyncBridge;
+using ash::floating_sso::FromSyncProto;
 
 class CookiePresenceChecker : public SingleClientStatusChangeChecker {
  public:
@@ -118,16 +120,20 @@ class SingleClientCookiesSyncTest : public SyncTest {
     base::test::TestFuture<void> commit_future;
     bridge.SetOnStoreCommitCallbackForTest(
         commit_future.GetRepeatingCallback());
-    bridge.AddOrUpdateCookie(specifics);
+    std::unique_ptr<net::CanonicalCookie> cookie = FromSyncProto(specifics);
+    ASSERT_TRUE(cookie);
+    bridge.AddOrUpdateCookie(*cookie);
     commit_future.Get();
   }
 
-  void DeleteCookieOnTheClient(const std::string& storage_key) {
+  void DeleteCookieOnTheClient(const sync_pb::CookieSpecifics& specifics) {
     FloatingSsoSyncBridge& bridge = GetFloatingSsoBridge();
     base::test::TestFuture<void> commit_future;
     bridge.SetOnStoreCommitCallbackForTest(
         commit_future.GetRepeatingCallback());
-    bridge.DeleteCookie(storage_key);
+    std::unique_ptr<net::CanonicalCookie> cookie = FromSyncProto(specifics);
+    ASSERT_TRUE(cookie);
+    bridge.DeleteCookie(*cookie);
     commit_future.Get();
   }
 
@@ -159,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCookiesSyncTest, DownloadAndDelete) {
 
   // Delete `remote_cookie` on the client and check that the server reflects
   // this.
-  DeleteCookieOnTheClient(remote_cookie.unique_key());
+  DeleteCookieOnTheClient(remote_cookie);
   EXPECT_TRUE(ServerCountMatchStatusChecker(syncer::COOKIES, 0).Wait());
 }
 

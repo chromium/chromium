@@ -30,6 +30,7 @@
 
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -277,7 +278,7 @@ String DOMException::ToStringForConsole() const {
       !unsanitized_message_.empty() ? unsanitized_message_ : sanitized_message_;
   return message_for_console.empty()
              ? String()
-             : "Uncaught " + name() + ": " + message_for_console;
+             : WTF::StrCat({"Uncaught ", name(), ": ", message_for_console});
 }
 
 void DOMException::AddContextToMessages(v8::ExceptionContext type,

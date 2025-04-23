@@ -7,8 +7,10 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FileUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /** A class containing some utility static methods for rename. */
+@NullMarked
 public class RenameUtils {
     private static boolean sIsDisabledNativeForTesting;
 

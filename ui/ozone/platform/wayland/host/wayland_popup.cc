@@ -142,17 +142,28 @@ void WaylandPopup::Hide() {
   if (child_popup()) {
     child_popup()->Hide();
   }
+
+  // Note that the xdg_popup object should be destroyed before we touch
+  // anything else in order to provide the compositor a good reference point
+  // when the window contents can be frozen in case a window closing animation
+  // needs to be played. Ideally, the xdg_popup object should also be
+  // destroyed before any subsurface is destroyed, otherwise the window may have
+  // missing contents when the compositor animates it.
+  //
+  // The xdg-shell spec provides another way to hide a window: attach a nil
+  // buffer to the root surface. However, compositors often get it wrong, and it
+  // makes sense only if the xdg_popup object is going to be reused, which is
+  // not the case here.
+  parent_window()->set_child_popup(nullptr);
+  xdg_popup_.reset();
+
   WaylandWindow::Hide();
   // Mutter compositor crashes if we don't reset subsurfaces when hiding.
   if (WaylandWindow::primary_subsurface()) {
     WaylandWindow::primary_subsurface()->ResetSubsurface();
   }
 
-  if (xdg_popup_) {
-    parent_window()->set_child_popup(nullptr);
-    xdg_popup_.reset();
-    ClearInFlightRequestsSerial();
-  }
+  ClearInFlightRequestsSerial();
 
   connection()->Flush();
 }
@@ -205,6 +216,10 @@ void WaylandPopup::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
   if (!xdg_parent_window) {
     return;
   }
+
+  // Popup state is set to "normal" as soon as the first configure
+  // sequence is processed.
+  pending_configure_state_.window_state = PlatformWindowState::kNormal;
 
   // Use UI scale to scale the bounds received from the Wayland compositor (ie:
   // non-empty `bounds_dip`) as it is an internal scaling factor, which the
@@ -271,9 +286,9 @@ void WaylandPopup::OnCloseRequest() {
 bool WaylandPopup::OnInitialize(PlatformWindowInitProperties properties,
                                 PlatformWindowDelegate::State* state) {
   DCHECK(parent_window());
-
-  // `window_state` is always `kNormal` on WaylandPopup.
-  state->window_state = PlatformWindowState::kNormal;
+  // Just like toplevel windows, popups start with unknown state, until the
+  // first configure sequence arrives, when it transitions to kNormal.
+  CHECK_EQ(state->window_state, PlatformWindowState::kUnknown);
 
   state->window_scale = parent_window()->applied_state().window_scale;
   shadow_type_ = properties.shadow_type;

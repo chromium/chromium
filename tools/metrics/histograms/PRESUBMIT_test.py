@@ -107,7 +107,7 @@ class MetricsPresubmitTest(unittest.TestCase):
                         '/example_valid_enums.xml')
     example_allowlist_path = (f'{os.path.dirname(__file__)}'
                               '/test_data'
-                              '/allowlist_example.txt')
+                              '/AllowlistExample.java')
 
     (mock_input_api, missing_allow_list_entries_histograms_path
      ) = _MockInputFromTestFile('no_allowlist_entries_histograms.xml')
@@ -124,7 +124,7 @@ class MetricsPresubmitTest(unittest.TestCase):
     self.assertEqual(len(results), 1)
     self.assertRegex(
         results[0].message.replace('\n', ' '), 'All histograms in'
-        ' .*allowlist_example.txt must be valid.')
+        ' .*AllowlistExample.java must be valid.')
     self.assertEqual(results[0].type, 'error')
 
   def testCheckBooleansAreEnumsFailureIsDetected(self):
@@ -164,7 +164,7 @@ class MetricsPresubmitTest(unittest.TestCase):
                         '/example_valid_enums.xml')
     example_allowlist_path = (f'{os.path.dirname(__file__)}'
                               '/test_data'
-                              '/allowlist_example.txt')
+                              '/AllowlistExample.java')
 
     (mock_input_api, valid_histograms_path
      ) = _MockInputFromTestFile('example_valid_histograms.xml')
@@ -381,7 +381,7 @@ class MetricsPresubmitTest(unittest.TestCase):
                         '/example_valid_enums.xml')
     example_allowlist_path = (f'{os.path.dirname(__file__)}'
                               '/test_data'
-                              '/allowlist_example.txt')
+                              '/AllowlistExample.java')
 
     with open(valid_histograms_path, 'r') as f:
       valid_histograms_contents = f.read()

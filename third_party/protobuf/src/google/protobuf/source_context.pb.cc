@@ -210,7 +210,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         SourceContext_class_data_ =
             SourceContext::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL SourceContext::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    SourceContext::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&SourceContext_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(SourceContext_class_data_.tc_table);
   return SourceContext_class_data_.base();

@@ -4,6 +4,7 @@
 
 #include "base/types/zip.h"
 
+#include <array>
 #include <iostream>
 #include <iterator>
 #include <vector>
@@ -89,9 +90,9 @@ TEST(ZipTest, DifferentBeginEndIterators) {
 }
 
 TEST(ZipTest, WithCommonArrays) {
-  const int a[] = {1, 2, 3};
-  const double b[] = {4.5, 5.5, 6.5};
-  const char* c[] = {"x", "y", "z"};
+  const auto a = std::to_array<int>({1, 2, 3});
+  const auto b = std::to_array<double>({4.5, 5.5, 6.5});
+  auto c = std::to_array<const char*>({"x", "y", "z"});
 
   size_t index = 0;
   for (auto [x, y, z] : zip(a, b, c)) {

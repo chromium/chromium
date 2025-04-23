@@ -9,6 +9,7 @@ namespace gfx {
 
 enum class SurfaceControlFrameRateCompatibility {
   kFixedSource,
+  kAtLeast,
 };
 
 struct SurfaceControlFrameRate {

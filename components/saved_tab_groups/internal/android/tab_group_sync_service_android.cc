@@ -420,4 +420,14 @@ void TabGroupSyncServiceAndroid::RecordTabGroupEvent(
   tab_group_sync_service_->RecordTabGroupEvent(event_details);
 }
 
+void TabGroupSyncServiceAndroid::UpdateArchivalStatus(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_caller,
+    const JavaParamRef<jstring>& j_sync_group_id,
+    const jboolean j_archival_status) {
+  auto sync_group_id = JavaStringToUuid(env, j_sync_group_id);
+  tab_group_sync_service_->UpdateArchivalStatus(sync_group_id,
+                                                j_archival_status);
+}
+
 }  // namespace tab_groups

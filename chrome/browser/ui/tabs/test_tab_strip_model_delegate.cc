@@ -123,6 +123,8 @@ bool TestTabStripModelDelegate::IsNormalWindow() {
   return true;
 }
 
+void TestTabStripModelDelegate::NewSplitTab(std::vector<int> indices) {}
+
 BrowserWindowInterface* TestTabStripModelDelegate::GetBrowserWindowInterface() {
   return browser_window_interface_;
 }

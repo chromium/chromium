@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <vector>
 
@@ -39,9 +40,25 @@ const int kDefaultStartWidth = 320;
 const int kDefaultStartHeight = 240;
 const int kDefaultWidthDelta = 4;
 const int kDefaultHeightDelta = 3;
-const uint8_t kKeyId[] = {0x00, 0x01, 0x02, 0x03};
-const uint8_t kIv[] = {0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27,
-                       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+const auto kKeyId = std::to_array<uint8_t>({0x00, 0x01, 0x02, 0x03});
+const auto kIv = std::to_array<uint8_t>({
+    0x20,
+    0x21,
+    0x22,
+    0x23,
+    0x24,
+    0x25,
+    0x26,
+    0x27,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+});
 
 FakeDemuxerStream::FakeDemuxerStream(int num_configs,
                                      int num_buffers_in_one_config,
@@ -211,8 +228,12 @@ void FakeDemuxerStream::DoRead(int read_count) {
     // TODO(xhwang): Output out-of-order buffers if needed.
     if (is_encrypted_) {
       buffer->set_decrypt_config(DecryptConfig::CreateCencConfig(
-          std::string(kKeyId, kKeyId + std::size(kKeyId)),
-          std::string(kIv, kIv + std::size(kIv)),
+          std::string(kKeyId.data(), base::span<const uint8_t>(kKeyId)
+                                         .subspan(std::size(kKeyId))
+                                         .data()),
+          std::string(
+              kIv.data(),
+              base::span<const uint8_t>(kIv).subspan(std::size(kIv)).data()),
           std::vector<SubsampleEntry>()));
     }
     buffer->set_timestamp(current_timestamp_);

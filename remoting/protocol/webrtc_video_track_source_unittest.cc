@@ -27,7 +27,7 @@ namespace remoting::protocol {
 
 namespace {
 
-class MockVideoSink : public rtc::VideoSinkInterface<VideoFrame> {
+class MockVideoSink : public webrtc::VideoSinkInterface<VideoFrame> {
  public:
   ~MockVideoSink() override = default;
 
@@ -51,12 +51,12 @@ class WebrtcVideoTrackSourceTest : public testing::Test {
 
 TEST_F(WebrtcVideoTrackSourceTest, AddSinkTriggersCallback) {
   EXPECT_CALL(add_sink_callback_,
-              Run(Field(&rtc::VideoSinkWants::max_framerate_fps, 123)));
+              Run(Field(&webrtc::VideoSinkWants::max_framerate_fps, 123)));
 
-  rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> source(
-      new rtc::RefCountedObject<WebrtcVideoTrackSource>(
+  webrtc::scoped_refptr<webrtc::VideoTrackSourceInterface> source(
+      new webrtc::RefCountedObject<WebrtcVideoTrackSource>(
           add_sink_callback_.Get()));
-  rtc::VideoSinkWants wants;
+  webrtc::VideoSinkWants wants;
   wants.max_framerate_fps = 123;
   source->AddOrUpdateSink(&video_sink_, wants);
 
@@ -67,10 +67,10 @@ TEST_F(WebrtcVideoTrackSourceTest, CapturedFrameSentToAddedSink) {
   auto frame = std::make_unique<BasicDesktopFrame>(DesktopSize(123, 234));
   EXPECT_CALL(video_sink_, OnFrame(Property(&VideoFrame::width, 123)));
 
-  rtc::scoped_refptr<WebrtcVideoTrackSource> source(
-      new rtc::RefCountedObject<WebrtcVideoTrackSource>(
+  webrtc::scoped_refptr<WebrtcVideoTrackSource> source(
+      new webrtc::RefCountedObject<WebrtcVideoTrackSource>(
           add_sink_callback_.Get()));
-  source->AddOrUpdateSink(&video_sink_, rtc::VideoSinkWants());
+  source->AddOrUpdateSink(&video_sink_, webrtc::VideoSinkWants());
   source->SendCapturedFrame(std::move(frame), nullptr);
 
   task_environment_.FastForwardUntilNoTasksRemain();
@@ -84,10 +84,10 @@ TEST_F(WebrtcVideoTrackSourceTest, FramesHaveIncrementingIds) {
     EXPECT_CALL(video_sink_, OnFrame(Property(&VideoFrame::id, 2)));
   }
 
-  rtc::scoped_refptr<WebrtcVideoTrackSource> source(
-      new rtc::RefCountedObject<WebrtcVideoTrackSource>(
+  webrtc::scoped_refptr<WebrtcVideoTrackSource> source(
+      new webrtc::RefCountedObject<WebrtcVideoTrackSource>(
           add_sink_callback_.Get()));
-  source->AddOrUpdateSink(&video_sink_, rtc::VideoSinkWants());
+  source->AddOrUpdateSink(&video_sink_, webrtc::VideoSinkWants());
   source->SendCapturedFrame(
       std::make_unique<BasicDesktopFrame>(DesktopSize(100, 100)), nullptr);
   source->SendCapturedFrame(

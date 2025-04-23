@@ -29,7 +29,7 @@ build_webui("build") {
     "text_group_button.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "constants.ts",
     "emoji_picker.ts",
     "emoji_picker_api_proxy.ts",

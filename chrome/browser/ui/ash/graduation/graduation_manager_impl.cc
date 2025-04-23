@@ -9,9 +9,11 @@
 #include "ash/edusumer/graduation_utils.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ref.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -20,7 +22,6 @@
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -44,8 +46,10 @@ base::Time GetNextDayLocalMidnight(base::Time date) {
 }
 }  // namespace
 
-GraduationManagerImpl::GraduationManagerImpl()
-    : clock_(base::DefaultClock::GetInstance()),
+GraduationManagerImpl::GraduationManagerImpl(
+    ApplicationLocaleStorage* application_locale_storage)
+    : application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      clock_(base::DefaultClock::GetInstance()),
       tick_clock_(base::DefaultTickClock::GetInstance()) {
   // SessionManager may be unset in unit tests.
   auto* session_manager = session_manager::SessionManager::Get();
@@ -60,8 +64,7 @@ GraduationManagerImpl::~GraduationManagerImpl() {
 }
 
 std::string GraduationManagerImpl::GetLanguageCode() const {
-  return google_util::GetGoogleLocale(
-      g_browser_process->GetApplicationLocale());
+  return google_util::GetGoogleLocale(application_locale_storage_->Get());
 }
 
 signin::IdentityManager* GraduationManagerImpl::GetIdentityManager(

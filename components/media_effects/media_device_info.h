@@ -12,6 +12,11 @@
 #include "services/audio/public/mojom/system_info.mojom.h"
 #include "services/video_capture/public/mojom/video_source_provider.mojom.h"
 
+namespace base {
+template <typename T>
+class NoDestructor;
+}
+
 namespace media_effects {
 
 // Get the id of the real default device if present in the passed `infos`,

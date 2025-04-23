@@ -157,6 +157,14 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "android_14_automotive_landscape_emulator_gtests",
+    targets = [
+        "android_trichrome_smoke_tests",
+        "android_smoke_tests",
+    ],
+)
+
+targets.bundle(
     name = "android_14_device_ci_only_gtests",
     targets = [
         "system_webview_shell_instrumentation_tests",
@@ -956,7 +964,7 @@ targets.bundle(
     },
 )
 
-# Run content_browser_tests with BackForwardCache disabled
+# Run content_browsertests with BackForwardCache disabled
 targets.bundle(
     name = "bfcache_generic_gtests",
     targets = [
@@ -1638,8 +1646,16 @@ targets.bundle(
 targets.bundle(
     name = "chromium_gtests_for_linux_wayland_mutter",
     targets = [
+        "content_browsertests",
         "interactive_ui_tests",
     ],
+    per_test_modifications = {
+        "content_browsertests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 8,
+            ),
+        ),
+    },
 )
 
 targets.bundle(
@@ -2729,7 +2745,6 @@ targets.bundle(
     name = "fieldtrial_browser_tests_mac",
     targets = [
         "accessibility_unittests_no_field_trial",
-        "browser_tests_no_field_trial",
         "components_browsertests_no_field_trial",
         "content_browsertests_no_field_trial",
         "interactive_ui_tests_no_field_trial",
@@ -2738,12 +2753,6 @@ targets.bundle(
     per_test_modifications = {
         "accessibility_unittests_no_field_trial": targets.mixin(
             ci_only = True,
-        ),
-        "browser_tests_no_field_trial": targets.mixin(
-            ci_only = True,
-            swarming = targets.swarming(
-                shards = 10,
-            ),
         ),
         "components_browsertests_no_field_trial": targets.mixin(
             ci_only = True,

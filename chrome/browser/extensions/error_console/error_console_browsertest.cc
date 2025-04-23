@@ -13,7 +13,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_platform_browsertest.h"
+#include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -44,7 +44,6 @@ namespace {
 
 const char kTestingPage[] = "/extensions/test_file.html";
 
-#if !BUILDFLAG(IS_ANDROID)
 const char kAnonymousFunction[] = "(anonymous function)";
 const char* const kBackgroundPageName =
     extensions::kGeneratedBackgroundPageFilename;
@@ -74,7 +73,6 @@ void CheckStackFrame(const StackFrame& frame,
   EXPECT_EQ(line_number, frame.line_number);
   EXPECT_EQ(column_number, frame.column_number);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Verify that all properties of a given |error| are correct.
 void CheckError(const ExtensionError* error,
@@ -91,7 +89,6 @@ void CheckError(const ExtensionError* error,
   EXPECT_EQ(base::UTF8ToUTF16(message), error->message());
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // Verify that all properties of a JS runtime error are correct.
 void CheckRuntimeError(const ExtensionError* error,
                        const std::string& id,
@@ -109,7 +106,6 @@ void CheckRuntimeError(const ExtensionError* error,
   EXPECT_EQ(context, runtime_error->context_url());
   EXPECT_EQ(expected_stack_size, runtime_error->stack_trace().size());
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 void CheckManifestError(const ExtensionError* error,
                         const std::string& id,
@@ -129,7 +125,6 @@ void CheckManifestError(const ExtensionError* error,
             manifest_error->manifest_specific());
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // Checks that a given `error` refers to an error for using a deprecated
 // manifest version.
 void CheckDeprecatedManifestVersionError(const ExtensionError* error,
@@ -138,11 +133,10 @@ void CheckDeprecatedManifestVersionError(const ExtensionError* error,
                      manifest_keys::kManifestVersion,
                      std::string() /* no manifest_specific bit */);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
-class ErrorConsoleBrowserTest : public ExtensionPlatformBrowserTest {
+class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
  public:
   ErrorConsoleBrowserTest() : error_console_(nullptr) {}
   ~ErrorConsoleBrowserTest() override = default;
@@ -224,7 +218,7 @@ class ErrorConsoleBrowserTest : public ExtensionPlatformBrowserTest {
   };
 
   void SetUpOnMainThread() override {
-    ExtensionPlatformBrowserTest::SetUpOnMainThread();
+    ExtensionBrowserTest::SetUpOnMainThread();
 
     // Errors are only kept if we have Developer Mode enabled.
     profile()->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);
@@ -380,11 +374,8 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest,
   EXPECT_EQ(0u, error_console()->GetErrorsForExtension(extension->id()).size());
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // Load an extension which, upon visiting any page, first sends out a console
 // log, and then crashes with a JS TypeError.
-// TODO(crbug.com/395170712): Port to desktop Android once we can capture
-// runtime JS errors.
 IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest,
                        ContentScriptLogAndRuntimeError) {
   const Extension* extension = nullptr;
@@ -438,6 +429,7 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest,
   CheckStackFrame(stack_trace2[0], script_url, kAnonymousFunction, 17u, 1u);
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Catch an error from a BrowserAction; this is more complex than a content
 // script error, since browser actions are routed through our own code.
 // TODO(crbug.com/395160734): Port ExtensionActionRunner to desktop Android.
@@ -475,10 +467,9 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BrowserActionRuntimeError) {
 
   CheckStackFrame(stack_trace[0], script_url, kAnonymousFunction);
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test that we can catch an error for calling an API with improper arguments.
-// TODO(crbug.com/395170712): Port to desktop Android once we can capture
-// runtime JS errors.
 IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadAPIArgumentsRuntimeError) {
   const Extension* extension = nullptr;
   LoadExtensionAndCheckErrors(
@@ -494,8 +485,8 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadAPIArgumentsRuntimeError) {
 
   std::string source = extension->GetResourceURL("background.js").spec();
   std::string message =
-      "Uncaught TypeError: Error in invocation of tabs.get"
-      "(integer tabId, function callback): No matching signature.";
+      "Uncaught TypeError: Error in invocation of alarms.getAll"
+      "(function callback): No matching signature.";
 
   CheckRuntimeError(errors[1].get(), extension->id(), source,
                     false,  // not incognito
@@ -509,8 +500,6 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadAPIArgumentsRuntimeError) {
 
 // Test that we catch an error when we try to call an API method without
 // permission.
-// TODO(crbug.com/395170712): Port to desktop Android once we can capture
-// runtime JS errors.
 IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadAPIPermissionsRuntimeError) {
   const Extension* extension = nullptr;
   LoadExtensionAndCheckErrors(
@@ -544,8 +533,6 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadAPIPermissionsRuntimeError) {
 
 // Test that if there is an error in an HTML page loaded by an extension (most
 // common with apps), it is caught and reported by the ErrorConsole.
-// TODO(crbug.com/395170712): Port to desktop Android once we can capture
-// runtime JS errors.
 IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadExtensionPage) {
   const Extension* extension = nullptr;
   LoadExtensionAndCheckErrors(
@@ -593,6 +580,5 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, DISABLED_CatchesLastError) {
   CheckStackFrame(stack_trace[0], source, kAnonymousFunction, line_number,
                   column_number);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions

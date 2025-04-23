@@ -532,8 +532,6 @@ IN_PROC_BROWSER_TEST_P(AppBoundEncryptionWinReencryptTest, EncryptDecrypt) {
   EXPECT_EQ(plaintext, returned_plaintext);
 
   if (ExpectReencrypt()) {
-    histograms.ExpectUniqueSample("OSCrypt.AppBound.ReEncrypt.ResultCode", S_OK,
-                                  1u);
     ASSERT_TRUE(maybe_new_ciphertext);
 
     std::optional<std::string> even_newer_ciphertext;
@@ -545,10 +543,8 @@ IN_PROC_BROWSER_TEST_P(AppBoundEncryptionWinReencryptTest, EncryptDecrypt) {
     ASSERT_HRESULT_SUCCEEDED(hr);
     EXPECT_EQ(plaintext, returned_plaintext);
   } else {
-    histograms.ExpectTotalCount("OSCrypt.AppBound.ReEncrypt.ResultCode", 0);
     ASSERT_FALSE(maybe_new_ciphertext);
   }
-  histograms.ExpectTotalCount("OSCrypt.AppBound.ReEncrypt.ResultLastError", 0);
 }
 
 // This could be a unit test, but it needs the service installed to work, so

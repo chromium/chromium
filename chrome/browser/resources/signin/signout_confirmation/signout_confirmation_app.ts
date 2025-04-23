@@ -28,6 +28,7 @@ const SAMPLE_DATA: SignoutConfirmationData = {
   acceptButtonLabel: '',
   cancelButtonLabel: '',
   accountExtensions: [],
+  hasUnsyncedData: false,
 };
 
 export interface SignoutConfirmationAppElement {
@@ -115,6 +116,12 @@ export class SignoutConfirmationAppElement extends CrLitElement {
 
   protected showExtensionsSection_(): boolean {
     return !!this.data_.accountExtensions.length;
+  }
+
+  // Returns if additional text should be shown in the dialog if the user has
+  // account extensions installed.
+  protected showExtensionsAdditionalText_(): boolean {
+    return this.showExtensionsSection_() && this.data_.hasUnsyncedData;
   }
 
   protected onAcceptButtonClick_() {

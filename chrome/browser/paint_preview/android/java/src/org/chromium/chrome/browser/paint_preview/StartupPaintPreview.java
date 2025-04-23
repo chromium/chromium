@@ -8,10 +8,12 @@ import android.content.res.Resources;
 import android.os.Handler;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewMetrics.ExitCause;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewMetrics.PaintPreviewMetricsObserver;
@@ -34,25 +36,26 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Used for displaying a paint preview representation of a tab on startup. */
+@NullMarked
 public class StartupPaintPreview implements PlayerManager.Listener {
-    private Tab mTab;
-    private StartupPaintPreviewMetrics mMetricsHelper;
-    private TabbedPaintPreview mTabbedPaintPreview;
-    private Runnable mOnDismissed;
-    private SnackbarManager.SnackbarController mSnackbarController;
-    private TabObserver mStartupTabObserver;
+    private static final int DEFAULT_INITIAL_REMOVE_DELAY_MS = 0;
+    private static final int SNACKBAR_DURATION_MS = 8 * 1000;
 
+    private final Tab mTab;
+    private final StartupPaintPreviewMetrics mMetricsHelper;
+    private final TabbedPaintPreview mTabbedPaintPreview;
+    private final TabObserver mStartupTabObserver;
+
+    private @Nullable Runnable mOnDismissed;
+    private @MonotonicNonNull SnackbarManager.SnackbarController mSnackbarController;
+    private @Nullable Supplier<Boolean> mShouldRecordFirstPaint;
+    private @Nullable Supplier<Boolean> mIsOfflinePage;
     private @State int mState;
     private boolean mFirstMeaningfulPaintHappened;
     private boolean mDidStartRestore;
     private int mSnackbarShownCount;
     private boolean mShowingSnackbar;
     private long mActivityCreationTimestampMs;
-    private Supplier<Boolean> mShouldRecordFirstPaint;
-    private Supplier<Boolean> mIsOfflinePage;
-
-    private static final int DEFAULT_INITIAL_REMOVE_DELAY_MS = 0;
-    private static final int SNACKBAR_DURATION_MS = 8 * 1000;
 
     @IntDef({
         State.READY,
@@ -154,7 +157,7 @@ public class StartupPaintPreview implements PlayerManager.Listener {
     }
 
     private void showSnackbar() {
-        if (mTab == null || mTab.getWindowAndroid() == null || mShowingSnackbar) return;
+        if (mTab.getWindowAndroid() == null || mShowingSnackbar) return;
 
         SnackbarManager snackbarManager = SnackbarManagerProvider.from(mTab.getWindowAndroid());
         if (snackbarManager == null) return;
@@ -163,13 +166,13 @@ public class StartupPaintPreview implements PlayerManager.Listener {
             mSnackbarController =
                     new SnackbarManager.SnackbarController() {
                         @Override
-                        public void onAction(Object actionData) {
+                        public void onAction(@Nullable Object actionData) {
                             mShowingSnackbar = false;
                             remove(ExitCause.SNACK_BAR_ACTION);
                         }
 
                         @Override
-                        public void onDismissNoAction(Object actionData) {
+                        public void onDismissNoAction(@Nullable Object actionData) {
                             mShowingSnackbar = false;
                         }
                     };
@@ -186,13 +189,13 @@ public class StartupPaintPreview implements PlayerManager.Listener {
         snackbar.setAction(
                 resources.getString(R.string.paint_preview_startup_upgrade_snackbar_action), null);
         snackbar.setDuration(SNACKBAR_DURATION_MS);
-        SnackbarManagerProvider.from(mTab.getWindowAndroid()).showSnackbar(snackbar);
+        snackbarManager.showSnackbar(snackbar);
         mShowingSnackbar = true;
         mSnackbarShownCount++;
     }
 
     private void dismissSnackbar() {
-        if (mSnackbarController == null || mTab == null || mTab.getWindowAndroid() == null) return;
+        if (mSnackbarController == null || mTab.getWindowAndroid() == null) return;
 
         SnackbarManager snackbarManager = SnackbarManagerProvider.from(mTab.getWindowAndroid());
         if (snackbarManager == null) return;
@@ -201,7 +204,7 @@ public class StartupPaintPreview implements PlayerManager.Listener {
     }
 
     private void showUpgradeToast() {
-        if (mTab == null || mTab.isHidden()) return;
+        if (mTab.isHidden()) return;
 
         Toast.makeText(
                         mTab.getContext(),
@@ -218,7 +221,7 @@ public class StartupPaintPreview implements PlayerManager.Listener {
     public void onWebContentsFirstMeaningfulPaint(WebContents webContents) {
         // If there is no observer or tab this will never handle the event so it should be
         // treated as a success.
-        if (mTab == null || mTab.getWebContents() != webContents) return;
+        if (mTab.getWebContents() != webContents) return;
 
         mFirstMeaningfulPaintHappened = true;
         mMetricsHelper.onTabLoadFinished();
@@ -277,7 +280,7 @@ public class StartupPaintPreview implements PlayerManager.Listener {
 
     @Override
     public void onLinkClick(GURL url) {
-        if (mTab == null || !url.isValid() || url.isEmpty()) return;
+        if (!url.isValid() || url.isEmpty()) return;
 
         mTab.loadUrl(new LoadUrlParams(url.getSpec()));
         remove(ExitCause.LINK_CLICKED);

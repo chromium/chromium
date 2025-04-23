@@ -7,9 +7,10 @@ import '/strings.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
+import type {BookmarksTreeNode} from './bookmarks.mojom-webui.js';
+import type {BookmarksApiProxy} from './bookmarks_api_proxy.js';
+import {BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
 import {PowerBookmarkRowElement} from './power_bookmark_row.js';
-
-const ROOT_FOLDER_ID = '0';
 
 export const DROP_POSITION_ATTR = 'drop-position';
 
@@ -17,19 +18,55 @@ export enum DropPosition {
   INTO = 'into',
 }
 
+// Conversion is needed given that `chrome.bookmarkManagerPrivate.DragData`
+// contains a `chrome.bookmarks.BookmarkTreeNode` to be able to communicate
+// with the rest of the UIs in chrome.
+function toExtensionsBookmarkTreeNode(mojoNode: BookmarksTreeNode):
+    chrome.bookmarks.BookmarkTreeNode {
+  const extensionNode: chrome.bookmarks.BookmarkTreeNode = {
+    id: mojoNode.id,
+    parentId: mojoNode.parentId,
+    title: mojoNode.title,
+    index: mojoNode.index,
+  };
+
+  if (mojoNode.url && mojoNode.url.length !== 0) {
+    extensionNode.url = mojoNode.url;
+  } else if (mojoNode.children) {
+    extensionNode.children =
+        mojoNode.children.map(toExtensionsBookmarkTreeNode);
+  }
+
+  if (mojoNode.dateAdded !== null) {
+    extensionNode.dateAdded = mojoNode.dateAdded;
+  }
+
+  if (mojoNode.dateLastUsed !== null) {
+    extensionNode.dateLastUsed = mojoNode.dateLastUsed;
+  }
+
+  if (mojoNode.unmodifiable) {
+    extensionNode.unmodifiable =
+        chrome.bookmarks.BookmarkTreeNodeUnmodifiable.MANAGED;
+  }
+
+  return extensionNode;
+}
+
 interface PowerBookmarksDragDelegate extends HTMLElement {
-  getFallbackBookmark(): chrome.bookmarks.BookmarkTreeNode;
+  getFallbackBookmark(): BookmarksTreeNode;
   getFallbackDropTargetElement(): HTMLElement;
-  onFinishDrop(dropTarget: chrome.bookmarks.BookmarkTreeNode): void;
+  onFinishDrop(dropTarget: BookmarksTreeNode): void;
 }
 
 class DragSession {
   private delegate_: PowerBookmarksDragDelegate;
   private dragData_: chrome.bookmarkManagerPrivate.DragData;
   private lastDragOverElement_: PowerBookmarkRowElement|null = null;
-  private lastDropTargetBookmark_: chrome.bookmarks.BookmarkTreeNode|null =
-      null;
+  private lastDropTargetBookmark_: BookmarksTreeNode|null = null;
   private lastPointerWasTouch_ = false;
+  private bookmarksApi_: BookmarksApiProxy =
+      BookmarksApiProxyImpl.getInstance();
 
   constructor(
       delegate: PowerBookmarksDragDelegate,
@@ -106,8 +143,8 @@ class DragSession {
     if (!this.lastDropTargetBookmark_) {
       return;
     }
-    chrome.bookmarkManagerPrivate
-        .drop(this.lastDropTargetBookmark_.id, /* index */ undefined)
+
+    this.bookmarksApi_.dropBookmarks(this.lastDropTargetBookmark_.id)
         .then(() => {
           this.delegate_.onFinishDrop(this.lastDropTargetBookmark_!);
           this.cancel();
@@ -123,10 +160,9 @@ class DragSession {
   }
 
   static createFromBookmark(
-      delegate: PowerBookmarksDragDelegate,
-      bookmark: chrome.bookmarks.BookmarkTreeNode) {
+      delegate: PowerBookmarksDragDelegate, bookmark: BookmarksTreeNode) {
     return new DragSession(delegate, {
-      elements: [bookmark],
+      elements: [toExtensionsBookmarkTreeNode(bookmark)],
       sameProfile: true,
     });
   }
@@ -204,7 +240,7 @@ export class PowerBookmarksDragManager {
             .bookmark;
     if (!bookmark ||
         /* Cannot drag root's children. */ bookmark.parentId ===
-            ROOT_FOLDER_ID ||
+            loadTimeData.getString('rootBookmarkId') ||
         bookmark.unmodifiable) {
       return;
     }

@@ -103,6 +103,10 @@ namespace version_info {
 enum class Channel;
 }
 
+namespace split_tabs {
+class SplitTabVisualData;
+}
+
 namespace views {
 class ExternalFocusTracker;
 class WebView;
@@ -298,7 +302,7 @@ class BrowserView : public BrowserWindow,
   glic::GlicBorderView* glic_border() const { return glic_border_; }
 #endif
 
-  ScrimView* window_scrim_view_for_testing() { return window_scrim_view_; }
+  ScrimView* window_scrim_view() { return window_scrim_view_; }
 
   base::WeakPtr<BrowserView> GetAsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -477,6 +481,14 @@ class BrowserView : public BrowserWindow,
   // Display only the current active tab's web contents, hiding any previous
   // side-by-side display.
   void HideSplitView();
+
+  // Update the index of the active split based on the active tab's web contents
+  void UpdateActiveSplitView();
+
+  // True if an activation from `old_contents` to `new_contents` happens between
+  // tabs that are already in a split-view configuration.
+  bool IsTabChangeInSplitView(content::WebContents* old_contents,
+                              content::WebContents* new_contents);
 
   // Activate the tab containing the given WebContents (if any).
   void ActivateWebContents(content::WebContents* web_contents);
@@ -705,14 +717,20 @@ class BrowserView : public BrowserWindow,
   void OnSplitTabCreated(std::vector<std::pair<tabs::TabInterface*, int>> tabs,
                          split_tabs::SplitTabId split_id,
                          SplitTabAddReason reason,
-                         tabs::SplitTabLayout tab_layout) override;
+                         split_tabs::SplitTabVisualData visual_data) override;
   void OnSplitTabRemoved(std::vector<std::pair<tabs::TabInterface*, int>> tabs,
                          split_tabs::SplitTabId split_id,
                          SplitTabRemoveReason reason) override;
+  void OnSplitTabVisualsChanged(
+      split_tabs::SplitTabId split_id,
+      split_tabs::SplitTabVisualData old_visual_data,
+      split_tabs::SplitTabVisualData new_visual_data) override;
   void TabStripEmpty() override;
   void WillCloseAllTabs(TabStripModel* tab_strip_model) override;
   void CloseAllTabsStopped(TabStripModel* tab_strip_model,
                            CloseAllStoppedReason reason) override;
+
+  void OnSplitTabResize(double start_ratio);
 
   // ui::AcceleratorProvider:
   bool GetAcceleratorForCommandId(int command_id,
@@ -1132,6 +1150,9 @@ class BrowserView : public BrowserWindow,
   // prevent policy from incorrectly allowing the browser to enter fullscreen
   // when it should not be able to.
   void UpdateFullscreenAllowedFromPolicy(bool allowed_without_policy);
+
+  bool ShouldUseBrowserContentMinimumSize() const;
+  bool IsBrowserAWebApp() const;
 
   // The BrowserFrame that hosts this view.
   raw_ptr<BrowserFrame> frame_ = nullptr;

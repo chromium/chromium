@@ -145,6 +145,7 @@
 <translation id="5768079895599174203">{DAYS,plural, =1{يوم واحد و }zero{# من الأيام و }two{يومان (#) و }few{# أيام و }many{# يومًا و }other{# من الأيام و }}</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5843690142429128814">صورة</translation>
+<translation id="5860491529813859533">تفعيل</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{خلال عام واحد}zero{خلال # عام}two{خلال عامين (#)}few{خلال # أعوام}many{خلال # عامًا}other{خلال # عام}}</translation>
 <translation id="588258955323874662">ملء الشاشة</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{يتبقى ثانية واحدة}zero{يتبقى # من الثواني}two{يتبقى ثانيتان (#)}few{يتبقى # ثانية}many{يتبقى # ثانية}other{يتبقى # من الثواني}}</translation>

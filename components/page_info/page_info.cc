@@ -363,22 +363,19 @@ PageInfo::~PageInfo() {
 #endif
 }
 
-void PageInfo::OnStatusChanged(
-    bool controls_visible,
-    bool protections_on,
-    CookieControlsEnforcement enforcement,
-    CookieBlocking3pcdStatus blocking_status,
-    base::Time expiration,
-    std::vector<content_settings::TrackingProtectionFeature> features) {
+void PageInfo::OnStatusChanged(bool controls_visible,
+                               bool protections_on,
+                               CookieControlsEnforcement enforcement,
+                               CookieBlocking3pcdStatus blocking_status,
+                               base::Time expiration) {
   if (controls_visible_ != controls_visible ||
       protections_on_ != protections_on || enforcement != enforcement_ ||
       blocking_status != blocking_status_ ||
-      expiration != cookie_exception_expiration_ || features_ != features) {
+      expiration != cookie_exception_expiration_) {
     controls_visible_ = controls_visible;
     protections_on_ = protections_on;
     enforcement_ = enforcement;
     blocking_status_ = blocking_status;
-    features_ = features;
     cookie_exception_expiration_ = expiration;
     PresentSiteData(base::DoNothing());
   }
@@ -594,6 +591,10 @@ void PageInfo::RecordPageInfoAction(page_info::PageInfoAction action) {
     case page_info::PAGE_INFO_SAFE_BROWSING_HELP_OPENED:
       base::RecordAction(
           base::UserMetricsAction("PageInfo.SafeBrowsing.HelpOpened"));
+      break;
+    case page_info::PAGE_INFO_SYNC_SETTINGS_OPENED:
+      base::RecordAction(base::UserMetricsAction(
+          "PageInfo.CookiesSubpage.SyncSettingsLinkClicked"));
       break;
   }
 }
@@ -820,6 +821,15 @@ void PageInfo::OpenAllSitesViewFilteredToRws() {
     delegate_->ShowAllSitesSettingsFilteredByRwsOwner(std::u16string());
   }
 
+#endif
+}
+
+void PageInfo::OpenSyncSettingsView() {
+#if BUILDFLAG(IS_ANDROID)
+  NOTREACHED();
+#else
+  RecordPageInfoAction(page_info::PAGE_INFO_SYNC_SETTINGS_OPENED);
+  delegate_->ShowSyncSettings();
 #endif
 }
 
@@ -1518,7 +1528,6 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
   cookies_info.protections_on = protections_on_;
   cookies_info.enforcement = enforcement_;
   cookies_info.blocking_status = blocking_status_;
-  cookies_info.features = features_;
   cookies_info.expiration = cookie_exception_expiration_;
   cookies_info.is_incognito = delegate_->IsIncognitoProfile();
   ui_->SetCookieInfo(cookies_info);

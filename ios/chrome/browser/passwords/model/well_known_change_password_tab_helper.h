@@ -89,7 +89,6 @@ class WellKnownChangePasswordTabHelper
   password_manager::WellKnownChangePasswordState
       well_known_change_password_state_{this};
   raw_ptr<affiliations::AffiliationService> affiliation_service_ = nullptr;
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 }  // namespace password_manager

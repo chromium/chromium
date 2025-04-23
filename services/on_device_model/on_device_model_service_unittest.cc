@@ -6,6 +6,7 @@
 
 #include "base/files/scoped_temp_file.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -38,13 +39,15 @@ class ContextClientWaiter : public mojom::ContextClient {
 
   int WaitForCompletion() {
     run_loop_.Run();
-    return tokens_processed_;
+    return *tokens_processed_;
   }
+
+  bool IsComplete() const { return tokens_processed_.has_value(); }
 
  private:
   base::RunLoop run_loop_;
   mojo::Receiver<mojom::ContextClient> receiver_{this};
-  int tokens_processed_ = 0;
+  std::optional<int> tokens_processed_;
 };
 
 class FakeFile {
@@ -149,7 +152,20 @@ class OnDeviceModelServiceTest : public testing::Test {
     return response.responses();
   }
 
+  std::unique_ptr<ContextClientWaiter> AppendAndFlush(
+      mojo::Remote<mojom::Session>& session,
+      const std::string& input) {
+    auto client = std::make_unique<ContextClientWaiter>();
+    session->Append(MakeInput(input), client->BindRemote());
+    session.FlushForTesting();
+    return client;
+  }
+
   size_t GetNumModels() { return service_impl_.NumModelsForTesting(); }
+
+  void ForceQueueing(bool force) {
+    service_impl_.SetForceQueueingForTesting(force);
+  }
 
   void FlushService() { service_.FlushForTesting(); }
 
@@ -687,6 +703,258 @@ TEST_F(OnDeviceModelServiceTest, CapabilitiesFromFilePath) {
   expect_capabilities("image audio", {CapabilityFlags::kImageInput,
                                       CapabilityFlags::kAudioInput});
 }
+
+TEST_F(OnDeviceModelServiceTest, SetPriority) {
+  auto model = LoadModel();
+
+  mojo::Remote<mojom::Session> background;
+  model->StartSession(background.BindNewPipeAndPassReceiver(), nullptr);
+  background->SetPriority(mojom::Priority::kBackground);
+
+  mojo::Remote<mojom::Session> foreground;
+  model->StartSession(foreground.BindNewPipeAndPassReceiver(), nullptr);
+
+  base::HistogramTester histogram_tester;
+
+  ForceQueueing(true);
+  auto bg_waiter = AppendAndFlush(background, "bg");
+  auto fg_waiter = AppendAndFlush(foreground, "fg");
+
+  constexpr char kForegroundHistogram[] = "OnDeviceModel.QueueTime.Foreground";
+  constexpr char kBackgroundHistogram[] = "OnDeviceModel.QueueTime.Background";
+  histogram_tester.ExpectTotalCount(kForegroundHistogram, 0);
+  histogram_tester.ExpectTotalCount(kBackgroundHistogram, 0);
+  ForceQueueing(false);
+
+  fg_waiter->WaitForCompletion();
+  EXPECT_FALSE(bg_waiter->IsComplete());
+  histogram_tester.ExpectTotalCount(kForegroundHistogram, 1);
+  histogram_tester.ExpectTotalCount(kBackgroundHistogram, 0);
+
+  ForceQueueing(true);
+
+  // Add another call to fg client, should jump ahead of bg again.
+  fg_waiter = AppendAndFlush(foreground, "fg");
+  ForceQueueing(false);
+
+  fg_waiter->WaitForCompletion();
+  EXPECT_FALSE(bg_waiter->IsComplete());
+  histogram_tester.ExpectTotalCount(kForegroundHistogram, 2);
+  histogram_tester.ExpectTotalCount(kBackgroundHistogram, 0);
+
+  bg_waiter->WaitForCompletion();
+  histogram_tester.ExpectTotalCount(kForegroundHistogram, 2);
+  histogram_tester.ExpectTotalCount(kBackgroundHistogram, 1);
+}
+
+TEST_F(OnDeviceModelServiceTest, SetPriorityAfterQueue) {
+  auto model = LoadModel();
+
+  mojo::Remote<mojom::Session> background;
+  model->StartSession(background.BindNewPipeAndPassReceiver(), nullptr);
+
+  mojo::Remote<mojom::Session> foreground;
+  model->StartSession(foreground.BindNewPipeAndPassReceiver(), nullptr);
+
+  ForceQueueing(true);
+  auto bg_waiter = AppendAndFlush(background, "bg");
+  auto fg_waiter = AppendAndFlush(foreground, "fg");
+
+  background->SetPriority(mojom::Priority::kBackground);
+  background.FlushForTesting();
+  ForceQueueing(false);
+
+  fg_waiter->WaitForCompletion();
+  EXPECT_FALSE(bg_waiter->IsComplete());
+  bg_waiter->WaitForCompletion();
+}
+
+TEST_F(OnDeviceModelServiceTest, SetPriorityBackToForeground) {
+  auto model = LoadModel();
+
+  mojo::Remote<mojom::Session> background;
+  model->StartSession(background.BindNewPipeAndPassReceiver(), nullptr);
+  background->SetPriority(mojom::Priority::kBackground);
+
+  mojo::Remote<mojom::Session> foreground;
+  model->StartSession(foreground.BindNewPipeAndPassReceiver(), nullptr);
+
+  ForceQueueing(true);
+
+  auto bg_waiter = AppendAndFlush(background, "bg");
+  auto fg_waiter = AppendAndFlush(foreground, "fg");
+
+  ForceQueueing(false);
+  fg_waiter->WaitForCompletion();
+  EXPECT_FALSE(bg_waiter->IsComplete());
+
+  ForceQueueing(true);
+
+  fg_waiter = AppendAndFlush(foreground, "fg");
+
+  background->SetPriority(mojom::Priority::kForeground);
+  background.FlushForTesting();
+
+  ForceQueueing(false);
+  bg_waiter->WaitForCompletion();
+
+  EXPECT_FALSE(fg_waiter->IsComplete());
+  fg_waiter->WaitForCompletion();
+}
+
+TEST_F(OnDeviceModelServiceTest, SetPriorityMultipleSessions) {
+  auto model = LoadModel();
+
+  mojo::Remote<mojom::Session> background1;
+  model->StartSession(background1.BindNewPipeAndPassReceiver(), nullptr);
+  background1->SetPriority(mojom::Priority::kBackground);
+
+  mojo::Remote<mojom::Session> background2;
+  model->StartSession(background2.BindNewPipeAndPassReceiver(), nullptr);
+  background2->SetPriority(mojom::Priority::kBackground);
+
+  mojo::Remote<mojom::Session> foreground1;
+  model->StartSession(foreground1.BindNewPipeAndPassReceiver(), nullptr);
+
+  mojo::Remote<mojom::Session> foreground2;
+  model->StartSession(foreground2.BindNewPipeAndPassReceiver(), nullptr);
+
+  std::set<ContextClientWaiter*> all;
+  auto append = [&](mojo::Remote<mojom::Session>& session) {
+    std::unique_ptr<ContextClientWaiter> waiter = AppendAndFlush(session, "in");
+    all.insert(waiter.get());
+    return waiter;
+  };
+  ForceQueueing(true);
+  auto bg1_waiter1 = append(background1);
+  auto bg2_waiter1 = append(background2);
+  auto fg1_waiter1 = append(foreground1);
+  auto fg2_waiter1 = append(foreground2);
+  auto fg1_waiter2 = append(foreground1);
+  auto bg2_waiter2 = append(background2);
+  auto fg2_waiter2 = append(foreground2);
+  auto bg1_waiter2 = append(background1);
+  ForceQueueing(false);
+
+  auto wait_for_next = [&](ContextClientWaiter* next) {
+    next->WaitForCompletion();
+    all.erase(next);
+    for (auto* waiter : all) {
+      EXPECT_FALSE(waiter->IsComplete());
+    }
+  };
+  wait_for_next(fg1_waiter1.get());
+
+  // Add another item, should be added at the end of fg items.
+  ForceQueueing(true);
+  fg1_waiter1 = append(foreground1);
+  ForceQueueing(false);
+
+  wait_for_next(fg2_waiter1.get());
+  wait_for_next(fg1_waiter2.get());
+  wait_for_next(fg2_waiter2.get());
+  wait_for_next(fg1_waiter1.get());
+  wait_for_next(bg1_waiter1.get());
+
+  // Add a few fg and bg items, fg should run immediately, bg should run last.
+  ForceQueueing(true);
+  bg1_waiter1 = append(background1);
+  fg1_waiter1 = append(foreground1);
+  fg2_waiter1 = append(foreground2);
+  ForceQueueing(false);
+
+  wait_for_next(fg1_waiter1.get());
+  wait_for_next(fg2_waiter1.get());
+  wait_for_next(bg2_waiter1.get());
+  wait_for_next(bg2_waiter2.get());
+  wait_for_next(bg1_waiter2.get());
+
+  // Add another bg item, but bump priority to fg, should run immediately.
+  ForceQueueing(true);
+  bg2_waiter1 = append(background2);
+  background2->SetPriority(mojom::Priority::kForeground);
+  background2.FlushForTesting();
+  ForceQueueing(false);
+
+  wait_for_next(bg2_waiter1.get());
+  wait_for_next(bg1_waiter1.get());
+}
+
+TEST_F(OnDeviceModelServiceTest, SetPriorityCloneInherits) {
+  auto model = LoadModel();
+
+  mojo::Remote<mojom::Session> background;
+  model->StartSession(background.BindNewPipeAndPassReceiver(), nullptr);
+  background->SetPriority(mojom::Priority::kBackground);
+
+  mojo::Remote<mojom::Session> foreground;
+  model->StartSession(foreground.BindNewPipeAndPassReceiver(), nullptr);
+
+  mojo::Remote<mojom::Session> clone;
+  background->Clone(clone.BindNewPipeAndPassReceiver());
+  background.FlushForTesting();
+
+  ForceQueueing(true);
+  auto bg_waiter = AppendAndFlush(background, "bg");
+  auto clone_waiter = AppendAndFlush(clone, "clone");
+  auto fg_waiter = AppendAndFlush(foreground, "fg");
+  ForceQueueing(false);
+
+  fg_waiter->WaitForCompletion();
+  EXPECT_FALSE(bg_waiter->IsComplete());
+  EXPECT_FALSE(clone_waiter->IsComplete());
+
+  bg_waiter->WaitForCompletion();
+  EXPECT_FALSE(clone_waiter->IsComplete());
+
+  clone_waiter->WaitForCompletion();
+}
+
+#if defined(ENABLE_ON_DEVICE_CONSTRAINTS)
+TEST_F(OnDeviceModelServiceTest, JSONSchema) {
+  auto model = LoadModel();
+
+  TestResponseHolder response;
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+
+  auto options = mojom::GenerateOptions::New();
+  options->response_json_schema = R"({
+    "type": "object",
+    "required": ["Rating"],
+    "additionalProperties": false,
+    "properties": {
+      "Rating": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 5
+      }
+    }
+  })";
+  session->Generate(std::move(options), response.BindRemote());
+  response.WaitForCompletion();
+
+  EXPECT_THAT(response.responses(), ElementsAre(R"({"Rating":1})"));
+}
+
+TEST_F(OnDeviceModelServiceTest, JSONSchemaInvalid) {
+  auto model = LoadModel();
+
+  TestResponseHolder response;
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+  session->Append(MakeInput("hi"), {});
+
+  auto options = mojom::GenerateOptions::New();
+  options->response_json_schema = "blah";
+  session->Generate(std::move(options), response.BindRemote());
+  response.WaitForCompletion();
+
+  // For now invalid schema will cause a disconnect.
+  EXPECT_THAT(response.responses(), ElementsAre());
+  EXPECT_TRUE(response.disconnected());
+}
+#endif
 
 }  // namespace
 }  // namespace on_device_model

@@ -91,7 +91,7 @@ void WriteDictionary(SharedDictionaryStorage* storage,
           /*was_fetched_via_cache=*/false, DummyAccessAllowedCheckCallback());
   ASSERT_TRUE(writer.has_value());
   ASSERT_TRUE(*writer);
-  (*writer)->Append(data.c_str(), data.size());
+  (*writer)->Append(base::as_byte_span(data));
   (*writer)->Finish();
 }
 void WriteDictionaryWithExpiry(SharedDictionaryStorage* storage,
@@ -118,7 +118,7 @@ void WriteDictionaryWithExpiry(SharedDictionaryStorage* storage,
           /*was_fetched_via_cache=*/false, DummyAccessAllowedCheckCallback());
   ASSERT_TRUE(writer.has_value());
   ASSERT_TRUE(*writer);
-  (*writer)->Append(data.c_str(), data.size());
+  (*writer)->Append(base::as_byte_span(data));
   (*writer)->Finish();
 }
 
@@ -2056,7 +2056,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
           /*was_fetched_via_cache=*/false, DummyAccessAllowedCheckCallback());
   ASSERT_TRUE(writer.has_value());
   ASSERT_TRUE(*writer);
-  (*writer)->Append(kTestData1.c_str(), kTestData1.size());
+  (*writer)->Append(base::as_byte_span(kTestData1));
 
   base::RunLoop run_loop;
   manager->ClearData(

@@ -39,8 +39,9 @@ SubresourceFilterSafeBrowsingClientRequest::
 SubresourceFilterSafeBrowsingClientRequest::
     ~SubresourceFilterSafeBrowsingClientRequest() {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M129);
-  if (!request_completed_)
+  if (!request_completed_) {
     database_manager_->CancelCheck(this);
+  }
   timer_.Stop();
 }
 

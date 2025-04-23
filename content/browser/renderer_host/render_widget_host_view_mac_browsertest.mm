@@ -254,6 +254,10 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
   // No accessibility support enabled at this time.
   EXPECT_EQ(accessibility_state->GetAccessibilityMode(), ui::AXMode());
 
+  // Enable platform activation since that is what is begin tested here.
+  BrowserAccessibilityState::GetInstance()->SetActivationFromPlatformEnabled(
+      /*enabled=*/true);
+
   // An AT descending the AX tree calls -accessibilityRole on the nodes as it
   // goes. Simulate an AT calling -accessibilityRole on the web contents.
   RenderWidgetHostView* rwhv =

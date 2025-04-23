@@ -816,7 +816,9 @@ TabSlotView::ViewType Tab::GetTabSlotViewType() const {
 }
 
 TabSizeInfo Tab::GetTabSizeInfo() const {
-  return {tab_style()->GetPinnedWidth(), tab_style()->GetMinimumActiveWidth(),
+  return {tab_style()->GetPinnedWidth(),
+          split().has_value() ? tab_style()->GetMinimumActiveSplitWidth()
+                              : tab_style()->GetMinimumActiveWidth(),
           tab_style()->GetMinimumInactiveWidth(),
           split().has_value() ? tab_style()->GetStandardSplitWidth()
                               : tab_style()->GetStandardWidth()};
@@ -1064,6 +1066,10 @@ std::optional<TabAlertState> Tab::GetAlertStateToShow(
 
 void Tab::SetShouldShowDiscardIndicator(bool enabled) {
   icon_->SetShouldShowDiscardIndicator(enabled);
+}
+
+void Tab::UpdateInsets() {
+  SetBorder(views::CreateEmptyBorder(tab_style_views()->GetContentsInsets()));
 }
 
 void Tab::MaybeAdjustLeftForPinnedTab(gfx::Rect* bounds,

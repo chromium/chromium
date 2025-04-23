@@ -12,7 +12,7 @@ GEN_INCLUDE([
 /**
  * Test fixture.
  */
-ChromeVoxBrailleDisplayManagerTest = class extends ChromeVoxE2ETest {
+ChromeVoxMV2BrailleDisplayManagerTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
@@ -165,7 +165,7 @@ FakeTranslatorManager.prototype = {
   refresh() {},
 };
 
-AX_TEST_F('ChromeVoxBrailleDisplayManagerTest', 'NoApi', function() {
+AX_TEST_F('ChromeVoxMV2BrailleDisplayManagerTest', 'NoApi', function() {
   const manager = new BrailleDisplayManager();
   manager.setContent(this.NAV_BRAILLE);
   BrailleTranslatorManager.instance.setTranslator(this.translator);
@@ -176,7 +176,7 @@ AX_TEST_F('ChromeVoxBrailleDisplayManagerTest', 'NoApi', function() {
  * Test that we don't write to the display when the API is available, but
  * the display is not.
  */
-AX_TEST_F('ChromeVoxBrailleDisplayManagerTest', 'NoDisplay', function() {
+AX_TEST_F('ChromeVoxMV2BrailleDisplayManagerTest', 'NoDisplay', function() {
   this.displayState = {available: false};
 
   const manager = new BrailleDisplayManager();
@@ -189,22 +189,23 @@ AX_TEST_F('ChromeVoxBrailleDisplayManagerTest', 'NoDisplay', function() {
 /**
  * Tests the typical sequence: setContent, setTranslator, setContent.
  */
-AX_TEST_F('ChromeVoxBrailleDisplayManagerTest', 'BasicSetContent', function() {
-  const manager = new BrailleDisplayManager();
-  this.assertEmptyDisplayAndClear();
-  manager.setContent(this.NAV_BRAILLE);
-  this.assertEmptyDisplayAndClear();
-  BrailleTranslatorManager.instance.setTranslator(this.translator);
-  this.assertDisplayPositionAndClear(0);
-  manager.setContent(this.NAV_BRAILLE);
-  this.assertDisplayPositionAndClear(0);
-});
+AX_TEST_F(
+    'ChromeVoxMV2BrailleDisplayManagerTest', 'BasicSetContent', function() {
+      const manager = new BrailleDisplayManager();
+      this.assertEmptyDisplayAndClear();
+      manager.setContent(this.NAV_BRAILLE);
+      this.assertEmptyDisplayAndClear();
+      BrailleTranslatorManager.instance.setTranslator(this.translator);
+      this.assertDisplayPositionAndClear(0);
+      manager.setContent(this.NAV_BRAILLE);
+      this.assertDisplayPositionAndClear(0);
+    });
 
 /**
  * Tests that setting empty content clears the display.
  */
 AX_TEST_F(
-    'ChromeVoxBrailleDisplayManagerTest', 'SetEmptyContentWithTranslator',
+    'ChromeVoxMV2BrailleDisplayManagerTest', 'SetEmptyContentWithTranslator',
     function() {
       const manager = new BrailleDisplayManager();
       this.assertEmptyDisplayAndClear();
@@ -218,7 +219,7 @@ AX_TEST_F(
 
 
 AX_TEST_F(
-    'ChromeVoxBrailleDisplayManagerTest', 'CursorAndPanning', function() {
+    'ChromeVoxMV2BrailleDisplayManagerTest', 'CursorAndPanning', function() {
       const text = 'This is a test string';
       function createNavBrailleWithCursor(start, end) {
         return new NavBraille({text, startIndex: start, endIndex: end});
@@ -254,7 +255,7 @@ AX_TEST_F(
  * Tests that the grouping algorithm works with one text character that maps
  * to one braille cell.
  */
-AX_TEST_F('ChromeVoxBrailleDisplayManagerTest', 'BasicGroup', function() {
+AX_TEST_F('ChromeVoxMV2BrailleDisplayManagerTest', 'BasicGroup', function() {
   const text = 'a';
   const translated = '1';
   const mapping = [0];
@@ -270,7 +271,7 @@ AX_TEST_F('ChromeVoxBrailleDisplayManagerTest', 'BasicGroup', function() {
  * Tests that the grouping algorithm works with one text character that maps
  * to multiple braille cells.
  */
-AX_TEST_F('ChromeVoxBrailleDisplayManagerTest', 'OneRtoManyB', function() {
+AX_TEST_F('ChromeVoxMV2BrailleDisplayManagerTest', 'OneRtoManyB', function() {
   const text = 'A';
   const translated = '11';
   const mapping = [0, 0];
@@ -286,7 +287,7 @@ AX_TEST_F('ChromeVoxBrailleDisplayManagerTest', 'OneRtoManyB', function() {
  * Tests that the grouping algorithm works with one braille cell that maps
  * to multiple text characters.
  */
-AX_TEST_F('ChromeVoxBrailleDisplayManagerTest', 'OneBtoManyR', function() {
+AX_TEST_F('ChromeVoxMV2BrailleDisplayManagerTest', 'OneBtoManyR', function() {
   const text = 'knowledge';
   const translated = '1';
   const mapping = [0];
@@ -303,7 +304,8 @@ AX_TEST_F('ChromeVoxBrailleDisplayManagerTest', 'OneBtoManyR', function() {
  * have text characters that map to multiple braille cells.
  */
 AX_TEST_F(
-    'ChromeVoxBrailleDisplayManagerTest', 'OneRtoManyB_BothEnds', function() {
+    'ChromeVoxMV2BrailleDisplayManagerTest', 'OneRtoManyB_BothEnds',
+    function() {
       const text = 'AbbC';
       const translated = 'X122X3';
       const mapping = [0, 0, 1, 2, 3, 3];
@@ -320,7 +322,8 @@ AX_TEST_F(
  * have braille cells that map to multiple text characters.
  */
 AX_TEST_F(
-    'ChromeVoxBrailleDisplayManagerTest', 'OneBtoManyR_BothEnds', function() {
+    'ChromeVoxMV2BrailleDisplayManagerTest', 'OneBtoManyR_BothEnds',
+    function() {
       const text = 'knowledgehappych';
       const translated = '1234456';
       const mapping = [0, 9, 10, 11, 12, 13, 14];
@@ -344,7 +347,7 @@ AX_TEST_F(
  * Tests that the grouping algorithm works with one  string that has both types
  * of mapping.
  */
-AX_TEST_F('ChromeVoxBrailleDisplayManagerTest', 'RandB_Random', function() {
+AX_TEST_F('ChromeVoxMV2BrailleDisplayManagerTest', 'RandB_Random', function() {
   const text = 'knowledgeIsPower';
   const translated = '1X23X45678';
   const mapping = [0, 9, 9, 10, 11, 11, 12, 13, 14, 15];
@@ -369,7 +372,7 @@ AX_TEST_F('ChromeVoxBrailleDisplayManagerTest', 'RandB_Random', function() {
  * Tests that braille-related preferences are updated upon connecting and
  * disconnecting a braille display.
  */
-AX_TEST_F('ChromeVoxBrailleDisplayManagerTest', 'UpdatePrefs', function() {
+AX_TEST_F('ChromeVoxMV2BrailleDisplayManagerTest', 'UpdatePrefs', function() {
   this.displayState = {available: false};
   const manager = new BrailleDisplayManager();
   assertEquals(false, SettingsManager.get('menuBrailleCommands'));
@@ -380,7 +383,7 @@ AX_TEST_F('ChromeVoxBrailleDisplayManagerTest', 'UpdatePrefs', function() {
 });
 
 AX_TEST_F(
-    'ChromeVoxBrailleDisplayManagerTest', 'ConvertImageToBraille',
+    'ChromeVoxMV2BrailleDisplayManagerTest', 'ConvertImageToBraille',
     async function() {
       // TODO(accessibility): images drawn on canvases (e.g. within
       // BrailleDisplayManager.convertImageDataUrlToBraille) do not work within

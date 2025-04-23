@@ -54,6 +54,33 @@ const char kQueryUrlField[] = "queryUrl";
 // Dummy number used for indicating that a new search engine is added.
 const int kNewSearchEngineIndex = -1;
 
+void ProcessGuestDsePropagation(Profile& profile,
+                                bool save_guest_choice,
+                                int dse_prepopulate_id) {
+  auto* choice_service =
+      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(&profile);
+  if (!choice_service->IsDsePropagationAllowedForGuest()) {
+    return;
+  }
+
+  if (!save_guest_choice) {
+    // The user opted out, so clear the propagated choice. The next Guest
+    // session will be reprompted if a choice is needed.
+    choice_service->SetSavedSearchEngineBetweenGuestSessions(std::nullopt);
+    return;
+  }
+
+  if (dse_prepopulate_id <= 0 ||
+      dse_prepopulate_id >
+          TemplateURLPrepopulateData::kMaxPrepopulatedEngineID) {
+    // DSE is custom or coming from local overrides, and incompatible with
+    // propagation.
+    return;
+  }
+
+  choice_service->SetSavedSearchEngineBetweenGuestSessions(dse_prepopulate_id);
+}
+
 }  // namespace
 
 namespace settings {
@@ -314,27 +341,11 @@ void SearchEnginesHandler::HandleSetDefaultSearchEngine(
   list_controller_.MakeDefaultTemplateURL(index, choice_made_location);
   base::RecordAction(base::UserMetricsAction("Options_SearchEngineSetDefault"));
 
-  auto* choice_service =
-      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(profile_);
-  if (!choice_service->IsProfileEligibleForDseGuestPropagation()) {
-    return;
-  }
-
-  if (args[2].is_none()) {
-    return;
-  }
-
-  bool saveGuestChoice = args[2].GetBool();
-  if (!saveGuestChoice) {
-    choice_service->SetSavedSearchEngineBetweenGuestSessions(std::nullopt);
-    return;
-  }
-
-  int prepopulate_id =
-      list_controller_.GetDefaultSearchProvider()->prepopulate_id();
-  if (prepopulate_id > 0 &&
-      prepopulate_id <= TemplateURLPrepopulateData::kMaxPrepopulatedEngineID) {
-    choice_service->SetSavedSearchEngineBetweenGuestSessions(prepopulate_id);
+  if (std::optional<bool> save_guest_choice = args[2].GetIfBool();
+      save_guest_choice.has_value()) {
+    ProcessGuestDsePropagation(
+        *profile_, save_guest_choice.value(),
+        list_controller_.GetDefaultSearchProvider()->prepopulate_id());
   }
 }
 
@@ -347,7 +358,7 @@ void SearchEnginesHandler::HandleGetSaveGuestChoice(
   base::Value save_guest_choice;
   auto* choice_service =
       search_engines::SearchEngineChoiceServiceFactory::GetForProfile(profile_);
-  if (choice_service->IsProfileEligibleForDseGuestPropagation()) {
+  if (choice_service->IsDsePropagationAllowedForGuest()) {
     save_guest_choice = base::Value(
         choice_service->GetSavedSearchEngineBetweenGuestSessions().has_value());
   }

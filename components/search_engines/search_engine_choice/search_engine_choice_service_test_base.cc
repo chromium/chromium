@@ -10,10 +10,12 @@
 #include "components/country_codes/country_codes.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/policy/policy_constants.h"
+#include "components/regional_capabilities/regional_capabilities_prefs.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/regional_capabilities/regional_capabilities_test_utils.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_metrics_service_accessor.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 
 namespace search_engines {
@@ -27,6 +29,7 @@ SearchEngineChoiceServiceTestBase::SearchEngineChoiceServiceTestBase::
   TemplateURLService::RegisterProfilePrefs(pref_service_.registry());
   DefaultSearchManager::RegisterProfilePrefs(pref_service_.registry());
   TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_.registry());
+  regional_capabilities::prefs::RegisterProfilePrefs(pref_service_.registry());
   local_state_.registry()->RegisterBooleanPref(
       metrics::prefs::kMetricsReportingEnabled, true);
   local_state_.registry()->RegisterInt64Pref(
@@ -115,11 +118,12 @@ void SearchEngineChoiceServiceTestBase::PopulateLazyFactories(
       base::BindLambdaForTesting(
           [args](SearchEnginesTestEnvironment& environment) {
             return std::make_unique<SearchEngineChoiceService>(
+                std::make_unique<FakeSearchEngineChoiceServiceClient>(
+                    args.variation_country_id,
+                    args.is_profile_eligible_for_dse_guest_propagation),
                 environment.pref_service(), &environment.local_state(),
                 environment.regional_capabilities_service(),
-                environment.prepopulate_data_resolver(),
-                args.is_profile_eligible_for_dse_guest_propagation,
-                args.variation_country_id);
+                environment.prepopulate_data_resolver());
           });
 }
 

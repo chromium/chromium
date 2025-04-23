@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/modules/accessibility/aria_notification.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_block_flow_iterator.h"
@@ -657,12 +658,6 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // Clears the map after each call, should be called after each serialization.
   void ClearTextOperationInNodeIdMap();
 
-  // TODO(accessibility) Convert methods consuming this into members so that we
-  // can remove this accessor method.
-  HashMap<DOMNodeId, bool>& whitespace_ignored_map() {
-    return whitespace_ignored_map_;
-  }
-
   // Adds an event to the list of pending_events_ and mark the object as dirty
   // via AXObjectCache::AddDirtyObjectToSerializationQueue. If
   // immediate_serialization is set, it schedules a serialization to be done at
@@ -893,7 +888,8 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // FinalizeTree() is called. It will recursively traversse the tree and mark
   // nodes as on-screen or off-screen. This information is later used to
   // determine which nodes will be serialized.
-  bool MarkOnScreenNodes(AXObject* obj);
+  bool MarkOnScreenNodes(AXObject* obj,
+                         const HitTestResult::NodeSet* on_screen_nodes);
 
   HeapHashSet<WeakMember<InspectorAccessibilityAgent>> agents_;
 
@@ -1290,8 +1286,6 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   HeapVector<Member<AXDirtyObject>> pending_objects_to_serialize_;
 
   Vector<ui::AXEvent> pending_events_to_serialize_;
-
-  HashMap<DOMNodeId, bool> whitespace_ignored_map_;
 
   // Any tree, tab or listbox that disallows implicit "selection from focus".
   HashSet<AXID> containers_disallowing_implicit_selection_;

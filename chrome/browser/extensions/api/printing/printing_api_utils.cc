@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/json/json_reader.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/values.h"
@@ -380,20 +381,26 @@ bool CheckSettingsAndCapabilitiesCompatibility(
 
   if (base::FeatureList::IsEnabled(
           printing::features::kApiPrintingMarginsAndScale)) {
+    // Default value is `kUnknownPrintScalingType`, so we only need to check if
+    // the value is not the default.
     if (settings.print_scaling() !=
-            printing::mojom::PrintScalingType::kUnknownPrintScalingType &&
-        !base::Contains(capabilities.print_scaling_types,
-                        settings.print_scaling())) {
-      LOG(ERROR) << "Print scaling '" << settings.print_scaling()
-                 << "' is not compatible with printer capabilities";
-      return false;
+        printing::mojom::PrintScalingType::kUnknownPrintScalingType) {
+      const bool uses_supported_print_scaling = base::Contains(
+          capabilities.print_scaling_types, settings.print_scaling());
+      base::UmaHistogramBoolean("Extensions.Printing.UsesSupportedPrintScaling",
+                                uses_supported_print_scaling);
+      if (!uses_supported_print_scaling) {
+        LOG(ERROR) << "Print scaling '" << settings.print_scaling()
+                   << "' is not compatible with printer capabilities";
+        return false;
+      }
     }
 
     if (settings.margin_type() !=
         printing::mojom::MarginType::kDefaultMargins) {
       const auto& requested_margins_um =
           settings.requested_custom_margins_in_microns();
-      bool result = std::ranges::any_of(
+      bool margins_value_supported = std::ranges::any_of(
           capabilities.papers,
           [requested_margins_um,
            needs_borderless_variant = settings.borderless()](
@@ -416,7 +423,9 @@ bool CheckSettingsAndCapabilitiesCompatibility(
                                          supported_margins.top_margin_um,
                                          supported_margins.bottom_margin_um);
           });
-      if (!result) {
+      base::UmaHistogramBoolean("Extensions.Printing.UsesSupportedMargins",
+                                margins_value_supported);
+      if (!margins_value_supported) {
         LOG(ERROR) << "Margin values " << requested_margins_um.ToString()
                    << " are not supported by the printer";
         return false;

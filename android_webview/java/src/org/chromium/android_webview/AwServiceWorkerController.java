@@ -126,7 +126,7 @@ public class AwServiceWorkerController {
         public void shouldInterceptRequest(
                 AwWebResourceRequest request,
                 WebResponseCallback callback,
-                AsyncShouldInterceptRequestCallback asyncShouldInterceptRequestCallback) {
+                @Nullable AsyncShouldInterceptRequestCallback asyncShouldInterceptRequestCallback) {
             // TODO: Consider analogy with AwContentsClient, i.e.
             //  - do we need an onloadresource callback?
             //  - do we need to post an error if the response data == null?

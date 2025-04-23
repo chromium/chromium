@@ -187,7 +187,7 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet,
   // True when this stylesheet is among the TreeScope's adopted style sheets.
   //
   // https://drafts.csswg.org/cssom/#dom-documentorshadowroot-adoptedstylesheets
-  bool IsAdoptedByTreeScope(TreeScope& tree_scope);
+  bool IsAdoptedByTreeScope(const TreeScope& tree_scope);
 
   // Associated document for constructed stylesheet. Always non-null for
   // constructed stylesheets, always null otherwise.

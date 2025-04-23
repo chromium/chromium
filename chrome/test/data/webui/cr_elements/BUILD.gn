@@ -54,9 +54,9 @@ build_webui_tests("build") {
       "cr_radio_button_test.ts",
       "cr_radio_group_test.ts",
       "cr_ripple_mixin_polymer_test.ts",
-      "cr_scrollable_test.ts",
       "cr_scroll_observer_mixin_lit_test.ts",
       "cr_scroll_observer_mixin_test.ts",
+      "cr_scrollable_test.ts",
       "cr_search_field_test.ts",
       "cr_selectable_mixin_test.ts",
       "cr_slider_test.ts",
@@ -77,7 +77,6 @@ build_webui_tests("build") {
       "i18n_mixin_test.ts",
       "iron_list_focus_test.ts",
       "list_property_update_mixin_test.ts",
-      "store_client_test.ts",
       "web_ui_listener_mixin_lit_test.ts",
       "web_ui_listener_mixin_test.ts",
     ]

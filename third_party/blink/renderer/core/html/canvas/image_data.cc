@@ -347,24 +347,26 @@ bool ImageData::IsBufferBaseDetached() const {
   NOTREACHED();
 }
 
-SkPixmap ImageData::GetSkPixmap() const {
+base::span<uint8_t> ImageData::RawByteSpan() const {
   CHECK(!IsBufferBaseDetached());
-  const void* data = nullptr;
   switch (data_->GetContentType()) {
     case V8ImageDataArray::ContentType::kFloat32Array:
-      data = data_->GetAsFloat32Array()->Data();
-      break;
+      return data_->GetAsFloat32Array()->ByteSpan();
     case V8ImageDataArray::ContentType::kFloat16Array:
-      data = data_->GetAsFloat16Array()->Data();
-      break;
+      return data_->GetAsFloat16Array()->ByteSpan();
     case V8ImageDataArray::ContentType::kUint8ClampedArray:
-      data = data_->GetAsUint8ClampedArray()->Data();
-      break;
+      return data_->GetAsUint8ClampedArray()->ByteSpan();
   }
+
+  NOTREACHED();
+}
+
+SkPixmap ImageData::GetSkPixmap() const {
+  base::span<const uint8_t> data = RawByteSpan();
   SkImageInfo info =
       SkImageInfo::Make(width(), height(), color_type_, kUnpremul_SkAlphaType,
                         PredefinedColorSpaceToSkColorSpace(color_space_));
-  return SkPixmap(info, data, info.minRowBytes());
+  return SkPixmap(info, data.data(), info.minRowBytes());
 }
 
 void ImageData::Trace(Visitor* visitor) const {

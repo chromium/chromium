@@ -351,7 +351,8 @@ TEST_F(AppMenuModelTest, DeclutterTabsItem) {
 TEST_F(AppMenuModelTest, GlicItem) {
   feature_list_.Reset();
   feature_list_.InitWithFeatures(
-      {features::kGlic, features::kTabstripComboButton}, {});
+      {features::kGlic, features::kTabstripComboButton, features::kGlicRollout},
+      {});
 
   TestLogMetricsAppMenuModel model(this, browser());
   model.Init();
@@ -441,7 +442,7 @@ TEST_P(ExtensionsMenuModelTest, ExtensionsMenu) {
   model.Init();
 
   if (GetParam()) {
-    const auto index = model.GetIndexOfCommandId(IDC_EXPLORE_EXTENSIONS);
+    const auto index = model.GetIndexOfCommandId(IDC_FIND_EXTENSIONS);
     ASSERT_TRUE(index.has_value());
     EXPECT_EQ(nullptr, model.GetSubmenuModelAt(*index));
   } else {

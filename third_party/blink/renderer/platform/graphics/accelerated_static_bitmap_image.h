@@ -124,9 +124,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   gpu::MailboxHolder GetMailboxHolder() const final;
   scoped_refptr<gpu::ClientSharedImage> GetSharedImage() const final;
   gpu::SyncToken GetSyncToken() const final;
-  bool IsOriginTopLeft() const final {
-    return shared_image_->surface_origin() == kTopLeft_GrSurfaceOrigin;
-  }
 
   PaintImage PaintImageForCurrentFrame() override;
 

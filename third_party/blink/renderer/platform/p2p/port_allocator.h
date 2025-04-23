@@ -13,7 +13,7 @@
 
 namespace blink {
 
-class PLATFORM_EXPORT P2PPortAllocator : public cricket::BasicPortAllocator {
+class PLATFORM_EXPORT P2PPortAllocator : public webrtc::BasicPortAllocator {
  public:
   struct Config {
     // Enable non-proxied UDP-based transport when set to true. When set to
@@ -34,8 +34,8 @@ class PLATFORM_EXPORT P2PPortAllocator : public cricket::BasicPortAllocator {
     bool enable_default_local_candidate = true;
   };
 
-  P2PPortAllocator(std::unique_ptr<rtc::NetworkManager> network_manager,
-                   rtc::PacketSocketFactory* socket_factory,
+  P2PPortAllocator(std::unique_ptr<webrtc::NetworkManager> network_manager,
+                   webrtc::PacketSocketFactory* socket_factory,
                    const Config& config);
   P2PPortAllocator(const P2PPortAllocator&) = delete;
   P2PPortAllocator& operator=(const P2PPortAllocator&) = delete;
@@ -45,7 +45,7 @@ class PLATFORM_EXPORT P2PPortAllocator : public cricket::BasicPortAllocator {
   void Initialize() override;
 
  private:
-  std::unique_ptr<rtc::NetworkManager> network_manager_;
+  std::unique_ptr<webrtc::NetworkManager> network_manager_;
   Config config_;
 };
 

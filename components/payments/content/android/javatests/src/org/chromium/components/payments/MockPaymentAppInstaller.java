@@ -70,7 +70,8 @@ public class MockPaymentAppInstaller {
                     app.getPackage(),
                     app.getMethod(),
                     getSupportedDelegations(app),
-                    app.getSignature());
+                    app.getSignature(),
+                    app.getPackageInfoState());
             downloader.serveManifestFor(app);
             launcher.handleLaunchingApp(app);
         }

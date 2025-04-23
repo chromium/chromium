@@ -13,9 +13,10 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
+#include "ui/display/display.h"
+#include "ui/gfx/win/wuc_backdrop.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host.h"
-#include "ui/views/widget/widget_observer.h"
 #include "ui/views/win/hwnd_message_handler_delegate.h"
 #include "ui/wm/public/animation_host.h"
 
@@ -45,11 +46,11 @@ namespace test {
 class DesktopWindowTreeHostWinTestApi;
 }
 
-class VIEWS_EXPORT DesktopWindowTreeHostWin : public DesktopWindowTreeHost,
-                                              public wm::AnimationHost,
-                                              public aura::WindowTreeHost,
-                                              public HWNDMessageHandlerDelegate,
-                                              public WidgetObserver {
+class VIEWS_EXPORT DesktopWindowTreeHostWin
+    : public DesktopWindowTreeHost,
+      public wm::AnimationHost,
+      public aura::WindowTreeHost,
+      public HWNDMessageHandlerDelegate {
  public:
   DesktopWindowTreeHostWin(
       internal::NativeWidgetDelegate* native_widget_delegate,
@@ -99,6 +100,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin : public DesktopWindowTreeHost,
   void OnNativeWidgetCreated(const Widget::InitParams& params) override;
   void OnActiveWindowChanged(bool active) override;
   void OnWidgetInitDone() override;
+  void OnWidgetThemeChanged(
+      ui::ColorProviderKey::ColorMode color_mode) override;
   std::unique_ptr<corewm::Tooltip> CreateTooltip() override;
   std::unique_ptr<aura::client::DragDropClient> CreateDragDropClient() override;
   void Close() override;
@@ -215,7 +218,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin : public DesktopWindowTreeHost,
   int GetNonClientComponent(const gfx::Point& point) const override;
   void GetWindowMask(const gfx::Size& size_px, SkPath* path) override;
   bool GetClientAreaInsets(gfx::Insets* insets,
-                           HMONITOR monitor) const override;
+                           int frame_thickness) const override;
   bool GetDwmFrameInsetsInPixels(gfx::Insets* insets) const override;
   void GetMinMaxSize(gfx::Size* min_size, gfx::Size* max_size) const override;
   gfx::Size GetRootViewSize() const override;
@@ -227,6 +230,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin : public DesktopWindowTreeHost,
   void HandleCancelMode() override;
   void HandleCaptureLost() override;
   void HandleClose() override;
+  void HandleRequestClose() override;
   bool HandleCommand(int command) override;
   void HandleAccelerator(const ui::Accelerator& accelerator) override;
   void HandleCreate() override;
@@ -269,9 +273,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin : public DesktopWindowTreeHost,
   void HandleWindowScaleFactorChanged(float window_scale_factor) override;
   void HandleHeadlessWindowBoundsChanged(const gfx::Rect& bounds) override;
 
-  // Overridden from WidgetObserver.
-  void OnWidgetThemeChanged(Widget* widget) override;
-
   Widget* GetWidget();
   const Widget* GetWidget() const;
   HWND GetHWND() const;
@@ -295,10 +296,11 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin : public DesktopWindowTreeHost,
   // Call Windows API to update the window display affinity.
   void UpdateAllowScreenshots();
 
-  HMONITOR last_monitor_from_window_ = nullptr;
-
   std::unique_ptr<HWNDMessageHandler> message_handler_;
   std::unique_ptr<aura::client::FocusClient> focus_client_;
+
+  // Used to track monitor changes.
+  display::Display last_nearest_display_;
 
   // TODO(beng): Consider providing an interface to DesktopNativeWidgetAura
   //             instead of providing this route back to Widget.
@@ -343,7 +345,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin : public DesktopWindowTreeHost,
   // True if the window is allow to take screenshots, by default is true.
   bool allow_screenshots_ = true;
 
-  base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
+  // A Windows.Ui.Composition visual tree that represents the window backdrop.
+  std::unique_ptr<gfx::WUCBackdrop> wuc_backdrop_;
 
   // Visibility of the cursor. On Windows we can have multiple root windows and
   // the implementation of ::ShowCursor() is based on a counter, so making this

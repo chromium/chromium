@@ -11,8 +11,10 @@
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "chromeos/ash/components/boca/on_task/on_task_notifications_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -32,6 +34,8 @@ namespace ash {
 class OnTaskPodController;
 }
 
+inline static constexpr char16_t kOutsideOfWorkbookTitle[] = u"Not in workbook";
+
 // This class is used to track the windows and tabs that are opened in the
 // user's OnTask locked session. Only one browser window is allowed at a time to
 // be tracked. Attempting to track another browser while there is one already
@@ -44,6 +48,7 @@ class OnTaskPodController;
 class LockedSessionWindowTracker : public KeyedService,
                                    public TabStripModelObserver,
                                    public BrowserListObserver,
+                                   public ImmersiveModeController::Observer,
                                    public content::WebContentsObserver {
  public:
   static Browser* GetBrowserWithTab(content::WebContents* tab);
@@ -80,6 +85,10 @@ class LockedSessionWindowTracker : public KeyedService,
   // or new tabs that are opened when a navigation
   void ObserveWebContents(content::WebContents* web_content);
 
+  // Callback triggered to configure the browsing instance and the OnTask pod
+  // when entering or exiting pause mode.
+  void OnPauseModeChanged(bool paused);
+
   bool can_start_navigation_throttle() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     return can_start_navigation_throttle_;
@@ -96,7 +105,6 @@ class LockedSessionWindowTracker : public KeyedService,
           notification_manager);
 
   ash::OnTaskPodController* on_task_pod_controller();
-
   OnTaskBlocklist* on_task_blocklist();
   Browser* browser();
 
@@ -115,10 +123,16 @@ class LockedSessionWindowTracker : public KeyedService,
   // BrowserListObserver Implementation
   void OnBrowserClosing(Browser* browser) override;
   void OnBrowserAdded(Browser* browser) override;
+  void OnBrowserSetLastActive(Browser* browser) override;
+  void OnBrowserNoLongerActive(Browser* browser) override;
 
   // content::WebContentsObserver Impl
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+
+  // ImmersiveModeController::Observer:
+  void OnImmersiveRevealStarted() override;
+  void OnImmersiveModeControllerDestroyed() override;
 
   void MaybeCloseWebContents(base::WeakPtr<content::WebContents> weak_tab_ptr);
   void MaybeCloseBrowser(base::WeakPtr<Browser> weak_browser_ptr);
@@ -134,6 +148,8 @@ class LockedSessionWindowTracker : public KeyedService,
   std::unique_ptr<ash::OnTaskPodController> on_task_pod_controller_;
   raw_ptr<Browser> browser_ = nullptr;
 
+  base::ScopedObservation<ImmersiveModeController, LockedSessionWindowTracker>
+      immersive_mode_controller_observation_{this};
   base::ObserverList<ash::boca::BocaWindowObserver> observers_;
 
   base::WeakPtrFactory<LockedSessionWindowTracker> weak_pointer_factory_{this};

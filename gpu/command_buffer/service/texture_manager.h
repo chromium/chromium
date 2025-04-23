@@ -14,6 +14,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <set>
 #include <string>
@@ -1240,7 +1241,7 @@ class GPU_GLES2_EXPORT TextureManager
   GLuint black_texture_ids_[kNumDefaultTextures];
 
   // The default textures for each target (texture name = 0)
-  scoped_refptr<TextureRef> default_textures_[kNumDefaultTextures];
+  std::array<scoped_refptr<TextureRef>, kNumDefaultTextures> default_textures_;
 
   std::vector<raw_ptr<DestructionObserver, VectorExperimental>>
       destruction_observers_;

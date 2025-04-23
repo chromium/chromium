@@ -625,6 +625,9 @@ class InputHandler::InputInjector
   InputInjector(InputHandler* owner, RenderWidgetHostImpl* widget_host)
       : owner_(owner), widget_host_(widget_host->GetWeakPtr()) {
     widget_host->AddInputEventObserver(this);
+    // Make sure the input event observer is not blocked by browser-side
+    // paint-holding.
+    widget_host_->ForceFirstFrameAfterNavigationTimeout();
   }
 
   InputInjector(const InputInjector&) = delete;

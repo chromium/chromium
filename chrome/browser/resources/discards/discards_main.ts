@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import './database_tab.js';
@@ -10,39 +9,35 @@ import './discards_tab.js';
 import './graph_tab.js';
 
 import {CrRouter} from 'chrome://resources/js/cr_router.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './discards_main.html.js';
+import {getCss} from './discards_main.css.js';
+import {getHtml} from './discards_main.html.js';
 
-class DiscardsMainElement extends PolymerElement {
+export class DiscardsMainElement extends CrLitElement {
   static get is() {
     return 'discards-main';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {
-      selected: {
-        type: Number,
-        value: 0,
-        observer: 'selectedChanged_',
-      },
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      tabs: {
-        type: Array,
-        value: () => ['Discards', 'Database', 'Graph'],
-      },
+  static override get properties() {
+    return {
+      selected: {type: Number},
+      tabs: {type: Array},
     };
   }
 
-  declare selected: number;
-  declare tabs: string[];
+  protected accessor selected: number = 0;
+  protected accessor tabs: string[] = ['discards', 'database', 'graph'];
 
-  override ready() {
-    super.ready();
+  override firstUpdated() {
     const router = CrRouter.getInstance();
     this.pathChanged_(router.getPath());
     router.addEventListener(
@@ -51,14 +46,17 @@ class DiscardsMainElement extends PolymerElement {
   }
 
   /** Updates the location hash on selection change. */
-  private selectedChanged_(newValue: number, oldValue?: number) {
-    if (oldValue !== undefined) {
-      // The first tab is special-cased to the empty path.
-      const defaultTab = this.tabs[0].toLowerCase();
-      const tabName = this.tabs[newValue].toLowerCase();
-      CrRouter.getInstance().setPath(
-          '/' + (tabName === defaultTab ? '' : tabName));
+  protected onSelectedChanged_(e: CustomEvent<{value: number}>) {
+    const newIndex = e.detail.value;
+    if (newIndex === this.selected) {
+      return;
     }
+
+    this.selected = newIndex;
+
+    // The first tab is special-cased to the empty path.
+    const tabName = this.tabs[newIndex];
+    CrRouter.getInstance().setPath('/' + (newIndex === 0 ? '' : tabName));
   }
 
   /**
@@ -66,7 +64,7 @@ class DiscardsMainElement extends PolymerElement {
    * path or zero if no match.
    */
   private selectedFromPath_(path: string): number {
-    const index = this.tabs.findIndex(tab => path === tab.toLowerCase());
+    const index = this.tabs.findIndex(tab => path === tab);
     return Math.max(index, 0);
   }
 

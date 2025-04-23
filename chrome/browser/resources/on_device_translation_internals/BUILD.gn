@@ -9,7 +9,7 @@ assert(is_win || is_mac || is_linux)
 build_webui("build") {
   grd_prefix = "on_device_translation_internals"
   static_files = [ "on_device_translation_internals.html" ]
-  non_web_component_files = [
+  ts_files = [
     "app.html.ts",
     "app.ts",
     "browser_proxy.ts",

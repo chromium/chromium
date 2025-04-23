@@ -24,6 +24,7 @@ source_set("feedback_private") {
     "//build:chromeos_buildflags",
     "//components/feedback",
     "//extensions/browser:browser_sources",
+    "//extensions/browser/api:extensions_api_client",
     "//extensions/common/api",
     "//services/data_decoder/public/cpp",
     "//ui/gfx/geometry",

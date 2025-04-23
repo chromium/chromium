@@ -213,7 +213,7 @@ def __step_config(ctx, step_config):
                 "platform_ref": "lld-link",
                 "input_root_absolute_path": input_root_absolute_path,
                 "canonicalize_dir": canonicalize_dir,
-                "timeout": "2m",
+                "timeout": "4m",
             },
         ])
     elif gn.args(ctx).get("use_remoteexec") == "true":

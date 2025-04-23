@@ -10,14 +10,8 @@
 
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_browsertest_platform_delegate.h"
-#include "net/test/spawned_test_server/spawned_test_server.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/extension_platform_browsertest.h"
-#else
 #include "chrome/browser/extensions/extension_browsertest.h"
-#endif  // BUILDFLAG(IS_ANDROID)
+#include "net/test/spawned_test_server/spawned_test_server.h"
 
 namespace base {
 class FilePath;
@@ -27,13 +21,6 @@ class GURL;
 
 namespace extensions {
 class Extension;
-class ExtensionBrowserTestPlatformDelegate;
-
-#if BUILDFLAG(IS_ANDROID)
-using ExtensionApiTestBase = ExtensionPlatformBrowserTest;
-#else
-using ExtensionApiTestBase = ExtensionBrowserTest;
-#endif
 
 // The general flow of these API tests should work like this:
 // (1) Setup initial browser state (e.g. create some bookmarks for the
@@ -43,7 +30,7 @@ using ExtensionApiTestBase = ExtensionBrowserTest;
 //     chrome.test.fail
 // (4) Verify expected browser state.
 // TODO(erikkay): There should also be a way to drive events in these tests.
-class ExtensionApiTest : public ExtensionApiTestBase {
+class ExtensionApiTest : public ExtensionBrowserTest {
  public:
   struct RunOptions {
     // Start the test by opening the specified page URL. This must be an
@@ -187,10 +174,6 @@ class ExtensionApiTest : public ExtensionApiTestBase {
   // created using UseHttpsTestServer() and then called with
   // embedded_test_server().
   std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
-
-  // A delegate to handle platform-specific behavior.
-  // TODO(devlin): Hoist this up to ExtensionPlatformBrowserTest?
-  ExtensionBrowserTestPlatformDelegate platform_delegate_;
 };
 
 }  // namespace extensions

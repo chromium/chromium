@@ -102,9 +102,6 @@ class AutofillField : public FormFieldData {
   experimental_server_predictions() const {
     return experimental_server_predictions_;
   }
-  std::optional<bool> may_use_prefilled_placeholder() const {
-    return may_use_prefilled_placeholder_;
-  }
   HtmlFieldType html_type() const { return html_type_; }
   HtmlFieldMode html_mode() const { return html_mode_; }
   const FieldTypeSet& possible_types() const { return possible_types_; }
@@ -128,10 +125,6 @@ class AutofillField : public FormFieldData {
       AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
           prediction);
 
-  void set_may_use_prefilled_placeholder(
-      std::optional<bool> may_use_prefilled_placeholder) {
-    may_use_prefilled_placeholder_ = may_use_prefilled_placeholder;
-  }
   void set_possible_types(const FieldTypeSet& possible_types) {
     possible_types_ = possible_types;
   }
@@ -297,22 +290,6 @@ class AutofillField : public FormFieldData {
     return credit_card_number_offset_;
   }
 
-  void set_generation_type(
-      AutofillUploadContents::Field::PasswordGenerationType type) {
-    generation_type_ = type;
-  }
-  AutofillUploadContents::Field::PasswordGenerationType generation_type()
-      const {
-    return generation_type_;
-  }
-
-  void set_generated_password_changed(bool generated_password_changed) {
-    generated_password_changed_ = generated_password_changed;
-  }
-  bool generated_password_changed() const {
-    return generated_password_changed_;
-  }
-
   void set_vote_type(AutofillUploadContents::Field::VoteType type) {
     vote_type_ = type;
   }
@@ -358,12 +335,6 @@ class AutofillField : public FormFieldData {
       format_string_source_ = source;
     }
   }
-
-  // Getter and Setter methods for |state_is_a_matching_type_|.
-  void set_state_is_a_matching_type(bool value = true) {
-    state_is_a_matching_type_ = value;
-  }
-  bool state_is_a_matching_type() const { return state_is_a_matching_type_; }
 
   void set_field_log_events(const std::vector<FieldLogEventType>& events) {
     field_log_events_ = events;
@@ -474,12 +445,6 @@ class AutofillField : public FormFieldData {
       AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction>
       experimental_server_predictions_;
 
-  // Whether the server-side classification believes that the field
-  // may be pre-filled with a placeholder in the value attribute.
-  // For autofillable types, `nullopt` indicates that there is no server-side
-  // classification. For PWM, `nullopt` and `false` are currently identical.
-  std::optional<bool> may_use_prefilled_placeholder_ = std::nullopt;
-
   // Requirements the site imposes to passwords (for password generation).
   // Corresponds to the requirements determined by the Autofill server.
   std::optional<PasswordRequirementsSpec> password_requirements_;
@@ -549,21 +514,11 @@ class AutofillField : public FormFieldData {
   // label when the label is divided between subsequent fields.
   std::u16string parseable_label_;
 
-  // The type of password generation event, if it happened.
-  AutofillUploadContents::Field::PasswordGenerationType generation_type_ =
-      AutofillUploadContents::Field::NO_GENERATION;
-
-  // Whether the generated password was changed by user.
-  bool generated_password_changed_ = false;
-
   // The vote type, if the autofill type is USERNAME or any password vote.
   // Otherwise, the field is ignored. |vote_type_| provides context as to what
   // triggered the vote.
   AutofillUploadContents::Field::VoteType vote_type_ =
       AutofillUploadContents::Field::NO_INFORMATION;
-
-  // Denotes if |ADDRESS_HOME_STATE| should be added to |possible_types_|.
-  bool state_is_a_matching_type_ = false;
 
   // A list of field log events, which record when user interacts the field
   // during autofill or editing, such as user clicks on the field, the

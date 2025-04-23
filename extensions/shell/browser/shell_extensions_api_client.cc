@@ -4,6 +4,7 @@
 
 #include "extensions/shell/browser/shell_extensions_api_client.h"
 
+#include <memory>
 #include <utility>
 
 #include "build/build_config.h"
@@ -40,9 +41,9 @@ void ShellExtensionsAPIClient::AttachWebContentsHelpers(
 }
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
-AppViewGuestDelegate* ShellExtensionsAPIClient::CreateAppViewGuestDelegate()
-    const {
-  return new ShellAppViewGuestDelegate();
+std::unique_ptr<AppViewGuestDelegate>
+ShellExtensionsAPIClient::CreateAppViewGuestDelegate() const {
+  return std::make_unique<ShellAppViewGuestDelegate>();
 }
 
 std::unique_ptr<guest_view::GuestViewManagerDelegate>
@@ -50,15 +51,17 @@ ShellExtensionsAPIClient::CreateGuestViewManagerDelegate() const {
   return std::make_unique<ExtensionsGuestViewManagerDelegate>();
 }
 
-WebViewGuestDelegate* ShellExtensionsAPIClient::CreateWebViewGuestDelegate(
+std::unique_ptr<WebViewGuestDelegate>
+ShellExtensionsAPIClient::CreateWebViewGuestDelegate(
     WebViewGuest* web_view_guest) const {
-  return new ShellWebViewGuestDelegate();
+  return std::make_unique<ShellWebViewGuestDelegate>();
 }
 
-WebViewPermissionHelperDelegate*
+std::unique_ptr<WebViewPermissionHelperDelegate>
 ShellExtensionsAPIClient::CreateWebViewPermissionHelperDelegate(
     WebViewPermissionHelper* web_view_permission_helper) const {
-  return new WebViewPermissionHelperDelegate(web_view_permission_helper);
+  return std::make_unique<WebViewPermissionHelperDelegate>(
+      web_view_permission_helper);
 }
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 

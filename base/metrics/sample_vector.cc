@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/debug/leak_annotations.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
@@ -590,6 +591,7 @@ SampleVector::CreateCountsStorageWhileLocked() {
 }
 
 PersistentSampleVector::PersistentSampleVector(
+    std::string_view name,
     uint64_t id,
     const BucketRanges* bucket_ranges,
     Metadata* meta,
@@ -608,9 +610,15 @@ PersistentSampleVector::PersistentSampleVector(
   // move any single-sample to it because sometimes the persistent memory is
   // read-only. Only non-const methods (which assume that memory is read/write)
   // can do that.
-  if (single_sample().IsDisabled()) {
-    bool success = MountExistingCountsStorage();
-    DCHECK(success);
+  if (single_sample().IsDisabled() && !MountExistingCountsStorage()) {
+#if !BUILDFLAG(IS_NACL)
+    // TODO: crbug.com/410544723 - Remove crash keys and DumpWithoutCrashing
+    // once investigation is complete.
+    SCOPED_CRASH_KEY_STRING64("PSV", "name", name);
+    SCOPED_CRASH_KEY_NUMBER("PSV", "counts_ref",
+                            persistent_counts_.reference());
+#endif
+    debug::DumpWithoutCrashing();
   }
 }
 

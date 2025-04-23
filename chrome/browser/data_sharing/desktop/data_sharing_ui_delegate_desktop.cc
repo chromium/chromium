@@ -31,9 +31,7 @@ void DataSharingUIDelegateDesktop::HandleShareURLIntercepted(
     auto delegate =
         std::make_unique<CollaborationControllerDelegateDesktop>(browser);
     collaboration::CollaborationServiceFactory::GetForProfile(profile_)
-        ->StartJoinFlow(
-            std::move(delegate), url,
-            collaboration::CollaborationServiceJoinEntryPoint::kUnknown);
+        ->StartJoinFlow(std::move(delegate), url);
   }
 }
 

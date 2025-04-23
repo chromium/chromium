@@ -281,18 +281,9 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
       num_spatial_layers, num_temporal_layers, is_vbr,
       test_type == TestType::kValidation);
 
-  // TODO(b/182008564) Add checks to make sure no features are duplicated, and
-  // there is no intersection between the enabled and disabled set.
+  // TODO(b/182008564) Add checks to make sure no features are duplicated.
   std::vector<base::test::FeatureRef> combined_enabled_features(
       enabled_features);
-  std::vector<base::test::FeatureRef> combined_disabled_features(
-      disabled_features);
-#if BUILDFLAG(USE_VAAPI)
-  // Disable this feature so that the encoder test can test a resolution
-  // which is denied for the sake of performance. See crbug.com/1008491.
-  combined_disabled_features.push_back(
-      media::kVaapiEnforceVideoMinMaxResolution);
-#endif
 
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_VAAPI)
   combined_enabled_features.push_back(media::kAcceleratedVideoEncodeLinux);
@@ -306,8 +297,7 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
       test_type, std::move(video), output_folder, video_path.BaseName(),
       profile, inter_layer_pred_mode, num_spatial_layers, num_temporal_layers,
       content_type, bitrate_allocation, save_output_bitstream, reverse,
-      frame_output_config, combined_enabled_features,
-      combined_disabled_features);
+      frame_output_config, combined_enabled_features, disabled_features);
 }
 
 VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(

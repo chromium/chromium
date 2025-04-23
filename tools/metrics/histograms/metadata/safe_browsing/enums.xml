@@ -197,6 +197,24 @@ chromium-metrics-reviews@google.com.
   <int value="26" label="dangerous download canceled on profile closure"/>
 </enum>
 
+<!-- LINT.IfChange(DismissReason) -->
+
+<enum name="DismissReason">
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="PRIMARY_ACTION"/>
+  <int value="2" label="SECONDARY_ACTION"/>
+  <int value="3" label="TIMER"/>
+  <int value="4" label="GESTURE"/>
+  <int value="5" label="TAB_SWITCHED"/>
+  <int value="6" label="TAB_DESTROYED"/>
+  <int value="7" label="ACTIVITY_DESTROYED"/>
+  <int value="8" label="SCOPE_DESTROYED"/>
+  <int value="9" label="DISMISSED_BY_FEATURE"/>
+  <int value="10" label="COUNT"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/messages/android/message_enums.h) -->
+
 <enum name="DisplayPersistentNotificationEvents">
   <int value="0" label="Request to display persistent notification"/>
   <int value="1" label="Finished displaying persistent notification"/>
@@ -569,6 +587,16 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="UNABLE_TO_RENAME_FAILURE"/>
 </enum>
 
+<!-- LINT.IfChange(SafeBrowsingV4UpdateType) -->
+
+<enum name="SafeBrowsingV4UpdateType">
+  <int value="0" label="Invalid update"/>
+  <int value="1" label="Full update"/>
+  <int value="2" label="Partial update"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/core/browser/db/v4_store.h:ApplyUpdateType) -->
+
 <enum name="SafetyCheckWarningReason">
   <int value="1" label="Unpublished"/>
   <int value="2" label="Policy"/>
@@ -718,6 +746,17 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="A report has started"/>
   <int value="4" label="The trigger is in monitoring mode"/>
 </enum>
+
+<!-- LINT.IfChange(SyncedEsbOutcome) -->
+
+<enum name="SyncedEsbOutcome">
+  <int value="0" label="Shown"/>
+  <int value="1" label="AcceptedOk"/>
+  <int value="2" label="AcceptedTurnOn"/>
+  <int value="3" label="Dismissed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/safe_browsing/tailored_security/consented_message_android.cc:SyncedEsbOutcome) -->
 
 <enum name="URTAndBackgroundHPRTResult">
   <int value="0" label="UrtSafeAndHprtUnfinished"/>

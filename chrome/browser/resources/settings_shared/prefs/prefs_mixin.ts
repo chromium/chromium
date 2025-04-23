@@ -28,7 +28,7 @@ export const PrefsMixin = dedupingMixin(
           };
         }
 
-        prefs: any;
+        declare prefs: any;
 
         /**
          * Gets the pref at the given prefPath. Throws if the pref is not found.

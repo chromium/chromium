@@ -171,7 +171,6 @@ source_set("base") {
     "//services/network/public/mojom",
     "//third_party/abseil-cpp:absl",
     "//third_party/libvpx",
-    "//third_party/libyuv",
     "//third_party/webrtc_overrides:webrtc_component",
     "//url",
   ]
@@ -439,7 +438,6 @@ source_set("unit_tests") {
     "//remoting/proto/remoting/v1:telemetry_messages",
     "//services/network:test_support",
     "//services/network/public/cpp",
-    "//third_party/libyuv",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
 

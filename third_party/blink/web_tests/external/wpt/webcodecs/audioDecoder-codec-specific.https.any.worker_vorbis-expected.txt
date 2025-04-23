@@ -5,8 +5,10 @@ Harness Error. harness_status.status = 1 , harness_status.message = Error: vorbi
 [NOTRUN] Test configure()
 [NOTRUN] Verify closed AudioDecoder operations
 [NOTRUN] Test decoding
-[NOTRUN] Test decoding a with negative timestamp
+[NOTRUN] Test decoding a with a negative timestamp
+[NOTRUN] Test decoding a with a positive timestamp
 [NOTRUN] Test decoding after flush
 [NOTRUN] Test reset during flush
 [NOTRUN] AudioDecoder decodeQueueSize test
 Harness: the test ran to completion.
+

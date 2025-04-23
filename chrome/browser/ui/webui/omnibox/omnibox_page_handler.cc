@@ -271,10 +271,8 @@ struct TypeConverter<mojom::AutocompleteMatchPtr, AutocompleteMatch> {
     result->destination_url = input.destination_url.spec();
     result->stripped_destination_url = input.stripped_destination_url.spec();
 
-    GURL image = input.ImageUrl();
-    if (image.is_empty())
-      image = input.icon_url;
-    result->image = image.spec().c_str();
+    result->icon = input.icon_url.spec().c_str();
+    result->image = input.ImageUrl().spec().c_str();
 
     result->contents = base::UTF16ToUTF8(input.contents);
     result->contents_class =
@@ -421,10 +419,12 @@ void OmniboxPageHandler::OnResultChanged(AutocompleteController* controller,
   // Obtain a vector of all image urls required.
   std::vector<std::string> image_urls;
   for (const auto& match : response->combined_results) {
+    image_urls.push_back(match->icon);
     image_urls.push_back(match->image);
   }
   for (const auto& results_by_provider : response->results_by_provider) {
     for (const auto& match : results_by_provider->results) {
+      image_urls.push_back(match->icon);
       image_urls.push_back(match->image);
     }
   }
@@ -464,7 +464,7 @@ void OmniboxPageHandler::OnBitmapFetched(mojom::AutocompleteControllerType type,
   std::string base_64 = base::Base64Encode(*data);
   const char kDataUrlPrefix[] = "data:image/png;base64,";
   std::string data_url = GURL(kDataUrlPrefix + base_64).spec();
-  page_->HandleAnswerImageData(type, image_url, data_url);
+  page_->HandleAnswerIconImageData(type, image_url, data_url);
 }
 
 bool OmniboxPageHandler::LookupIsTypedHost(const std::u16string& host,

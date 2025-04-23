@@ -12,9 +12,11 @@
 name = "iana-time-zone-haiku"
 version = "0.1.2"
 
+[package.metadata.gnrt]
+is_placeholder = true
+
 [features]
 
 [dependencies.cc]
 version = "^1.0.79"
-default_features = true
-features = []
+default_features = false

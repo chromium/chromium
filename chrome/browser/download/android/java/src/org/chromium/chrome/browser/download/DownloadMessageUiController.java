@@ -6,9 +6,9 @@ package org.chromium.chrome.browser.download;
 
 import android.content.Context;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.offline_items_collection.ContentId;
@@ -25,20 +25,18 @@ import java.util.List;
  * bar and messages UI versions. Tracks updates for download items, offline items, android
  * downloads etc. and computes the current state of the UI to be shown.
  */
+@NullMarked
 public interface DownloadMessageUiController extends OfflineContentProvider.Observer {
     /** A delegate to provide chrome layer dependencies. */
     interface Delegate {
         /** @return The context used for obtaining resources. */
-        @Nullable
-        Context getContext();
+        @Nullable Context getContext();
 
         /** @return The {@link MessageDispatcher} used for showing messages. */
-        @Nullable
-        MessageDispatcher getMessageDispatcher();
+        @Nullable MessageDispatcher getMessageDispatcher();
 
         /** @return The {@link ModalDialogManager} for showing download later dialog. */
-        @Nullable
-        ModalDialogManager getModalDialogManager();
+        @Nullable ModalDialogManager getModalDialogManager();
 
         /**
          * Called by the controller before updating the UI so that it is only using the last focused
@@ -48,12 +46,12 @@ public interface DownloadMessageUiController extends OfflineContentProvider.Obse
         boolean maybeSwitchToFocusedActivity();
 
         /** Called to open the downloads page. */
-        void openDownloadsPage(OtrProfileId otrProfileId, @DownloadOpenSource int source);
+        void openDownloadsPage(@Nullable OtrProfileId otrProfileId, @DownloadOpenSource int source);
 
         /** Called to open the download associated with the given {@link OfflineItem}. */
         void openDownload(
-                OfflineItem offlineItem,
-                OtrProfileId otrProfileId,
+                @Nullable OfflineItem offlineItem,
+                @Nullable OtrProfileId otrProfileId,
                 @DownloadOpenSource int source,
                 Context context);
 

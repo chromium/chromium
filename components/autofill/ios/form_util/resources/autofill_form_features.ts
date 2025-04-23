@@ -24,6 +24,14 @@ let autofillAcrossIframes: boolean = false;
 let autofillAcrossIframesThrottling: boolean = false;
 // LINT.ThenChange(//components/autofill/core/common/autofill_features.cc:autofill_across_iframes_ios)
 
+// LINT.IfChange(autofill_disallow_slash_dot_labels)
+/**
+ * True labels must not exclusively contain slashes and dots and other special
+ * characters.
+ */
+let autofillDisallowSlashDotLabels: boolean = true;
+// LINT.ThenChange(//components/autofill/core/common/autofill_features.cc:autofill_disallow_slash_dot_labels)
+
 // LINT.IfChange(autofill_isolated_content_world)
 /**
  Enables the logic necessary for Autofill to work from an isolated content world
@@ -48,6 +56,14 @@ instead of using true by default.
  */
 let autofillCorrectUserEditedBitInParsedField: boolean = false;
 // LINT.ThenChange(//components/autofill/ios/common/features.mm:autofill_correct_user_edited_bit_in_parsed_field)
+
+// LINT.IfChange(autofill_allow_default_prevented_submission)
+/**
+Allows detecting form submissions that are `defaultPrevented` by the page
+content.
+*/
+let autofillAllowDefaultPreventedSubmission: boolean = false;
+// LINT.ThenChange(//components/autofill/ios/common/features.mm:autofill_allow_default_prevented_submission)
 
 /**
  * @see autofillAcrossIframes
@@ -75,6 +91,20 @@ function setAutofillAcrossIframesThrottling(enabled: boolean): void {
  */
 function isAutofillAcrossIframesThrottlingEnabled(): boolean {
   return autofillAcrossIframesThrottling;
+}
+
+/**
+ * @see autofillDisallowSlashDotLabels
+ */
+function setAutofillDisallowSlashDotLabels(enabled: boolean): void {
+  autofillDisallowSlashDotLabels = enabled;
+}
+
+/**
+ * @see setAutofillDisallowSlashDotLabels
+ */
+function isAutofillDisallowSlashDotLabelsEnabled(): boolean {
+  return autofillDisallowSlashDotLabels;
 }
 
 /**
@@ -119,17 +149,36 @@ function isAutofillCorrectUserEditedBitInParsedField(): boolean {
   return autofillCorrectUserEditedBitInParsedField;
 }
 
-// Expose globally via `gCrWebLegacy` instead of `export` to ensure state (feature
+
+/**
+ * @see autofillAllowDefaultPreventedSubmission
+ */
+function setAutofillAllowDefaultPreventedSubmission(enabled: boolean): void {
+  autofillAllowDefaultPreventedSubmission = enabled;
+}
+
+/**
+ * @see autofillAllowDefaultPreventedSubmission
+ */
+function isAutofillAllowDefaultPreventedSubmission(): boolean {
+  return autofillAllowDefaultPreventedSubmission;
+}
+
+// Expose globally via `gCrWeb` instead of `export` to ensure state (feature
 // on/off) is maintained across imports.
 gCrWebLegacy.autofill_form_features = {
   setAutofillAcrossIframes,
   isAutofillAcrossIframesEnabled,
   setAutofillAcrossIframesThrottling,
   isAutofillAcrossIframesThrottlingEnabled,
+  setAutofillDisallowSlashDotLabels,
+  isAutofillDisallowSlashDotLabelsEnabled,
   setAutofillIsolatedContentWorld,
   isAutofillIsolatedContentWorldEnabled,
   setAutofillFixPaymentSheetSpam,
   isAutofillFixPaymentSheetSpamEnabled,
   setAutofillCorrectUserEditedBitInParsedField,
   isAutofillCorrectUserEditedBitInParsedField,
+  setAutofillAllowDefaultPreventedSubmission,
+  isAutofillAllowDefaultPreventedSubmission,
 };

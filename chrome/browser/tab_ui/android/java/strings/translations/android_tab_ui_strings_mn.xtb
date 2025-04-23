@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="mn">
+<translation id="1293272072740285747">Дараа таб нэмэхийн тулд энэ бүлгийг үлдээх эсвэл уг бүлэг танд цаашид хэрэггүй болсон бол устгана уу.
+
+Хэрэв та бүлгийг устгавал хүн бүр "<ph name="TITLE_OF_GROUP" />" табын бүлэгт хандах эрхээ тэр даруй алдах бөгөөд тус бүлгийг бүх төхөөрөмжөөс устгана.</translation>
+<translation id="1340839264183302272">Бүлгээс гарах</translation>
+<translation id="1419023007528516122">Энэ нь бүлгийг таны төхөөрөмжөөс бүрмөсөн устгана</translation>
+<translation id="1501480321619201731">Бүлгийг устгах</translation>
+<translation id="2677748264148917807">Үлдээх</translation>
+<translation id="3547352561153509682">Энэ нь бүлгийг <ph name="USER_EMAIL" />-д нэвтэрсэн бүх төхөөрөмжөөс устгана</translation>
+<translation id="381219490185664296">Табын бүлгийг салгах уу?</translation>
+<translation id="4139634748112164403">Табууд энэ төхөөрөмж дээр нээлттэй хэвээр үлдэх хэдий ч бүлгийг бүрмөсөн устгана</translation>
+<translation id="4431937619879060901">Та "<ph name="GROUP_NAME" />" табын бүлэгт хандах эрхээ тэр даруй алдах ба уг бүлгийг таны бүх төхөөрөмжөөс устгана</translation>
+<translation id="4460014764210899310">Бүлгийг болих</translation>
+<translation id="4777866634702576038">Табын бүлгийг устгах уу?</translation>
+<translation id="5094423602314093681">Табыг хасаж, бүлгийг устгах уу?</translation>
+<translation id="5647702255748985085">Бүлгээс гарах уу?</translation>
+<translation id="742664698522525515">Бүлгийг үлдээх үү?</translation>
+<translation id="750886945254958667">Дараа таб нэмэхийн тулд энэ бүлгийг үлдээх эсвэл та цаашид уг бүлэгт хандахыг хүсэхгүй байвал гарна уу</translation>
+<translation id="8261506727792406068">Устгах</translation>
+<translation id="870736955561925754">Табыг хааж, бүлгийг устгах уу?</translation>
+<translation id="8804742093141782941">Бүлгийг үлдээх</translation>
+<translation id="9169141410816678175">Хүн бүр "<ph name="GROUP_NAME" />" табын бүлэгт хандах эрхээ тэр даруй алдах бөгөөд үүнийг бүх төхөөрөмжөөс устгана</translation>
+<translation id="9216898458513705996">Таб энэ төхөөрөмж дээр нээлттэй үлдэх хэдий ч бүлгийг <ph name="USER_EMAIL" />-д нэвтэрсэн бүх төхөөрөмжөөс устгана</translation>
+<translation id="94870150074703282">Бүлгийг устгах уу?</translation>
+</translationbundle>

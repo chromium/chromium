@@ -44,6 +44,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.content.app.SandboxedProcessService;
 import org.chromium.content.common.ContentSwitchUtils;
 import org.chromium.content_public.browser.ChildProcessImportance;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.content_public.common.ContentSwitches;
@@ -55,10 +56,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.concurrent.GuardedBy;
+
 /**
- * This is the java counterpart to ChildProcessLauncherHelper. It is owned by native side and
- * has an explicit destroy method.
- * Each public or jni methods should have explicit documentation on what threads they are called.
+ * This is the java counterpart to ChildProcessLauncherHelper. It is owned by native side and has an
+ * explicit destroy method. Each public or jni methods should have explicit documentation on what
+ * threads they are called.
  */
 @JNINamespace("content::internal")
 @NullMarked
@@ -195,11 +198,15 @@ public final class ChildProcessLauncherHelperImpl {
                     if (pid > 0) {
                         sLauncherByPid.put(pid, ChildProcessLauncherHelperImpl.this);
                         if (mRanking != null) {
+                            // TODO(crbug.com/409703175): Set isSpareRenderer once the
+                            // spare renderer information is passed when launching the
+                            // process.
                             mRanking.addConnection(
                                     connection,
                                     /* visible= */ false,
                                     /* frameDepth= */ 1,
                                     /* intersectsViewport= */ false,
+                                    /* isSpareRenderer= */ false,
                                     ChildProcessImportance.MODERATE);
                             if (mBindingManager != null) mBindingManager.rankingChanged();
                         }
@@ -340,6 +347,9 @@ public final class ChildProcessLauncherHelperImpl {
 
     private boolean mDroppedStrongBingingDueToBackgrounding;
 
+    private final Object mIsSpareRendererLock = new Object();
+
+    @GuardedBy("mIsSpareRendererLock")
     private boolean mIsSpareRenderer;
 
     @CalledByNative
@@ -737,6 +747,18 @@ public final class ChildProcessLauncherHelperImpl {
         return TextUtils.isEmpty(mProcessType) ? "" : mProcessType;
     }
 
+    private boolean getIsSpareRenderer() {
+        synchronized (mIsSpareRendererLock) {
+            return mIsSpareRenderer;
+        }
+    }
+
+    private void setIsSpareRenderer(boolean isSpareRenderer) {
+        synchronized (mIsSpareRendererLock) {
+            mIsSpareRenderer = isSpareRenderer;
+        }
+    }
+
     // Called on client (UI or IO) thread.
     @CalledByNative
     private void getTerminationInfoAndStop(long terminationInfoPtr) {
@@ -745,6 +767,11 @@ public final class ChildProcessLauncherHelperImpl {
         // does not change once it's been set. So it is safe to test whether it's null here and
         // access it afterwards.
         if (connection == null) return;
+
+        boolean isSpareRenderer;
+        synchronized (mIsSpareRendererLock) {
+            isSpareRenderer = mIsSpareRenderer;
+        }
 
         // Note there is no guarantee that connection lost has happened. However ChildProcessRanking
         // is not thread safe, so this is the best we can do.
@@ -761,7 +788,8 @@ public final class ChildProcessLauncherHelperImpl {
                         connection.bindingStateCurrentOrWhenDied(),
                         connection.isKilledByUs(),
                         connection.hasCleanExit(),
-                        exceptionString != null);
+                        exceptionString != null,
+                        isSpareRenderer);
         LauncherThread.post(() -> mLauncher.stop());
     }
 
@@ -813,6 +841,9 @@ public final class ChildProcessLauncherHelperImpl {
                 || hasForegroundServiceWorker
                 || boostForLoading) {
             newEffectiveImportance = ChildProcessImportance.MODERATE;
+        } else if (importance == ChildProcessImportance.PERCEPTIBLE
+                && ChildProcessConnection.supportNotPerceptibleBinding()) {
+            newEffectiveImportance = ChildProcessImportance.PERCEPTIBLE;
         } else {
             newEffectiveImportance = ChildProcessImportance.NORMAL;
         }
@@ -828,6 +859,20 @@ public final class ChildProcessLauncherHelperImpl {
                 case ChildProcessImportance.NORMAL:
                     // Nothing to add.
                     break;
+                case ChildProcessImportance.PERCEPTIBLE:
+                    // Use not-perceptible binding for protected tabs. A service binding which leads
+                    // to PERCEPTIBLE_APP_ADJ (= 200) is ideal for protected tabs, but Android does
+                    // not provide the service binding yet.
+                    // TODO(crbug.com/400602112): Use Context.BIND_NOT_VISIBLE binding instead.
+                    //
+                    // This binding is out of control of BindingManager which always unbinds the
+                    // lowest ranked process from not-perceptible binding by
+                    // ensureLowestRankIsWaived().
+                    //
+                    // Note that ChildProcessConnection.supportNotPerceptibleBinding() is checked
+                    // above on setting ChildProcessImportance.PERCEPTIBLE.
+                    connection.addNotPerceptibleBinding();
+                    break;
                 case ChildProcessImportance.MODERATE:
                     connection.addVisibleBinding();
                     break;
@@ -839,19 +884,25 @@ public final class ChildProcessLauncherHelperImpl {
             }
         }
 
-        if (mIsSpareRenderer != isSpareRenderer
-                && ChildProcessConnection.supportNotPerceptibleBinding()) {
+        if (getIsSpareRenderer() != isSpareRenderer
+                && ChildProcessConnection.supportNotPerceptibleBinding()
+                && ContentFeatureList.sSpareRendererAddNotPerceptibleBinding.getValue()) {
             if (isSpareRenderer) {
                 connection.addNotPerceptibleBinding();
             } else {
                 connection.removeNotPerceptibleBinding();
             }
-            mIsSpareRenderer = isSpareRenderer;
         }
+        setIsSpareRenderer(isSpareRenderer);
 
         if (mRanking != null) {
             mRanking.updateConnection(
-                    connection, visible, frameDepth, intersectsViewport, importance);
+                    connection,
+                    visible,
+                    frameDepth,
+                    intersectsViewport,
+                    isSpareRenderer,
+                    importance);
             if (mBindingManager != null) mBindingManager.rankingChanged();
         }
 
@@ -863,6 +914,9 @@ public final class ChildProcessLauncherHelperImpl {
                         switch (existingEffectiveImportance) {
                             case ChildProcessImportance.NORMAL:
                                 // Nothing to remove.
+                                break;
+                            case ChildProcessImportance.PERCEPTIBLE:
+                                connection.removeNotPerceptibleBinding();
                                 break;
                             case ChildProcessImportance.MODERATE:
                                 connection.removeVisibleBinding();
@@ -1035,7 +1089,8 @@ public final class ChildProcessLauncherHelperImpl {
                 @ChildBindingState int bindingState,
                 boolean killedByUs,
                 boolean cleanExit,
-                boolean exceptionDuringInit);
+                boolean exceptionDuringInit,
+                boolean isSpareRenderer);
 
         boolean serviceGroupImportanceEnabled();
     }

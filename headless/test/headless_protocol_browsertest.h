@@ -32,6 +32,7 @@ class HeadlessProtocolBrowserTest : public HeadlessDevTooledBrowserTest {
   // HeadlessWebContentsObserver implementation.
   void RunDevTooledTest() override;
 
+  void OnceSetUp(base::Value::Dict params);
   void OnLoadEventFired(const base::Value::Dict& params);
   void OnEvaluateResult(base::Value::Dict params);
   void OnConsoleAPICalled(const base::Value::Dict& params);

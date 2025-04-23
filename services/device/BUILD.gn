@@ -12,6 +12,10 @@ if (is_android) {
   import("//third_party/jni_zero/jni_zero.gni")
 }
 
+if (is_ios) {
+  import("//build/config/apple/mobile_config.gni")
+}
+
 is_serial_enabled_platform =
     is_win || ((is_linux || is_chromeos) && use_udev) || is_mac || is_android
 
@@ -62,10 +66,11 @@ source_set("lib") {
   if (is_android) {
     deps += [ ":device_service_jni_headers" ]
   } else {
-    deps += [
-      "//services/device/battery",
-      "//services/device/hid",
-    ]
+    deps += [ "//services/device/hid" ]
+
+    if (!(is_ios && target_platform == "tvos")) {
+      deps += [ "//services/device/battery" ]
+    }
   }
 
   if (enable_compute_pressure) {
@@ -254,16 +259,19 @@ source_set("tests") {
     deps += [ ":device_service_jni_headers" ]
   } else {
     sources += [
-      "battery/battery_monitor_impl_unittest.cc",
       "hid/hid_device_info_unittest.cc",
       "hid/hid_manager_unittest.cc",
       "public/cpp/hid/hid_blocklist_unittest.cc",
     ]
     deps += [
       "//components/variations:test_support",
-      "//services/device/battery",
       "//services/device/hid",
     ]
+
+    if (!(is_ios && target_platform == "tvos")) {
+      sources += [ "battery/battery_monitor_impl_unittest.cc" ]
+      deps += [ "//services/device/battery" ]
+    }
 
     if ((!is_linux && !is_chromeos) || use_udev) {
       sources += [

@@ -6,7 +6,7 @@
 
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/extensions/extension_platform_browsertest.h"
+#include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -22,12 +22,6 @@
 #endif
 
 namespace extensions {
-
-#if BUILDFLAG(IS_ANDROID)
-using ExtensionBrowserTestBase = ExtensionPlatformBrowserTest;
-#else
-using ExtensionBrowserTestBase = ExtensionBrowserTest;
-#endif
 
 namespace {
 
@@ -49,7 +43,7 @@ int RetrieveSentinelValue(content::WebContents* web_contents) {
 }
 
 class ExtensionBrowserTestWithCustomTestResourcesLocation
-    : public ExtensionBrowserTestBase {
+    : public ExtensionBrowserTest {
  public:
   ExtensionBrowserTestWithCustomTestResourcesLocation() = default;
 
@@ -74,7 +68,7 @@ class ExtensionBrowserTestWithCustomTestResourcesLocation
 
 // A simple test to ensure resources can be served from _test_resources/, and
 // properly load.
-IN_PROC_BROWSER_TEST_F(ExtensionBrowserTestBase, TestResourcesLoad) {
+IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, TestResourcesLoad) {
   TestExtensionDir test_dir;
   test_dir.WriteManifest(
       R"({

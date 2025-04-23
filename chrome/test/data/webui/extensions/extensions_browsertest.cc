@@ -527,6 +527,11 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsManagerUnitTest, EnableAndDisable) {
   RunTestCase("EnableAndDisable");
 }
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsManagerUnitTest,
+                       CheckDrawerSitePermissionsVisibility) {
+  RunTestCase("CheckDrawerSitePermissionsVisibility");
+}
+
 class CrExtensionsManagerTestWithMultipleExtensionTypesInstalled
     : public ExtensionSettingsTestBase {
  protected:

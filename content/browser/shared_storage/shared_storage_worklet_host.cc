@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
@@ -408,6 +409,11 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
   // The data origin can't be opaque.
   DCHECK(!shared_storage_origin_.opaque());
 
+  // The render frame host must have a permissions policy.
+  CHECK(
+      static_cast<RenderFrameHostImpl&>(document_service_->render_frame_host())
+          .GetPermissionsPolicy());
+
   url_loader_factory_proxy_ =
       std::make_unique<SharedStorageURLLoaderFactoryProxy>(
           std::move(frame_url_loader_factory),
@@ -415,7 +421,10 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
           shared_storage_origin_, script_source_url, credentials_mode,
           static_cast<RenderFrameHostImpl&>(
               document_service_->render_frame_host())
-              .ComputeSiteForCookies());
+              .ComputeSiteForCookies(),
+          *static_cast<RenderFrameHostImpl&>(
+               document_service_->render_frame_host())
+               .GetPermissionsPolicy());
 
   if (creation_method ==
       blink::mojom::SharedStorageWorkletCreationMethod::kAddModule) {
@@ -809,7 +818,7 @@ void SharedStorageWorkletHost::SelectURL(
       SharedStorageEventParams::CreateForSelectURL(
           name, keep_alive_after_operation, private_aggregation_config,
           serialized_data, std::move(converted_urls), resolve_to_config,
-          base::UTF16ToUTF8(saved_query_name), worklet_id_));
+          base::UTF16ToUTF8(saved_query_name), urn_uuid, worklet_id_));
 
   if (saved_queries_enabled_ && !saved_query_name.empty()) {
     auto saved_query_callback = base::BindOnce(

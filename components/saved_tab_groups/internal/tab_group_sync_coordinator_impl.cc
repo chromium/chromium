@@ -44,6 +44,7 @@ void TabGroupSyncCoordinatorImpl::InitializeTabGroupSync() {
     startup_helper_->HandleUnsavedLocalTabGroups();
   }
 
+  auto batch_token = platform_delegate_->StartBatchOperation();
   // At this point, there should be no unsaved local groups. Update them to
   // match sync state.
   for (const SavedTabGroup* saved_tab_group : service_->ReadAllGroups()) {

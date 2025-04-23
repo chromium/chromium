@@ -5,6 +5,7 @@
 module glic.mojom;
 
 import "components/content_settings/core/common/content_settings_types.mojom";
+import "components/optimization_guide/content/mojom/ai_page_content_metadata.mojom";
 import "mojo/public/mojom/base/proto_wrapper.mojom";
 import "mojo/public/mojom/base/version.mojom";
 import "skia/public/mojom/bitmap.mojom";
@@ -69,6 +70,8 @@ enum WebUiState {
   kUnresponsive = 9,
   // Sign in panel is displayed.
   kSignIn = 10,
+  // Web view is displayed, but it is an error page.
+  kGuestError = 11,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:WebUiState)
 
@@ -191,6 +194,13 @@ struct WebClientInitialState {
   bool open_os_settings_api_is_allowed;
   // Reflects the enabling state of always-detached mode.
   bool always_detached_mode;
+  bool enable_zero_state_suggestions;
+  // Whether features::kGlicActor is enabled.
+  bool enable_act_in_focused_tab;
+  // Whether features::kGlicScrollTo is enabled.
+  bool enable_scroll_to;
+  // Whether features::kGlicUserResize is enabled.
+  bool enable_drag_to_resize_panel;
 };
 
 // Options for getting tab context.
@@ -287,6 +297,22 @@ enum ScrollToErrorReason {
 
   // The search range starting from DOMNodeId did not result in a valid range.
   [MinVersion=5] kSearchRangeInvalid,
+};
+
+// A single suggestion.
+struct SuggestionContent {
+  // The suggestion. Always provided.
+  string suggestion;
+};
+
+// A list of suggestions for the currently focused tab.
+struct ZeroStateSuggestions {
+  // The list of suggestions to present to the user.
+  array<SuggestionContent> suggestions;
+  // The unique tab id of the tab associated with the suggestions.
+  int32 tab_id;
+  // The url of the tab associated with the suggestions.
+  url.mojom.Url tab_url;
 };
 
 // Access to the browser from the web client by proxy through the WebUI.
@@ -447,6 +473,11 @@ interface WebClientHandler {
 
   // Get the status of the OS Microphone permission currently granted to Chrome.
   GetOsMicrophonePermissionStatus() => (bool enabled);
+
+  // Returns zero-state suggestions from the currently active tab.
+  GetZeroStateSuggestionsForFocusedTab(bool? is_first_run)
+      => (ZeroStateSuggestions? suggestions);
+
 };
 
 // Data sent from the browser to the web client with panel opening information.
@@ -679,24 +710,6 @@ struct NoFocusedTabData {
   string no_focus_reason;
 };
 
-// A meta tag.
-struct MetaTag {
-  string name;
-  string content;
-};
-
-// Metadata about a frame.
-struct FrameMetadata {
-  url.mojom.Url url;
-  array<MetaTag> meta_tags;
-};
-
-// Metadata about the page content.  Includes metadata about each frame.
-struct PageMetadata {
-  // The main frame is the first entry in the array.
-  array<FrameMetadata> frame_metadata;
-};
-
 // Information about the annotated page content.
 struct AnnotatedPageData {
   // Proto for AnnotatedPageContent.
@@ -705,7 +718,7 @@ struct AnnotatedPageData {
   mojo_base.mojom.ProtoWrapper? annotated_page_content;
 
   // Metadata about the page content.
-  PageMetadata? metadata;
+  optimization_guide.mojom.PageMetadata? metadata;
 };
 
 // Annotates an image, providing security relevant information about the origins

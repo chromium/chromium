@@ -31,6 +31,7 @@ enum AIPageContentAttributeType {
 
   // Image chunks.
   kImage,
+  kSVG,
 
   // Structured chunks.
   kForm,
@@ -143,6 +144,10 @@ struct AIPageContentNodeInteractionInfo {
   // a clickable control (e.g. form control elements) or has activation
   // behavior. It also checks for whether the node has a click handler.
   bool is_clickable;
+
+  // If this node is a label associated with an input node, provides the
+  // dom_node_id for the corresponding input node.
+  int32 for_dom_node_id;
 };
 
 enum AIPageContentTextSize {
@@ -192,6 +197,11 @@ struct AIPageContentImageInfo {
   // rendered. For example, an image element whose resource is not available
   // will be empty.
   url.mojom.Origin? source_origin;
+};
+
+struct AIPageContentSVGData {
+  // Provides the concatenated string for the text inside an SVG node.
+  string? inner_text;
 };
 
 // Represents meta tags on the page.
@@ -323,6 +333,9 @@ struct AIPageContentAttributes {
 
   // Only set if attribute_type is kImage.
   AIPageContentImageInfo? image_info;
+
+  // Only set if attribute_type is kSVG.
+  AIPageContentSVGData? svg_data;
 
   // Only set if attribute_type is kAnchor.
   AIPageContentAnchorData? anchor_data;

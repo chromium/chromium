@@ -4,7 +4,6 @@
 package org.chromium.chrome.browser.compositor.overlays.strip.reorder;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -81,8 +80,8 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
                         mTabGroupModelFilter,
                         mContainerView,
                         mGroupIdToHideSupplier,
-                        mTabWidthSupplier);
-        when(mTabWidthSupplier.get()).thenReturn((float) TAB_WIDTH);
+                        mTabWidthSupplier,
+                        mLastReorderScrollTimeSupplier);
         setupStripViews();
         setupDragDropState(/* isGroupDrag= */ false);
     }
@@ -90,11 +89,12 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
     @Test
     public void testStartReorder() {
         // Mock interacting view in a group
-        when(mTabForInteractingView.getTabGroupId()).thenReturn(GROUP_ID);
-        when(mTabGroupModelFilter.getTabCountForGroup(GROUP_ID)).thenReturn(2);
+        when(mTabForInteractingView.getTabGroupId()).thenReturn(GROUP_ID1);
+        when(mTabGroupModelFilter.getTabCountForGroup(GROUP_ID1)).thenReturn(2);
 
         // Call
-        mStrategy.startReorderMode(mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
+        mStrategy.startReorderMode(
+                mStripViews, mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
 
         // Verify - animations
         verify(mAnimationHost).finishAnimationsAndPushTabUpdates();
@@ -117,7 +117,7 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
                 mInteractingTab.getTrailingMargin() > 0);
         assertTrue(
                 "Interacting view title should have bottom indicator width set",
-                mInteractingTabGroupTitle.getBottomIndicatorWidth() > 0);
+                mInteractingGroupTitle.getBottomIndicatorWidth() > 0);
     }
 
     @Test
@@ -126,7 +126,8 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
         mockTabInGroup(mStripTab3.getTabId(), mTabForStripTab3);
 
         // Call
-        mStrategy.startReorderMode(mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
+        mStrategy.startReorderMode(
+                mStripViews, mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
 
         // Verify
         verify(mAnimationHost).finishAnimationsAndPushTabUpdates();
@@ -142,62 +143,10 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
     }
 
     @Test
-    public void testHoverCollaborationGroupOverOtherGroup_noTrailingMargins() {
-        // Set up collaboration tab group metadata.
-        setupDragDropState(/* isGroupDrag= */ true);
-
-        // Group and collapse tabs.
-        mockTabInGroup(INTERACTING_VIEW_ROOT_ID, mTabForInteractingView);
-        mockTabInGroup(mStripTab2.getTabId(), mTabForStripTab2);
-        mInteractingTabGroupTitle.setCollapsed(true);
-
-        // Assert: drop to merge to other group not allowed.
-        assertFalse(TabDragSource.canMergeIntoGroupOnDrop());
-
-        // Start reorder to set interacting view - interacting view shouldn't bottom indicator width
-        // if collapsed.
-        mStrategy.startReorderMode(mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
-        assertTrue(
-                "Interacting view should not have trailing margin set",
-                mInteractingTab.getTrailingMargin() == 0);
-        assertTrue(
-                "Collapsed group title bottom indicator width should be 0",
-                mInteractingTabGroupTitle.getBottomIndicatorWidth() == 0);
-
-        // Move drag to mStripTab2
-        // Call - endX = end of mStripTab2 (accounting for interacting view's trailing margin)
-        mStrategy.updateReorderPosition(
-                mStripViews,
-                mGroupTitles,
-                mStripTabs,
-                mStripTab2.getDrawX() + TAB_WIDTH + mInteractingTab.getTrailingMargin(),
-                0,
-                ReorderType.DRAG_ONTO_STRIP);
-
-        // Verify
-        verify(mAnimationHost).finishAnimationsAndPushTabUpdates();
-        verify(mAnimationHost, times(2)).startAnimations(anyList(), isNull());
-
-        assertEquals(
-                "mStripTab2 should become interacting view",
-                mStripTab2,
-                mStrategy.getInteractingView());
-        // Verify trailing margins updated
-        assertTrue(
-                "Interacting view should not have trailing margin set",
-                mInteractingTab.getTrailingMargin() == 0);
-        assertTrue(
-                "Interacting view should not have trailing margin set",
-                mStripTab2.getTrailingMargin() == 0);
-        assertTrue(
-                "Collapsed group title bottom indicator width should be 0",
-                mInteractingTabGroupTitle.getBottomIndicatorWidth() == 0);
-    }
-
-    @Test
     public void testUpdateReorder_hoveredTabSameAsInteractingView_noOp() {
         // Start reorder to set interacting view
-        mStrategy.startReorderMode(mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
+        mStrategy.startReorderMode(
+                mStripViews, mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
 
         // Call - endX = end of interactingView
         mStrategy.updateReorderPosition(
@@ -216,10 +165,155 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
     }
 
     @Test
+    public void testHoverOverCollapsedGroup_groupTitleHasTrailingMargin() {
+        // Set up tab group metadata.
+        setupDragDropState(/* isGroupDrag= */ true);
+
+        // Group and collapse tabs.
+        mockTabInGroup(INTERACTING_VIEW_ROOT_ID, mTabForInteractingView);
+        mockTabInGroup(mStripTab2.getTabId(), mTabForStripTab2);
+        mInteractingGroupTitle.setCollapsed(true);
+
+        // Start reorder to set interacting view - bottom indicator width should be 0 if collapsed.
+        mStrategy.startReorderMode(
+                mStripViews, mStripTabs, mGroupTitles, mInteractingGroupTitle, DRAG_START_POINT);
+        verify(mAnimationHost).finishAnimationsAndPushTabUpdates();
+        verify(mAnimationHost).startAnimations(anyList(), any());
+        assertTrue(
+                "Interacting view trailing margin should be set",
+                mInteractingGroupTitle.getTrailingMargin() > 0);
+        assertTrue(
+                "Collapsed group title bottom indicator width should be 0",
+                mInteractingGroupTitle.getBottomIndicatorWidth() == 0);
+
+        // Move drag to mInteractingTabGroupTitle.
+        // Call - endX = end of mInteractingGroupTitle (accounting for interacting view's trailing
+        // margin)
+        mStrategy.updateReorderPosition(
+                mStripViews,
+                mGroupTitles,
+                mStripTabs,
+                mInteractingGroupTitle.getDrawX()
+                        + TAB_WIDTH
+                        + mInteractingGroupTitle.getTrailingMargin(),
+                0,
+                ReorderType.DRAG_ONTO_STRIP);
+
+        // Verify
+        verify(mAnimationHost).finishAnimationsAndPushTabUpdates();
+        verify(mAnimationHost, times(1)).startAnimations(anyList(), isNull());
+
+        assertEquals(
+                "mInteractingTabGroupTitle should become interacting view",
+                mInteractingGroupTitle,
+                mStrategy.getInteractingView());
+        // Verify trailing margins updated.
+        assertTrue(
+                "Interacting view should have trailing margin set",
+                mInteractingGroupTitle.getTrailingMargin() > 0);
+        assertTrue(
+                "Collapsed group title bottom indicator width should be 0",
+                mInteractingGroupTitle.getBottomIndicatorWidth() == 0);
+    }
+
+    @Test
+    public void testHoverGroupOverLastTabInGroup_hasTrailingMargin_noBottomIndicator() {
+        // Set up tab group metadata.
+        setupDragDropState(/* isGroupDrag= */ true);
+
+        // Group and collapse tabs.
+        mockTabInGroup(INTERACTING_VIEW_ROOT_ID, mTabForInteractingView);
+        mockTabInGroup(mStripTab2.getTabId(), mTabForStripTab2);
+        when(mTabGroupModelFilter.getRelatedTabList(anyInt()))
+                .thenReturn(Arrays.asList(mTabForInteractingView, mTabForStripTab2));
+        float initialBottomIndicatorWidth = mInteractingGroupTitle.getBottomIndicatorWidth();
+
+        // Start reorder to set interacting view - bottom indicator width should be 0 for
+        // non-trailing tab in group.
+        mStrategy.startReorderMode(
+                mStripViews, mStripTabs, mGroupTitles, mInteractingGroupTitle, DRAG_START_POINT);
+        verify(mAnimationHost).finishAnimationsAndPushTabUpdates();
+        verify(mAnimationHost).startAnimations(anyList(), any());
+        assertTrue(
+                "Interacting tab trailing margin should be 0 in non-trailing tab in group",
+                mInteractingTab.getTrailingMargin() == 0);
+        assertTrue(
+                "Bottom indicator width should not change if there is no trailing margin",
+                mInteractingGroupTitle.getBottomIndicatorWidth() - initialBottomIndicatorWidth
+                        == 0);
+
+        // Move drag to mStripTab2.
+        // Call - endX = end of mStripTab2 (accounting for interacting view's trailing margin)
+        mStrategy.updateReorderPosition(
+                mStripViews,
+                mGroupTitles,
+                mStripTabs,
+                mStripTab2.getDrawX() + TAB_WIDTH + mInteractingTab.getTrailingMargin(),
+                0,
+                ReorderType.DRAG_ONTO_STRIP);
+
+        // Verify
+        verify(mAnimationHost).finishAnimationsAndPushTabUpdates();
+        verify(mAnimationHost, times(2)).startAnimations(anyList(), isNull());
+
+        assertEquals(
+                "mStripTab2 should become interacting view",
+                mStripTab2,
+                mStrategy.getInteractingView());
+        // Verify trailing margins updated.
+        assertTrue(
+                "mStripTab2 should have trailing margin set", mStripTab2.getTrailingMargin() > 0);
+        assertTrue(
+                "mStripTab2 bottom indicator width should not change for group hover",
+                mInteractingGroupTitle.getBottomIndicatorWidth() - initialBottomIndicatorWidth
+                        == 0);
+    }
+
+    @Test
+    public void testHoverGroupOverIndividualTab_hasTrailingMargin() {
+        // Set up tab group metadata.
+        setupDragDropState(/* isGroupDrag= */ true);
+
+        // Start reorder to set interacting view
+        mStrategy.startReorderMode(
+                mStripViews, mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
+        assertTrue(
+                "Interacting tab trailing margin should be set",
+                mInteractingTab.getTrailingMargin() > 0);
+
+        // Move drag to mStripTab2.
+        // Call - endX = end of mStripTab2 (accounting for interacting view's trailing margin)
+        when(mModel.getTabById(anyInt())).thenReturn(mTabForInteractingView);
+        mStrategy.updateReorderPosition(
+                mStripViews,
+                mGroupTitles,
+                mStripTabs,
+                mStripTab2.getDrawX() + TAB_WIDTH + mInteractingTab.getTrailingMargin(),
+                0,
+                ReorderType.DRAG_ONTO_STRIP);
+
+        // Verify
+        verify(mAnimationHost).finishAnimationsAndPushTabUpdates();
+        verify(mAnimationHost, times(2)).startAnimations(anyList(), isNull());
+
+        assertEquals(
+                "mStripTab2 should become interacting view",
+                mStripTab2,
+                mStrategy.getInteractingView());
+        // Verify trailing margins updated
+        assertTrue(
+                "Old interacting view trailing margin should be 0",
+                mInteractingTab.getTrailingMargin() == 0);
+        assertTrue(
+                "mStripTab2 should have trailing margin set", mStripTab2.getTrailingMargin() > 0);
+    }
+
+    @Test
     public void testUpdateReorder_hoveredTabDiffThanInteractingView_updateInteractingView() {
         mockTabInGroup(mStripTab2.getTabId(), mTabForStripTab2);
         // Start reorder to set interacting view - interacting view gets trailing margin
-        mStrategy.startReorderMode(mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
+        mStrategy.startReorderMode(
+                mStripViews, mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
         assertTrue(
                 "Interacting view should have trailing margin set",
                 mInteractingTab.getTrailingMargin() > 0);
@@ -255,17 +349,18 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
         // Group and collapse tabs.
         mockTabInGroup(INTERACTING_VIEW_ROOT_ID, mTabForInteractingView);
         mockTabInGroup(mStripTab2.getTabId(), mTabForStripTab2);
-        mInteractingTabGroupTitle.setCollapsed(true);
+        mInteractingGroupTitle.setCollapsed(true);
 
         // Start reorder to set interacting view - interacting view shouldn't bottom indicator width
         // if collapsed.
-        mStrategy.startReorderMode(mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
+        mStrategy.startReorderMode(
+                mStripViews, mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
         assertTrue(
                 "Interacting view should have trailing margin set",
                 mInteractingTab.getTrailingMargin() > 0);
         assertTrue(
                 "Collapsed group title bottom indicator width should be 0",
-                mInteractingTabGroupTitle.getBottomIndicatorWidth() == 0);
+                mInteractingGroupTitle.getBottomIndicatorWidth() == 0);
 
         // Move drag to mStripTab2
         // Call - endX = end of mStripTab2 (accounting for interacting view's trailing margin)
@@ -294,13 +389,14 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
                 mStripTab2.getTrailingMargin() > 0);
         assertTrue(
                 "Collapsed group title bottom indicator width should be 0",
-                mInteractingTabGroupTitle.getBottomIndicatorWidth() == 0);
+                mInteractingGroupTitle.getBottomIndicatorWidth() == 0);
     }
 
     @Test
     public void testUpdateReorder_hoveredInStartGap() {
         // Start reorder to set interacting view - interacting view gets trailing margin
-        mStrategy.startReorderMode(mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
+        mStrategy.startReorderMode(
+                mStripViews, mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
         assertTrue(
                 "Interacting view should have trailing margin set",
                 mInteractingTab.getTrailingMargin() > 0);
@@ -323,10 +419,11 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
     @Test
     public void testStopReorder() {
         // Start reorder to set interacting view - interacting view gets trailing margin
-        mStrategy.startReorderMode(mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
+        mStrategy.startReorderMode(
+                mStripViews, mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
 
         // Call
-        mStrategy.stopReorderMode(mGroupTitles, mStripTabs);
+        mStrategy.stopReorderMode(mStripViews, mGroupTitles);
 
         // Verify
         verify(mAnimationHost, times(2)).startAnimations(anyList(), any());
@@ -340,12 +437,13 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
     @Test
     public void testHandleDrop() {
         // Mock interacting view in group
-        when(mTabForInteractingView.getTabGroupId()).thenReturn(GROUP_ID);
+        when(mTabForInteractingView.getTabGroupId()).thenReturn(GROUP_ID1);
         when(mTabGroupModelFilter.isTabInTabGroup(mTabForInteractingView)).thenReturn(true);
 
         // Start and stop reorder to set interacting view on stop.
-        mStrategy.startReorderMode(mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
-        mStrategy.stopReorderMode(mGroupTitles, mStripTabs);
+        mStrategy.startReorderMode(
+                mStripViews, mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
+        mStrategy.stopReorderMode(mStripViews, mGroupTitles);
         assertEquals(
                 "mInteractingViewDuringStop should be set",
                 mInteractingTab,
@@ -370,8 +468,9 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
     @Test
     public void testHandleDrop_hoveredTabNotInGroup_noOp() {
         // Start and stop reorder at mStripTab1 (not in group) to set interacting view on stop.
-        mStrategy.startReorderMode(mStripTabs, mGroupTitles, mStripTab1, DRAG_START_POINT);
-        mStrategy.stopReorderMode(mGroupTitles, mStripTabs);
+        mStrategy.startReorderMode(
+                mStripViews, mStripTabs, mGroupTitles, mStripTab1, DRAG_START_POINT);
+        mStrategy.stopReorderMode(mStripViews, mGroupTitles);
 
         // Call
         int draggedTabId = 100; // Arbitrary value.
@@ -391,22 +490,22 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
     private void mockTabInGroup(int id, Tab tabForStripTab) {
         when(mModel.getTabById(id)).thenReturn(tabForStripTab);
         when(mTabGroupModelFilter.isTabInTabGroup(tabForStripTab)).thenReturn(true);
-        when(tabForStripTab.getTabGroupId()).thenReturn(GROUP_ID);
+        when(tabForStripTab.getTabGroupId()).thenReturn(GROUP_ID1);
     }
 
     private void setupStripViews() {
         mStripTab1 = buildStripTab(1, 0, TAB_WIDTH);
-        mInteractingTabGroupTitle =
-                buildGroupTitle(INTERACTING_VIEW_ROOT_ID, GROUP_ID, TAB_WIDTH, TAB_WIDTH);
+        mInteractingGroupTitle =
+                buildGroupTitle(INTERACTING_VIEW_ROOT_ID, GROUP_ID1, TAB_WIDTH, TAB_WIDTH);
         mInteractingTab = buildStripTab(INTERACTING_VIEW_ID, 2 * TAB_WIDTH, TAB_WIDTH);
         mStripTab2 = buildStripTab(2, 3 * TAB_WIDTH, TAB_WIDTH);
         mStripTab3 = buildStripTab(3, 4 * TAB_WIDTH, TAB_WIDTH);
 
         mStripTabs = new StripLayoutTab[] {mStripTab1, mInteractingTab, mStripTab2, mStripTab3};
-        mGroupTitles = new StripLayoutGroupTitle[] {mInteractingTabGroupTitle};
+        mGroupTitles = new StripLayoutGroupTitle[] {mInteractingGroupTitle};
         mStripViews =
                 new StripLayoutView[] {
-                    mStripTab1, mInteractingTabGroupTitle, mInteractingTab, mStripTab2, mStripTab3
+                    mStripTab1, mInteractingGroupTitle, mInteractingTab, mStripTab2, mStripTab3
                 };
     }
 
@@ -424,7 +523,7 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
                             /* tabGroupTitle= */ "Collaboration Group",
                             /* mhtmlTabTitle= */ null,
                             /* tabGroupCollapsed= */ false,
-                            /* isGroupShared= */ true,
+                            /* isGroupShared= */ false,
                             /* isIncognito= */ false);
             dropData =
                     new ChromeTabGroupDropDataAndroid.Builder()

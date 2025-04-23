@@ -194,7 +194,10 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
       // Updated on synced-device-manager attach by chrome.sending
       // 'otherDevicesInitialized'.
-      isUserSignedIn_: Boolean,
+      isUserSignedIn_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('isUserSignedIn'),
+      },
 
       pendingDelete_: Boolean,
 
@@ -285,9 +288,30 @@ export class HistoryAppElement extends HistoryAppElementBase {
         reflectToAttribute: true,
       },
 
-      compareHistoryEnabled_: Boolean,
-      tabContentScrollOffset_: Number,
-      nonEmbeddingsResultClicked_: Boolean,
+      compareHistoryEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('compareHistoryEnabled'),
+      },
+
+      tabContentScrollOffset_: {
+        type: Number,
+        value: 0,
+      },
+
+      nonEmbeddingsResultClicked_: {
+        type: Boolean,
+        value: false,
+      },
+
+      numCharsTypedInSearch_: {
+        type: Number,
+        value: 0,
+      },
+
+      historyEmbeddingsDisclaimerLinkClicked_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -295,44 +319,43 @@ export class HistoryAppElement extends HistoryAppElementBase {
     return ['onQueryStateChanged_(queryState_.*)'];
   }
 
-  footerInfo: FooterInfo;
+  declare footerInfo: FooterInfo;
   private browserService_: BrowserService = BrowserServiceImpl.getInstance();
   private callbackRouter_: PageCallbackRouter;
-  private enableHistoryEmbeddings_: boolean;
+  declare private enableHistoryEmbeddings_: boolean;
   private eventTracker_: EventTracker = new EventTracker();
-  private hasDrawer_: boolean;
-  private historyClustersEnabled_: boolean;
-  private historyClustersVisible_: boolean;
-  private isUserSignedIn_: boolean = loadTimeData.getBoolean('isUserSignedIn');
-  private lastSelectedTab_: number;
-  private contentPage_: string;
-  private tabsContentPage_: string;
+  declare private hasDrawer_: boolean;
+  declare private historyClustersEnabled_: boolean;
+  declare private historyClustersVisible_: boolean;
+  declare private isUserSignedIn_: boolean;
+  declare private lastSelectedTab_: number;
+  declare private contentPage_: string;
+  declare private tabsContentPage_: string;
   private pageHandler_: PageHandlerRemote;
-  private pendingDelete_: boolean;
-  private queryResult_: QueryResult;
-  private queryState_: QueryState;
-  private selectedPage_: string;
-  private selectedTab_: number;
+  declare private pendingDelete_: boolean;
+  declare private queryResult_: QueryResult;
+  declare private queryState_: QueryState;
+  declare private selectedPage_: string;
+  declare private selectedTab_: number;
   private lastRecordedSelectedPageHistogramValue_: HistoryPageViewHistogram =
       HistoryPageViewHistogram.END;
-  private showTabs_: boolean;
-  private showHistoryClusters_: boolean;
-  private tabsIcons_: string[];
-  private tabsNames_: string[];
-  private toolbarShadow_: boolean;
+  declare private showTabs_: boolean;
+  declare private showHistoryClusters_: boolean;
+  declare private tabsIcons_: string[];
+  declare private tabsNames_: string[];
+  declare private toolbarShadow_: boolean;
   private historyClustersViewStartTime_: Date|null = null;
   private onHasOtherFormsChangedListenerId_: number|null = null;
-  private scrollTarget_: HTMLElement;
-  private queryStateAfterDate_?: Date;
-  private hasHistoryEmbeddingsResults_: boolean;
-  private compareHistoryEnabled_: boolean =
-      loadTimeData.getBoolean('compareHistoryEnabled');
+  declare private scrollTarget_: HTMLElement;
+  declare private queryStateAfterDate_?: Date;
+  declare private hasHistoryEmbeddingsResults_: boolean;
+  declare private compareHistoryEnabled_: boolean;
   private historyEmbeddingsResizeObserver_?: ResizeObserver;
-  private historyEmbeddingsDisclaimerLinkClicked_ = false;
-  private tabContentScrollOffset_: number = 0;
+  declare private historyEmbeddingsDisclaimerLinkClicked_: boolean;
+  declare private tabContentScrollOffset_: number;
   private dataFromNativeBeforeInput_: string|null = null;
-  private numCharsTypedInSearch_: number = 0;
-  private nonEmbeddingsResultClicked_: boolean = false;
+  declare private numCharsTypedInSearch_: number;
+  declare private nonEmbeddingsResultClicked_: boolean;
 
   constructor() {
     super();

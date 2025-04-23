@@ -10,6 +10,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.dialogs.InsecureDownloadDialog;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
@@ -18,6 +19,7 @@ import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
  * Glues insecure download dialogs UI code and handles the communication to download native
  * backend.
  */
+@NullMarked
 public class InsecureDownloadDialogBridge {
     private long mNativeInsecureDownloadDialogBridge;
 

@@ -62,6 +62,7 @@ class MockPage : public product_specifications::mojom::Page {
               OnProductSpecificationsSetRemoved,
               (const base::Uuid& uuid),
               (override));
+  MOCK_METHOD(void, OnSyncStateChanged, (), (override));
 };
 
 class MockDelegate : public ProductSpecificationsHandler::Delegate {
@@ -124,7 +125,7 @@ class ProductSpecificationsHandlerTest : public testing::Test {
         mojo::PendingReceiver<
             product_specifications::mojom::ProductSpecificationsHandler>(),
         std::move(delegate), history_service_.get(), pref_service_.get(),
-        product_specs_service_.get());
+        product_specs_service_.get(), nullptr);
   }
 
   std::unique_ptr<MockHistoryService> history_service_;

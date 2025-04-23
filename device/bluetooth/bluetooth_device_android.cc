@@ -125,7 +125,7 @@ bool BluetoothDeviceAndroid::IsPaired() const {
 }
 
 bool BluetoothDeviceAndroid::IsConnected() const {
-  return IsGattConnected();
+  return IsGattConnected() || connected_transport_;
 }
 
 bool BluetoothDeviceAndroid::IsGattConnected() const {
@@ -340,6 +340,15 @@ void BluetoothDeviceAndroid::CreateGattConnectionImpl(
 
 void BluetoothDeviceAndroid::DisconnectGatt() {
   Java_ChromeBluetoothDevice_disconnectGatt(AttachCurrentThread(), j_device_);
+}
+
+void BluetoothDeviceAndroid::UpdateAclConnectState(uint8_t transport,
+                                                   bool connected) {
+  if (connected) {
+    connected_transport_ |= transport;
+  } else {
+    connected_transport_ &= ~transport;
+  }
 }
 
 }  // namespace device

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message_mojom_traits.h"
 
+#include "base/compiler_specific.h"
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/public/mojom/messaging/static_bitmap_image.mojom-blink.h"
@@ -179,8 +175,8 @@ bool StructTraits<blink::mojom::blink::SerializedArrayBufferContents::DataView,
   if (contents_data.size() != array_buffer_contents.DataLength()) {
     return false;
   }
-  memcpy(array_buffer_contents.Data(), contents_data.data(),
-         contents_data.size());
+  UNSAFE_TODO(memcpy(array_buffer_contents.Data(), contents_data.data(),
+                     contents_data.size()));
   *out = std::move(array_buffer_contents);
   return true;
 }

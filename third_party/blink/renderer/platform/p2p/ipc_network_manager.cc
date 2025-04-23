@@ -25,22 +25,22 @@ namespace blink {
 
 namespace {
 
-rtc::AdapterType ConvertConnectionTypeToAdapterType(
+webrtc::AdapterType ConvertConnectionTypeToAdapterType(
     net::NetworkChangeNotifier::ConnectionType type) {
   switch (type) {
     case net::NetworkChangeNotifier::CONNECTION_UNKNOWN:
-      return rtc::ADAPTER_TYPE_UNKNOWN;
+      return webrtc::ADAPTER_TYPE_UNKNOWN;
     case net::NetworkChangeNotifier::CONNECTION_ETHERNET:
-      return rtc::ADAPTER_TYPE_ETHERNET;
+      return webrtc::ADAPTER_TYPE_ETHERNET;
     case net::NetworkChangeNotifier::CONNECTION_WIFI:
-      return rtc::ADAPTER_TYPE_WIFI;
+      return webrtc::ADAPTER_TYPE_WIFI;
     case net::NetworkChangeNotifier::CONNECTION_2G:
     case net::NetworkChangeNotifier::CONNECTION_3G:
     case net::NetworkChangeNotifier::CONNECTION_4G:
     case net::NetworkChangeNotifier::CONNECTION_5G:
-      return rtc::ADAPTER_TYPE_CELLULAR;
+      return webrtc::ADAPTER_TYPE_CELLULAR;
     default:
-      return rtc::ADAPTER_TYPE_UNKNOWN;
+      return webrtc::ADAPTER_TYPE_UNKNOWN;
   }
 }
 
@@ -108,49 +108,53 @@ void IpcNetworkManager::OnNetworkListChanged(
   bool use_default_ipv4_address = false;
   bool use_default_ipv6_address = false;
 
-  // rtc::Network uses these prefix_length to compare network
+  // webrtc::Network uses these prefix_length to compare network
   // interfaces discovered.
-  std::vector<std::unique_ptr<rtc::Network>> networks;
+  std::vector<std::unique_ptr<webrtc::Network>> networks;
   for (auto it = list.begin(); it != list.end(); it++) {
-    rtc::IPAddress ip_address = webrtc::NetIPAddressToRtcIPAddress(it->address);
+    webrtc::IPAddress ip_address =
+        webrtc::NetIPAddressToRtcIPAddress(it->address);
     DCHECK(!ip_address.IsNil());
 
-    rtc::IPAddress prefix = rtc::TruncateIP(ip_address, it->prefix_length);
-    rtc::AdapterType adapter_type =
+    webrtc::IPAddress prefix =
+        webrtc::TruncateIP(ip_address, it->prefix_length);
+    webrtc::AdapterType adapter_type =
         ConvertConnectionTypeToAdapterType(it->type);
     // If the adapter type is unknown, try to guess it using WebRTC's string
     // matching rules.
-    if (adapter_type == rtc::ADAPTER_TYPE_UNKNOWN) {
-      adapter_type = rtc::GetAdapterTypeFromName(it->name.c_str());
+    if (adapter_type == webrtc::ADAPTER_TYPE_UNKNOWN) {
+      adapter_type = webrtc::GetAdapterTypeFromName(it->name.c_str());
     }
-    rtc::AdapterType underlying_adapter_type = rtc::ADAPTER_TYPE_UNKNOWN;
+    webrtc::AdapterType underlying_adapter_type = webrtc::ADAPTER_TYPE_UNKNOWN;
     if (it->mac_address.has_value() && IsVpnMacAddress(*it->mac_address)) {
-      adapter_type = rtc::ADAPTER_TYPE_VPN;
+      adapter_type = webrtc::ADAPTER_TYPE_VPN;
       // With MAC-based detection we do not know the
       // underlying adapter type.
-      underlying_adapter_type = rtc::ADAPTER_TYPE_UNKNOWN;
+      underlying_adapter_type = webrtc::ADAPTER_TYPE_UNKNOWN;
     }
     auto network = CreateNetwork(it->name, it->name, prefix, it->prefix_length,
                                  adapter_type);
-    if (adapter_type == rtc::ADAPTER_TYPE_VPN) {
+    if (adapter_type == webrtc::ADAPTER_TYPE_VPN) {
       network->set_underlying_type_for_vpn(underlying_adapter_type);
     }
     network->set_default_local_address_provider(this);
     network->set_mdns_responder_provider(this);
 
-    rtc::InterfaceAddress iface_addr;
+    webrtc::InterfaceAddress iface_addr;
     if (it->address.IsIPv4()) {
       use_default_ipv4_address |= (default_ipv4_local_address == it->address);
-      iface_addr = rtc::InterfaceAddress(ip_address);
+      iface_addr = webrtc::InterfaceAddress(ip_address);
     } else {
       DCHECK(it->address.IsIPv6());
-      iface_addr = rtc::InterfaceAddress(ip_address, it->ip_address_attributes);
+      iface_addr =
+          webrtc::InterfaceAddress(ip_address, it->ip_address_attributes);
 
       // Only allow non-link-local, non-loopback, non-deprecated IPv6 addresses
       // which don't contain MAC.
-      if (rtc::IPIsMacBased(iface_addr) ||
+      if (webrtc::IPIsMacBased(iface_addr) ||
           (it->ip_address_attributes & net::IP_ADDRESS_ATTRIBUTE_DEPRECATED) ||
-          rtc::IPIsLinkLocal(iface_addr) || rtc::IPIsLoopback(iface_addr)) {
+          webrtc::IPIsLinkLocal(iface_addr) ||
+          webrtc::IPIsLoopback(iface_addr)) {
         continue;
       }
 
@@ -158,7 +162,7 @@ void IpcNetworkManager::OnNetworkListChanged(
       // TODO(b/350111561): Remove once the applications are updated to handle
       // ULA addresses properly.
 #if BUILDFLAG(IS_FUCHSIA)
-      if (rtc::IPIsPrivate(iface_addr)) {
+      if (webrtc::IPIsPrivate(iface_addr)) {
         continue;
       }
 #endif  // BUILDFLAG(IS_FUCHSIA)
@@ -170,8 +174,8 @@ void IpcNetworkManager::OnNetworkListChanged(
   }
 
   // Update the default local addresses.
-  rtc::IPAddress ipv4_default;
-  rtc::IPAddress ipv6_default;
+  webrtc::IPAddress ipv4_default;
+  webrtc::IPAddress ipv6_default;
   if (use_default_ipv4_address) {
     ipv4_default =
         webrtc::NetIPAddressToRtcIPAddress(default_ipv4_local_address);
@@ -184,24 +188,24 @@ void IpcNetworkManager::OnNetworkListChanged(
 
   if (Platform::Current()->AllowsLoopbackInPeerConnection()) {
     std::string name_v4("loopback_ipv4");
-    rtc::IPAddress ip_address_v4(INADDR_LOOPBACK);
+    webrtc::IPAddress ip_address_v4(INADDR_LOOPBACK);
     auto network_v4 = CreateNetwork(name_v4, name_v4, ip_address_v4, 32,
-                                    rtc::ADAPTER_TYPE_UNKNOWN);
+                                    webrtc::ADAPTER_TYPE_UNKNOWN);
     network_v4->set_default_local_address_provider(this);
     network_v4->set_mdns_responder_provider(this);
     network_v4->AddIP(ip_address_v4);
     networks.push_back(std::move(network_v4));
 
-    rtc::IPAddress ipv6_default_address;
+    webrtc::IPAddress ipv6_default_address;
     // Only add IPv6 loopback if we can get default local address for IPv6. If
     // we can't, it means that we don't have IPv6 enabled on this machine and
     // bind() to the IPv6 loopback address will fail.
     if (GetDefaultLocalAddress(AF_INET6, &ipv6_default_address)) {
       DCHECK(!ipv6_default_address.IsNil());
       std::string name_v6("loopback_ipv6");
-      rtc::IPAddress ip_address_v6(in6addr_loopback);
+      webrtc::IPAddress ip_address_v6(in6addr_loopback);
       auto network_v6 = CreateNetwork(name_v6, name_v6, ip_address_v6, 64,
-                                      rtc::ADAPTER_TYPE_UNKNOWN);
+                                      webrtc::ADAPTER_TYPE_UNKNOWN);
       network_v6->set_default_local_address_provider(this);
       network_v6->set_mdns_responder_provider(this);
       network_v6->AddIP(ip_address_v6);

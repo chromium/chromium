@@ -66,7 +66,6 @@ class FakeTabHelper : public web::WebStateUserData<FakeTabHelper> {
  private:
   explicit FakeTabHelper(web::WebState* web_state) {}
   friend class web::WebStateUserData<FakeTabHelper>;
-  WEB_STATE_USER_DATA_KEY_DECL();
 
   // The delegates.
   raw_ptr<Delegate> delegate_ = nullptr;
@@ -76,7 +75,6 @@ class FakeTabHelper : public web::WebStateUserData<FakeTabHelper> {
   SetDelegateCallback set_delegate_cb_;
   SetSecondDelegateCallback set_second_delegate_cb_;
 };
-WEB_STATE_USER_DATA_KEY_IMPL(FakeTabHelper)
 // WebStateListDelegate that installs FakeTabHelpers.
 class FakeTabHelperWebStateListDelegate : public WebStateListDelegate {
  public:

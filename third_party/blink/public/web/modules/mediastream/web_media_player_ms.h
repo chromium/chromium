@@ -16,10 +16,9 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "media/mojo/mojom/media_types.mojom-shared.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "media/video/gpu_video_accelerator_factories.h"
-#include "third_party/blink/public/common/media/display_type.h"
-#include "third_party/blink/public/common/media/watch_time_reporter.h"
 #include "third_party/blink/public/platform/media/web_media_player_delegate.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -36,6 +35,7 @@ class VideoLayer;
 }
 
 namespace blink {
+
 using CreateSurfaceLayerBridgeCB =
     base::OnceCallback<std::unique_ptr<WebSurfaceLayerBridge>(
         WebSurfaceLayerBridgeObserver*,
@@ -49,6 +49,7 @@ class MediaStreamVideoRenderer;
 template <typename TimerFiredClass>
 class TaskRunnerTimer;
 class TimerBase;
+class WatchTimeReporter;
 class WebLocalFrame;
 class WebMediaPlayerMSCompositor;
 class WebString;
@@ -202,12 +203,13 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   void TrackAdded(const WebString& track_id) override;
   void TrackRemoved(const WebString& track_id) override;
   void ActiveStateChanged(bool is_active) override;
+  void EnabledStateChangedForWebRtcAudio(bool is_enabled) override;
   int GetPlayerId() override { return player_id_; }
   std::optional<viz::SurfaceId> GetSurfaceId() override;
 
   base::WeakPtr<WebMediaPlayer> AsWeakPtr() override;
 
-  void OnDisplayTypeChanged(DisplayType) override;
+  void OnDisplayTypeChanged(WebMediaPlayer::DisplayType) override;
 
   void RequestVideoFrameCallback() override;
   std::unique_ptr<WebMediaPlayer::VideoFramePresentationMetadata>
@@ -342,7 +344,9 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   // (ducking) for a transient sound.  Playout volume is derived by volume *
   // multiplier.
   double volume_;
+  double volume_before_muted_;
   double volume_multiplier_;
+  bool enabled_ = true;
 
   // True if playback should be started upon the next call to OnShown(). Only
   // used on Android.

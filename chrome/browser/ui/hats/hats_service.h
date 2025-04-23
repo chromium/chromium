@@ -219,6 +219,8 @@ class HatsService : public KeyedService {
   // ID for the survey.
   virtual void RecordSurveyAsShown(std::string trigger_id) = 0;
 
+  hats::SurveyConfigs& GetSurveyConfigsByTriggersForTesting();
+
  protected:
   hats::SurveyConfigs survey_configs_by_triggers_;
   using SurveyConfigs = base::flat_map<std::string, hats::SurveyConfig>;

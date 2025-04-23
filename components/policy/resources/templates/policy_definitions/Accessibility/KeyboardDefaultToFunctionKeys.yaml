@@ -15,8 +15,7 @@ items:
 - caption: Treat top-row keys as media keys, but allow user to change
   value: false
 owners:
-- file://components/policy/OWNERS
-- rsorokin@chromium.org
+- file://ash/accessibility/OWNERS
 schema:
   type: boolean
 supported_on:

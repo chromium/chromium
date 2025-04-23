@@ -21,7 +21,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "net/base/backoff_entry.h"
-#include "net/base/cronet_buildflags.h"
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/base/network_anonymization_key.h"
@@ -1062,21 +1061,10 @@ TEST_F(ReportingDeliveryAgentTest, SkipUploadForReportWithLargeBody) {
   }));
 
   histograms.ExpectBucketCount("Net.Reporting.ReportsCount", 1, 1);
-  if constexpr (BUILDFLAG(CRONET_BUILD)) {
-    // CRONET_BUILD does not support many tracing features.
-    // DictValue::EstimateMemoryUsage() is one of them, being always reported as
-    // 0. Hence, no reports are ever filtered due to being too big. Check for a
-    // different value, instead of disabling the tests, so that once
-    // CRONET_BUILD will support that, we will need to converge back to the same
-    // value.
-    EXPECT_FALSE(AreReportsProcessed());
-    histograms.ExpectBucketCount("Net.Reporting.FilteredReportsCount", 1, 1);
-  } else {
-    // Verify that the cache is now empty (report should be removed after send,
-    // even if filtered)
-    EXPECT_TRUE(AreReportsProcessed());
-    histograms.ExpectBucketCount("Net.Reporting.FilteredReportsCount", 1, 0);
-  }
+  histograms.ExpectBucketCount("Net.Reporting.FilteredReportsCount", 1, 0);
+  // Verify that the cache is now empty (report should be removed after send,
+  // even if filtered)
+  EXPECT_TRUE(AreReportsProcessed());
 }
 
 TEST_F(ReportingDeliveryAgentTest, ExcludeLargeBodyReports) {
@@ -1111,13 +1099,7 @@ TEST_F(ReportingDeliveryAgentTest, ExcludeLargeBodyReports) {
   EXPECT_TRUE(AreReportsProcessed());
 
   EXPECT_EQ(histograms.GetTotalSum("Net.Reporting.ReportsCount"), 3);
-  // CRONET_BUILD does not support many tracing features.
-  // DictValue::EstimateMemoryUsage() is one of them, being always reported as
-  // 0. Hence, no reports are ever filtered due to being too big. Check for a
-  // different value, instead of disabling the tests, so that once CRONET_BUILD
-  // will support that, we will need to converge back to the same value.
-  EXPECT_EQ(histograms.GetTotalSum("Net.Reporting.FilteredReportsCount"),
-            BUILDFLAG(CRONET_BUILD) ? 3 : 2);
+  EXPECT_EQ(histograms.GetTotalSum("Net.Reporting.FilteredReportsCount"), 2);
 }
 
 }  // namespace net

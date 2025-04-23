@@ -2019,6 +2019,46 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
+    name = "Mac FYI Retina Release (Apple M3)",
+    description_html = "Runs release GPU tests on stable Mac/M3 Macbook Pro configs",
+    triggered_by = ["GPU FYI Mac arm64 Builder"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+        run_tests_serially = True,
+    ),
+    targets = targets.bundle(
+        targets = [
+            # TODO(crbug.com/411164097): Enable actual tests.
+            "gpu_noop_sleep_telemetry_test",
+        ],
+        mixins = [
+            "mac_arm64_apple_m3_retina_gpu_stable",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE,
+        os_type = targets.os_type.MAC,
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Mac|Apple",
+        short_name = "m3",
+    ),
+)
+
+ci.thin_tester(
     name = "Mac FYI ASAN (Intel)",
     description_html = "Runs release GPU tests with ASan enabled on stable Mac/Intel UHD 630 Mac Mini configs",
     triggered_by = ["GPU FYI Mac Builder (asan)"],

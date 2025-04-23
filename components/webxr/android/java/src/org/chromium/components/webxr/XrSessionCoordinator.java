@@ -4,6 +4,8 @@
 
 package org.chromium.components.webxr;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +20,8 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -26,14 +30,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 
 /**
- * Provides static methods called by the XrDelegateImpl as well as JNI methods to the C/C++ code
- * in order to interact with the various bits of the Java side of a session. This includes the
- * responsibility to standup/create any needed overlays/SurfaceViews and forwarding events both
- * from them and elsewhere within Chrome (forwarded/registered for via XrDelegate). This class is
- * also responsible for ensuring that there is only one active session at a time and answering
- * questions about that session; mainly via communication of its static members.
+ * Provides static methods called by the XrDelegateImpl as well as JNI methods to the C/C++ code in
+ * order to interact with the various bits of the Java side of a session. This includes the
+ * responsibility to standup/create any needed overlays/SurfaceViews and forwarding events both from
+ * them and elsewhere within Chrome (forwarded/registered for via XrDelegate). This class is also
+ * responsible for ensuring that there is only one active session at a time and answering questions
+ * about that session; mainly via communication of its static members.
  */
 @JNINamespace("webxr")
+@NullMarked
 public class XrSessionCoordinator {
     private static final String TAG = "XrSessionCoordinator";
     private static final boolean DEBUG_LOGS = false;
@@ -51,7 +56,7 @@ public class XrSessionCoordinator {
     // in progress, and reset to null on session end. The XrImmersiveOverlay member has a strong
     // reference to the ChromeActivity, and that shouldn't be retained beyond the duration of a
     // session.
-    private static XrSessionCoordinator sActiveSessionInstance;
+    private static @Nullable XrSessionCoordinator sActiveSessionInstance;
 
     /** Whether there is a non-null valid {@link #sActiveSessionInstance}. */
     private static XrSessionTypeSupplier sActiveSessionAvailableSupplier =
@@ -63,20 +68,20 @@ public class XrSessionCoordinator {
     // and keeps a strong reference to it for the lifetime of the device. It creates and
     // owns an XrImmersiveOverlay for the duration of an immersive session, which in
     // turn contains a reference to XrSessionCoordinator for making JNI calls back to the device.
-    private XrImmersiveOverlay mImmersiveOverlay;
+    private @Nullable XrImmersiveOverlay mImmersiveOverlay;
 
     private @SessionType int mActiveSessionType = SessionType.NONE;
 
     // The WebContents that triggered the currently active session.
-    private WebContents mWebContents;
+    private @Nullable WebContents mWebContents;
 
-    private WeakReference<Activity> mXrHostActivity;
+    private @Nullable WeakReference<Activity> mXrHostActivity;
 
     // Helper, obtains android Activity out of passed in WebContents instance.
     // Equivalent to ChromeActivity.fromWebContents(), but does not require that
     // the resulting instance is a ChromeActivity.
     @CalledByNative
-    public static Activity getActivity(final WebContents webContents) {
+    public static @Nullable Activity getActivity(final WebContents webContents) {
         if (webContents == null) return null;
         WindowAndroid window = webContents.getTopLevelNativeWindow();
         if (window == null) return null;
@@ -96,7 +101,7 @@ public class XrSessionCoordinator {
      * @return Context The current activity as a Context.
      */
     @CalledByNative
-    private static Context getCurrentActivityContext() {
+    private static @Nullable Context getCurrentActivityContext() {
         if (sActiveSessionInstance == null || sActiveSessionInstance.mWebContents == null) {
             return null;
         }
@@ -155,6 +160,7 @@ public class XrSessionCoordinator {
                         webContents,
                         useOverlay,
                         canRenderDomContent);
+        assumeNonNull(overlayDelegate);
         startSession(SessionType.AR, overlayDelegate, webContents);
     }
 
@@ -167,9 +173,13 @@ public class XrSessionCoordinator {
         // active session going on.
         assert (sActiveSessionInstance == null);
 
+        Activity activity = getActivity(webContents);
+        assumeNonNull(activity);
+
         XrImmersiveOverlay.Delegate overlayDelegate =
                 CardboardClassProvider.getOverlayDelegate(
-                        compositorDelegateProvider.create(webContents), getActivity(webContents));
+                        compositorDelegateProvider.create(webContents), activity);
+        assumeNonNull(overlayDelegate);
         startSession(SessionType.VR, overlayDelegate, webContents);
     }
 
@@ -267,6 +277,7 @@ public class XrSessionCoordinator {
     }
 
     public static boolean hasActiveArSession() {
+        assumeNonNull(sActiveSessionInstance);
         return sActiveSessionInstance.mActiveSessionType == SessionType.AR;
     }
 
@@ -275,6 +286,7 @@ public class XrSessionCoordinator {
     }
 
     public static void onActiveXrSessionButtonTouched() {
+        assumeNonNull(sActiveSessionInstance);
         sActiveSessionInstance.onXrSessionButtonTouched();
     }
 
@@ -293,7 +305,7 @@ public class XrSessionCoordinator {
                         height);
     }
 
-    public static XrSessionCoordinator getActiveInstanceForTesting() {
+    public static @Nullable XrSessionCoordinator getActiveInstanceForTesting() {
         return sActiveSessionInstance;
     }
 
@@ -389,6 +401,8 @@ public class XrSessionCoordinator {
         void onXrSessionButtonTouched(long nativeXrSessionCoordinator, XrSessionCoordinator caller);
 
         void onXrHostActivityReady(
-                long nativeXrSessionCoordinator, XrSessionCoordinator caller, Activity activity);
+                long nativeXrSessionCoordinator,
+                XrSessionCoordinator caller,
+                @Nullable Activity activity);
     }
 }

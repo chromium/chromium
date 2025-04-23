@@ -273,7 +273,9 @@ ChromeSecurityBlockingPageFactory::CreateHttpsOnlyModeBlockingPage(
     content::WebContents* web_contents,
     const GURL& request_url,
     security_interstitials::https_only_mode::HttpInterstitialState
-        interstitial_state) {
+        interstitial_state,
+    security_interstitials::HttpsOnlyModeBlockingPage::MetricsCallback
+        metrics_callback) {
   std::unique_ptr<HttpsOnlyModeControllerClient> client =
       std::make_unique<HttpsOnlyModeControllerClient>(web_contents,
                                                       request_url);
@@ -292,7 +294,8 @@ ChromeSecurityBlockingPageFactory::CreateHttpsOnlyModeBlockingPage(
   auto page =
       std::make_unique<security_interstitials::HttpsOnlyModeBlockingPage>(
           web_contents, request_url, std::move(client), interstitial_state,
-          /*use_new_interstitial=*/IsNewHttpsFirstModeInterstitialEnabled());
+          /*use_new_interstitial=*/IsNewHttpsFirstModeInterstitialEnabled(),
+          metrics_callback);
   return page;
 }
 

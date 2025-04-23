@@ -27,6 +27,7 @@
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
@@ -148,7 +149,7 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
   void UpdateWindowRoundedCorners() override {
     if (!chromeos::features::IsRoundedWindowsEnabled() && GetFrameEnabled()) {
       header_view_->SetHeaderCornerRadius(
-          chromeos::GetWindowCornerRadius(frame()->GetNativeWindow()));
+          chromeos::GetWindowRadii(frame()->GetNativeWindow()).upper_left());
     }
 
     if (!GetWidget()) {
@@ -194,7 +195,8 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
       header_view_->SetHeaderCornerRadius(corner_radius);
     }
 
-    GetWidget()->client_view()->UpdateWindowRoundedCorners(corner_radius);
+    GetWidget()->client_view()->UpdateWindowRoundedCorners(
+        gfx::RoundedCornersF(corner_radius));
   }
 
   gfx::Rect GetWindowBoundsForClientBounds(
@@ -266,7 +268,8 @@ class CustomClientView : public views::ClientView {
   ~CustomClientView() override = default;
 
   // ClientView:
-  void UpdateWindowRoundedCorners(int corner_radius) override {
+  void UpdateWindowRoundedCorners(
+      const gfx::RoundedCornersF& window_radii) override {
     DCHECK(GetWidget());
     const CustomFrameView* custom_frame_view = static_cast<CustomFrameView*>(
         GetWidget()->non_client_view()->frame_view());
@@ -281,11 +284,10 @@ class CustomClientView : public views::ClientView {
         !custom_frame_view->GetFrameEnabled() ||
         custom_frame_view->GetFrameOverlapped();
 
-    const float corner_radius_f = corner_radius;
     const gfx::RoundedCornersF root_surface_radii = {
-        should_round_client_view_upper_corner ? corner_radius_f : 0,
-        should_round_client_view_upper_corner ? corner_radius_f : 0,
-        corner_radius_f, corner_radius_f};
+        should_round_client_view_upper_corner ? window_radii.upper_left() : 0,
+        should_round_client_view_upper_corner ? window_radii.upper_right() : 0,
+        window_radii.lower_right(), window_radii.lower_left()};
 
     const Surface* root_surface = shell_surface_->root_surface();
 
@@ -430,7 +432,7 @@ ShellSurfaceBase::ShellSurfaceBase(Surface* surface,
   surface->AddSurfaceObserver(this);
   SetRootSurface(surface);
   host_window()->Show();
-  set_owned_by_client();
+  set_owned_by_client(OwnedByClientPassKey());
 
   SetCanMinimize(can_minimize_);
   SetCanMaximize(ash::desks_util::IsDeskContainerId(container_));
@@ -1085,7 +1087,8 @@ void ShellSurfaceBase::AddOverlay(OverlayParams&& overlay_params) {
     params.activatable = views::Widget::InitParams::Activatable::kYes;
 
   params.delegate = new views::WidgetDelegate();
-  params.delegate->SetOwnedByWidget(true);
+  params.delegate->SetOwnedByWidget(
+      views::WidgetDelegate::OwnedByWidgetPassKey());
   params.delegate->SetContentsView(std::move(overlay_params.contents_view));
   params.name = "Overlay";
 

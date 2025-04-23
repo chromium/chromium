@@ -31,8 +31,9 @@ const char kAdsInterventionRecordedHistogramName[] =
 
 AdsInterventionStatus GetAdsInterventionStatus(bool activation_status,
                                                bool intervention_active) {
-  if (!intervention_active)
+  if (!intervention_active) {
     return AdsInterventionStatus::kExpired;
+  }
 
   return activation_status ? AdsInterventionStatus::kBlocking
                            : AdsInterventionStatus::kWouldBlock;
@@ -87,8 +88,9 @@ AdsInterventionManager::GetLastAdsIntervention(const GURL& url) const {
   std::optional<base::Value::Dict> dict =
       settings_manager_->GetSiteMetadata(url);
 
-  if (!dict)
+  if (!dict) {
     return std::nullopt;
+  }
 
   std::optional<int> ads_violation = dict->FindInt(kLastAdsViolationKey);
   std::optional<double> last_violation_time =

@@ -12,8 +12,11 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "chrome/browser/ui/views/media_preview/media_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/permissions/permission_hats_trigger_helper.h"
+#include "components/permissions/permission_request.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -183,5 +186,19 @@ void MediaViewControllerBase::OnComboboxMenuWillShow() {
       media_preview_metrics::MediaPreviewDeviceSelectionUserAction::kNoAction) {
     user_action_ =
         media_preview_metrics::MediaPreviewDeviceSelectionUserAction::kOpened;
+  }
+
+  if (metrics_context_.request) {
+    auto preview_params =
+        metrics_context_.request->get_preview_parameters().value_or(
+            permissions::PermissionHatsTriggerHelper::
+                PreviewParametersForHats{});
+    preview_params.MergeParameters(
+        permissions::PermissionHatsTriggerHelper::PreviewParametersForHats(
+            /*was_visible=*/false, /*dropdown_was_interacted=*/true,
+            /*was_prompt_combined=*/metrics_context_.prompt_type ==
+                media_preview_metrics::PromptType::kCombined,
+            /*time_to_decision=*/{}, /*time_to_visible=*/{}));
+    metrics_context_.request->set_preview_parameters(preview_params);
   }
 }

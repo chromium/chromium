@@ -163,8 +163,8 @@ void RecordUserInitiatedUMA(
 WebViewPermissionHelper::WebViewPermissionHelper(WebViewGuest* web_view_guest)
     : next_permission_request_id_(guest_view::kInstanceIDNone),
       web_view_guest_(web_view_guest) {
-  web_view_permission_helper_delegate_.reset(
-      ExtensionsAPIClient::Get()->CreateWebViewPermissionHelperDelegate(this));
+  web_view_permission_helper_delegate_ =
+      ExtensionsAPIClient::Get()->CreateWebViewPermissionHelperDelegate(this);
 }
 
 WebViewPermissionHelper::~WebViewPermissionHelper() {

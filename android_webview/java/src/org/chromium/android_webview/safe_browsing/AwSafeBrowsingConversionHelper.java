@@ -8,12 +8,14 @@ import android.os.Build;
 import android.webkit.WebViewClient;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.safe_browsing.SBThreatType;
 
 /**
  * This is a helper class to map native SafeBrowsingActions and SAFE_BROWSING_THREATs to the
  * constants in WebViewClient.
  */
+@NullMarked
 public final class AwSafeBrowsingConversionHelper {
     // These values are used for UMA. Entries should not be renumbered and
     // numeric values should never be reused. The BOUNDARY constant should be

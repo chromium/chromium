@@ -270,8 +270,8 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
   blink::mojom::ControllerServiceWorkerInfoPtr
   CreateControllerServiceWorkerInfo();
 
-  // Dispatches message event to the client (document, dedicated worker when
-  // PlzDedicatedWorker is enabled, or shared worker).
+  // Dispatches message event to the client (document, dedicated worker, or
+  // shared worker).
   void PostMessageToClient(ServiceWorkerVersion& version,
                            blink::TransferableMessage message);
 

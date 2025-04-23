@@ -19,15 +19,13 @@
 @property(nonatomic, strong, readonly) UILabel* titleLabel;
 @property(nonatomic, strong, readonly) UILabel* subtitleLabel;
 
+// The face pile, to be set externally.
+@property(nonatomic, strong) UIView* facePile;
+
 // Associated item, identifying the represented tab group.
 @property(nonatomic, strong) TabGroupsPanelItem* item;
 
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
-
-// Configures the `facePileViewController` with its `parentViewController`. The
-// parent must be non-nil if the face pile is non nil.
-- (void)setFacePileViewController:(UIViewController*)facePileViewController
-             parentViewController:(UIViewController*)parentViewController;
 
 @end
 

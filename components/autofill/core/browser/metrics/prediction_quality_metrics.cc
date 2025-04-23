@@ -84,6 +84,7 @@ enum FieldTypeGroupForMetrics {
   GROUP_ADDRESS_HOME_HOUSE_NUMBER_AND_APT = 46,
   GROUP_STANDALONE_CREDIT_CARD_VERIFICATION = 47,
   GROUP_AUTOFILL_AI = 48,
+  GROUP_LOYALTY_CARD = 49,
   // Note: if adding an enum value here, run
   // tools/metrics/histograms/update_autofill_enums.py
   NUM_FIELD_TYPE_GROUPS_FOR_METRICS
@@ -222,6 +223,10 @@ int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
 
     case FieldTypeGroup::kAutofillAi:
       group = GROUP_AUTOFILL_AI;
+      break;
+
+    case FieldTypeGroup::kLoyaltyCard:
+      group = GROUP_LOYALTY_CARD;
       break;
 
     case FieldTypeGroup::kAddress:

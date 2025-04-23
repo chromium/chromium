@@ -57,6 +57,7 @@ class HostResolverManager::ServiceEndpointRequestImpl
   const HostCache::EntryStaleness* GetStaleInfo() const override;
   bool IsStaleWhileRefresing() const override;
   void ChangeRequestPriority(RequestPriority priority) override;
+  std::string DebugString() const override;
 
   // These should only be called from HostResolver::Job.
   void AssignJob(base::SafeRef<Job> job);
@@ -151,6 +152,8 @@ class HostResolverManager::ServiceEndpointRequestImpl
   std::optional<base::SafeRef<Job>> job_;
 
   ResolveErrorInfo error_info_;
+
+  std::vector<TaskType> initial_tasks_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

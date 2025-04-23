@@ -1,4 +1,4 @@
-caption: Set a custom enterprise label
+caption: Set a custom enterprise label for a managed profile
 default: null
 desc: |-
   This policy controls a custom label used to identify managed profiles. For managed profiles, this label will be shown next to the avatar in the toolbar. The custom label will not be translated.

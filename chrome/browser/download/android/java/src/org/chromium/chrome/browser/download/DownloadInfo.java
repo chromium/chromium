@@ -6,12 +6,13 @@ package org.chromium.chrome.browser.download;
 
 import android.graphics.Bitmap;
 
-import androidx.annotation.NonNull;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
+import org.chromium.components.download.DownloadDangerType;
 import org.chromium.components.download.DownloadState;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.FailState;
@@ -25,31 +26,33 @@ import org.chromium.components.offline_items_collection.PendingState;
 import org.chromium.url.GURL;
 
 /** Class representing the state of a single download. */
+@NullMarked
 public final class DownloadInfo {
-    private final @NonNull GURL mUrl;
-    private final String mUserAgent;
-    private final String mMimeType;
-    private final String mCookie;
-    private final String mFileName;
-    private final String mDescription;
-    private final String mFilePath;
-    private final @NonNull GURL mReferrer;
-    private final @NonNull GURL mOriginalUrl;
+    private final GURL mUrl;
+    private final @Nullable String mUserAgent;
+    private final @Nullable String mMimeType;
+    private final @Nullable String mCookie;
+    private final @Nullable String mFileName;
+    private final @Nullable String mDescription;
+    private final @Nullable String mFilePath;
+    private final GURL mReferrer;
+    private final GURL mOriginalUrl;
     private final long mBytesReceived;
     private final long mBytesTotalSize;
-    private final String mDownloadGuid;
+    private final @Nullable String mDownloadGuid;
     private final boolean mHasUserGesture;
-    private final String mContentDisposition;
+    private final @Nullable String mContentDisposition;
     private final boolean mIsGETRequest;
-    private final Progress mProgress;
+    private final @Nullable Progress mProgress;
     private final long mTimeRemainingInMillis;
     private final boolean mIsResumable;
     private final boolean mIsPaused;
     private final boolean mIsOffTheRecord;
-    private final OtrProfileId mOtrProfileId;
+    private final @Nullable OtrProfileId mOtrProfileId;
     private final boolean mIsOfflinePage;
     private final int mState;
     private final long mLastAccessTime;
+    private final @DownloadDangerType int mDangerType;
     private final boolean mIsDangerous;
 
     // New variables to assist with the migration to OfflineItems.
@@ -57,7 +60,7 @@ public final class DownloadInfo {
     private final boolean mIsOpenable;
     private final boolean mIsTransient;
     private final boolean mIsParallelDownload;
-    private final Bitmap mIcon;
+    private final @Nullable Bitmap mIcon;
     @PendingState private final int mPendingState;
     @FailState private final int mFailState;
     private final boolean mShouldPromoteOrigin;
@@ -87,6 +90,7 @@ public final class DownloadInfo {
         mIsOfflinePage = builder.mIsOfflinePage;
         mState = builder.mState;
         mLastAccessTime = builder.mLastAccessTime;
+        mDangerType = builder.mDangerType;
         mIsDangerous = builder.mIsDangerous;
 
         if (builder.mContentId != null) {
@@ -103,39 +107,39 @@ public final class DownloadInfo {
         mShouldPromoteOrigin = builder.mShouldPromoteOrigin;
     }
 
-    public @NonNull GURL getUrl() {
+    public GURL getUrl() {
         return mUrl;
     }
 
-    public String getUserAgent() {
+    public @Nullable String getUserAgent() {
         return mUserAgent;
     }
 
-    public String getMimeType() {
+    public @Nullable String getMimeType() {
         return mMimeType;
     }
 
-    public String getCookie() {
+    public @Nullable String getCookie() {
         return mCookie;
     }
 
-    public String getFileName() {
+    public @Nullable String getFileName() {
         return mFileName;
     }
 
-    public String getDescription() {
+    public @Nullable String getDescription() {
         return mDescription;
     }
 
-    public String getFilePath() {
+    public @Nullable String getFilePath() {
         return mFilePath;
     }
 
-    public @NonNull GURL getReferrer() {
+    public GURL getReferrer() {
         return mReferrer;
     }
 
-    public @NonNull GURL getOriginalUrl() {
+    public GURL getOriginalUrl() {
         return mOriginalUrl;
     }
 
@@ -151,7 +155,7 @@ public final class DownloadInfo {
         return mIsGETRequest;
     }
 
-    public String getDownloadGuid() {
+    public @Nullable String getDownloadGuid() {
         return mDownloadGuid;
     }
 
@@ -159,11 +163,11 @@ public final class DownloadInfo {
         return mHasUserGesture;
     }
 
-    public String getContentDisposition() {
+    public @Nullable String getContentDisposition() {
         return mContentDisposition;
     }
 
-    public Progress getProgress() {
+    public @Nullable Progress getProgress() {
         return mProgress;
     }
 
@@ -186,7 +190,7 @@ public final class DownloadInfo {
         return mIsOffTheRecord;
     }
 
-    public OtrProfileId getOtrProfileId() {
+    public @Nullable OtrProfileId getOtrProfileId() {
         return mOtrProfileId;
     }
 
@@ -200,6 +204,10 @@ public final class DownloadInfo {
 
     public long getLastAccessTime() {
         return mLastAccessTime;
+    }
+
+    public @DownloadDangerType int getDangerType() {
+        return mDangerType;
     }
 
     public boolean getIsDangerous() {
@@ -222,7 +230,7 @@ public final class DownloadInfo {
         return mIsParallelDownload;
     }
 
-    public Bitmap getIcon() {
+    public @Nullable Bitmap getIcon() {
         return mIcon;
     }
 
@@ -281,7 +289,7 @@ public final class DownloadInfo {
 
         return new DownloadInfo.Builder()
                 .setContentId(item.id)
-                .setDownloadGuid(item.id.id)
+                .setDownloadGuid(item.id == null ? null : item.id.id)
                 .setFileName(item.title)
                 .setFilePath(item.filePath)
                 .setDescription(item.description)
@@ -291,7 +299,9 @@ public final class DownloadInfo {
                 .setMimeType(item.mimeType)
                 .setUrl(item.url)
                 .setOriginalUrl(item.originalUrl)
-                .setOtrProfileId(OtrProfileId.deserialize(item.otrProfileId))
+                .setOtrProfileId(
+                        OtrProfileId.deserialize(
+                                item.otrProfileId == null ? "" : item.otrProfileId))
                 .setState(state)
                 .setIsPaused(item.state == OfflineItemState.PAUSED)
                 .setIsResumable(item.isResumable)
@@ -299,6 +309,7 @@ public final class DownloadInfo {
                 .setBytesTotalSize(item.totalSizeBytes)
                 .setProgress(item.progress)
                 .setTimeRemainingInMillis(item.timeRemainingMs)
+                .setDangerType(item.dangerType)
                 .setIsDangerous(item.isDangerous)
                 .setIsParallelDownload(item.isAccelerated)
                 .setIcon(visuals == null ? null : visuals.icon)
@@ -309,71 +320,72 @@ public final class DownloadInfo {
 
     /** Helper class for building the DownloadInfo object. */
     public static class Builder {
-        private GURL mUrl;
-        private String mUserAgent;
-        private String mMimeType;
-        private String mCookie;
-        private String mFileName;
-        private String mDescription;
-        private String mFilePath;
-        private GURL mReferrer;
-        private GURL mOriginalUrl;
+        private @Nullable GURL mUrl;
+        private @Nullable String mUserAgent;
+        private @Nullable String mMimeType;
+        private @Nullable String mCookie;
+        private @Nullable String mFileName;
+        private @Nullable String mDescription;
+        private @Nullable String mFilePath;
+        private @Nullable GURL mReferrer;
+        private @Nullable GURL mOriginalUrl;
         private long mBytesReceived;
         private long mBytesTotalSize;
         private boolean mIsGETRequest;
-        private String mDownloadGuid;
+        private @Nullable String mDownloadGuid;
         private boolean mHasUserGesture;
-        private String mContentDisposition;
-        private Progress mProgress = Progress.createIndeterminateProgress();
+        private @Nullable String mContentDisposition;
+        private @Nullable Progress mProgress = Progress.createIndeterminateProgress();
         private long mTimeRemainingInMillis;
         private boolean mIsResumable = true;
         private boolean mIsPaused;
         private boolean mIsOffTheRecord;
-        private OtrProfileId mOtrProfileId;
+        private @Nullable OtrProfileId mOtrProfileId;
         private boolean mIsOfflinePage;
         private int mState = DownloadState.IN_PROGRESS;
         private long mLastAccessTime;
+        private @DownloadDangerType int mDangerType;
         private boolean mIsDangerous;
-        private ContentId mContentId;
+        private @Nullable ContentId mContentId;
         private boolean mIsOpenable = true;
         private boolean mIsTransient;
         private boolean mIsParallelDownload;
-        private Bitmap mIcon;
+        private @Nullable Bitmap mIcon;
         @PendingState private int mPendingState;
         @FailState private int mFailState;
         private boolean mShouldPromoteOrigin;
 
-        public Builder setUrl(GURL url) {
+        public Builder setUrl(@Nullable GURL url) {
             mUrl = url;
             return this;
         }
 
-        public Builder setUserAgent(String userAgent) {
+        public Builder setUserAgent(@Nullable String userAgent) {
             mUserAgent = userAgent;
             return this;
         }
 
-        public Builder setMimeType(String mimeType) {
+        public Builder setMimeType(@Nullable String mimeType) {
             mMimeType = mimeType;
             return this;
         }
 
-        public Builder setCookie(String cookie) {
+        public Builder setCookie(@Nullable String cookie) {
             mCookie = cookie;
             return this;
         }
 
-        public Builder setFileName(String fileName) {
+        public Builder setFileName(@Nullable String fileName) {
             mFileName = fileName;
             return this;
         }
 
-        public Builder setDescription(String description) {
+        public Builder setDescription(@Nullable String description) {
             mDescription = description;
             return this;
         }
 
-        public Builder setFilePath(String filePath) {
+        public Builder setFilePath(@Nullable String filePath) {
             mFilePath = filePath;
             return this;
         }
@@ -383,7 +395,7 @@ public final class DownloadInfo {
             return this;
         }
 
-        public Builder setOriginalUrl(GURL originalUrl) {
+        public Builder setOriginalUrl(@Nullable GURL originalUrl) {
             mOriginalUrl = originalUrl;
             return this;
         }
@@ -403,7 +415,7 @@ public final class DownloadInfo {
             return this;
         }
 
-        public Builder setDownloadGuid(String downloadGuid) {
+        public Builder setDownloadGuid(@Nullable String downloadGuid) {
             mDownloadGuid = downloadGuid;
             return this;
         }
@@ -413,12 +425,12 @@ public final class DownloadInfo {
             return this;
         }
 
-        public Builder setContentDisposition(String contentDisposition) {
+        public Builder setContentDisposition(@Nullable String contentDisposition) {
             mContentDisposition = contentDisposition;
             return this;
         }
 
-        public Builder setProgress(OfflineItem.Progress progress) {
+        public Builder setProgress(OfflineItem.@Nullable Progress progress) {
             mProgress = progress;
             return this;
         }
@@ -438,7 +450,7 @@ public final class DownloadInfo {
             return this;
         }
 
-        public Builder setOtrProfileId(OtrProfileId otrProfileId) {
+        public Builder setOtrProfileId(@Nullable OtrProfileId otrProfileId) {
             mOtrProfileId = otrProfileId;
             mIsOffTheRecord = OtrProfileId.isOffTheRecord(otrProfileId);
             return this;
@@ -459,12 +471,17 @@ public final class DownloadInfo {
             return this;
         }
 
+        public Builder setDangerType(@DownloadDangerType int dangerType) {
+            mDangerType = dangerType;
+            return this;
+        }
+
         public Builder setIsDangerous(boolean isDangerous) {
             mIsDangerous = isDangerous;
             return this;
         }
 
-        public Builder setContentId(ContentId contentId) {
+        public Builder setContentId(@Nullable ContentId contentId) {
             mContentId = contentId;
             return this;
         }
@@ -484,7 +501,7 @@ public final class DownloadInfo {
             return this;
         }
 
-        public Builder setIcon(Bitmap icon) {
+        public Builder setIcon(@Nullable Bitmap icon) {
             mIcon = icon;
             return this;
         }
@@ -532,6 +549,7 @@ public final class DownloadInfo {
                     .setIsGETRequest(downloadInfo.isGETRequest())
                     .setProgress(downloadInfo.getProgress())
                     .setTimeRemainingInMillis(downloadInfo.getTimeRemainingInMillis())
+                    .setDangerType(downloadInfo.getDangerType())
                     .setIsDangerous(downloadInfo.getIsDangerous())
                     .setIsResumable(downloadInfo.isResumable())
                     .setIsPaused(downloadInfo.isPaused())
@@ -569,6 +587,7 @@ public final class DownloadInfo {
             @JniType("GURL") GURL referrerUrl,
             long timeRemainingInMs,
             long lastAccessTime,
+            @DownloadDangerType int dangerType,
             boolean isDangerous,
             @FailState int failState,
             boolean isTransient) {
@@ -598,6 +617,7 @@ public final class DownloadInfo {
                 .setState(state)
                 .setTimeRemainingInMillis(timeRemainingInMs)
                 .setLastAccessTime(lastAccessTime)
+                .setDangerType(dangerType)
                 .setIsDangerous(isDangerous)
                 .setUrl(url)
                 .setFailState(failState)

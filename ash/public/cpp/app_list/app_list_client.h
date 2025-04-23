@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "ui/base/models/image_model.h"
 #include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
 
@@ -163,6 +164,8 @@ class ASH_PUBLIC_EXPORT AppListClient {
 
   // Read Assistant new entry point eligibility from Assistant delegate as an
   // async operation.
+  // TODO(crbug.com/388361414): rename to GetGeminiEligibility. Same for other
+  // methods in this file.
   virtual void GetAssistantNewEntryPointEligibility(
       GetAssistantNewEntryPointEligibilityCallback callback) = 0;
 
@@ -171,6 +174,9 @@ class ASH_PUBLIC_EXPORT AppListClient {
   // is not eligible, new entry point not installed. You should query the name
   // only if `GetAssistantNewEntryPointEligibility` returns eligible.
   virtual std::optional<std::string> GetAssistantNewEntryPointName() = 0;
+
+  // Returns a Gemini icon.
+  virtual ui::ImageModel GetGeminiIcon() = 0;
 
  protected:
   virtual ~AppListClient() = default;

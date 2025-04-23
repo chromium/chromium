@@ -365,7 +365,9 @@ const Element* GetPositionAnchorElement(
   }
   if (const ScopedCSSName* specifier = style.PositionAnchor()) {
     if (const PhysicalAnchorReference* reference =
-            anchor_query->AnchorReference(*node.GetLayoutBox(), specifier)) {
+            anchor_query->AnchorReference(
+                *node.GetLayoutBox(),
+                ToAnchorScopedName(*specifier, *node.GetLayoutBox()))) {
       DCHECK(!reference->element || reference->GetLayoutObject());
       return reference->element;
     }

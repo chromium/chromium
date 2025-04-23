@@ -89,9 +89,8 @@ const CheckTemplate& GetRawOutputCheckTemplate(
 }  // namespace
 
 SafetyConfig::SafetyConfig() = default;
-SafetyConfig::SafetyConfig(
-    std::optional<proto::FeatureTextSafetyConfiguration> proto)
-    : proto_(proto) {}
+SafetyConfig::SafetyConfig(proto::FeatureTextSafetyConfiguration proto)
+    : proto_(std::move(proto)) {}
 SafetyConfig::SafetyConfig(const SafetyConfig&) = default;
 SafetyConfig::SafetyConfig(SafetyConfig&&) = default;
 SafetyConfig::~SafetyConfig() = default;
@@ -100,26 +99,26 @@ SafetyConfig& SafetyConfig::operator=(SafetyConfig&&) = default;
 bool SafetyConfig::CanCheckPartialOutput(
     uint32_t num_output_tokens,
     uint32_t num_unchecked_output_tokens) const {
-  if (!proto_) {
-    // In the absence of a config, partial outputs are trivially checked at
+  // Response checks do not work well with streaming responses.
+  if (proto_.response_check_size() > 0) {
+    return false;
+  }
+  if (!HasRawOutputCheck()) {
+    // If no output checks are configured, outputs are trivially checked at
     // every token.
     return true;
   }
-  // Response checks do not work well with streaming responses.
-  if (proto_->response_check_size() > 0) {
-    return false;
-  }
-  if (!proto_->has_partial_output_checks()) {
+  if (!proto_.has_partial_output_checks()) {
     // TODO(crbug.com/379429927): Temporary fix before rolling out the partial
     // output checks. Change the return value to false after fully landing the
     // new configs.
     return true;
   }
-  if (num_output_tokens < proto_->partial_output_checks().minimum_tokens()) {
+  if (num_output_tokens < proto_.partial_output_checks().minimum_tokens()) {
     return false;
   }
   if (num_unchecked_output_tokens <
-      proto_->partial_output_checks().token_interval()) {
+      proto_.partial_output_checks().token_interval()) {
     return false;
   }
   return true;
@@ -128,12 +127,7 @@ bool SafetyConfig::CanCheckPartialOutput(
 bool SafetyConfig::IsTextInUnsupportedOrUndeterminedLanguage(
     const on_device_model::mojom::SafetyInfoPtr& safety_info,
     double reliability_threshold) const {
-  auto& allowed_languages = proto_->allowed_languages();
-  if (!proto_) {
-    // No safety config, so no language requirements.
-    return false;
-  }
-
+  auto& allowed_languages = proto_.allowed_languages();
   if (allowed_languages.empty() || reliability_threshold <= 0.0) {
     // No language requirements.
     return false;
@@ -160,29 +154,29 @@ bool SafetyConfig::IsTextInUnsupportedOrUndeterminedLanguage(
 }
 
 int SafetyConfig::NumRequestChecks() const {
-  return proto_ ? proto_->request_check_size() : 0;
+  return proto_.request_check_size();
 }
 
 std::optional<SubstitutionResult> SafetyConfig::GetRequestCheckInput(
     int check_idx,
     MultimodalMessageReadView message) const {
   return CreateSubstitutions(message,
-                             proto_->request_check(check_idx).input_template());
+                             proto_.request_check(check_idx).input_template());
 }
 
 bool SafetyConfig::IsRequestCheckLanguageOnly(int check_idx) const {
-  return proto_->request_check(check_idx).check_language_only();
+  return proto_.request_check(check_idx).check_language_only();
 }
 
 bool SafetyConfig::IsRequestUnsafe(
     int check_idx,
     const on_device_model::mojom::SafetyInfoPtr& safety_info) const {
-  const auto& check = proto_->request_check(check_idx);
+  const auto& check = proto_.request_check(check_idx);
   if (check.check_language_only()) {
     return false;
   }
   const auto& thresholds = check.safety_category_thresholds().empty()
-                               ? proto_->safety_category_thresholds()
+                               ? proto_.safety_category_thresholds()
                                : check.safety_category_thresholds();
   return HasUnsafeScores(thresholds, safety_info);
 }
@@ -190,7 +184,7 @@ bool SafetyConfig::IsRequestUnsafe(
 bool SafetyConfig::IsRequestUnsupportedLanguage(
     int check_idx,
     const on_device_model::mojom::SafetyInfoPtr& safety_info) const {
-  const auto& check = proto_->request_check(check_idx);
+  const auto& check = proto_.request_check(check_idx);
   if (check.ignore_language_result()) {
     return false;
   }
@@ -200,7 +194,11 @@ bool SafetyConfig::IsRequestUnsupportedLanguage(
 }
 
 bool SafetyConfig::HasRawOutputCheck() const {
-  return proto_.has_value() && NumResponseChecks() == 0;
+  return proto_.has_raw_output_check() ||
+         // Do a "default" check for some non-empty legacy configs.
+         (proto_.response_check_size() == 0 &&
+          (proto_.allowed_languages_size() > 0 ||
+           proto_.safety_category_thresholds_size() > 0));
 }
 
 std::optional<SubstitutionResult> SafetyConfig::GetRawOutputCheckInput(
@@ -208,37 +206,37 @@ std::optional<SubstitutionResult> SafetyConfig::GetRawOutputCheckInput(
   proto::StringValue message;
   message.set_value(raw_output);
   return CreateSubstitutions(MultimodalMessageReadView(message),
-                             GetRawOutputCheckTemplate(*proto_));
+                             GetRawOutputCheckTemplate(proto_));
 }
 
 bool SafetyConfig::IsRawOutputUnsafe(
     const on_device_model::mojom::SafetyInfoPtr& safety_info) const {
-  if (!proto_) {
+  if (proto_.safety_category_thresholds().size() == 0) {
     // If no safety config and we are allowed here, that means we don't care
     // about the safety scores so just mark the content as safe.
     return false;
   }
-  return HasUnsafeScores(proto_->safety_category_thresholds(), safety_info);
+  return HasUnsafeScores(proto_.safety_category_thresholds(), safety_info);
 }
 
 bool SafetyConfig::IsRawOutputUnsupportedLanguage(
     ResponseCompleteness completeness,
     const on_device_model::mojom::SafetyInfoPtr& safety_info) const {
-  const auto& check = proto_->raw_output_check();
+  const auto& check = proto_.raw_output_check();
   double threshold = GetLanguageReliabilityThreshold(check, completeness);
   return IsTextInUnsupportedOrUndeterminedLanguage(safety_info, threshold);
 }
 
 int SafetyConfig::NumResponseChecks() const {
-  return proto_ ? proto_->response_check_size() : 0;
+  return proto_.response_check_size();
 }
 
 bool SafetyConfig::IsResponseUnsafe(
     int check_idx,
     const on_device_model::mojom::SafetyInfoPtr& safety_info) const {
-  const auto& check = proto_->response_check(check_idx);
+  const auto& check = proto_.response_check(check_idx);
   const auto& thresholds = check.safety_category_thresholds().empty()
-                               ? proto_->safety_category_thresholds()
+                               ? proto_.safety_category_thresholds()
                                : check.safety_category_thresholds();
   return HasUnsafeScores(thresholds, safety_info);
 }
@@ -247,7 +245,7 @@ bool SafetyConfig::IsResponseUnsupportedLanguage(
     int check_idx,
     ResponseCompleteness completeness,
     const on_device_model::mojom::SafetyInfoPtr& safety_info) const {
-  const auto& check = proto_->response_check(check_idx);
+  const auto& check = proto_.response_check(check_idx);
   if (check.ignore_language_result()) {
     return false;
   }
@@ -261,7 +259,7 @@ std::optional<SubstitutionResult> SafetyConfig::GetResponseCheckInput(
     MultimodalMessageReadView response) const {
   SubstitutionResult result;
   result.input = on_device_model::mojom::Input::New();
-  for (const auto& input : proto_->response_check(check_idx).inputs()) {
+  for (const auto& input : proto_.response_check(check_idx).inputs()) {
     std::optional<SubstitutionResult> inner_result;
     switch (input.input_type()) {
       case proto::CHECK_INPUT_TYPE_REQUEST:
@@ -284,7 +282,7 @@ std::optional<SubstitutionResult> SafetyConfig::GetResponseCheckInput(
 }
 
 bool SafetyConfig::OnlyCancelUnsafeResponseOnComplete() const {
-  return proto_ && proto_->only_cancel_unsafe_response_on_complete();
+  return proto_.only_cancel_unsafe_response_on_complete();
 }
 
 }  // namespace optimization_guide

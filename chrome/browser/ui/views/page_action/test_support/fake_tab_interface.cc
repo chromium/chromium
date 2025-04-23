@@ -4,12 +4,20 @@
 
 #include "chrome/browser/ui/views/page_action/test_support/fake_tab_interface.h"
 
+#include <memory>
+
+#include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/test_web_contents_factory.h"
 
 namespace page_actions {
 
-FakeTabInterface::FakeTabInterface(content::WebContents* contents)
-    : contents_(contents) {}
+FakeTabInterface::FakeTabInterface(TestingProfile* testing_profile) {
+  if (testing_profile) {
+    web_contents_factory_ = std::make_unique<content::TestWebContentsFactory>();
+    web_contents_ = web_contents_factory_->CreateWebContents(testing_profile);
+  }
+}
 
 FakeTabInterface::~FakeTabInterface() = default;
 
@@ -21,6 +29,10 @@ base::CallbackListSubscription FakeTabInterface::RegisterDidActivate(
 base::CallbackListSubscription FakeTabInterface::RegisterWillDeactivate(
     base::RepeatingCallback<void(TabInterface*)> cb) {
   return deactivation_callbacks_.Add(cb);
+}
+
+content::WebContents* FakeTabInterface::GetContents() const {
+  return web_contents_;
 }
 
 void FakeTabInterface::Activate() {

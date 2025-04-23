@@ -104,9 +104,7 @@ class FormatQueryResults(unittest.TestCase):
               'chromium.builder_group': {
                   'builder_name': {
                       'fake_test_suite': {
-                          'debug': {
-                              'try_builder': 'linux-rel'
-                          },
+                          'try_builder': 'linux-rel',
                           'shards': 4
                       }
                   }
@@ -157,10 +155,12 @@ class FormatQueryResults(unittest.TestCase):
     with open(self.output_file, 'r') as f:
       script_result = json.load(f)
     self.assertEqual(
-        script_result['chromium.linux']['Linux Tests'],
-        {'browser_tests': {
-            'shards': expected_optimal_shard_count
-        }})
+        script_result['chromium.linux']['Linux Tests'], {
+            'browser_tests': {
+                'shards': expected_optimal_shard_count,
+                'try_builder': 'linux-rel'
+            }
+        })
 
   def testMultipleBuildersInGroup(self):
     expected_optimal_shard_count_1 = 15
@@ -213,14 +213,19 @@ class FormatQueryResults(unittest.TestCase):
         2,
     )
     self.assertEqual(
-        script_result['chromium.linux']['Linux Tests'],
-        {'browser_tests': {
-            'shards': expected_optimal_shard_count_1
-        }})
-    self.assertEqual(script_result['chromium.linux']['Linux GPU Tests'],
-                     {'gpu_tests': {
-                         'shards': expected_optimal_shard_count_2
-                     }})
+        script_result['chromium.linux']['Linux Tests'], {
+            'browser_tests': {
+                'shards': expected_optimal_shard_count_1,
+                'try_builder': 'linux-rel'
+            }
+        })
+    self.assertEqual(
+        script_result['chromium.linux']['Linux GPU Tests'], {
+            'gpu_tests': {
+                'shards': expected_optimal_shard_count_2,
+                'try_builder': 'linux-rel'
+            }
+        })
 
   def testVerbose(self):
     suite_durations = json.dumps([
@@ -373,9 +378,11 @@ class FormatQueryResults(unittest.TestCase):
             'Linux Tests': {
                 'browser_tests': {
                     'shards': 10,
+                    'try_builder': 'linux-rel',
                 },
                 'interactive_ui_tests': {
                     'shards': 3,
+                    'try_builder': 'linux-rel',
                 }
             },
         },
@@ -383,6 +390,7 @@ class FormatQueryResults(unittest.TestCase):
             'android-12-x64-rel': {
                 'webview_instrumentation_test_apk': {
                     'shards': 11,
+                    'try_builder': 'android-try',
                 }
             }
         }
@@ -394,16 +402,25 @@ class FormatQueryResults(unittest.TestCase):
       script_result = json.load(f)
     self.assertEqual(
         script_result['chromium.linux']['Linux Tests']['browser_tests'],
-        {'shards': 23},
+        {
+            'shards': 23,
+            'try_builder': 'linux-rel',
+        },
     )
     self.assertEqual(
         script_result['chromium.linux']['Linux Tests']['interactive_ui_tests'],
-        {'shards': 3},
+        {
+            'shards': 3,
+            'try_builder': 'linux-rel',
+        },
     )
     self.assertEqual(
         script_result['chromium.android']['android-12-x64-rel']
         ['webview_instrumentation_test_apk'],
-        {'shards': 11},
+        {
+            'shards': 11,
+            'try_builder': 'android-try',
+        },
     )
 
   def testOverwriteExistingOutputFile(self):
@@ -459,7 +476,10 @@ class FormatQueryResults(unittest.TestCase):
       script_result = json.load(f)
     self.assertEqual(
         script_result['chromium.linux']['Linux Tests']['browser_tests'],
-        {'shards': 23},
+        {
+            'shards': 23,
+            'try_builder': 'linux-rel'
+        },
     )
     self.assertIsNone(script_result['chromium.linux']['Linux Tests'].get(
         'interactive_ui_tests'))
@@ -768,7 +788,10 @@ class FormatQueryResults(unittest.TestCase):
     self.assertEqual(
         script_result['chromium.android']['android-12-x64-rel']
         ['webview_instrumentation_test_apk'],
-        {'shards': 15},
+        {
+            'shards': 15,
+            'try_builder': 'android-12-x64-rel'
+        },
     )
 
   def testPruned(self):
@@ -814,9 +837,7 @@ class FormatQueryResults(unittest.TestCase):
             'chromium.builder_group': {
                 'builder_name': {
                     'fake_test_suite': {
-                        'debug': {
-                            'try_builder': 'linux-rel'
-                        },
+                        'try_builder': 'linux-rel',
                         'shards': 4
                     }
                 }

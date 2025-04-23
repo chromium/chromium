@@ -33,3 +33,9 @@ include_rules = [
   "+ios/chrome/browser/policy/ui_bundled/user_policy_util.h",
   "+ios/chrome/browser/web/model/java_script_console",
 ]
+
+specific_include_rules = {
+  "^policy_egtest.mm": [
+    "+components/policy/test_support",
+  ],
+}

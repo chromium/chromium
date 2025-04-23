@@ -148,7 +148,7 @@ DesktopDataControlsDialog::DesktopDataControlsDialog(
     base::OnceCallback<void(bool bypassed)> callback)
     : DataControlsDialog(type, std::move(callback)),
       content::WebContentsObserver(contents) {
-  SetOwnedByWidget(true);
+  SetOwnedByWidget(OwnedByWidgetPassKey());
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 

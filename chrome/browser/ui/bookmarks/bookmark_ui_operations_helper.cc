@@ -492,13 +492,17 @@ void BookmarkUIOperationsHelperMergedSurfaces::MoveBookmarkNodeData(
     const base::FilePath& profile_path,
     size_t index_to_add_at,
     Browser* browser) {
-  CHECK_EQ(data.size(), 1u);
-  const BookmarkNode* moved_node = data.GetFirstNode(model(), profile_path);
-  CHECK(moved_node);
-  CHECK(!merged_surface_service_->IsNodeManaged(moved_node));
+  CHECK_GE(data.size(), 1u);
+  const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>
+      moved_nodes = data.GetNodes(model(), profile_path);
+  CHECK(!moved_nodes.empty());
 
-  merged_surface_service_->Move(moved_node, *parent_folder(), index_to_add_at,
-                                browser);
+  for (const auto& moved_node : moved_nodes) {
+    CHECK(!model()->client()->IsNodeManaged(moved_node));
+    merged_surface_service_->Move(moved_node, *parent_folder(), index_to_add_at,
+                                  browser);
+    index_to_add_at++;
+  }
 }
 
 const internal::BookmarkUIOperationsHelper::TargetParent*

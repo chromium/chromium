@@ -27,6 +27,8 @@ class AccountManagementTypeMetricsRecorder : public IdentityManager::Observer {
 
   // IdentityManager::Observer:
   void OnRefreshTokensLoaded() override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
 
   // LINT.IfChange(AccountManagementTypesSummary)
   // These values are persisted to logs. Entries should not be renumbered and

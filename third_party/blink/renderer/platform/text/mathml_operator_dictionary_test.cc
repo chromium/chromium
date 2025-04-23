@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/text/mathml_operator_dictionary.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -145,7 +140,8 @@ static const UChar32 category_m[]{
 
 template <typename T, size_t N>
 bool IsInCategory(const T (&table)[N], UChar32 character) {
-  return std::binary_search(table, table + std::size(table), character);
+  return std::binary_search(table, UNSAFE_TODO(table + std::size(table)),
+                            character);
 }
 
 String FromUChar32(UChar32 c) {

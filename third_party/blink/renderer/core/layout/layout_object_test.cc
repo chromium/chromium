@@ -1436,8 +1436,7 @@ TEST_F(LayoutObjectTest, PerspectiveIsNotParent) {
   child->GetTransformFromContainer(ancestor, PhysicalOffset(), transform);
   std::optional<gfx::DecomposedTransform> decomp = transform.Decompose();
   ASSERT_TRUE(decomp);
-  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-  EXPECT_EQ(0, UNSAFE_TODO(decomp->perspective[2]));
+  EXPECT_EQ(0, decomp->perspective[2]);
 }
 
 TEST_F(LayoutObjectTest, PerspectiveWithAnonymousTable) {
@@ -1457,8 +1456,7 @@ TEST_F(LayoutObjectTest, PerspectiveWithAnonymousTable) {
   child->GetTransformFromContainer(ancestor, PhysicalOffset(), transform);
   std::optional<gfx::DecomposedTransform> decomp = transform.Decompose();
   ASSERT_TRUE(decomp);
-  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-  EXPECT_EQ(-0.01, UNSAFE_TODO(decomp->perspective[2]));
+  EXPECT_EQ(-0.01, decomp->perspective[2]);
 }
 
 TEST_F(LayoutObjectTest, LocalToAncestoRectIgnoreAncestorScroll) {

@@ -273,11 +273,11 @@ TEST_F(DevToolsFileHelperTest, ConnectAutomaticFileSystemInfoBarDenied) {
   base::ScopedTempDir td;
   ASSERT_TRUE(td.CreateUniqueTempDir());
   base::FilePath path = td.GetPath();
-  base::MockCallback<DevToolsFileHelper::ShowInfoBarCallback>
-      show_info_bar_callback;
-  EXPECT_CALL(show_info_bar_callback, Run)
+  base::MockCallback<DevToolsFileHelper::HandlePermissionsCallback>
+      handle_permissions_callback;
+  EXPECT_CALL(handle_permissions_callback, Run)
       .WillOnce(
-          InvokeCallbackArgument<1, base::OnceCallback<void(bool)>>(false));
+          InvokeCallbackArgument<2, base::OnceCallback<void(bool)>>(false));
   base::MockCallback<DevToolsFileHelper::ConnectCallback> connect_cb;
   EXPECT_CALL(connect_cb, Run(false)).Times(1);
   EXPECT_CALL(delegate(), FileSystemAdded("<permission denied>", IsNull()))
@@ -285,7 +285,7 @@ TEST_F(DevToolsFileHelperTest, ConnectAutomaticFileSystemInfoBarDenied) {
 
   file_helper()->ConnectAutomaticFileSystem(
       path.AsUTF8Unsafe(), base::Uuid::GenerateRandomV4(),
-      /* add_if_missing */ true, show_info_bar_callback.Get(),
+      /* add_if_missing */ true, handle_permissions_callback.Get(),
       connect_cb.Get());
 
   EXPECT_THAT(profile()->GetPrefs()->GetDict(prefs::kDevToolsFileSystemPaths),
@@ -305,8 +305,9 @@ TEST_F(DevToolsFileHelperTest, ConnectAutomaticFileSystemAlreadyKnown) {
   EXPECT_THAT(file_helper()->GetFileSystems(), IsEmpty());
   DevToolsFileHelper::FileSystem file_system{
       "automatic", "test", "filesystem:test", path.AsUTF8Unsafe()};
-  base::MockCallback<DevToolsFileHelper::ShowInfoBarCallback> show_info_bar_cb;
-  EXPECT_CALL(show_info_bar_cb, Run).Times(0);
+  base::MockCallback<DevToolsFileHelper::HandlePermissionsCallback>
+      handle_permissions_callback;
+  EXPECT_CALL(handle_permissions_callback, Run).Times(0);
   base::MockCallback<DevToolsFileHelper::ConnectCallback> connect_cb;
   EXPECT_CALL(connect_cb, Run(true)).Times(1);
   EXPECT_CALL(storage(), RegisterFileSystem(path, "automatic"))
@@ -316,9 +317,10 @@ TEST_F(DevToolsFileHelperTest, ConnectAutomaticFileSystemAlreadyKnown) {
 
   base::RunLoop run_loop;
   ON_CALL(delegate(), FileSystemAdded).WillByDefault([&] { run_loop.Quit(); });
-  file_helper()->ConnectAutomaticFileSystem(
-      path.AsUTF8Unsafe(), uuid,
-      /* add_if_missing */ false, show_info_bar_cb.Get(), connect_cb.Get());
+  file_helper()->ConnectAutomaticFileSystem(path.AsUTF8Unsafe(), uuid,
+                                            /* add_if_missing */ false,
+                                            handle_permissions_callback.Get(),
+                                            connect_cb.Get());
   run_loop.Run();
 
   const base::Value::Dict& file_system_paths_value =
@@ -336,10 +338,11 @@ TEST_F(DevToolsFileHelperTest, ConnectAutomaticFileSystemNewlyAdded) {
   base::Uuid uuid = base::Uuid::GenerateRandomV4();
   DevToolsFileHelper::FileSystem file_system{
       "automatic", "test", "filesystem:test", path.AsUTF8Unsafe()};
-  base::MockCallback<DevToolsFileHelper::ShowInfoBarCallback> show_info_bar_cb;
-  EXPECT_CALL(show_info_bar_cb, Run)
+  base::MockCallback<DevToolsFileHelper::HandlePermissionsCallback>
+      handle_permissions_callback;
+  EXPECT_CALL(handle_permissions_callback, Run)
       .WillOnce(
-          InvokeCallbackArgument<1, base::OnceCallback<void(bool)>>(true));
+          InvokeCallbackArgument<2, base::OnceCallback<void(bool)>>(true));
   base::MockCallback<DevToolsFileHelper::ConnectCallback> connect_cb;
   EXPECT_CALL(connect_cb, Run(true)).Times(1);
   EXPECT_CALL(storage(), RegisterFileSystem(path, "automatic"))
@@ -349,9 +352,10 @@ TEST_F(DevToolsFileHelperTest, ConnectAutomaticFileSystemNewlyAdded) {
 
   base::RunLoop run_loop;
   ON_CALL(delegate(), FileSystemAdded).WillByDefault([&] { run_loop.Quit(); });
-  file_helper()->ConnectAutomaticFileSystem(
-      path.AsUTF8Unsafe(), uuid,
-      /* add_if_missing */ true, show_info_bar_cb.Get(), connect_cb.Get());
+  file_helper()->ConnectAutomaticFileSystem(path.AsUTF8Unsafe(), uuid,
+                                            /* add_if_missing */ true,
+                                            handle_permissions_callback.Get(),
+                                            connect_cb.Get());
   run_loop.Run();
 
   const base::Value::Dict& file_system_paths_value =
@@ -374,8 +378,9 @@ TEST_F(DevToolsFileHelperTest, ConnectAndDisconnectKnownAutomaticFileSystem) {
   EXPECT_THAT(file_helper()->GetFileSystems(), IsEmpty());
   DevToolsFileHelper::FileSystem file_system{
       "automatic", "test", "filesystem:test", path.AsUTF8Unsafe()};
-  base::MockCallback<DevToolsFileHelper::ShowInfoBarCallback> show_info_bar_cb;
-  EXPECT_CALL(show_info_bar_cb, Run).Times(0);
+  base::MockCallback<DevToolsFileHelper::HandlePermissionsCallback>
+      handle_permissions_callback;
+  EXPECT_CALL(handle_permissions_callback, Run).Times(0);
   base::MockCallback<DevToolsFileHelper::ConnectCallback> connect_cb;
   EXPECT_CALL(connect_cb, Run(true)).Times(1);
   EXPECT_CALL(storage(), RegisterFileSystem(path, "automatic"))
@@ -389,9 +394,10 @@ TEST_F(DevToolsFileHelperTest, ConnectAndDisconnectKnownAutomaticFileSystem) {
     ON_CALL(delegate(), FileSystemAdded).WillByDefault([&] {
       run_loop.Quit();
     });
-    file_helper()->ConnectAutomaticFileSystem(
-        path.AsUTF8Unsafe(), uuid,
-        /* add_if_missing */ false, show_info_bar_cb.Get(), connect_cb.Get());
+    file_helper()->ConnectAutomaticFileSystem(path.AsUTF8Unsafe(), uuid,
+                                              /* add_if_missing */ false,
+                                              handle_permissions_callback.Get(),
+                                              connect_cb.Get());
     run_loop.Run();
 
     EXPECT_TRUE(file_helper()->IsFileSystemAdded(path.AsUTF8Unsafe()));

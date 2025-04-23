@@ -98,6 +98,7 @@ std::unique_ptr<policy::SchemaRegistry> CreateSchemaRegistry() {
 base::Value::Dict CopyChromotingPoliciesIntoDictionary(
     const policy::PolicyMap& current) {
   const char kPolicyNameSubstring[] = "RemoteAccessHost";
+  const char kClassManagementEnabled[] = "ClassManagementEnabled";
   base::Value::Dict policy_dict;
   for (const auto& entry : current) {
     const std::string& key = entry.first;
@@ -106,9 +107,12 @@ base::Value::Dict CopyChromotingPoliciesIntoDictionary(
 
     // Copying only Chromoting-specific policies helps avoid false alarms
     // raised by NormalizePolicies below (such alarms shutdown the host).
+    // A special exception is the ClassManagementEnabled policy. This is used
+    // by education to allow teacher/student view-only CRD connections.
     // TODO(lukasza): Removing this somewhat brittle filtering will be possible
     //                after having separate, Chromoting-specific schema.
-    if (key.find(kPolicyNameSubstring) != std::string::npos) {
+    if ((key.find(kPolicyNameSubstring) != std::string::npos) ||
+        (key == kClassManagementEnabled)) {
       policy_dict.Set(key, value->Clone());
     }
   }
@@ -176,6 +180,7 @@ base::Value::Dict PolicyWatcher::GetDefaultPolicies() {
   result.Set(key::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections,
              true);
   result.Set(key::kRemoteAccessHostAllowEnterpriseFileTransfer, false);
+  result.Set(key::kClassManagementEnabled, "disabled");
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
   result.Set(key::kRemoteAccessHostMatchUsername, false);

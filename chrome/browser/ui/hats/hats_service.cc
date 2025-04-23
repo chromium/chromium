@@ -21,3 +21,7 @@ HatsService::HatsService(Profile* profile) : profile_(profile) {
 }
 
 HatsService::~HatsService() = default;
+
+hats::SurveyConfigs& HatsService::GetSurveyConfigsByTriggersForTesting() {
+  return survey_configs_by_triggers_;
+}

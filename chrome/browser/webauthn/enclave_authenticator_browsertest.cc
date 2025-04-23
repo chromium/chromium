@@ -85,7 +85,7 @@
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/fake_server_network_resources.h"
 #include "components/trusted_vault/securebox.h"
-#include "components/trusted_vault/test/mock_trusted_vault_connection.h"
+#include "components/trusted_vault/test/mock_trusted_vault_throttling_connection.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "components/webauthn/core/browser/passkey_model.h"
@@ -140,7 +140,7 @@
 
 namespace {
 
-using trusted_vault::MockTrustedVaultConnection;
+using trusted_vault::MockTrustedVaultThrottlingConnection;
 
 constexpr int32_t kSecretVersion = 417;
 constexpr uint8_t kSecurityDomainSecret[32] = {};
@@ -1016,8 +1016,8 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
   void SetMockVaultConnectionOnRequestDelegate(
       trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
           result) {
-    std::unique_ptr<testing::NiceMock<MockTrustedVaultConnection>> connection =
-        std::make_unique<testing::NiceMock<MockTrustedVaultConnection>>();
+    auto connection = std::make_unique<
+        testing::NiceMock<MockTrustedVaultThrottlingConnection>>();
     EXPECT_CALL(*connection, DownloadAuthenticationFactorsRegistrationState(
                                  testing::_, testing::_, testing::_))
         .WillOnce(
@@ -1044,8 +1044,8 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
   }
 
   void SetVaultConnectionToTimeout() {
-    std::unique_ptr<testing::NiceMock<MockTrustedVaultConnection>> connection =
-        std::make_unique<testing::NiceMock<MockTrustedVaultConnection>>();
+    auto connection = std::make_unique<
+        testing::NiceMock<MockTrustedVaultThrottlingConnection>>();
     EXPECT_CALL(*connection, DownloadAuthenticationFactorsRegistrationState(
                                  testing::_, testing::_, testing::_))
         .WillOnce(
@@ -1070,8 +1070,8 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
   }
 
   void CheckRegistrationStateNotRequested() {
-    std::unique_ptr<testing::NiceMock<MockTrustedVaultConnection>> connection =
-        std::make_unique<testing::NiceMock<MockTrustedVaultConnection>>();
+    auto connection = std::make_unique<
+        testing::NiceMock<MockTrustedVaultThrottlingConnection>>();
     EXPECT_CALL(*connection, DownloadAuthenticationFactorsRegistrationState(
                                  testing::_, testing::_, testing::_))
         .WillRepeatedly(
@@ -2090,8 +2090,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   base::OnceCallback<void(
       trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult)>
       connection_cb;
-  std::unique_ptr<testing::NiceMock<MockTrustedVaultConnection>> connection =
-      std::make_unique<testing::NiceMock<MockTrustedVaultConnection>>();
+  auto connection = std::make_unique<
+      testing::NiceMock<MockTrustedVaultThrottlingConnection>>();
   EXPECT_CALL(*connection, DownloadAuthenticationFactorsRegistrationState(
                                testing::_, testing::_, testing::_))
       .WillOnce(
@@ -2312,8 +2312,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   base::OnceCallback<void(
       trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult)>
       connection_cb;
-  std::unique_ptr<testing::NiceMock<MockTrustedVaultConnection>> connection =
-      std::make_unique<testing::NiceMock<MockTrustedVaultConnection>>();
+  auto connection = std::make_unique<
+      testing::NiceMock<MockTrustedVaultThrottlingConnection>>();
   EXPECT_CALL(*connection, DownloadAuthenticationFactorsRegistrationState(
                                testing::_, testing::_, testing::_))
       .WillOnce(
@@ -2514,8 +2514,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithTimeout,
       trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult)>
       connection_cb;
   base::RepeatingClosure keep_alive_cb;
-  std::unique_ptr<testing::NiceMock<MockTrustedVaultConnection>> connection =
-      std::make_unique<testing::NiceMock<MockTrustedVaultConnection>>();
+  auto connection = std::make_unique<
+      testing::NiceMock<MockTrustedVaultThrottlingConnection>>();
   EXPECT_CALL(*connection, DownloadAuthenticationFactorsRegistrationState(
                                testing::_, testing::_, testing::_))
       .WillOnce(
@@ -2578,8 +2578,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithTimeout,
   base::OnceCallback<void(
       trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult)>
       connection_cb;
-  std::unique_ptr<testing::NiceMock<MockTrustedVaultConnection>> connection =
-      std::make_unique<testing::NiceMock<MockTrustedVaultConnection>>();
+  auto connection = std::make_unique<
+      testing::NiceMock<MockTrustedVaultThrottlingConnection>>();
   EXPECT_CALL(*connection, DownloadAuthenticationFactorsRegistrationState(
                                testing::_, testing::_, testing::_))
       .WillOnce(

@@ -27,21 +27,8 @@ class GtkUiPlatform {
  public:
   virtual ~GtkUiPlatform() = default;
 
-  // Called when the GtkUi instance initialization process finished. |widget| is
-  // a dummy window passed in for context.
-  virtual void OnInitialized(GtkWidget* widget) = 0;
-
-  // Gets the GDK key event state for a KeyEvent.
-  virtual GdkModifierType GetGdkKeyEventState(
-      const ui::KeyEvent& key_event) = 0;
-
-  // Gets the GDK key event group for a KeyEvent.
-  virtual int GetGdkKeyEventGroup(const ui::KeyEvent& key_event) = 0;
-
-  // Creates/Gets a GdkWindow out of a Aura window id. Caller owns the returned
-  // object. This function is meant to be used in GtkIM-based IME implementation
-  // and is supported only in X11 backend (both Aura and Ozone).
-  virtual GdkWindow* GetGdkWindow(gfx::AcceleratedWidget window_id) = 0;
+  // Called when the GtkUi instance initialization process finished.
+  virtual void OnInitialized() = 0;
 
   // Gtk dialog windows must be set transient for the browser window. This
   // function abstracts away such functionality.

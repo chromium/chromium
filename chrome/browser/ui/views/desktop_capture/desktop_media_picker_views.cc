@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_source_view.h"
 #include "chrome/browser/ui/views/desktop_capture/screen_capture_permission_checker.h"
@@ -77,6 +78,22 @@ using content::RenderFrameHost;
 using content::WebContents;
 using content::WebContentsMediaCaptureId;
 using RequestSource = DesktopMediaPicker::Params::RequestSource;
+
+const DesktopMediaSourceViewStyle& GetGenericScreenStyle() {
+  static const DesktopMediaSourceViewStyle style(
+      /*columns=*/2,
+      /*item_size=*/gfx::Size(266, 224),
+      /*icon_rect=*/gfx::Rect(),
+      /*label_rect=*/gfx::Rect(8, 196, 250, 36),
+      /*text_alignment=*/gfx::HorizontalAlignment::ALIGN_CENTER,
+      /*image_rect=*/gfx::Rect(8, 8, 250, 180));
+  return style;
+}
+
+const DesktopMediaSourceViewStyle& GetSingleScreenStyle() {
+  static const DesktopMediaSourceViewStyle style(GetGenericScreenStyle());
+  return style;
+}
 
 namespace {
 
@@ -280,7 +297,7 @@ bool ShouldSelectTab(DesktopMediaList::Type type,
 
 std::unique_ptr<views::ScrollView> CreateScrollView(bool audio_requested) {
   auto scroll_view = std::make_unique<views::ScrollView>();
-  scroll_view->SetBackgroundThemeColorId(ui::kColorSysSurface4);
+  scroll_view->SetBackgroundColor(ui::kColorSysSurface4);
   // The overflow indicator is disabled to reduce clutter next to the
   // separator to the audio control when audio is requested or the bottom of
   // the dialog when audio is not requested.
@@ -422,20 +439,9 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
       case DesktopMediaList::Type::kCurrentTab:
         NOTREACHED();
       case DesktopMediaList::Type::kScreen: {
-        const DesktopMediaSourceViewStyle kGenericScreenStyle =
-            DesktopMediaSourceViewStyle(
-                /*columns=*/2,
-                /*item_size=*/gfx::Size(266, 224),
-                /*icon_rect=*/gfx::Rect(),
-                /*label_rect=*/gfx::Rect(8, 196, 250, 36),
-                /*text_alignment=*/gfx::HorizontalAlignment::ALIGN_CENTER,
-                /*image_rect=*/gfx::Rect(8, 8, 250, 180));
-
-        const DesktopMediaSourceViewStyle kSingleScreenStyle =
-            kGenericScreenStyle;
-
         std::unique_ptr<views::ScrollView> screen_scroll_view =
             CreateScrollView(audio_requested_);
+        screen_scroll_view->SetID(VIEW_ID_MEDIA_PICKER_SCREEN_SCROLL_VIEW);
         std::u16string screen_title_text = l10n_util::GetStringUTF16(
             IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_SCREEN);
         auto list_controller = std::make_unique<DesktopMediaListController>(
@@ -443,12 +449,13 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
         const bool supports_reselect_button =
             list_controller->SupportsReselectButton();
         screen_scroll_view->SetContents(list_controller->CreateView(
-            kGenericScreenStyle, kSingleScreenStyle, screen_title_text,
+            GetGenericScreenStyle(), GetSingleScreenStyle(), screen_title_text,
             DesktopMediaList::Type::kScreen));
         // Allow space for the audio-toggle controller.
         screen_scroll_view->ClipHeightTo(
-            kGenericScreenStyle.item_size.height(),
-            kGenericScreenStyle.item_size.height() * 3 / 2);
+            GetGenericScreenStyle().item_size.height() +
+                GetGenericScreenStyle().label_rect.height(),
+            GetGenericScreenStyle().item_size.height() * 3 / 2);
         screen_scroll_view->SetHorizontalScrollBarMode(
             views::ScrollView::ScrollBarMode::kDisabled);
 

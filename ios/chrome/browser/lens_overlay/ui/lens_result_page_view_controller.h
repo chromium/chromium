@@ -14,6 +14,7 @@
 @protocol LensToolbarMutator;
 @protocol LensResultPageMutator;
 @protocol TextFieldViewContaining;
+@protocol LensResultPageViewControllerDelegate;
 
 /// View controller of the lens result page.
 @interface LensResultPageViewController
@@ -23,6 +24,8 @@
 
 /// Container for the web view.
 @property(nonatomic, strong, readonly) UIView* webViewContainer;
+/// Delegate for the lens result page.
+@property(nonatomic, weak) id<LensResultPageViewControllerDelegate> delegate;
 /// Mutator of the lens omnibox.
 @property(nonatomic, weak) id<LensToolbarMutator> toolbarMutator;
 /// Mutator of the lens result page.
@@ -30,6 +33,15 @@
 
 /// Sets the omnibox edit view.
 - (void)setEditView:(UIView<TextFieldViewContaining>*)editView;
+
+@end
+
+// Delegate for lens result page.
+@protocol LensResultPageViewControllerDelegate <NSObject>
+
+// The user tapped on the bottom sheet grabber.
+- (void)lensResultPageViewControllerDidTapBottomSheetGrabber:
+    (LensResultPageViewController*)lensResultPageViewController;
 
 @end
 

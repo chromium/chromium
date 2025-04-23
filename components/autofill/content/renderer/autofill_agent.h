@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/optional_ref.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
@@ -27,6 +28,7 @@
 #include "components/autofill/content/renderer/form_tracker.h"
 #include "components/autofill/content/renderer/timing.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data_predictions.h"
@@ -179,6 +181,7 @@ class AutofillAgent : public content::RenderFrameObserver,
       uint32_t number_of_ancestor_levels_to_search,
       base::OnceCallback<void(const std::string&)> callback) override;
 
+  void ExposeDomNodeIDs() override;
   void FieldTypePredictionsAvailable(
       const std::vector<FormDataPredictions>& forms) override;
   // Besides cases that "actually" clear the form, this function needs to be
@@ -301,6 +304,14 @@ class AutofillAgent : public content::RenderFrameObserver,
   void FireHostSubmitEvents(const FormData& form_data,
                             mojom::SubmissionSource source);
 
+  // Tries to show the given `passwords_request` for the given fields and update
+  // `is_popup_possibly_visible` accordingly. Returns true if the password agent
+  // handles the request.
+  bool TryShowPasswordSuggestions(
+      const blink::WebInputElement& input,
+      IsPasswordRequestManuallyTriggered manually_triggered_password_request,
+      base::optional_ref<const PasswordSuggestionRequest> password_request);
+
   // blink::WebAutofillClient:
   void TextFieldCleared(const blink::WebFormControlElement&) override;
   void TextFieldDidEndEditing(const blink::WebInputElement& element) override;
@@ -366,9 +377,11 @@ class AutofillAgent : public content::RenderFrameObserver,
   // of a suggestion popup (no popup is shown if there are no available
   // suggestions). `form_cache` can be used to optimize form extractions
   // occurring synchronously after this function call.
-  void ShowSuggestions(const blink::WebFormControlElement& element,
-                       AutofillSuggestionTriggerSource trigger_source,
-                       const SynchronousFormCache& form_cache);
+  void ShowSuggestions(
+      const blink::WebFormControlElement& element,
+      AutofillSuggestionTriggerSource trigger_source,
+      const SynchronousFormCache& form_cache,
+      base::optional_ref<const PasswordSuggestionRequest> password_request);
 
   // Shows Autofill suggestions for `element` if `element` is a contenteditable.
   void ShowSuggestionsForContentEditable(

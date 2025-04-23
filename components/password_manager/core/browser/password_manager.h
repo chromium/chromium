@@ -80,6 +80,9 @@ constexpr void operator|=(PasswordVsOtpFormType& lhs,
                                            static_cast<int>(rhs));
 }
 
+inline constexpr base::TimeDelta kDelayBeforeSuccessfulLogin =
+    base::Milliseconds(500);
+
 // Per-tab password manager. Handles creation and management of UI elements,
 // receiving password form data from the renderer and managing the password
 // database through the PasswordStore.
@@ -298,10 +301,13 @@ class PasswordManager : public PasswordManagerInterface {
   bool ShouldBlockPasswordForSameOriginButDifferentScheme(
       const GURL& origin) const;
 
-  // Called when the login was deemed successful. It handles the special case
-  // when the provisionally saved password is a sync credential, and otherwise
-  // asks the user about saving the password or saves it directly, as
-  // appropriate.
+  // ScheduleOnLoginsSuccessful is called when the login was deemed successful.
+  // It post OnLoginSuccessful with a delayed. The delay allows to catch failed
+  // logins (e.g. based on failed POST requests) more effectively as a sequence
+  // of events isn't guaranteed. OnLoginSuccessful handles the special case when
+  // the provisionally saved password is a sync credential, and otherwise asks
+  // the user about saving the password or saves it directly, as appropriate.
+  void ScheduleOnLoginsSuccessful();
   void OnLoginSuccessful();
 
   // Called when the login was considered unsuccessful. Takes care of logging
@@ -481,6 +487,11 @@ class PasswordManager : public PasswordManagerInterface {
       possible_usernames_ =
           base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>(
               kMaxSingleUsernameFieldsToStore);
+
+  // Closure holding a scheduled call to OnLoginSuccessful().
+  base::CancelableOnceClosure on_successful_submission_closure_;
+
+  base::WeakPtrFactory<PasswordManager> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

@@ -13,6 +13,7 @@ found in the LICENSE file.
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+   <!-- TODO(crbug.com/392943234) Move `ConstraintLayout` to be a child of `BoundedLinearLayout` such that the dialog is centered for tablet/landscape views.-->
    <androidx.constraintlayout.widget.ConstraintLayout
        android:id="@+id/privacy_sandbox_consent_eea_main_layout"
        android:layout_width="match_parent"
@@ -45,11 +46,11 @@ found in the LICENSE file.
 
                    <ImageView
                        android:id="@+id/privacy_sandbox_eea_consent_logo"
-                       android:layout_height="@dimen/privacy_sandbox_eea_dialog_logo_height"
-                       android:layout_width="@dimen/privacy_sandbox_eea_dialog_logo_width"
+                       android:layout_height="@dimen/privacy_sandbox_dialog_logo_height"
+                       android:layout_width="@dimen/privacy_sandbox_dialog_logo_width"
                        android:layout_gravity="center"
                        app:srcCompat="@drawable/privacy_sandbox_eea_consent_logo"
-                       android:layout_marginVertical="@dimen/privacy_sandbox_dialog_eea_dialog_logo_vertical_margin"
+                       android:layout_marginVertical="@dimen/privacy_sandbox_dialog_dialog_logo_vertical_margin"
                        android:importantForAccessibility="no" />
 
                    <TextView
@@ -268,14 +269,14 @@ found in the LICENSE file.
                            android:layout_width="0dp"
                            android:layout_height="wrap_content"
                            android:gravity="center_vertical"
-                           android:minHeight="@dimen/privacy_sandbox_consent_dropdown_button_height_v3"
+                           android:minHeight="@dimen/privacy_sandbox_dropdown_button_height_v3"
                            android:text="@string/privacy_sandbox_m1_consent_ads_topic_dropdown_v3"
                            style="@style/TextAppearance.TextMedium.Secondary" />
 
                        <org.chromium.ui.widget.CheckableImageView
                            android:id="@+id/dropdown_element_expand_arrow"
                            android:layout_width="20dp"
-                           android:layout_height="@dimen/privacy_sandbox_consent_dropdown_button_height_v3"/>
+                           android:layout_height="@dimen/privacy_sandbox_dropdown_button_height_v3"/>
                    </LinearLayout>
 
                    <LinearLayout
@@ -299,7 +300,7 @@ found in the LICENSE file.
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="16dp"
                             app:cardElevation="0dp"
-                            android:id="@+id/learn_more_card">
+                            android:id="@+id/privacy_policy_card">
 
                             <LinearLayout
                                 android:id="@+id/learn_more_layout"
@@ -309,23 +310,23 @@ found in the LICENSE file.
                                 android:paddingHorizontal="16dp">
 
                                 <org.chromium.ui.widget.TextViewWithLeading
-                                    android:id="@+id/learn_more_text"
+                                    android:id="@+id/privacy_policy_text"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                      app:leading="@dimen/text_size_medium_leading"
-                                    android:text="@string/privacy_sandbox_m1_consent_learn_more_card_v3"
+                                    app:leading="@dimen/text_size_medium_leading"
+                                    android:text="@string/privacy_sandbox_m1_privacy_policy_text_v3"
                                     android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
 
                              </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
 
                         <org.chromium.ui.widget.TextViewWithLeading
-                            android:id="@+id/privacy_sandbox_consent_last_text_v3"
+                            android:id="@+id/privacy_sandbox_dialog_last_text_v3"
                             android:layout_marginBottom="@dimen/privacy_sandbox_notice_margin_bottom"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
-                            android:text="@string/privacy_sandbox_m1_consent_last_text_v3"
+                            android:text="@string/privacy_sandbox_m1_dialog_last_text_v3"
                             app:leading="@dimen/text_size_medium_leading"
                             style="@style/TextAppearance.TextMedium.Secondary" />
                </LinearLayout>
@@ -391,6 +392,8 @@ found in the LICENSE file.
                 style="@style/FilledButton" />
 
    </androidx.constraintlayout.widget.ConstraintLayout>
+
+  <!-- TODO(crbug.com/392943234) Add a action button divider-->
 
    <org.chromium.components.browser_ui.widget.BoundedLinearLayout
         android:id="@+id/privacy_policy_view"

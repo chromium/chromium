@@ -66,10 +66,6 @@ class TestCookieManager : public network::mojom::CookieManager {
   void SetMitigationsEnabledFor3pcd(bool enable) override {}
   void SetTrackingProtectionEnabledFor3pcd(bool enable) override {}
   void SetPreCommitCallbackDelayForTesting(base::TimeDelta delay) override {}
-  void SiteHasCookieInOtherPartition(
-      const net::SchemefulSite& schemeful_site,
-      const std::optional<net::CookiePartitionKey>& cookie_partition_key,
-      SiteHasCookieInOtherPartitionCallback callback) override {}
 
   virtual void DispatchCookieChange(const net::CookieChangeInfo& change);
 

@@ -20,6 +20,7 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/install_signer.h"
 #include "chrome/browser/extensions/install_verifier_factory.h"
 #include "chrome/common/chrome_switches.h"
@@ -42,7 +43,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -142,15 +142,9 @@ bool InstallVerifier::NeedsVerification(const Extension& extension,
 // static
 bool InstallVerifier::IsFromStore(const Extension& extension,
                                   content::BrowserContext* context) {
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug./com/394876083): Remove the following code when
-  // ExtensionManagement is ported on desktop android.
-  return extension.from_webstore();
-#else
   return extension.from_webstore() ||
          ExtensionManagementFactory::GetForBrowserContext(context)
              ->UpdatesFromWebstore(extension);
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void InstallVerifier::Init() {
@@ -255,14 +249,10 @@ void InstallVerifier::RemoveMany(const ExtensionIdSet& ids) {
     BeginFetch();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug./com/394876083): Enable the following function for desktop android
-// when ExtensionManagement is ported on desktop android.
 bool InstallVerifier::AllowedByEnterprisePolicy(const std::string& id) const {
   return ExtensionManagementFactory::GetForBrowserContext(context_)
       ->IsInstallationExplicitlyAllowed(id);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 std::string InstallVerifier::GetDebugPolicyProviderName() const {
   return std::string("InstallVerifier");
@@ -278,15 +268,11 @@ bool InstallVerifier::MustRemainDisabled(
     return false;
   if (extension->location() == mojom::ManifestLocation::kComponent)
     return false;
-#if !BUILDFLAG(IS_ANDROID)
-  // TODO(crbug./com/394876083): Enable the following code for desktop android
-  // when ExtensionManagement is ported on desktop android.
   if (AllowedByEnterprisePolicy(extension->id()) &&
       !ExtensionManagementFactory::GetForBrowserContext(context_)
            ->IsForceInstalledInLowTrustEnvironment(*extension)) {
     return false;
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   bool verified = true;
   if (base::Contains(InstallSigner::GetForcedNotFromWebstore(),
@@ -379,15 +365,19 @@ void InstallVerifier::OnVerificationComplete(bool success, OperationType type) {
           }
         }
       }
-#if !BUILDFLAG(IS_ANDROID)
-      // TODO(crbug./com/394876083): Enable the following code for desktop
-      // android when ExtensionManagement is ported on desktop android.
       if (success || GetStatus() == VerifyStatus::ENFORCE_STRICT) {
+#if BUILDFLAG(IS_ANDROID)
+        NOTIMPLEMENTED() << "CheckManagementPolicy";
+#else
+        // TODO(crbug.com/409824638): Enable the following code for desktop
+        // android when ExtensionManagement is ported on desktop android and
+        // ExtensionService::CheckManagementPolicy() is refactored out of
+        // ExtensionService.
         ExtensionSystem::Get(context_)
             ->extension_service()
             ->CheckManagementPolicy();
-      }
 #endif  // !BUILDFLAG(IS_ANDROID)
+      }
       break;
     // We don't need to check disable reasons for provisional adds or removals.
     case ADD_PROVISIONAL:

@@ -63,7 +63,6 @@ class MEDIA_MOJO_EXPORT MojoRendererService final : public mojom::Renderer,
       mojo::PendingAssociatedRemote<mojom::RendererClient> client,
       std::optional<std::vector<mojo::PendingRemote<mojom::DemuxerStream>>>
           streams,
-      mojom::MediaUrlParamsPtr media_url_params,
       InitializeCallback callback) final;
   void Flush(FlushCallback callback) final;
   void StartPlayingFrom(base::TimeDelta time_delta) final;

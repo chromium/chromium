@@ -35,6 +35,10 @@ class TabGroupId;
 class TabGroupVisualData;
 }  // namespace tab_groups
 
+namespace split_tabs {
+class SplitTabVisualData;
+}
+
 namespace ui {
 class ListSelectionModel;
 }
@@ -161,7 +165,7 @@ class BrowserTabStripController : public TabStripController,
   void OnSplitTabCreated(std::vector<std::pair<tabs::TabInterface*, int>> tabs,
                          split_tabs::SplitTabId split_id,
                          SplitTabAddReason reason,
-                         tabs::SplitTabLayout tab_layout) override;
+                         split_tabs::SplitTabVisualData visual_data) override;
   void OnSplitTabRemoved(std::vector<std::pair<tabs::TabInterface*, int>> tabs,
                          split_tabs::SplitTabId split_id,
                          SplitTabRemoveReason reason) override;
@@ -185,6 +189,10 @@ class BrowserTabStripController : public TabStripController,
       std::vector<std::pair<content::WebContents*, int>> contents_list);
 
   void OnDiscardRingTreatmentEnabledChanged();
+
+  // Returns the index of the most recently focused tab in the split that
+  // contains `model_index`.
+  int GetIndexOfLastFocusedTabInSplit(int model_index);
 
   raw_ptr<TabStripModel> model_;
 

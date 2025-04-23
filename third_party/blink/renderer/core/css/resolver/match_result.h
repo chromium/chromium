@@ -21,14 +21,10 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_MATCH_RESULT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_MATCH_RESULT_H_
 
+#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
@@ -79,10 +75,10 @@ struct CORE_EXPORT MatchedProperties {
     uint8_t padding = 0;
 
     bool operator==(const Data& other) const {
-      return memcmp(this, &other, sizeof(*this)) == 0;
+      return UNSAFE_TODO(memcmp(this, &other, sizeof(*this))) == 0;
     }
     bool operator!=(const Data& other) const {
-      return memcmp(this, &other, sizeof(*this)) != 0;
+      return UNSAFE_TODO(memcmp(this, &other, sizeof(*this))) != 0;
     }
   };
 

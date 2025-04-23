@@ -37,6 +37,16 @@ BASE_FEATURE(kUseAAudioDriver,
 BASE_FEATURE(kUseAAudioInput,
              "UseAAudioInput",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables selection of audio devices for each individual AAudio stream instead
+// of using communication streams and managing the system-wide communication
+// route. This is not fully reliable on all Android devices.
+//
+// Requires `UseAAudioDriver`, `UseAAudioInput`, and an Android API level >=
+// `AAUDIO_MIN_API`, otherwise it will have no effect.
+BASE_FEATURE(kAAudioPerStreamDeviceSelection,
+             "AAudioPerStreamDeviceSelection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 }  // namespace features

@@ -74,6 +74,9 @@ interface Page {
 
   // Callback when a product specifications set is removed.
   OnProductSpecificationsSetRemoved(mojo_base.mojom.Uuid uuid);
+
+  // Callback when the state of sync changes.
+  OnSyncStateChanged();
 };
 
 // Used by WebUI pages (chrome://compare and chrome://history) to bootstrap

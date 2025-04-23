@@ -653,16 +653,15 @@ TEST(SourceRegistrationTest, IsValid) {
                      base::Hours(1) - base::Microseconds(1);
                }).IsValid());
 
-  EXPECT_FALSE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
-                 r.expiry = base::Days(1);
-                 r.aggregatable_report_window =
-                     r.expiry + base::Microseconds(1);
-                 r.trigger_specs =
-                     TriggerSpecs(SourceType::kEvent,
-                                  *EventReportWindows::FromDefaults(
-                                      r.expiry, SourceType::kEvent),
-                                  MaxEventLevelReports(SourceType::kEvent));
-               }).IsValid());
+  EXPECT_FALSE(
+      SourceRegistrationWith(destination, [](SourceRegistration& r) {
+        r.expiry = base::Days(1);
+        r.aggregatable_report_window = r.expiry + base::Microseconds(1);
+        r.trigger_specs = TriggerSpecs(
+            SourceType::kEvent,
+            *EventReportWindows::FromDefaults(r.expiry, SourceType::kEvent),
+            MaxEventLevelReports(SourceType::kEvent));
+      }).IsValid());
 
   EXPECT_FALSE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
                  r.expiry = base::Days(1);

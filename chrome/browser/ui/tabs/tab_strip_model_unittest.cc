@@ -1,22 +1,17 @@
 // Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
-#include "chrome/browser/ui/tabs/split_tab_collection.h"
-#include "chrome/browser/ui/tabs/split_tab_data.h"
-#include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "components/commerce/core/commerce_utils.h"
-#include "components/tabs/public/tab_interface.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
 #endif
 
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <map>
 #include <memory>
 #include <optional>
@@ -39,12 +34,16 @@
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/split_tab_data.h"
+#include "chrome/browser/ui/tabs/split_tab_visual_data.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
@@ -52,9 +51,11 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/commerce/core/commerce_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "content/public/browser/render_process_host.h"
@@ -515,7 +516,7 @@ class TabStripModelTest : public testing::Test {
         actual += "p";
       }
 
-      if (model.IsTabSplit(i)) {
+      if (model.GetSplitForTab(i).has_value()) {
         actual += "s";
       }
     }
@@ -1003,6 +1004,40 @@ TEST_F(TabStripModelTest, TestDetachGroupNewSelection) {
 
   detached_group = tabstrip.DetachTabGroupForInsertion(group_id);
   EXPECT_EQ(tabstrip.active_index(), 3);
+}
+
+TEST_F(TabStripModelTest, InsertDetachedGroupSelectionObserver) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  MockTabStripModelObserver observer;
+  ASSERT_TRUE(tabstrip.empty());
+
+  tabstrip.AppendWebContents(CreateWebContentsWithID(1), false);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(2), true);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(3), false);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(4), false);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(5), false);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(6), false);
+  tabstrip.AddObserver(&observer);
+
+  tab_groups::TabGroupId group_id =
+      tabstrip.AddToNewGroup(std::vector<int>{1, 2});
+  tabstrip.ActivateTabAt(1);
+  std::unique_ptr<DetachedTabGroup> detached_group =
+      tabstrip.DetachTabGroupForInsertion(group_id);
+
+  tabs::TabInterface* active_tab = tabstrip.GetActiveTab();
+  observer.ClearStates();
+
+  tabstrip.InsertDetachedTabGroupAt(std::move(detached_group),
+                                    tabstrip.count());
+  ObservedSelectionChange change = observer.GetLatestSelectionChange();
+
+  EXPECT_EQ(active_tab->GetHandle(), change.old_tab);
+  EXPECT_EQ(tabstrip.GetActiveTab()->GetHandle(), change.new_tab);
+  EXPECT_EQ(tabstrip.active_index(), 4);
+
+  tabstrip.CloseAllTabs();
 }
 
 TEST_F(TabStripModelTest, TestBasicOpenerAPI) {
@@ -1784,72 +1819,6 @@ TEST_F(TabStripModelTest, CommandTogglePinned) {
   EXPECT_TRUE(tabstrip.empty());
 }
 
-// Tests IsContextMenuCommandEnabled and ExecuteContextMenuCommand with
-// CommandTogglePinned.
-TEST_F(TabStripModelTest, CommandAddToSplit) {
-  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
-  TestTabStripModelDelegate delegate;
-  TabStripModel tabstrip(&delegate, profile());
-  EXPECT_TRUE(tabstrip.empty());
-
-  // Create five tabs with two pinned.
-  ASSERT_NO_FATAL_FAILURE(
-      PrepareTabstripForSelectionTest(&tabstrip, 5, 2, "2"));
-  // Add tab at index 4 to a group.
-  tabstrip.AddToNewGroup({4});
-  tabstrip.ActivateTabAt(3,
-                         TabStripUserGestureDetails(
-                             TabStripUserGestureDetails::GestureType::kOther));
-  EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
-      0, TabStripModel::CommandAddToSplit));
-  EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
-      1, TabStripModel::CommandAddToSplit));
-  EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
-      2, TabStripModel::CommandAddToSplit));
-  EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
-      3, TabStripModel::CommandAddToSplit));
-  EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
-      4, TabStripModel::CommandAddToSplit));
-
-  tabstrip.ExecuteContextMenuCommand(0, TabStripModel::CommandAddToSplit);
-
-  // The first tab should become unpinned and adjacent to the active tab.
-  EXPECT_EQ("1p 2 0s 3s 4", GetTabStripStateString(tabstrip));
-
-  tabstrip.CloseAllTabs();
-  EXPECT_TRUE(tabstrip.empty());
-}
-
-TEST_F(TabStripModelTest, CommandRemoveSplit) {
-  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
-  TestTabStripModelDelegate delegate;
-  TabStripModel tabstrip(&delegate, profile());
-  EXPECT_TRUE(tabstrip.empty());
-
-  // Create four tabs, select the second.
-  ASSERT_NO_FATAL_FAILURE(
-      PrepareTabstripForSelectionTest(&tabstrip, 4, 0, "1"));
-  tabstrip.ActivateTabAt(1,
-                         TabStripUserGestureDetails(
-                             TabStripUserGestureDetails::GestureType::kOther));
-  EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
-      3, TabStripModel::CommandAddToSplit));
-  tabstrip.ExecuteContextMenuCommand(3, TabStripModel::CommandAddToSplit);
-
-  EXPECT_EQ("0 1s 3s 2", GetTabStripStateString(tabstrip));
-  EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
-      1, TabStripModel::CommandRemoveSplit));
-  EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
-      3, TabStripModel::CommandRemoveSplit));
-  tabstrip.ExecuteContextMenuCommand(1, TabStripModel::CommandRemoveSplit);
-
-  // The two tabs in the split will now be unsplit retaining their indexes.
-  EXPECT_EQ("0 1 3 2", GetTabStripStateString(tabstrip));
-
-  tabstrip.CloseAllTabs();
-  EXPECT_TRUE(tabstrip.empty());
-}
-
 TEST_F(TabStripModelTest, AddToSplitInGroup) {
   scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
   TestTabStripModelDelegate delegate;
@@ -1866,7 +1835,7 @@ TEST_F(TabStripModelTest, AddToSplitInGroup) {
                          TabStripUserGestureDetails(
                              TabStripUserGestureDetails::GestureType::kOther));
 
-  tabstrip.AddToNewSplit({2}, tabs::SplitTabLayout::kHorizontal);
+  tabstrip.AddToNewSplit({2}, split_tabs::SplitTabLayout::kHorizontal);
 
   EXPECT_EQ("0p 1p 3 2s 4s", GetTabStripStateString(tabstrip));
   EXPECT_EQ(tabstrip.group_model()->GetTabGroup(group_id)->ListTabs().length(),
@@ -1892,9 +1861,31 @@ TEST_F(TabStripModelTest, AddToSplitInPinned) {
                          TabStripUserGestureDetails(
                              TabStripUserGestureDetails::GestureType::kOther));
 
-  tabstrip.AddToNewSplit({3}, tabs::SplitTabLayout::kHorizontal);
+  tabstrip.AddToNewSplit({3}, split_tabs::SplitTabLayout::kHorizontal);
 
   EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip));
+
+  tabstrip.CloseAllTabs();
+  EXPECT_TRUE(tabstrip.empty());
+}
+
+TEST_F(TabStripModelTest, AddToSplitInSelected) {
+  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  // Create five tabs.
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 5, 0, "2"));
+
+  tabstrip.ActivateTabAt(0);
+  tabstrip.AddToNewSplit({1}, split_tabs::SplitTabLayout::kHorizontal);
+
+  EXPECT_EQ("0s 1s 2 3 4", GetTabStripStateString(tabstrip));
+  EXPECT_EQ(tabstrip.active_index(), 0);
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(0));
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(1));
 
   tabstrip.CloseAllTabs();
   EXPECT_TRUE(tabstrip.empty());
@@ -1917,7 +1908,7 @@ TEST_F(TabStripModelTest, UnsplitOperation) {
                              TabStripUserGestureDetails::GestureType::kOther));
 
   split_tabs::SplitTabId split_tab_id =
-      tabstrip.AddToNewSplit({3}, tabs::SplitTabLayout::kHorizontal);
+      tabstrip.AddToNewSplit({3}, split_tabs::SplitTabLayout::kHorizontal);
 
   EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip));
 
@@ -1942,11 +1933,112 @@ TEST_F(TabStripModelTest, MoveInsideSplitRemovesSplit) {
                              TabStripUserGestureDetails::GestureType::kOther));
 
   split_tabs::SplitTabId split_tab_id =
-      tabstrip.AddToNewSplit({3}, tabs::SplitTabLayout::kHorizontal);
+      tabstrip.AddToNewSplit({3}, split_tabs::SplitTabLayout::kHorizontal);
 
   EXPECT_EQ(tabstrip.GetSplitData(split_tab_id)->ListTabs().size(), 2u);
   tabstrip.MoveWebContentsAt(3, 1, false);
-  EXPECT_FALSE(tabstrip.GetSplitData(split_tab_id));
+  EXPECT_FALSE(tabstrip.ContainsSplit(split_tab_id));
+
+  tabstrip.CloseAllTabs();
+  EXPECT_TRUE(tabstrip.empty());
+}
+
+TEST_F(TabStripModelTest, MoveFromSplitRemovesSplit) {
+  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 5, 0, "2"));
+
+  tabstrip.ActivateTabAt(0,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
+
+  split_tabs::SplitTabId split_tab_id =
+      tabstrip.AddToNewSplit({1}, split_tabs::SplitTabLayout::kHorizontal);
+
+  EXPECT_EQ(tabstrip.GetSplitData(split_tab_id)->ListTabs().size(), 2u);
+  tabstrip.MoveWebContentsAt(1, 3, false);
+  EXPECT_FALSE(tabstrip.ContainsSplit(split_tab_id));
+
+  tabstrip.CloseAllTabs();
+  EXPECT_TRUE(tabstrip.empty());
+}
+
+TEST_F(TabStripModelTest, AddTabInsideSplitRemovesSplit) {
+  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 5, 0, "2"));
+
+  tabstrip.ActivateTabAt(0,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
+
+  split_tabs::SplitTabId split_tab_id =
+      tabstrip.AddToNewSplit({1}, split_tabs::SplitTabLayout::kHorizontal);
+
+  EXPECT_EQ(tabstrip.GetSplitData(split_tab_id)->ListTabs().size(), 2u);
+
+  std::unique_ptr<WebContents> new_blank_contents = CreateWebContents();
+  tabstrip.InsertWebContentsAt(1, std::move(new_blank_contents),
+                               AddTabTypes::ADD_NONE);
+  EXPECT_FALSE(tabstrip.ContainsSplit(split_tab_id));
+
+  tabstrip.CloseAllTabs();
+  EXPECT_TRUE(tabstrip.empty());
+}
+
+TEST_F(TabStripModelTest, RemoveSplitTabRemovesEntireSplit) {
+  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 5, 0, "2"));
+
+  tabstrip.ActivateTabAt(0,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
+
+  split_tabs::SplitTabId split_tab_id =
+      tabstrip.AddToNewSplit({1}, split_tabs::SplitTabLayout::kHorizontal);
+
+  EXPECT_EQ(tabstrip.GetSplitData(split_tab_id)->ListTabs().size(), 2u);
+
+  tabstrip.CloseWebContentsAt(1, TabCloseTypes::CLOSE_NONE);
+  EXPECT_FALSE(tabstrip.ContainsSplit(split_tab_id));
+
+  tabstrip.CloseAllTabs();
+  EXPECT_TRUE(tabstrip.empty());
+}
+
+TEST_F(TabStripModelTest, MoveGroupWithinSplitRemovesSplit) {
+  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 5, 0, "2"));
+
+  tabstrip.ActivateTabAt(3,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
+
+  split_tabs::SplitTabId split_tab_id =
+      tabstrip.AddToNewSplit({4}, split_tabs::SplitTabLayout::kHorizontal);
+
+  EXPECT_EQ(tabstrip.GetSplitData(split_tab_id)->ListTabs().size(), 2u);
+  tab_groups::TabGroupId group_id = tabstrip.AddToNewGroup({0, 1});
+  tabstrip.MoveGroupTo(group_id, 2);
+  EXPECT_FALSE(tabstrip.ContainsSplit(split_tab_id));
 
   tabstrip.CloseAllTabs();
   EXPECT_TRUE(tabstrip.empty());
@@ -1969,15 +2061,75 @@ TEST_F(TabStripModelTest, SplitLayoutTest) {
                              TabStripUserGestureDetails::GestureType::kOther));
 
   split_tabs::SplitTabId split_tab_id =
-      tabstrip.AddToNewSplit({3}, tabs::SplitTabLayout::kHorizontal);
+      tabstrip.AddToNewSplit({3}, split_tabs::SplitTabLayout::kHorizontal);
 
   EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip));
-  EXPECT_EQ(tabstrip.GetSplitData(split_tab_id)->split_layout(),
-            tabs::SplitTabLayout::kHorizontal);
+  EXPECT_EQ(tabstrip.GetSplitData(split_tab_id)->visual_data()->split_layout(),
+            split_tabs::SplitTabLayout::kHorizontal);
 
-  tabstrip.UpdateSplitLayout(split_tab_id, tabs::SplitTabLayout::kVertical);
-  EXPECT_EQ(tabstrip.GetSplitData(split_tab_id)->split_layout(),
-            tabs::SplitTabLayout::kVertical);
+  tabstrip.UpdateSplitLayout(split_tab_id,
+                             split_tabs::SplitTabLayout::kVertical);
+  EXPECT_EQ(tabstrip.GetSplitData(split_tab_id)->visual_data()->split_layout(),
+            split_tabs::SplitTabLayout::kVertical);
+
+  tabstrip.CloseAllTabs();
+  EXPECT_TRUE(tabstrip.empty());
+}
+
+TEST_F(TabStripModelTest, SplitRatioTest) {
+  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  // Create five tabs with two pinned, select the last.
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 5, 2, "2"));
+
+  // Add tab at index 4 to a group.
+  tabstrip.AddToNewGroup({4});
+  tabstrip.ActivateTabAt(0,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
+
+  split_tabs::SplitTabId split_tab_id =
+      tabstrip.AddToNewSplit({3}, split_tabs::SplitTabLayout::kHorizontal);
+
+  EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip));
+  EXPECT_EQ(tabstrip.GetSplitData(split_tab_id)->visual_data()->split_layout(),
+            split_tabs::SplitTabLayout::kHorizontal);
+
+  tabstrip.UpdateSplitRatio(split_tab_id, 0.7);
+  EXPECT_EQ(tabstrip.GetSplitData(split_tab_id)->visual_data()->split_ratio(),
+            0.7);
+
+  tabstrip.CloseAllTabs();
+  EXPECT_TRUE(tabstrip.empty());
+}
+
+TEST_F(TabStripModelTest, ReplaceSplitTab) {
+  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  // Create five tabs with two pinned, select the last.
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 5, 2, "2"));
+
+  // Add tab at index 4 to a group.
+  tabstrip.AddToNewGroup({4});
+  tabstrip.ActivateTabAt(0,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
+
+  split_tabs::SplitTabId split_tab_id =
+      tabstrip.AddToNewSplit({3}, split_tabs::SplitTabLayout::kHorizontal);
+
+  EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip));
+
+  tabstrip.ReplaceActiveTabInSplit(split_tab_id, 3);
+  EXPECT_EQ("2ps 3ps 1p 4", GetTabStripStateString(tabstrip));
 
   tabstrip.CloseAllTabs();
   EXPECT_TRUE(tabstrip.empty());
@@ -2000,13 +2152,21 @@ TEST_F(TabStripModelTest, SwapTabsInSplit) {
                              TabStripUserGestureDetails::GestureType::kOther));
 
   split_tabs::SplitTabId split_tab_id =
-      tabstrip.AddToNewSplit({3}, tabs::SplitTabLayout::kHorizontal);
+      tabstrip.AddToNewSplit({3}, split_tabs::SplitTabLayout::kHorizontal);
 
   EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip));
+  std::vector<tabs::TabInterface*> old_tabs =
+      tabstrip.GetSplitData(split_tab_id)->ListTabs();
+  EXPECT_EQ(2ul, old_tabs.size());
 
   tabstrip.SwapTabsInSplit(split_tab_id);
 
   EXPECT_EQ("3ps 0ps 1p 2 4", GetTabStripStateString(tabstrip));
+  std::vector<tabs::TabInterface*> new_tabs =
+      tabstrip.GetSplitData(split_tab_id)->ListTabs();
+  EXPECT_EQ(2ul, new_tabs.size());
+  EXPECT_EQ(old_tabs[1], new_tabs[0]);
+  EXPECT_EQ(old_tabs[0], new_tabs[1]);
 
   tabstrip.CloseAllTabs();
   EXPECT_TRUE(tabstrip.empty());
@@ -3340,7 +3500,8 @@ TEST_F(TabStripModelTest, MoveSelectedTabsTo) {
 
     // Expected state after the move (space separated list of indices).
     const std::string state_after_move;
-  } test_data[] = {
+  };
+  auto test_data = std::to_array<TestData>({
       // 1 selected tab.
       {2, 0, "0", 1, "1 0"},
       {3, 0, "0", 2, "1 2 0"},
@@ -3372,7 +3533,7 @@ TEST_F(TabStripModelTest, MoveSelectedTabsTo) {
       {8, 3, "1 3 4", 4, "0p 2p 1p 5 6 3 4 7"},
 
       {7, 4, "2 3 4", 3, "0p 1p 2p 3p 5 4 6"},
-  };
+  });
 
   for (size_t i = 0; i < std::size(test_data); ++i) {
     TestTabStripModelDelegate delegate;
@@ -5415,4 +5576,280 @@ TEST_F(TabStripModelTest, AddToComparisonTable_AddToNewTableOpensTab) {
   ASSERT_TRUE(tab_strip->count() == 2);
   ASSERT_TRUE(tab_strip->GetActiveWebContents()->GetVisibleURL() ==
               commerce::GetProductSpecsTabUrl({url}));
+}
+
+TEST_F(TabStripModelTest, ExtendSelectionTo_SplitTabs) {
+  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  // Create six tabs with a split containing tabs 0 and 1 and another split with
+  // tabs 4 and 5.
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 6, 0, "0"));
+  tabstrip.ActivateTabAt(0);
+  tabstrip.AddToNewSplit({1}, split_tabs::SplitTabLayout::kHorizontal);
+  tabstrip.ActivateTabAt(4);
+  tabstrip.AddToNewSplit({5}, split_tabs::SplitTabLayout::kHorizontal);
+
+  EXPECT_EQ("0s 1s 2 3 4s 5s", GetTabStripStateString(tabstrip));
+
+  // When active tab is part of a split, the selection should cover the split.
+  tabstrip.ActivateTabAt(1);
+  tabstrip.ExtendSelectionTo(2);
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(0));
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(1));
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(2));
+  EXPECT_EQ(tabstrip.selection_model().size(), 3u);
+
+  // When index tab is part of a split and selection extends left, the selection
+  // should cover the split.
+  tabstrip.ActivateTabAt(2);
+  tabstrip.ExtendSelectionTo(1);
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(0));
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(1));
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(2));
+  EXPECT_EQ(tabstrip.selection_model().size(), 3u);
+
+  // When index tab is part of a split and selection extends right, the
+  // selection should cover the split.
+  tabstrip.ActivateTabAt(3);
+  tabstrip.ExtendSelectionTo(4);
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(3));
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(4));
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(5));
+  EXPECT_EQ(tabstrip.selection_model().size(), 3u);
+}
+
+TEST_F(TabStripModelTest, SelectTabAt_SplitTabs) {
+  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  // Create four tabs with a split containing tabs 2 and 3.
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 4, 0, "0"));
+  tabstrip.ActivateTabAt(3);
+  tabstrip.AddToNewSplit({2}, split_tabs::SplitTabLayout::kHorizontal);
+
+  EXPECT_EQ("0 1 2s 3s", GetTabStripStateString(tabstrip));
+
+  // When selected tab is part of a split, both tabs in the split are selected.
+  tabstrip.ActivateTabAt(1);
+  tabstrip.SelectTabAt(2);
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(2));
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(3));
+}
+
+TEST_F(TabStripModelTest, DeselectTabAt_SplitTabs) {
+  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  // Create four tabs with a split containing tabs 2 and 3.
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 4, 0, "0"));
+  tabstrip.ActivateTabAt(3);
+  tabstrip.AddToNewSplit({2}, split_tabs::SplitTabLayout::kHorizontal);
+
+  EXPECT_EQ("0 1 2s 3s", GetTabStripStateString(tabstrip));
+
+  // When deselected tab is part of a split, both tabs in the split are
+  // deselected.
+  tabstrip.ActivateTabAt(0);
+  tabstrip.SelectTabAt(2);
+  tabstrip.DeselectTabAt(2);
+  EXPECT_FALSE(tabstrip.selection_model().IsSelected(2));
+  EXPECT_FALSE(tabstrip.selection_model().IsSelected(3));
+  EXPECT_EQ(tabstrip.selection_model().size(), 1u);
+}
+
+TEST_F(TabStripModelTest, DeselectTabAt_CantDeselectOnlySelectedSplitTabs) {
+  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  // Create four tabs with a split containing tabs 2 and 3.
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 4, 0, "0"));
+  tabstrip.ActivateTabAt(3);
+  tabstrip.AddToNewSplit({2}, split_tabs::SplitTabLayout::kHorizontal);
+
+  EXPECT_EQ("0 1 2s 3s", GetTabStripStateString(tabstrip));
+
+  // When deselected part of a split tab when no other tabs are selected,
+  // nothing happens.
+  tabstrip.ActivateTabAt(2);
+  tabstrip.DeselectTabAt(2);
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(2));
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(3));
+  EXPECT_EQ(tabstrip.selection_model().size(), 2u);
+}
+
+TEST_F(TabStripModelTest, RemoveSplitInSelectionActivatesRemainingTab) {
+  TestTabStripModelDelegate delegate;
+
+  TabStripModel tabstrip(&delegate, profile());
+  ASSERT_TRUE(tabstrip.empty());
+
+  // Add 6 tabs to the tabstrip model. The first 4 tabs will be selected with
+  // the tab at index 1 as the active tab. Tabs 1 and 2 are in a split view.
+  PrepareTabs(&tabstrip, 6);
+  ASSERT_EQ(6, tabstrip.count());
+  tabstrip.ActivateTabAt(1);
+  tabstrip.AddToNewSplit({2}, split_tabs::SplitTabLayout::kHorizontal);
+  tabstrip.ActivateTabAt(3);
+  tabstrip.SelectTabAt(0);
+  tabstrip.SelectTabAt(2);
+  tabstrip.SelectTabAt(1);
+
+  // Verify the selection model before closing the tab.
+  EXPECT_EQ(tabstrip.active_index(), 1);
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(0));
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(1));
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(2));
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(3));
+  EXPECT_EQ(tabstrip.selection_model().size(), 4u);
+
+  // Close the right half of the split tab.
+  tabstrip.CloseWebContentsAt(2, TabCloseTypes::CLOSE_NONE);
+
+  // Verify that the other half of the split is active and 3 tabs are selected.
+  EXPECT_EQ(tabstrip.active_index(), 1);
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(0));
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(1));
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(2));
+  EXPECT_EQ(tabstrip.selection_model().size(), 3u);
+}
+
+TEST_F(TabStripModelTest, RemoveSplitUnselectsNonActiveTab) {
+  TestTabStripModelDelegate delegate;
+
+  TabStripModel tabstrip(&delegate, profile());
+  ASSERT_TRUE(tabstrip.empty());
+
+  // Add 4 tabs to the tabstrip model. Tabs 1 and 2 are in a split view and
+  // active/selected.
+  PrepareTabs(&tabstrip, 4);
+  ASSERT_EQ(4, tabstrip.count());
+  tabstrip.ActivateTabAt(1);
+  split_tabs::SplitTabId split_tab_id =
+      tabstrip.AddToNewSplit({2}, split_tabs::SplitTabLayout::kHorizontal);
+
+  // Verify the selection model before closing the tab.
+  EXPECT_EQ(tabstrip.active_index(), 1);
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(1));
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(2));
+  EXPECT_EQ(tabstrip.selection_model().size(), 2u);
+
+  // Unsplit the tabs
+  tabstrip.RemoveSplit(split_tab_id);
+
+  // Verify that only the active tab (1) is selected.
+  EXPECT_EQ(tabstrip.active_index(), 1);
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(1));
+  EXPECT_FALSE(tabstrip.selection_model().IsSelected(2));
+  EXPECT_EQ(tabstrip.selection_model().size(), 1u);
+}
+
+TEST_F(TabStripModelTest, RemoveLeftTabInSplitActivatesRemainingTab) {
+  TestTabStripModelDelegate delegate;
+
+  TabStripModel tabstrip(&delegate, profile());
+  ASSERT_TRUE(tabstrip.empty());
+
+  // Add 4 tabs to the tabstrip model. Tabs 0 and 1 are in a split view.
+  PrepareTabs(&tabstrip, 4);
+  ASSERT_EQ(4, tabstrip.count());
+  tabstrip.ActivateTabAt(0);
+  tabstrip.AddToNewSplit({1}, split_tabs::SplitTabLayout::kHorizontal);
+
+  // Verify the selection model before closing the tab.
+  EXPECT_EQ("0s 1s 2 3", GetTabStripStateString(tabstrip));
+  EXPECT_EQ(tabstrip.active_index(), 0);
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(0));
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(1));
+  EXPECT_EQ(tabstrip.selection_model().size(), 2u);
+
+  // Close the left half of the split tab.
+  tabstrip.CloseWebContentsAt(0, TabCloseTypes::CLOSE_NONE);
+
+  // Verify that the other half of the split is now active.
+  EXPECT_EQ(tabstrip.active_index(), 0);
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(0));
+  EXPECT_EQ(tabstrip.selection_model().size(), 1u);
+}
+
+TEST_F(TabStripModelTest, IteratorTest) {
+  TestTabStripModelDelegate delegate;
+
+  TabStripModel tabstrip(&delegate, profile());
+  ASSERT_TRUE(tabstrip.empty());
+
+  // Get the iterator without any tabs being present.
+  TabStripModel::TabIterator it = tabstrip.begin();
+  EXPECT_EQ(*it, nullptr);
+  EXPECT_EQ(it, tabstrip.end());
+
+  // Add only one unpinned tab
+  PrepareTabstripForSelectionTest(&tabstrip, 1, 0, {"0"});
+  it = tabstrip.begin();
+  EXPECT_EQ(*it, tabstrip.GetTabAtIndex(0));
+  EXPECT_EQ(++it, tabstrip.end());
+
+  // Add 4 tabs to the tabstrip model. Tabs 0 and 1 are in a split view.
+  PrepareTabstripForSelectionTest(&tabstrip, 50, 10, {"0"});
+
+  tabstrip.AddToNewGroup({15, 16});
+  tabstrip.AddToNewGroup({25, 26});
+  tabstrip.AddToNewGroup({40});
+
+  it = tabstrip.begin();
+  int i = 0;
+  while (it != tabstrip.end()) {
+    EXPECT_EQ(*it, tabstrip.GetTabAtIndex(i++));
+    it++;
+  }
+  EXPECT_EQ(i, tabstrip.count());
+}
+
+TEST_F(TabStripModelTest, IteratorTestPinnedTab) {
+  TestTabStripModelDelegate delegate;
+
+  TabStripModel tabstrip(&delegate, profile());
+  ASSERT_TRUE(tabstrip.empty());
+
+  // Add only one unpinned tab
+  PrepareTabstripForSelectionTest(&tabstrip, 10, 10, {"0"});
+
+  TabStripModel::TabIterator it = tabstrip.begin();
+  int i = 0;
+  while (it != tabstrip.end()) {
+    EXPECT_EQ(*it, tabstrip.GetTabAtIndex(i++));
+    it++;
+  }
+  EXPECT_EQ(i, tabstrip.count());
+}
+
+TEST_F(TabStripModelTest, IteratorTestGroupOnlyTabs) {
+  TestTabStripModelDelegate delegate;
+
+  TabStripModel tabstrip(&delegate, profile());
+  ASSERT_TRUE(tabstrip.empty());
+
+  // Add only one unpinned tab
+  PrepareTabstripForSelectionTest(&tabstrip, 5, 0, {"0"});
+  tabstrip.AddToNewGroup({0, 1, 2, 3, 4});
+
+  TabStripModel::TabIterator it = tabstrip.begin();
+  int i = 0;
+  while (it != tabstrip.end()) {
+    EXPECT_EQ(*it, tabstrip.GetTabAtIndex(i++));
+    it++;
+  }
+  EXPECT_EQ(i, tabstrip.count());
 }

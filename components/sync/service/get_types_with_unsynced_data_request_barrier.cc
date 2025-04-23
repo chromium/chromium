@@ -12,7 +12,7 @@ namespace syncer {
 
 GetTypesWithUnsyncedDataRequestBarrier::GetTypesWithUnsyncedDataRequestBarrier(
     DataTypeSet requested_types,
-    base::OnceCallback<void(DataTypeSet)> callback)
+    base::OnceCallback<void(absl::flat_hash_map<DataType, size_t>)> callback)
     : awaiting_types_(requested_types), callback_(std::move(callback)) {
   CHECK(!awaiting_types_.empty());
 }
@@ -28,11 +28,11 @@ GetTypesWithUnsyncedDataRequestBarrier::
 
 void GetTypesWithUnsyncedDataRequestBarrier::OnReceivedResultForType(
     const DataType type,
-    bool has_unsynced_data) {
+    size_t unsynced_data_count) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (has_unsynced_data) {
-    types_with_unsynced_data_.Put(type);
+  if (unsynced_data_count > 0) {
+    unsynced_data_counts_[type] = unsynced_data_count;
   }
 
   // Remember that this part of the request is satisfied.
@@ -40,7 +40,7 @@ void GetTypesWithUnsyncedDataRequestBarrier::OnReceivedResultForType(
   awaiting_types_.Remove(type);
 
   if (awaiting_types_.empty()) {
-    std::move(callback_).Run(types_with_unsynced_data_);
+    std::move(callback_).Run(std::move(unsynced_data_counts_));
   }
 }
 

@@ -24,22 +24,13 @@ FakeRasterBufferProviderImpl::AcquireBufferForRaster(
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates) {
   auto backing = std::make_unique<ResourcePool::Backing>(
-      resource.size(), GetFormat(), resource.color_space());
+      resource.size(), resource.format(), resource.color_space());
   backing->CreateSharedImageForTesting();
   resource.set_backing(std::move(backing));
   return nullptr;
 }
 
 void FakeRasterBufferProviderImpl::Flush() {}
-
-viz::SharedImageFormat FakeRasterBufferProviderImpl::GetFormat() const {
-  return is_software_ ? viz::SinglePlaneFormat::kBGRA_8888
-                      : viz::SinglePlaneFormat::kRGBA_8888;
-}
-
-bool FakeRasterBufferProviderImpl::IsResourcePremultiplied() const {
-  return true;
-}
 
 bool FakeRasterBufferProviderImpl::CanPartialRasterIntoProvidedResource()
     const {

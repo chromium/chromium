@@ -40,13 +40,11 @@ TEST_F(AutofillTypeServerPredictionTest, PredictionFromAutofillField) {
   field.set_server_predictions(
       {test::CreateFieldPrediction(FieldType::EMAIL_ADDRESS),
        test::CreateFieldPrediction(FieldType::USERNAME)});
-  field.set_may_use_prefilled_placeholder(true);
 
   AutofillType::ServerPrediction prediction(field);
   EXPECT_THAT(prediction.server_predictions,
               ElementsAre(EqualsPrediction(FieldType::EMAIL_ADDRESS),
                           EqualsPrediction(FieldType::USERNAME)));
-  EXPECT_TRUE(prediction.may_use_prefilled_placeholder);
 }
 
 TEST(AutofillTypeTest, FieldTypes) {

@@ -6,6 +6,7 @@
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/public/cpp/accessibility_focus_ring_info.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "content/public/common/color_parser.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

@@ -135,6 +135,9 @@ found in the LICENSE file.
       <message name="IDS_GLIC_OFFLINE_NOTICE_ACTION_BUTTON" translateable="false" desc="This is the button label text for the glic offline notice.">
         Try again
       </message>
+      <message name="IDS_GLIC_UNRESPONSIVE_MESSAGE" translateable="false" desc="This is the text of the glic unresponsive message.">
+        Glic is refreshing...
+      </message>
       <message name="IDS_GLIC_ERROR_NOTICE_HEADER" translateable="false" desc="This is the headline on the glic error notice.">
         Something went wrong
       </message>
@@ -189,11 +192,17 @@ found in the LICENSE file.
           Feature in your Toolbar
         </message>
       </if>
+      <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE_SUBLABEL" translateable="false" desc="Sublabel of the Glic setting for the toggle enabling feature in the menu.">
+        Feature enabled even if browser is minimized
+      </message>
       <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT" translateable="false" desc="Name of the Glic setting for the keyboard shortcut.">
         Keyboard shortcut
       </message>
       <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_SUBLABEL" translateable="false" desc="Subheading for the 'keyboard shortcut' toggle.">
         Open with shortcut
+      </message>
+      <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_LEARN_MORE_LABEL" translateable="false" desc="Label for the 'Learn more' link in the sublabel describing the keyboard shortcut.">
+        Learn more about shortcuts
       </message>
       <message name="IDS_SETTINGS_GLIC_DATA_LOCATION_TOGGLE" translateable="false" desc="Name of the 'enable location sharing' setting.">
         Location
@@ -259,6 +268,9 @@ found in the LICENSE file.
       <message name="IDS_GLIC_UNPIN" translateable="false" desc="Name of the context menu item for toggling Glic pinning, when glic is pinned.">
         Unpin Glic
       </message>
+      <message name="IDS_GLIC_CONTEXTUAL_CUEING_ANNOUNCEMENT" desc="Polite announcement that happens when a contextual nudge is shown next to the Glic button." translateable="false">
+        To open Glic in Chrome, press <ph name="GLOBAL_HOTKEY">$1<ex>⌘+G</ex></ph>
+      </message>
 
       <!-- Screenpicker Menu String -->
       <message name="IDS_GLIC_SCREEN_PICKER_REQUESTER" desc="Text shown on screen picker dialog that indicates the requesting source is Glic." translateable="false">
@@ -277,6 +289,12 @@ found in the LICENSE file.
       <!-- Glic Window Title -->
       <message name="IDS_GLIC_WINDOW_TITLE" desc="Accessible title for the Glic Window." translateable="false">
         Glic
+      </message>
+      <message name="IDS_GLIC_WINDOW_TITLE_FIRST_LOAD" desc="Accessible title for the Glic Window. Only included on first load." translateable="false">
+        Glic. To return to where you were on the page press <ph name="FOCUS_TOGGLE_HOTKEY">$1<ex>Ctrl+⌘+G</ex></ph>
+      </message>
+      <message name="IDS_GLIC_WINDOW_FIRST_FOCUS_LOST_ANNOUNCEMENT" desc="Announcement triggered the first time the Glic window loses focus." translateable="false">
+        To return to Glic, press <ph name="FOCUS_TOGGLE_HOTKEY">$1<ex>Ctrl+⌘+G</ex></ph>
       </message>
 
       <!-- Task Manager -->

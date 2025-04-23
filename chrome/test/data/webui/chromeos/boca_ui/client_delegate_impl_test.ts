@@ -276,9 +276,24 @@ class MockRemoteHandler extends PageHandlerRemote {
     return Promise.resolve({error: null});
   }
 
-  override addStudents(ids: string[]):
+  override addStudents(students: Identity[]):
       Promise<{error: AddStudentsError | null}> {
-    ids;
+    assertDeepEquals(
+        [
+          {
+            id: '1',
+            name: 'cat',
+            email: 'cat@gmail.com',
+            photoUrl: {url: 'cdn1'},
+          },
+          {
+            id: '2',
+            name: 'dog',
+            email: 'dog@gmail.com',
+            photoUrl: {url: 'cdn2'},
+          },
+        ],
+        students);
     return Promise.resolve({error: null});
   }
 
@@ -666,8 +681,10 @@ suite('ClientDelegateTest', function() {
   });
 
   test('client delegate should translate data for add students', async () => {
-    const result =
-        await clientDelegateImpl.getInstance().addStudents(['1', '2']);
+    const result = await clientDelegateImpl.getInstance().addStudents([
+      {id: '1', name: 'cat', email: 'cat@gmail.com', photoUrl: 'cdn1'},
+      {id: '2', name: 'dog', email: 'dog@gmail.com', photoUrl: 'cdn2'},
+    ]);
     assertTrue(result);
   });
 

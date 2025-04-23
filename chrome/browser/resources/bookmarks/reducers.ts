@@ -362,12 +362,13 @@ function updatePrefs(
 
 export function reduceAction(
     state: BookmarksPageState, action: Action): BookmarksPageState {
+  const updatedNodes = updateNodes(state.nodes, action);
   return {
-    nodes: updateNodes(state.nodes, action),
+    nodes: updatedNodes,
     selectedFolder:
-        updateSelectedFolder(state.selectedFolder, action, state.nodes),
+        updateSelectedFolder(state.selectedFolder, action, updatedNodes),
     folderOpenState:
-        updateFolderOpenState(state.folderOpenState, action, state.nodes),
+        updateFolderOpenState(state.folderOpenState, action, updatedNodes),
     prefs: updatePrefs(state.prefs, action),
     search: updateSearch(state.search, action),
     selection: updateSelection(state.selection, action),

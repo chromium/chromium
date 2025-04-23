@@ -1253,7 +1253,7 @@ bool ResourceBundle::PNGContainsFallbackMarker(base::span<const uint8_t> buf) {
     if (buf.size() < kPngChunkMetadataSize) {
       break;
     }
-    uint32_t length = base::numerics::U32FromBigEndian(buf.first<4u>());
+    uint32_t length = base::U32FromBigEndian(buf.first<4u>());
     if (buf.size() - kPngChunkMetadataSize < length) {
       break;
     }

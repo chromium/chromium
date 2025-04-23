@@ -11,7 +11,7 @@
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/popup_swift.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_pedal_swift.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"

@@ -1075,13 +1075,17 @@ void PopupViewViews::CreateSuggestionViews() {
                          kIPHAutofillHomeWorkProfileSuggestionFeature) {
             row_view->SetProperty(views::kElementIdentifierKey,
                                   kAutofillHomeWorkSuggestionElementId);
+          } else if (feature == &feature_engagement::
+                                    kIPHAutofillEnableLoyaltyCardsFeature) {
+            row_view->SetProperty(views::kElementIdentifierKey,
+                                  kAutofillEnableLoyaltyCardsElementId);
           }
       }
     }
 
     std::unique_ptr<views::ScrollView> scroll_view =
         views::Builder<views::ScrollView>()
-            .SetBackgroundThemeColorId(ui::kColorDropdownBackground)
+            .SetBackgroundColor(ui::kColorDropdownBackground)
             .SetHorizontalScrollBarMode(
                 views::ScrollView::ScrollBarMode::kDisabled)
             .SetDrawOverflowIndicator(false)
@@ -1441,6 +1445,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PopupViewViews,
                                       kAutofillSuggestionElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PopupViewViews,
                                       kAutofillHomeWorkSuggestionElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PopupViewViews,
+                                      kAutofillEnableLoyaltyCardsElementId);
 
 // static
 base::WeakPtr<AutofillPopupView> AutofillPopupView::Create(

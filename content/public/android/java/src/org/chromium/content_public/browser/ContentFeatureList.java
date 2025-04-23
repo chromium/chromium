@@ -4,7 +4,10 @@
 
 package org.chromium.content_public.browser;
 
+import org.chromium.base.MutableBooleanParamWithSafeDefault;
+import org.chromium.base.MutableFlagWithSafeDefault;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.content_public.common.ContentFeatures;
 
 /** Convenience static methods to access {@link ContentFeatureMap}. */
 @NullMarked
@@ -51,4 +54,19 @@ public class ContentFeatureList {
             "PrefetchBrowserInitiatedTriggers";
 
     public static final String DIPS_TTL = "DIPSTtl";
+
+    public static final MutableFlagWithSafeDefault sSpareRendererProcessPriority =
+            new MutableFlagWithSafeDefault(
+                    ContentFeatureMap.getInstance(),
+                    ContentFeatures.SPARE_RENDERER_PROCESS_PRIORITY,
+                    false);
+
+    // Add a non-perceptible binding on Android to decrease the chance of the spare process getting
+    // killed before it is taken.
+    public static final MutableBooleanParamWithSafeDefault sSpareRendererAddNotPerceptibleBinding =
+            sSpareRendererProcessPriority.newBooleanParam("not-perceptible-binding", false);
+
+    // Make the spare renderer of the lowest priority so as not to kill other processes during OOM.
+    public static final MutableBooleanParamWithSafeDefault sSpareRendererLowestRanking =
+            sSpareRendererProcessPriority.newBooleanParam("lowest-ranking", false);
 }

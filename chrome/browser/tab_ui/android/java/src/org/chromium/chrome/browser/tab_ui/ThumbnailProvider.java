@@ -8,8 +8,11 @@ import android.graphics.drawable.Drawable;
 import android.util.Size;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** An interface to get the thumbnails to be shown inside the tab grid cards. */
+@NullMarked
 public interface ThumbnailProvider {
     /**
      * Fetches a tab thumbnail in the form of a drawable. Usually from {@link TabContentManager}.
@@ -21,5 +24,8 @@ public interface ThumbnailProvider {
      *     receive null if no bitmap is returned.
      */
     void getTabThumbnailWithCallback(
-            int tabId, Size thumbnailSize, boolean isSelected, Callback<Drawable> callback);
+            int tabId,
+            Size thumbnailSize,
+            boolean isSelected,
+            Callback<@Nullable Drawable> callback);
 }

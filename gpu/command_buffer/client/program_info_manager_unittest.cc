@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -42,7 +43,7 @@ class ProgramInfoManagerTest : public testing::Test {
   struct ProgramES2Data {
     // TODO(zmo): Also add attrib data.
     ProgramInfoHeader header;
-    ProgramInput uniforms[2];
+    std::array<ProgramInput, 2> uniforms;
     int32_t uniform_loc0[1];
     int32_t uniform_loc1[2];
     char uniform_name0[4];
@@ -51,7 +52,7 @@ class ProgramInfoManagerTest : public testing::Test {
 
   struct UniformBlocksData {
     UniformBlocksHeader header;
-    UniformBlockInfo entry[2];
+    std::array<UniformBlockInfo, 2> entry;
     char name0[4];
     uint32_t indices0[2];
     char name1[8];
@@ -60,12 +61,12 @@ class ProgramInfoManagerTest : public testing::Test {
 
   struct UniformsES3Data {
     UniformsES3Header header;
-    UniformES3Info entry[2];
+    std::array<UniformES3Info, 2> entry;
   };
 
   struct TransformFeedbackVaryingsData {
     TransformFeedbackVaryingsHeader header;
-    TransformFeedbackVaryingInfo entry[2];
+    std::array<TransformFeedbackVaryingInfo, 2> entry;
     char name0[4];
     char name1[8];
   };
@@ -181,8 +182,10 @@ class ProgramInfoManagerTest : public testing::Test {
 TEST_F(ProgramInfoManagerTest, UpdateES2) {
   ProgramES2Data data;
   SetupProgramES2Data(&data);
-  const std::string kNames[] = { data.uniform_name0, data.uniform_name1 };
-  const int32_t* kLocs[] = { data.uniform_loc0, data.uniform_loc1 };
+  const auto kNames =
+      std::to_array<std::string>({data.uniform_name0, data.uniform_name1});
+  auto kLocs =
+      std::to_array<const int32_t*>({data.uniform_loc0, data.uniform_loc1});
   std::vector<int8_t> result(sizeof(data));
   memcpy(&result[0], &data, sizeof(data));
   EXPECT_FALSE(program_->IsCached(ProgramInfoManager::kES2));
@@ -227,8 +230,9 @@ TEST_F(ProgramInfoManagerTest, UpdateES2) {
 TEST_F(ProgramInfoManagerTest, UpdateES3UniformBlocks) {
   UniformBlocksData data;
   SetupUniformBlocksData(&data);
-  const std::string kName[] = { data.name0, data.name1 };
-  const uint32_t* kIndices[] = { data.indices0, data.indices1 };
+  const auto kName = std::to_array<std::string>({data.name0, data.name1});
+  auto kIndices =
+      std::to_array<const uint32_t*>({data.indices0, data.indices1});
   std::vector<int8_t> result(sizeof(data));
   memcpy(&result[0], &data, sizeof(data));
   EXPECT_FALSE(program_->IsCached(ProgramInfoManager::kES3UniformBlocks));
@@ -269,7 +273,7 @@ TEST_F(ProgramInfoManagerTest, UpdateES3UniformBlocks) {
 TEST_F(ProgramInfoManagerTest, UpdateES3TransformFeedbackVaryings) {
   TransformFeedbackVaryingsData data;
   SetupTransformFeedbackVaryingsData(&data);
-  const std::string kName[] = { data.name0, data.name1 };
+  const auto kName = std::to_array<std::string>({data.name0, data.name1});
   std::vector<int8_t> result(sizeof(data));
   memcpy(&result[0], &data, sizeof(data));
   EXPECT_FALSE(program_->IsCached(
@@ -369,8 +373,9 @@ TEST_F(ProgramInfoManagerTest, GetActiveUniformBlockivCached) {
   std::vector<int8_t> result(sizeof(data));
   memcpy(&result[0], &data, sizeof(data));
   program_->UpdateES3UniformBlocks(result);
-  const char* kName[] = { data.name0, data.name1 };
-  const uint32_t* kIndices[] = { data.indices0, data.indices1 };
+  auto kName = std::to_array<const char*>({data.name0, data.name1});
+  auto kIndices =
+      std::to_array<const uint32_t*>({data.indices0, data.indices1});
 
   for (uint32_t ii = 0; ii < data.header.num_uniform_blocks; ++ii) {
     ASSERT_GE(2u, data.entry[ii].active_uniforms);
@@ -419,7 +424,7 @@ TEST_F(ProgramInfoManagerTest, GetTransformFeedbackVaryingCached) {
   std::vector<int8_t> result(sizeof(data));
   memcpy(&result[0], &data, sizeof(data));
   program_->UpdateES3TransformFeedbackVaryings(result);
-  const char* kName[] = { data.name0, data.name1 };
+  auto kName = std::to_array<const char*>({data.name0, data.name1});
   GLsizei buf_size = std::max(strlen(kName[0]), strlen(kName[1])) + 1;
   for (uint32_t ii = 0; ii < data.header.num_transform_feedback_varyings;
        ++ii) {
@@ -446,7 +451,7 @@ TEST_F(ProgramInfoManagerTest, GetUniformIndices) {
 
   {  // Original order.
     const char* kNames[] = { data.uniform_name0, data.uniform_name1 };
-    const GLuint kIndices[] = { 0, 1 };
+    const auto kIndices = std::to_array<GLuint>({0, 1});
     const GLsizei kCount = 2;
     GLuint indices[kCount];
     EXPECT_TRUE(program_info_manager_->GetUniformIndices(
@@ -458,7 +463,7 @@ TEST_F(ProgramInfoManagerTest, GetUniformIndices) {
 
   {  // Switched order.
     const char* kNames[] = { data.uniform_name1, data.uniform_name0 };
-    const GLuint kIndices[] = { 1, 0 };
+    const auto kIndices = std::to_array<GLuint>({1, 0});
     const GLsizei kCount = 2;
     GLuint indices[kCount];
     EXPECT_TRUE(program_info_manager_->GetUniformIndices(
@@ -470,7 +475,7 @@ TEST_F(ProgramInfoManagerTest, GetUniformIndices) {
 
   {  // With bad names.
     const char* kNames[] = { data.uniform_name1, "BadName" };
-    const GLuint kIndices[] = { 1, GL_INVALID_INDEX };
+    const auto kIndices = std::to_array<GLuint>({1, GL_INVALID_INDEX});
     const GLsizei kCount = 2;
     GLuint indices[kCount];
     EXPECT_TRUE(program_info_manager_->GetUniformIndices(
@@ -483,7 +488,7 @@ TEST_F(ProgramInfoManagerTest, GetUniformIndices) {
   {  // Both "foo" and "foo[0]" are considered valid names for an array,
      // but not "foo[1]".
     const char* kNames[] = { "bull", "bull[0]", "bull[1]" };
-    const GLuint kIndices[] = { 1, 1, GL_INVALID_INDEX };
+    const auto kIndices = std::to_array<GLuint>({1, 1, GL_INVALID_INDEX});
     const GLsizei kCount = 3;
     GLuint indices[kCount];
     EXPECT_TRUE(program_info_manager_->GetUniformIndices(

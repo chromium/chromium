@@ -84,7 +84,10 @@ android_library("unit_device_javatests") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.ui.messages.test"
 
-  sources = [ "java/src/org/chromium/chrome/browser/ui/messages/snackbar/SnackbarTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/messages/snackbar/SnackbarRenderTest.java",
+    "java/src/org/chromium/chrome/browser/ui/messages/snackbar/SnackbarTest.java",
+  ]
 
   deps = [
     ":java",

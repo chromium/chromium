@@ -13,6 +13,9 @@
 // Opens the displayed tab resumption item.
 - (void)openTabResumptionItem:(TabResumptionItem*)item;
 
+// Track the URL correspodning to the ShopCard.
+- (void)trackShopCardItem:(TabResumptionItem*)item;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_TAB_RESUMPTION_TAB_RESUMPTION_COMMANDS_H_

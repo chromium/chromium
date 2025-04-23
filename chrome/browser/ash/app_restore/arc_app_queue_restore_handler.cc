@@ -10,6 +10,7 @@
 
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -29,8 +30,6 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/ui/ash/shelf/arc_shelf_spinner_item_controller.h"
@@ -90,7 +89,8 @@ constexpr char kGhostWindowPopToArcHistogram[] = "Arc.LaunchedWithGhostWindow";
 
 }  // namespace
 
-ArcAppQueueRestoreHandler::ArcAppQueueRestoreHandler() {
+ArcAppQueueRestoreHandler::ArcAppQueueRestoreHandler(
+    SchedulerConfigurationManager* scheduler_configuration_manager) {
   if (aura::Env::HasInstance())
     env_observer_.Observe(aura::Env::GetInstance());
 
@@ -101,10 +101,9 @@ ArcAppQueueRestoreHandler::ArcAppQueueRestoreHandler() {
       activation_client->AddObserver(this);
   }
 
-  auto* manager = GetSchedulerConfigurationManager();
-  if (manager) {
+  if (scheduler_configuration_manager) {
     std::optional<std::pair<bool, size_t>> scheduler_configuration =
-        manager->GetLastReply();
+        scheduler_configuration_manager->GetLastReply();
     if (scheduler_configuration) {
       // Logical CPU core number should consider system HyperThread status.
       should_apply_cpu_restirction_ =
@@ -113,8 +112,11 @@ ArcAppQueueRestoreHandler::ArcAppQueueRestoreHandler() {
     } else {
       // If the configuration not exist, add observer to receive configuration
       // update.
-      manager->AddObserver(this);
+      scheduler_configuration_manager_observer_.Observe(
+          scheduler_configuration_manager);
     }
+  } else {
+    CHECK_IS_TEST();
   }
 }
 
@@ -125,10 +127,6 @@ ArcAppQueueRestoreHandler::~ArcAppQueueRestoreHandler() {
     if (activation_client)
       activation_client->RemoveObserver(this);
   }
-
-  auto* manager = GetSchedulerConfigurationManager();
-  if (manager)
-    manager->RemoveObserver(this);
 }
 
 void ArcAppQueueRestoreHandler::RestoreArcApps(
@@ -346,9 +344,8 @@ void ArcAppQueueRestoreHandler::OnConfigurationSet(bool success,
   should_apply_cpu_restirction_ =
       (base::SysInfo::NumberOfProcessors() - num_cores_disabled) <=
       kCpuRestrictCoresCondition;
-  auto* manager = GetSchedulerConfigurationManager();
-  if (manager)
-    manager->RemoveObserver(this);
+
+  scheduler_configuration_manager_observer_.Reset();
 }
 
 void ArcAppQueueRestoreHandler::LoadRestoreData() {
@@ -766,9 +763,7 @@ void ArcAppQueueRestoreHandler::StopRestore() {
     stop_restore_timer_->Stop();
   stop_restore_timer_.reset();
 
-  auto* manager = GetSchedulerConfigurationManager();
-  if (manager)
-    manager->RemoveObserver(this);
+  scheduler_configuration_manager_observer_.Reset();
 
   StopCpuUsageCount();
 
@@ -847,13 +842,6 @@ void ArcAppQueueRestoreHandler::RecordRestoreResult() {
     base::UmaHistogramCounts100(kGhostWindowPopToArcHistogram,
                                 window_handler_->ghost_window_pop_count());
   }
-}
-
-SchedulerConfigurationManager*
-ArcAppQueueRestoreHandler::GetSchedulerConfigurationManager() {
-  if (!g_browser_process || !g_browser_process->platform_part())
-    return nullptr;
-  return g_browser_process->platform_part()->scheduler_configuration_manager();
 }
 
 }  // namespace ash::app_restore

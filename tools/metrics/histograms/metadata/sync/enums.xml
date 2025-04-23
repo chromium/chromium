@@ -175,10 +175,12 @@ chromium-metrics-reviews@google.com.
 <enum name="NudgedUpdateResult">
   <int value="0" label="Success"/>
   <int value="1" label="Empty response"/>
-  <int value="2" label="Failed to download data"/>
+  <int value="2" label="Partial failure"/>
+  <int value="3" label="Server error"/>
+  <int value="4" label="Network error"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/sync/engine/data_type_worker.cc:NudgedUpdateResult) -->
+<!-- LINT.ThenChange(/components/sync/engine/update_handler.h:NudgedUpdateResult) -->
 
 <!-- LINT.IfChange(OutgoingPasswordSharingInvitationCommitError) -->
 
@@ -237,6 +239,18 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/engine/data_type_worker.h:PendingInvalidationStatus) -->
+
+<!-- LINT.IfChange(PreviouslySyncingGaiaIdInfoForMetrics) -->
+
+<enum name="PreviouslySyncingGaiaIdInfoForMetrics">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="Not enough information"/>
+  <int value="2" label="Sync feature never previously turned on"/>
+  <int value="3" label="Current Gaia ID matches previous with Sync on"/>
+  <int value="4" label="Current Gaia ID differs previous with Sync on"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/base/previously_syncing_gaia_id_info_for_metrics.h:PreviouslySyncingGaiaIdInfoForMetrics) -->
 
 <!-- LINT.IfChange(RemoteBookmarkUpdateError) -->
 
@@ -722,6 +736,8 @@ chromium-metrics-reviews@google.com.
   <int value="100324" label="AccessibilityAXTreeFixingEnabled"/>
   <int value="100325" label="TabSearchMigrationComplete"/>
   <int value="100326" label="ReadAloudPlaybackMode"/>
+  <int value="100327" label="PinSplitTabButton"/>
+  <int value="100328" label="GlicRolloutEligibility"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->

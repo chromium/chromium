@@ -126,10 +126,9 @@ class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
     return Steps(
         WaitForElementToLoad(kTextarea),
         MoveMouseTo(kContentPageTabId, kTextarea),
-        ClickMouse(ui_controls::RIGHT),
-        WaitForShow(RenderViewContextMenu::kComposeMenuItem),
-        // Required to fully render the menu before selection.
-        SelectMenuItem(RenderViewContextMenu::kComposeMenuItem),
+        MayInvolveNativeContextMenu(
+            ClickMouse(ui_controls::RIGHT),
+            SelectMenuItem(RenderViewContextMenu::kComposeMenuItem)),
         WaitForShow(ComposeDialogView::kComposeDialogId),
         InstrumentNonTabWebView(kComposeWebContents, kComposeWebviewElementId));
   }

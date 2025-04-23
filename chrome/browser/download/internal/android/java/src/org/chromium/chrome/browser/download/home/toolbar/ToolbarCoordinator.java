@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.home.list.ListItem;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.components.browser_ui.widget.FadingShadow;
@@ -25,6 +27,7 @@ import org.chromium.components.feature_engagement.Tracker;
 import java.util.List;
 
 /** A top level class to handle various toolbar related functionalities in download home. */
+@NullMarked
 public class ToolbarCoordinator implements SelectionObserver<ListItem>, BackPressHandler {
     /** A delegate to handle various actions taken by user that relate to list items. */
     public interface ToolbarListActionDelegate {
@@ -44,7 +47,7 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem>, BackPres
          * Invoked when user starts a search on download home.
          * @param query The search text on which downloads will be filtered.
          */
-        void setSearchQuery(String query);
+        void setSearchQuery(@Nullable String query);
     }
 
     /**

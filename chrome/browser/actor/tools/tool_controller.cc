@@ -16,6 +16,7 @@
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/tools/tool_invocation.h"
+#include "chrome/browser/actor/tools/wait_tool.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -70,10 +71,9 @@ std::unique_ptr<Tool> ToolController::CreateTool(
       TabInterface* tab = invocation.FindTargetTab();
       return std::make_unique<HistoryTool>(*tab, HistoryTool::kForward);
     }
-    case ActionInformation::kWait:
-      // TODO(crbug.com/402730309): Implement
-      NOTIMPLEMENTED();
-      return nullptr;
+    case ActionInformation::kWait: {
+      return std::make_unique<WaitTool>();
+    }
     case ActionInformation::ACTION_INFO_NOT_SET:
       NOTREACHED();
   }

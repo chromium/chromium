@@ -15,12 +15,12 @@ parameters, or adding information to existing ones.
 The high level objectives when adding net logging code are:
 
 * No performance cost when capturing is off.
-* Logs captured using [`kDefault`](../log/net_log_capture_mode.h) are safe to
-  upload and share publicly.
-* Capturing using [`kDefault`](../log/net_log_capture_mode.h) has a low
+* Logs captured using [`kHeavilyRedacted`](../log/net_log_capture_mode.h) are
+  safe to upload and share publicly.
+* Capturing using [`kDefault`](../log/net_log_capture_mode.h) or lower has a low
   performance impact.
-* Logs captured using [`kDefault`](../log/net_log_capture_mode.h) are small
-  enough to upload to bug reports.
+* Logs captured using [`kDefault`](../log/net_log_capture_mode.h) or lower are
+  small enough to upload to bug reports.
 * Events that may emit sensitive information have accompanying unit-tests.
 * The event and its possible parameters are documented in
   [net_log_event_type_list.h](../log/net_log_event_type_list.h)

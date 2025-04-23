@@ -47,36 +47,36 @@
 #else
 
 // Defines the same symbolic names used by the WM_NCHITTEST Notification under
-// win32 (the integer values are not guaranteed to be equivalent). We do this
+// win32 (the integer values are guaranteed to be equivalent). We do this
 // because we have a whole bunch of code that deals with window resizing and
 // such that requires these values.
 enum HitTestCompat {
   HTNOWHERE = 0,
-  HTBORDER,
-  HTBOTTOM,
-  HTBOTTOMLEFT,
-  HTBOTTOMRIGHT,
-  HTCAPTION,
-  HTCLIENT,
-  HTCLOSE,
-  HTERROR,
-  HTGROWBOX,
-  HTHELP,
-  HTHSCROLL,
-  HTLEFT,
-  HTMENU,
-  HTMAXBUTTON,
-  HTMINBUTTON,
-  HTREDUCE,
-  HTRIGHT,
-  HTSIZE,
-  HTSYSMENU,
-  HTTOP,
-  HTTOPLEFT,
-  HTTOPRIGHT,
-  HTTRANSPARENT,
-  HTVSCROLL,
-  HTZOOM
+  HTBORDER = 18,
+  HTBOTTOM = 15,
+  HTBOTTOMLEFT = 16,
+  HTBOTTOMRIGHT = 17,
+  HTCAPTION = 2,
+  HTCLIENT = 1,
+  HTCLOSE = 20,
+  HTERROR = -2,
+  HTGROWBOX = 4,
+  HTHELP = 21,
+  HTHSCROLL = 6,
+  HTLEFT = 10,
+  HTMENU = 5,
+  HTMAXBUTTON = 9,
+  HTMINBUTTON = 8,
+  HTREDUCE = HTMINBUTTON,
+  HTRIGHT = 11,
+  HTSIZE = HTGROWBOX,
+  HTSYSMENU = 3,
+  HTTOP = 12,
+  HTTOPLEFT = 13,
+  HTTOPRIGHT = 14,
+  HTTRANSPARENT = -1,
+  HTVSCROLL = 7,
+  HTZOOM = HTMAXBUTTON
 };
 
 #endif  // BUILDFLAG(IS_WIN)

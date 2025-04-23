@@ -129,6 +129,13 @@ function emitExpectedResult(path, expected)
     case "navigator.mediaSession.playbackState":
         expected = "'none'";
         break;
+
+    // https://drafts.csswg.org/cssom-view/#dom-screen-colordepth
+    case "screen.colorDepth":
+    case "screen.pixelDepth":
+        expected = "24";
+        break;
+
     // Web tests are loaded from the local filesystem.
     case "origin":
         expected = "'file://'";

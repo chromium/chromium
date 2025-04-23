@@ -57,6 +57,7 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
             features::kTabOrganization,
 #if BUILDFLAG(ENABLE_GLIC)
             features::kGlic,
+            features::kGlicRollout,
 #endif
             features::kTabstripComboButton,
             features::kTabstripDeclutter,
@@ -70,7 +71,8 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     // This will temporarily disable preloading.
     glic::GlicProfileManager::ForceMemoryPressureForTesting(
-        &forced_memory_pressure_);
+        base::MemoryPressureMonitor::MemoryPressureLevel::
+            MEMORY_PRESSURE_LEVEL_CRITICAL);
     fre_server_.ServeFilesFromDirectory(
         base::PathService::CheckedGet(base::DIR_ASSETS)
             .AppendASCII("gen/chrome/test/data/webui/glic/"));
@@ -85,7 +87,7 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
 
   void TearDown() override {
     InProcessBrowserTest::TearDown();
-    glic::GlicProfileManager::ForceMemoryPressureForTesting(nullptr);
+    glic::GlicProfileManager::ForceMemoryPressureForTesting(std::nullopt);
   }
 
   void SetUpOnMainThread() override {
@@ -179,12 +181,20 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
 
 #if BUILDFLAG(ENABLE_GLIC)
   void ResetMemoryPressure() {
-    forced_memory_pressure_ = base::MemoryPressureMonitor::MemoryPressureLevel::
-        MEMORY_PRESSURE_LEVEL_NONE;
+    glic::GlicProfileManager::ForceMemoryPressureForTesting(
+        base::MemoryPressureMonitor::MemoryPressureLevel::
+            MEMORY_PRESSURE_LEVEL_NONE);
   }
 
   const GURL& fre_url() { return fre_url_; }
 #endif
+  void ResetAnimation(int value) {
+    if (tab_strip_action_container()->animation_session_for_testing()) {
+      tab_strip_action_container()
+          ->animation_session_for_testing()
+          ->ResetAnimationForTesting(value);
+    }
+  }
 
  private:
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
@@ -197,9 +207,6 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
       identity_test_environment_adaptor_;
   base::CallbackListSubscription create_services_subscription_;
 #if BUILDFLAG(ENABLE_GLIC)
-  base::MemoryPressureMonitor::MemoryPressureLevel forced_memory_pressure_ =
-      base::MemoryPressureMonitor::MemoryPressureLevel::
-          MEMORY_PRESSURE_LEVEL_CRITICAL;
   std::unique_ptr<glic::GlicTestEnvironment> glic_test_environment_;
   net::EmbeddedTestServer fre_server_;
   GURL fre_url_;
@@ -229,9 +236,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                   ->IsShowing());
 
   // Finish showing declutter chip.
-  tab_strip_action_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
   tab_strip_action_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   // Hide the declutter chip.
@@ -250,9 +255,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   ShowTabStripNudgeButton(TabDeclutterButton());
 
   // Finish showing declutter chip.
-  tab_strip_action_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
   tab_strip_action_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   OnButtonClicked(TabDeclutterButton());
@@ -274,9 +277,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   ShowTabStripNudgeButton(TabDeclutterButton());
 
   // Finish showing declutter chip.
-  tab_strip_action_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
   tab_strip_action_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   OnButtonDismissed(TabDeclutterButton());
@@ -292,9 +293,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   ShowTabStripNudgeButton(TabDeclutterButton());
 
   // Finish showing declutter chip.
-  tab_strip_action_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
   tab_strip_action_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   OnTabStripNudgeButtonTimeout(TabDeclutterButton());
@@ -309,9 +308,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 
   ShowTabStripNudgeButton(AutoTabGroupButton());
 
-  tab_strip_action_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
 
   tab_strip_action_container()->GetWidget()->LayoutRootViewIfNecessary();
 
@@ -335,9 +332,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 
   ShowTabStripNudgeButton(AutoTabGroupButton());
 
-  tab_strip_action_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
 
   tab_strip_action_container()->GetWidget()->LayoutRootViewIfNecessary();
 
@@ -375,9 +370,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest, DelaysHide) {
 
   ShowTabStripNudgeButton(TabDeclutterButton());
 
-  tab_strip_action_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
   tab_strip_action_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   ASSERT_FALSE(tab_strip_action_container()->animation_session_for_testing());
@@ -399,9 +392,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest, DelaysHide) {
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                        ImmediatelyHidesWhenOrganizeButtonClicked) {
   ShowTabStripNudgeButton(TabDeclutterButton());
-  tab_strip_action_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
   tab_strip_action_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   SetLockedExpansionMode(LockedExpansionMode::kWillHide, TabDeclutterButton());
@@ -417,9 +408,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                        ImmediatelyHidesWhenOrganizeButtonDismissed) {
   ShowTabStripNudgeButton(TabDeclutterButton());
-  tab_strip_action_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
   tab_strip_action_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   SetLockedExpansionMode(LockedExpansionMode::kWillHide, TabDeclutterButton());
@@ -436,9 +425,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                        ImmediatelyHidesWhenGlicNudgeButtonDismissed) {
   ShowTabStripNudgeButton(GlicNudgeButton());
-  tab_strip_action_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
   tab_strip_action_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   SetLockedExpansionMode(LockedExpansionMode::kWillHide, GlicNudgeButton());
@@ -455,9 +442,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                        LogsWhenGlicNudgeButtonClicked) {
   ShowTabStripNudgeButton(GlicNudgeButton());
 
-  tab_strip_action_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
   tab_strip_action_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   OnButtonClicked(GlicNudgeButton());
@@ -510,9 +495,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                        ShowAndHideGlicButtonWhenGlicNudgeButtonShows) {
   ShowTabStripNudgeButton(GlicNudgeButton());
 
-  tab_strip_action_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
   tab_strip_action_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   EXPECT_EQ(1, tab_strip_action_container()
@@ -522,9 +505,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 
   OnButtonDismissed(GlicNudgeButton());
 
-  tab_strip_action_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(0);
+  ResetAnimation(0);
   EXPECT_EQ(0, tab_strip_action_container()
                    ->GetGlicButton()
                    ->width_factor_for_testing());

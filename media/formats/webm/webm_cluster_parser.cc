@@ -442,7 +442,7 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
     return false;
   }
 
-  Track* track = NULL;
+  Track* track = nullptr;
   StreamParserBuffer::Type buffer_type = DemuxerStream::AUDIO;
   std::string encryption_key_id;
   base::TimeDelta encoded_duration = kNoTimestamp;

@@ -29,10 +29,13 @@ ActivationList GetSubresourceFilterMatch(
   // level is chosen. If it's a tie, we arbitrarily give |BETTER_ADS| a higher
   // priority over |ABUSIVE|.
   if (has_better_ads && has_abusive) {
-    if (better_ads_it->second == safe_browsing::SubresourceFilterLevel::ENFORCE)
+    if (better_ads_it->second ==
+        safe_browsing::SubresourceFilterLevel::ENFORCE) {
       return ActivationList::BETTER_ADS;
-    if (abusive_it->second == safe_browsing::SubresourceFilterLevel::ENFORCE)
+    }
+    if (abusive_it->second == safe_browsing::SubresourceFilterLevel::ENFORCE) {
       return ActivationList::ABUSIVE;
+    }
     *warning = true;
     return ActivationList::BETTER_ADS;
   }
@@ -49,8 +52,9 @@ ActivationList GetSubresourceFilterMatch(
 
   // Keep a generic subresource_filter list without warning implemented, for
   // subresource filter matches with no metadata.
-  if (threat_type_metadata.subresource_filter_match.empty())
+  if (threat_type_metadata.subresource_filter_match.empty()) {
     return ActivationList::SUBRESOURCE_FILTER;
+  }
 
   return ActivationList::NONE;
 }

@@ -19,7 +19,7 @@ std::vector<XCursorLoader::Image> ParseFile(base::span<const uint32_t> data,
   std::vector<uint8_t> vec(data.size() * 4u);
   for (size_t i = 0; i < data.size(); ++i) {
     auto bytes = base::span(vec).subspan(i * 4u).first<4u>();
-    bytes.copy_from(base::numerics::U32ToLittleEndian(data[i]));
+    bytes.copy_from(base::U32ToLittleEndian(data[i]));
   }
   return ParseCursorFile(
       base::MakeRefCounted<base::RefCountedBytes>(std::move(vec)),

@@ -64,12 +64,13 @@ const char* kLocalCommandSourcesFastPoll[] = {
 // cloud logging and should be reserved for commands that don't need
 // constant monitoring. Commands that are watched by a watchdog should
 // NOT be in this list.
-constexpr base::TimeDelta kExtendedCommandPollFrequency = base::Minutes(1);
+constexpr base::TimeDelta kExtendedCommandPollFrequency = base::Minutes(5);
 const char* kLocalCommandSourcesSlowPoll[] = {
     "df -h",
     "free -m",
     "aplay -l",
     "audio_diagnostics",
+    "nsenter --net=/run/netns/ip_periph ifconfig",
     // Hide kernelspace processes and show limited columns.
     "ps -o pid,user,group,args --ppid 2 -p 2 -N --sort=pid",
 };

@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
 #include "base/functional/bind.h"
@@ -57,11 +58,25 @@ namespace media {
 namespace {
 
 // Random key ID used to create a session.
-const uint8_t kKeyId[] = {
+const auto kKeyId = std::to_array<uint8_t>({
     // base64 equivalent is AQIDBAUGBwgJCgsMDQ4PEA
-    0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
-    0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10,
-};
+    0x01,
+    0x02,
+    0x03,
+    0x04,
+    0x05,
+    0x06,
+    0x07,
+    0x08,
+    0x09,
+    0x0a,
+    0x0b,
+    0x0c,
+    0x0d,
+    0x0e,
+    0x0f,
+    0x10,
+});
 
 }  // namespace
 
@@ -167,7 +182,9 @@ class MojoCdmTest : public ::testing::Test {
     // order to verify that the data is passed properly.
     const CdmSessionType session_type = CdmSessionType::kTemporary;
     const EmeInitDataType data_type = EmeInitDataType::WEBM;
-    const std::vector<uint8_t> key_id(kKeyId, kKeyId + std::size(kKeyId));
+    const std::vector<uint8_t> key_id(
+        kKeyId.data(),
+        base::span<const uint8_t>(kKeyId).subspan(std::size(kKeyId)).data());
     std::string created_session_id;
 
     if (expected_result == CONNECTION_ERROR_BEFORE) {

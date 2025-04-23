@@ -400,8 +400,8 @@ class CORE_EXPORT GridSizingTrackCollection final
 
   explicit GridSizingTrackCollection(
       GridRangeVector&& ranges,
-      bool must_create_baselines = false,
-      GridTrackSizingDirection track_direction = kForColumns);
+      GridTrackSizingDirection track_direction = kForColumns,
+      bool must_create_baselines = false);
 
   // This class should be specifically used for grid sizing.
   bool IsForSizing() const override { return true; }

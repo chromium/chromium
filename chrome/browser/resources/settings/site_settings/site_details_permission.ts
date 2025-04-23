@@ -119,14 +119,14 @@ export class SiteDetailsPermissionElement extends
     ];
   }
 
-  useAutomaticLabel: boolean;
-  site: RawSiteException;
-  private chooserExceptions_: ChooserException[];
-  chooserType: ChooserType;
-  private systemPermissionWarningKey_: string;
-  private defaultSetting_: ContentSetting;
-  label: string;
-  icon: string;
+  declare useAutomaticLabel: boolean;
+  declare site: RawSiteException;
+  declare private chooserExceptions_: ChooserException[];
+  declare chooserType: ChooserType;
+  declare private systemPermissionWarningKey_: string;
+  declare private defaultSetting_: ContentSetting;
+  declare label: string;
+  declare icon: string;
 
   override connectedCallback() {
     super.connectedCallback();

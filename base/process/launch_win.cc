@@ -14,13 +14,19 @@
 #include <shellapi.h>
 #include <userenv.h>
 
+#include <algorithm>
 #include <ios>
 #include <limits>
+#include <string>
+#include <string_view>
 
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/debug/alias.h"
 #include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/function_ref.h"
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
 #include "base/process/environment_internal.h"
@@ -30,6 +36,8 @@
 #include "base/system/sys_info.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/scoped_thread_priority.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
@@ -40,23 +48,26 @@ namespace base {
 
 namespace {
 
-bool GetAppOutputInternal(CommandLine::StringViewType cl,
-                          bool include_stderr,
-                          std::string* output,
-                          int* exit_code) {
+bool GetAppOutputInternal(
+    CommandLine::StringViewType cl,
+    bool include_stderr,
+    std::string* output,
+    int* exit_code,
+    TimeDelta timeout = TimeDelta::Max(),
+    LaunchOptions options = {},
+    FunctionRef<void(std::string_view)> still_waiting =
+        [](std::string_view partial_output) {},
+    TerminationStatus* final_status = nullptr) {
   TRACE_EVENT0("base", "GetAppOutput");
 
+  if (final_status) {
+    *final_status = TERMINATION_STATUS_LAUNCH_FAILED;
+  }
   HANDLE out_read = nullptr;
   HANDLE out_write = nullptr;
 
-  SECURITY_ATTRIBUTES sa_attr;
-  // Set the bInheritHandle flag so pipe handles are inherited.
-  sa_attr.nLength = sizeof(SECURITY_ATTRIBUTES);
-  sa_attr.bInheritHandle = TRUE;
-  sa_attr.lpSecurityDescriptor = nullptr;
-
   // Create the pipe for the child process's STDOUT.
-  if (!CreatePipe(&out_read, &out_write, &sa_attr, 0)) {
+  if (!CreatePipe(&out_read, &out_write, nullptr, 0)) {
     DPLOG(ERROR) << "Failed to create pipe";
     return false;
   }
@@ -65,70 +76,86 @@ bool GetAppOutputInternal(CommandLine::StringViewType cl,
   win::ScopedHandle scoped_out_read(out_read);
   win::ScopedHandle scoped_out_write(out_write);
 
-  // Ensure the read handles to the pipes are not inherited.
-  if (!SetHandleInformation(out_read, HANDLE_FLAG_INHERIT, 0)) {
-    DPLOG(ERROR) << "Failed to disabled pipe inheritance";
-    return false;
-  }
-
-  FilePath::StringType writable_command_line_string(cl);
-
-  STARTUPINFO start_info = {};
-
-  start_info.cb = sizeof(STARTUPINFO);
-  start_info.hStdOutput = out_write;
-  // Keep the normal stdin.
-  start_info.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
+  // The std output (and std error if `include_stderr` is `true`) handles should
+  // not be specified, since this function overrides them.
+  CHECK(!options.stdout_handle);
+  options.stdout_handle = out_write;
   if (include_stderr) {
-    start_info.hStdError = out_write;
-  } else {
-    start_info.hStdError = GetStdHandle(STD_ERROR_HANDLE);
+    CHECK(!options.stderr_handle);
+    options.stderr_handle = out_write;
   }
-  start_info.dwFlags |= STARTF_USESTDHANDLES;
+  options.handles_to_inherit.push_back(out_write);
 
   // Create the child process.
-  PROCESS_INFORMATION temp_process_info = {};
-  if (!CreateProcess(nullptr, data(writable_command_line_string), nullptr,
-                     nullptr,
-                     TRUE,  // Handles are inherited.
-                     0, nullptr, nullptr, &start_info, &temp_process_info)) {
-    DPLOG(ERROR) << "Failed to start process";
+  base::Process process =
+      base::LaunchProcess(CommandLine::StringType(cl), options);
+  if (!process.IsValid()) {
     return false;
   }
-
-  win::ScopedProcessInformation proc_info(temp_process_info);
 
   // Close our writing end of pipe now. Otherwise later read would not be able
   // to detect end of child's output.
   scoped_out_write.Close();
 
-  // Read output from the child process's pipe for STDOUT
-  const int kBufferSize = 1024;
-  char buffer[kBufferSize];
+  const ElapsedTimer timer;
 
-  for (;;) {
-    DWORD bytes_read = 0;
-    BOOL success =
-        ::ReadFile(out_read, buffer, kBufferSize, &bytes_read, nullptr);
-    if (!success || bytes_read == 0) {
+  do {
+    bool process_exited = false;
+    {
+      // It is okay to allow this process to wait on the launched process as a
+      // process launched with GetAppOutput*() shouldn't wait back on the
+      // process that launched it.
+      internal::GetAppOutputScopedAllowBaseSyncPrimitives allow_wait;
+      ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                              BlockingType::MAY_BLOCK);
+      process_exited = process.WaitForExitWithTimeout(Seconds(1), nullptr);
+    }
+
+    // Read output from the child process's pipe for STDOUT
+    const DWORD kBufferSize = 1024 * 4;
+    char buffer[kBufferSize];
+    for (DWORD bytes_available = 0; PeekNamedPipe(out_read, nullptr, 0, nullptr,
+                                                  &bytes_available, nullptr) &&
+                                    bytes_available;) {
+      for (DWORD bytes_read = 0; bytes_available;
+           bytes_available -= bytes_read) {
+        const DWORD bytes_to_read = std::min(kBufferSize, bytes_available);
+        if (const BOOL success =
+                ReadFile(out_read, buffer, bytes_to_read, &bytes_read, nullptr);
+            !success || !bytes_read) {
+          break;
+        }
+        CHECK_LE(bytes_read, bytes_to_read);
+        std::string_view buffer_view(buffer, bytes_read);
+        still_waiting(buffer_view);
+        if (output) {
+          output->append(buffer_view);
+        }
+      }
+
+      if (!process_exited) {
+        // Loop back to the wait.
+        break;
+      }
+
+      // The process ended, so continue reading as long as there is data
+      // available.
+    }
+
+    if (process_exited) {
+      // Exit and return from the function.
       break;
     }
-    output->append(buffer, bytes_read);
-  }
 
-  // Let's wait for the process to finish.
-  {
-    // It is okay to allow this process to wait on the launched process as a
-    // process launched with GetAppOutput*() shouldn't wait back on the process
-    // that launched it.
-    internal::GetAppOutputScopedAllowBaseSyncPrimitives allow_wait;
-    ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-    WaitForSingleObject(proc_info.process_handle(), INFINITE);
-  }
+    still_waiting({});
+  } while (timer.Elapsed() < timeout);
 
-  TerminationStatus status =
-      GetTerminationStatus(proc_info.process_handle(), exit_code);
+  TerminationStatus status = GetTerminationStatus(process.Handle(), exit_code);
+  if (final_status) {
+    *final_status = status;
+  }
   return status != TERMINATION_STATUS_PROCESS_CRASHED &&
+         status != TERMINATION_STATUS_STILL_RUNNING &&
          status != TERMINATION_STATUS_ABNORMAL_TERMINATION;
 }
 
@@ -471,6 +498,19 @@ bool GetAppOutputWithExitCode(const CommandLine& cl,
                               int* exit_code) {
   return GetAppOutputInternal(cl.GetCommandLineString(), false, output,
                               exit_code);
+}
+
+bool GetAppOutputWithExitCodeAndTimeout(
+    CommandLine::StringViewType cl,
+    bool include_stderr,
+    std::string* output,
+    int* exit_code,
+    TimeDelta timeout,
+    const LaunchOptions& options,
+    FunctionRef<void(std::string_view)> still_waiting,
+    TerminationStatus* final_status) {
+  return GetAppOutputInternal(cl, include_stderr, output, exit_code, timeout,
+                              options, still_waiting, final_status);
 }
 
 bool GetAppOutput(CommandLine::StringViewType cl, std::string* output) {

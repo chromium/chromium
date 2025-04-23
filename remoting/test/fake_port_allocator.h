@@ -18,11 +18,11 @@ namespace remoting {
 class FakeNetworkDispatcher;
 class FakePacketSocketFactory;
 
-class FakePortAllocator : public cricket::BasicPortAllocator {
+class FakePortAllocator : public webrtc::BasicPortAllocator {
  public:
   FakePortAllocator(
-      rtc::NetworkManager* network_manager,
-      rtc::PacketSocketFactory* socket_factory,
+      webrtc::NetworkManager* network_manager,
+      webrtc::PacketSocketFactory* socket_factory,
       scoped_refptr<protocol::TransportContext> transport_context_);
 
   FakePortAllocator(const FakePortAllocator&) = delete;
@@ -30,8 +30,8 @@ class FakePortAllocator : public cricket::BasicPortAllocator {
 
   ~FakePortAllocator() override;
 
-  // cricket::BasicPortAllocator overrides.
-  cricket::PortAllocatorSession* CreateSessionInternal(
+  // webrtc::BasicPortAllocator overrides.
+  webrtc::PortAllocatorSession* CreateSessionInternal(
       std::string_view content_name,
       int component,
       std::string_view ice_username_fragment,
@@ -60,7 +60,7 @@ class FakePortAllocatorFactory : public protocol::PortAllocatorFactory {
       override;
 
  private:
-  std::unique_ptr<rtc::NetworkManager> network_manager_;
+  std::unique_ptr<webrtc::NetworkManager> network_manager_;
   std::unique_ptr<FakePacketSocketFactory> socket_factory_;
 };
 

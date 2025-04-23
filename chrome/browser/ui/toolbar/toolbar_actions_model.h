@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/extension_action_dispatcher.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "extensions/browser/extension_action.h"
@@ -22,10 +23,6 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_management.h"
-#endif
 
 class Browser;
 class PrefService;
@@ -46,9 +43,7 @@ class ExtensionActionManager;
 class ToolbarActionsModel
     : public extensions::ExtensionActionDispatcher::Observer,
       public extensions::ExtensionRegistryObserver,
-#if BUILDFLAG(ENABLE_EXTENSIONS)
       public extensions::ExtensionManagement::Observer,
-#endif
       public extensions::PermissionsManager::Observer,
       public KeyedService {
  public:
@@ -120,11 +115,9 @@ class ToolbarActionsModel
   // toolbar.
   bool IsRestrictedUrl(const GURL& url) const;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Returns if `url` is a policy-blocked url for all non-enterprise extensions
   // with actions in the toolbar.
   bool IsPolicyBlockedHost(const GURL& url) const;
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // Returns true if the action is pinned to the toolbar.
   bool IsActionPinned(const ActionId& action_id) const;
@@ -160,10 +153,8 @@ class ToolbarActionsModel
       content::WebContents* web_contents,
       content::BrowserContext* browser_context) override;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   // extensions::ExtensionManagement::Observer:
   void OnExtensionManagementSettingsChanged() override;
-#endif
 
   // extensions::PermissionsManager::Observer:
   void OnExtensionPermissionsUpdated(
@@ -253,11 +244,9 @@ class ToolbarActionsModel
   // For observing pinned extensions changing.
   PrefChangeRegistrar pref_change_registrar_;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   base::ScopedObservation<extensions::ExtensionManagement,
                           extensions::ExtensionManagement::Observer>
       extension_management_observation_{this};
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   base::ScopedObservation<extensions::PermissionsManager,
                           extensions::PermissionsManager::Observer>

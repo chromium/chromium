@@ -33,6 +33,11 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "stack_alloc.h"
 #include "os_support.h"
 
+#ifdef ENABLE_OSCE
+#include "osce.h"
+#include "osce_structs.h"
+#endif
+
 /************************/
 /* Decoder Super Struct */
 /************************/
@@ -42,11 +47,32 @@ typedef struct {
     opus_int                         nChannelsAPI;
     opus_int                         nChannelsInternal;
     opus_int                         prev_decode_only_middle;
+#ifdef ENABLE_OSCE
+    OSCEModel                        osce_model;
+#endif
 } silk_decoder;
 
 /*********************/
 /* Decoder functions */
 /*********************/
+
+
+
+opus_int silk_LoadOSCEModels(void *decState, const unsigned char *data, int len)
+{
+#ifdef ENABLE_OSCE
+    opus_int ret = SILK_NO_ERROR;
+
+    ret = osce_load_models(&((silk_decoder *)decState)->osce_model, data, len);
+    ((silk_decoder *)decState)->osce_model.loaded = (ret == 0);
+    return ret;
+#else
+    (void) decState;
+    (void) data;
+    (void) len;
+    return SILK_NO_ERROR;
+#endif
+}
 
 opus_int silk_Get_Decoder_Size(                         /* O    Returns error code                              */
     opus_int                        *decSizeBytes       /* O    Number of bytes in SILK decoder state           */
@@ -60,12 +86,37 @@ opus_int silk_Get_Decoder_Size(                         /* O    Returns error co
 }
 
 /* Reset decoder state */
+opus_int silk_ResetDecoder(                              /* O    Returns error code                              */
+    void                            *decState           /* I/O  State                                           */
+)
+{
+    opus_int n, ret = SILK_NO_ERROR;
+    silk_decoder_state *channel_state = ((silk_decoder *)decState)->channel_state;
+
+    for( n = 0; n < DECODER_NUM_CHANNELS; n++ ) {
+        ret  = silk_reset_decoder( &channel_state[ n ] );
+    }
+    silk_memset(&((silk_decoder *)decState)->sStereo, 0, sizeof(((silk_decoder *)decState)->sStereo));
+    /* Not strictly needed, but it's cleaner that way */
+    ((silk_decoder *)decState)->prev_decode_only_middle = 0;
+
+    return ret;
+}
+
+
 opus_int silk_InitDecoder(                              /* O    Returns error code                              */
     void                            *decState           /* I/O  State                                           */
 )
 {
     opus_int n, ret = SILK_NO_ERROR;
     silk_decoder_state *channel_state = ((silk_decoder *)decState)->channel_state;
+#ifdef ENABLE_OSCE
+    ((silk_decoder *)decState)->osce_model.loaded = 0;
+#endif
+#ifndef USE_WEIGHTS_FILE
+    /* load osce models */
+    silk_LoadOSCEModels(decState, NULL, 0);
+#endif
 
     for( n = 0; n < DECODER_NUM_CHANNELS; n++ ) {
         ret  = silk_init_decoder( &channel_state[ n ] );
@@ -84,8 +135,11 @@ opus_int silk_Decode(                                   /* O    Returns error co
     opus_int                        lostFlag,           /* I    0: no loss, 1 loss, 2 decode fec                */
     opus_int                        newPacketFlag,      /* I    Indicates first decoder call for this packet    */
     ec_dec                          *psRangeDec,        /* I/O  Compressor data structure                       */
-    opus_int16                      *samplesOut,        /* O    Decoded output speech vector                    */
+    opus_res                        *samplesOut,        /* O    Decoded output speech vector                    */
     opus_int32                      *nSamplesOut,       /* O    Number of samples decoded                       */
+#ifdef ENABLE_DEEP_PLC
+    LPCNetPLCState                  *lpcnet,
+#endif
     int                             arch                /* I    Run-time architecture                           */
 )
 {
@@ -93,7 +147,6 @@ opus_int silk_Decode(                                   /* O    Returns error co
     opus_int32 nSamplesOutDec, LBRR_symbol;
     opus_int16 *samplesOut1_tmp[ 2 ];
     VARDECL( opus_int16, samplesOut1_tmp_storage1 );
-    VARDECL( opus_int16, samplesOut1_tmp_storage2 );
     VARDECL( opus_int16, samplesOut2_tmp );
     opus_int32 MS_pred_Q13[ 2 ] = { 0 };
     opus_int16 *resample_out_ptr;
@@ -101,7 +154,6 @@ opus_int silk_Decode(                                   /* O    Returns error co
     silk_decoder_state *channel_state = psDec->channel_state;
     opus_int has_side;
     opus_int stereo_to_mono;
-    int delay_stack_alloc;
     SAVE_STACK;
 
     celt_assert( decControl->nChannelsInternal == 1 || decControl->nChannelsInternal == 2 );
@@ -258,19 +310,10 @@ opus_int silk_Decode(                                   /* O    Returns error co
     /* Check if the temp buffer fits into the output PCM buffer. If it fits,
        we can delay allocating the temp buffer until after the SILK peak stack
        usage. We need to use a < and not a <= because of the two extra samples. */
-    delay_stack_alloc = decControl->internalSampleRate*decControl->nChannelsInternal
-          < decControl->API_sampleRate*decControl->nChannelsAPI;
-    ALLOC( samplesOut1_tmp_storage1, delay_stack_alloc ? ALLOC_NONE
-           : decControl->nChannelsInternal*(channel_state[ 0 ].frame_length + 2 ),
+    ALLOC( samplesOut1_tmp_storage1, decControl->nChannelsInternal*(channel_state[ 0 ].frame_length + 2 ),
            opus_int16 );
-    if ( delay_stack_alloc )
-    {
-       samplesOut1_tmp[ 0 ] = samplesOut;
-       samplesOut1_tmp[ 1 ] = samplesOut + channel_state[ 0 ].frame_length + 2;
-    } else {
-       samplesOut1_tmp[ 0 ] = samplesOut1_tmp_storage1;
-       samplesOut1_tmp[ 1 ] = samplesOut1_tmp_storage1 + channel_state[ 0 ].frame_length + 2;
-    }
+    samplesOut1_tmp[ 0 ] = samplesOut1_tmp_storage1;
+    samplesOut1_tmp[ 1 ] = samplesOut1_tmp_storage1 + channel_state[ 0 ].frame_length + 2;
 
     if( lostFlag == FLAG_DECODE_NORMAL ) {
         has_side = !decode_only_middle;
@@ -278,6 +321,7 @@ opus_int silk_Decode(                                   /* O    Returns error co
         has_side = !psDec->prev_decode_only_middle
               || (decControl->nChannelsInternal == 2 && lostFlag == FLAG_DECODE_LBRR && channel_state[1].LBRR_flags[ channel_state[1].nFramesDecoded ] == 1 );
     }
+    channel_state[ 0 ].sPLC.enable_deep_plc = decControl->enable_deep_plc;
     /* Call decoder for one frame */
     for( n = 0; n < decControl->nChannelsInternal; n++ ) {
         if( n == 0 || has_side ) {
@@ -297,7 +341,19 @@ opus_int silk_Decode(                                   /* O    Returns error co
             } else {
                 condCoding = CODE_CONDITIONALLY;
             }
-            ret += silk_decode_frame( &channel_state[ n ], psRangeDec, &samplesOut1_tmp[ n ][ 2 ], &nSamplesOutDec, lostFlag, condCoding, arch);
+#ifdef ENABLE_OSCE
+            if ( channel_state[n].osce.method != decControl->osce_method ) {
+                osce_reset( &channel_state[n].osce, decControl->osce_method );
+            }
+#endif
+            ret += silk_decode_frame( &channel_state[ n ], psRangeDec, &samplesOut1_tmp[ n ][ 2 ], &nSamplesOutDec, lostFlag, condCoding,
+#ifdef ENABLE_DEEP_PLC
+                n == 0 ? lpcnet : NULL,
+#endif
+#ifdef ENABLE_OSCE
+                &psDec->osce_model,
+#endif
+                arch);
         } else {
             silk_memset( &samplesOut1_tmp[ n ][ 2 ], 0, nSamplesOutDec * sizeof( opus_int16 ) );
         }
@@ -317,23 +373,9 @@ opus_int silk_Decode(                                   /* O    Returns error co
     *nSamplesOut = silk_DIV32( nSamplesOutDec * decControl->API_sampleRate, silk_SMULBB( channel_state[ 0 ].fs_kHz, 1000 ) );
 
     /* Set up pointers to temp buffers */
-    ALLOC( samplesOut2_tmp,
-           decControl->nChannelsAPI == 2 ? *nSamplesOut : ALLOC_NONE, opus_int16 );
-    if( decControl->nChannelsAPI == 2 ) {
-        resample_out_ptr = samplesOut2_tmp;
-    } else {
-        resample_out_ptr = samplesOut;
-    }
+    ALLOC( samplesOut2_tmp, *nSamplesOut, opus_int16 );
+    resample_out_ptr = samplesOut2_tmp;
 
-    ALLOC( samplesOut1_tmp_storage2, delay_stack_alloc
-           ? decControl->nChannelsInternal*(channel_state[ 0 ].frame_length + 2 )
-           : ALLOC_NONE,
-           opus_int16 );
-    if ( delay_stack_alloc ) {
-       OPUS_COPY(samplesOut1_tmp_storage2, samplesOut, decControl->nChannelsInternal*(channel_state[ 0 ].frame_length + 2));
-       samplesOut1_tmp[ 0 ] = samplesOut1_tmp_storage2;
-       samplesOut1_tmp[ 1 ] = samplesOut1_tmp_storage2 + channel_state[ 0 ].frame_length + 2;
-    }
     for( n = 0; n < silk_min( decControl->nChannelsAPI, decControl->nChannelsInternal ); n++ ) {
 
         /* Resample decoded signal to API_sampleRate */
@@ -342,7 +384,11 @@ opus_int silk_Decode(                                   /* O    Returns error co
         /* Interleave if stereo output and stereo stream */
         if( decControl->nChannelsAPI == 2 ) {
             for( i = 0; i < *nSamplesOut; i++ ) {
-                samplesOut[ n + 2 * i ] = resample_out_ptr[ i ];
+                samplesOut[ n + 2 * i ] = INT16TORES(resample_out_ptr[ i ]);
+            }
+        } else {
+            for( i = 0; i < *nSamplesOut; i++ ) {
+                samplesOut[ i ] = INT16TORES(resample_out_ptr[ i ]);
             }
         }
     }
@@ -355,7 +401,7 @@ opus_int silk_Decode(                                   /* O    Returns error co
             ret += silk_resampler( &channel_state[ 1 ].resampler_state, resample_out_ptr, &samplesOut1_tmp[ 0 ][ 1 ], nSamplesOutDec );
 
             for( i = 0; i < *nSamplesOut; i++ ) {
-                samplesOut[ 1 + 2 * i ] = resample_out_ptr[ i ];
+                samplesOut[ 1 + 2 * i ] = INT16TORES(resample_out_ptr[ i ]);
             }
         } else {
             for( i = 0; i < *nSamplesOut; i++ ) {

@@ -507,7 +507,8 @@ TEST_F(NativeViewHostAuraTest, FocusManagerUpdatedDuringDestruction) {
       std::make_unique<NativeViewHost>();
   toplevel()->GetContentsView()->AddChildViewRaw(native_view_host.get());
 
-  auto widget_delegate_view = std::make_unique<WidgetDelegateView>();
+  auto widget_delegate_view =
+      std::make_unique<WidgetDelegateView>(WidgetDelegateView::CreatePassKey());
   Widget::InitParams params =
       CreateParams(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
                    Widget::InitParams::TYPE_CONTROL);

@@ -41,7 +41,7 @@
 #include "content/public/common/content_client.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -51,7 +51,6 @@ namespace extensions {
 
 namespace {
 
-#if !BUILDFLAG(IS_ANDROID)
 // A helper class to wait until a given WebContents is audible or inaudible.
 // TODO(devlin): Put this somewhere common? //content/public/test/?
 class AudioWaiter : public content::WebContentsObserver {
@@ -84,7 +83,6 @@ class AudioWaiter : public content::WebContentsObserver {
   base::RunLoop run_loop_;
   bool expected_state_ = false;
 };
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Sets the extension to be enabled in incognito mode.
 scoped_refptr<const Extension> SetExtensionIncognitoEnabled(
@@ -470,8 +468,6 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest,
   EXPECT_FALSE(has_offscreen_document(*incognito_profile));
 }
 
-// TODO(crbug.com/378916068): Enable more tests on desktop android.
-#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(OffscreenApiTest, LifetimeEnforcement) {
   static constexpr char kManifest[] =
       R"({
@@ -553,28 +549,6 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest, LifetimeEnforcement) {
   EXPECT_FALSE(manager->GetOffscreenDocumentForExtension(*extension));
 }
 
-// TODO(crbug.com/40272130): Failing on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_TabCaptureStreams DISABLED_TabCaptureStreams
-#else
-#define MAYBE_TabCaptureStreams TabCaptureStreams
-#endif
-IN_PROC_BROWSER_TEST_F(OffscreenApiTest, MAYBE_TabCaptureStreams) {
-  const Extension* extension = LoadExtension(
-      test_data_dir_.AppendASCII("offscreen/tab_capture_streams"));
-  ASSERT_TRUE(extension);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_test_server()->GetURL("example.com", "/simple.html")));
-
-  // Tab capture requires active tab, so click on the action to grant permission
-  // and kick off the tests.
-  ResultCatcher result_catcher;
-  ExtensionActionTestHelper::Create(browser())->Press(extension->id());
-  ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
-}
-
 // Tests opening an offscreen document that takes awhile to load properly waits
 // for the document to load before resolving the promise, ensuring the document
 // is ready to receive messages by the time the promise resolves.
@@ -623,6 +597,31 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest, LongLoadOffscreenDocument) {
   test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.js"), kOffscreenJs);
 
   ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
+}
+
+// TODO(crbug.com/378916068): Enable the following tests on desktop Android
+// when chrome.action is supported on desktop Android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/40272130): Failing on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_TabCaptureStreams DISABLED_TabCaptureStreams
+#else
+#define MAYBE_TabCaptureStreams TabCaptureStreams
+#endif
+IN_PROC_BROWSER_TEST_F(OffscreenApiTest, MAYBE_TabCaptureStreams) {
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("offscreen/tab_capture_streams"));
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("example.com", "/simple.html")));
+
+  // Tab capture requires active tab, so click on the action to grant permission
+  // and kick off the tests.
+  ResultCatcher result_catcher;
+  ExtensionActionTestHelper::Create(browser())->Press(extension->id());
+  ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
 // Tests user gestures are curried from service workers into offscreen
@@ -686,6 +685,6 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest,
   ExtensionActionTestHelper::Create(browser())->Press(extension->id());
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif
 
 }  // namespace extensions

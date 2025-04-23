@@ -14,11 +14,14 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.toolbar.BaseButtonDataProvider;
-import org.chromium.chrome.browser.toolbar.ButtonData;
-import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** Controller for page summary toolbar button. */
@@ -26,6 +29,7 @@ public class PageSummaryButtonController extends BaseButtonDataProvider {
 
     private final Context mContext;
     private final AiAssistantService mAiAssistantService;
+    private final Supplier<Tracker> mTrackerSupplier;
 
     private final ButtonSpec mPageSummarySpec;
     private final ButtonSpec mReviewPdfSpec;
@@ -41,7 +45,8 @@ public class PageSummaryButtonController extends BaseButtonDataProvider {
             Context context,
             ModalDialogManager modalDialogManager,
             Supplier<Tab> activeTabSupplier,
-            AiAssistantService aiAssistantService) {
+            AiAssistantService aiAssistantService,
+            Supplier<Tracker> tracker) {
         super(
                 activeTabSupplier,
                 /* modalDialogManager= */ modalDialogManager,
@@ -55,6 +60,7 @@ public class PageSummaryButtonController extends BaseButtonDataProvider {
                 /* showBackgroundHighlight= */ true);
         mContext = context;
         mAiAssistantService = aiAssistantService;
+        mTrackerSupplier = tracker;
 
         mPageSummarySpec = mButtonData.getButtonSpec();
         mReviewPdfSpec =
@@ -75,7 +81,7 @@ public class PageSummaryButtonController extends BaseButtonDataProvider {
 
     @Override
     public ButtonData get(Tab tab) {
-        var isPdfPage = tab != null && tab.getNativePage() instanceof PdfPage;
+        var isPdfPage = isPdfPage(tab);
         mButtonData.setButtonSpec(isPdfPage ? mReviewPdfSpec : mPageSummarySpec);
         return super.get(tab);
     }
@@ -88,12 +94,39 @@ public class PageSummaryButtonController extends BaseButtonDataProvider {
     @Override
     public void onClick(View view) {
         assert mActiveTabSupplier.hasValue() : "Active tab supplier should have a value";
+        assert mTrackerSupplier.hasValue() : "Tracker supplier should have a value";
+        var activeTab = mActiveTabSupplier.get();
+        var trackerEvent =
+                isPdfPage(activeTab)
+                        ? EventConstants.ADAPTIVE_TOOLBAR_PAGE_SUMMARY_PDF_USED
+                        : EventConstants.ADAPTIVE_TOOLBAR_PAGE_SUMMARY_WEB_USED;
+        mTrackerSupplier.get().notifyEvent(trackerEvent);
 
-        mAiAssistantService.showAi(mContext, mActiveTabSupplier.get());
+        mAiAssistantService.showAi(mContext, activeTab);
     }
 
     @Override
     protected IphCommandBuilder getIphCommandBuilder(Tab tab) {
-        return super.getIphCommandBuilder(tab);
+        var tabIsPdf = isPdfPage(tab);
+        var featureName =
+                tabIsPdf
+                        ? FeatureConstants
+                                .ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_PAGE_SUMMARY_PDF_FEATURE
+                        : FeatureConstants
+                                .ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_PAGE_SUMMARY_WEB_FEATURE;
+        var stringId =
+                tabIsPdf
+                        ? R.string.adaptive_toolbar_button_review_pdf_iph
+                        : R.string.adaptive_toolbar_button_page_summary_iph;
+
+        return new IphCommandBuilder(
+                tab.getContext().getResources(),
+                featureName,
+                /* stringId= */ stringId,
+                /* accessibilityStringId= */ stringId);
+    }
+
+    private boolean isPdfPage(Tab tab) {
+        return tab != null && tab.getNativePage() instanceof PdfPage;
     }
 }

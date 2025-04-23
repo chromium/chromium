@@ -56,6 +56,7 @@ void ProfileReportGenerator::MaybeGenerate(
   report_ = std::make_unique<em::ChromeUserProfileInfo>();
 
   switch (report_type) {
+    // TODO(crbug.com/330336666): Rename report type `kFull` to `kBrowser`.
     case ReportType::kFull:
       report_->set_id(path.AsUTF8Unsafe());
       break;

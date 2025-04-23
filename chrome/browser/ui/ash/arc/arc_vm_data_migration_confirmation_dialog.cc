@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/ash/arc/arc_vm_data_migration_confirmation_dialog.h"
 
+#include "ash/public/cpp/ash_typography.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/vector_icons/vector_icons.h"
@@ -101,7 +101,7 @@ ArcVmDataMigrationConfirmationDialog::ArcVmDataMigrationConfirmationDialog(
 
   // Not system modal so that the user can interact with apps before restart.
   SetModalType(ui::mojom::ModalType::kNone);
-  SetOwnedByWidget(true);
+  SetOwnedByWidget(OwnedByWidgetPassKey());
   SetShowCloseButton(false);
 
   const auto* layout_provider = views::LayoutProvider::Get();
@@ -176,7 +176,7 @@ void ArcVmDataMigrationConfirmationDialog::InitializeView(
               IDS_ARC_VM_DATA_MIGRATION_DIALOG_DAYS_UNTIL_DEADLINE,
               days_until_deadline))
           .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
-          .SetTextStyle(ChromeTextStyle::STYLE_RED)
+          .SetTextStyle(ash::STYLE_ALERT)
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetMultiLine(true)
           .Build());

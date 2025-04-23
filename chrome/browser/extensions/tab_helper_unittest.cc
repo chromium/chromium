@@ -5,7 +5,6 @@
 #include "chrome/browser/extensions/tab_helper.h"
 
 #include "base/run_loop.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -13,6 +12,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/web_contents_tester.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/test/test_extension_dir.h"
 #include "url/origin.h"
@@ -84,8 +84,8 @@ TEST_F(TabHelperUnitTest, ClearsExtensionOnUnload) {
   tab_helper()->SetExtensionApp(extension);
   EXPECT_EQ(extension->id(), tab_helper()->GetExtensionAppId());
   EXPECT_TRUE(tab_helper()->is_app());
-  service()->UnloadExtension(extension->id(),
-                             UnloadedExtensionReason::TERMINATE);
+  registrar()->RemoveExtension(extension->id(),
+                               UnloadedExtensionReason::TERMINATE);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(ExtensionId(), tab_helper()->GetExtensionAppId());
 }

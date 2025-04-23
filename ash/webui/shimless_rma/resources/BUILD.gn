@@ -65,7 +65,7 @@ build_webui("build") {
     "wrapup_wait_for_manual_wp_enable_page.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "data.ts",
     "events.ts",
     "fake_data.ts",

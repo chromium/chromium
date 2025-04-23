@@ -143,6 +143,8 @@ String PermissionNameToString(PermissionName name) {
       return "hand-tracking";
     case PermissionName::WEB_PRINTING:
       return "web-printing";
+    case PermissionName::SMART_CARD:
+      return "smart-card";
   }
 }
 

@@ -98,7 +98,11 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [super setUp];
 
   // Some tests change the value of this pref, so reset.
-  [ChromeEarlGrey clearUserPrefWithName:prefs::kSigninAllowed];
+  [ChromeEarlGrey resetDataForLocalStatePref:prefs::kSigninAllowedOnDevice];
+  GREYAssertEqual(
+      [ChromeEarlGrey userBooleanPref:prefs::kSigninAllowed],
+      [ChromeEarlGrey localStateBooleanPref:prefs::kSigninAllowedOnDevice],
+      @"Signin allowed policy not synchronized");
   [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey clearBookmarks];
 }
@@ -106,7 +110,11 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 - (void)tearDownHelper {
   [super tearDownHelper];
   // Some tests change the value of this pref, so reset.
-  [ChromeEarlGrey clearUserPrefWithName:prefs::kSigninAllowed];
+  [ChromeEarlGrey resetDataForLocalStatePref:prefs::kSigninAllowedOnDevice];
+  GREYAssertEqual(
+      [ChromeEarlGrey userBooleanPref:prefs::kSigninAllowed],
+      [ChromeEarlGrey localStateBooleanPref:prefs::kSigninAllowedOnDevice],
+      @"Signin allowed policy not synchronized");
   [BookmarkEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
 }

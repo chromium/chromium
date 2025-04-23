@@ -6,6 +6,7 @@
 
 #include <math.h>
 
+#include <cstdint>
 #include <memory>
 #include <unordered_map>
 #include <unordered_set>
@@ -194,7 +195,7 @@ auto CreateFrameBuffer(const std::string& model_input,
                        int input_width,
                        int input_height) {
   tflite::task::vision::FrameBuffer::Plane plane{
-      reinterpret_cast<const tflite::uint8*>(model_input.data()),
+      reinterpret_cast<const uint8_t*>(model_input.data()),
       {3 * input_width, 3}};
   return tflite::task::vision::FrameBuffer::Create(
       {plane}, {input_width, input_height},

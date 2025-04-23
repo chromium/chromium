@@ -154,6 +154,7 @@ TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsBasic) {
   EXPECT_EQ(column_intersections.size(), 4);
 
   VerifyGapIntersections(expected_row_intersections, row_intersections);
+  VerifyGapIntersections(expected_column_intersections, column_intersections);
 }
 
 TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsOneLine) {
@@ -222,6 +223,7 @@ TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsOneLine) {
   EXPECT_EQ(column_intersections.size(), 1);
 
   VerifyGapIntersections(expected_row_intersections, row_intersections);
+  VerifyGapIntersections(expected_column_intersections, column_intersections);
 }
 
 TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsNonAlignedColumn) {
@@ -314,6 +316,7 @@ body {
   EXPECT_EQ(column_intersections.size(), 5);
 
   VerifyGapIntersections(expected_row_intersections, row_intersections);
+  VerifyGapIntersections(expected_column_intersections, column_intersections);
 }
 
 TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsNonAlignedColumn2) {
@@ -402,6 +405,7 @@ body {
   EXPECT_EQ(column_intersections.size(), 3);
 
   VerifyGapIntersections(expected_row_intersections, row_intersections);
+  VerifyGapIntersections(expected_column_intersections, column_intersections);
 }
 
 TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsVerticalFlexAlignedCenter) {
@@ -487,6 +491,7 @@ body {
   EXPECT_EQ(column_intersections.size(), 4);
 
   VerifyGapIntersections(expected_row_intersections, row_intersections);
+  VerifyGapIntersections(expected_column_intersections, column_intersections);
 }
 
 TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsVerticalFlexAlignedStart) {
@@ -572,6 +577,7 @@ body {
   EXPECT_EQ(column_intersections.size(), 4);
 
   VerifyGapIntersections(expected_row_intersections, row_intersections);
+  VerifyGapIntersections(expected_column_intersections, column_intersections);
 }
 
 TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsVerticalFlexAlignedStretch) {
@@ -657,6 +663,95 @@ body {
   EXPECT_EQ(column_intersections.size(), 4);
 
   VerifyGapIntersections(expected_row_intersections, row_intersections);
+  VerifyGapIntersections(expected_column_intersections, column_intersections);
+}
+
+TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsColumnFlexDirection) {
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    body {
+        margin: 0px;
+    }
+
+    #flexbox {
+        border: 2px solid rgb(96 139 168);
+        display: flex;
+        column-gap: 20px;
+        row-gap: 10px;
+        width: 120px;
+        height: 170px;
+        flex-wrap: wrap;
+        flex-direction: column;
+        column-rule-style: solid;
+        column-rule-color: red;
+        column-rule-width: 10px;
+    }
+
+    .items {
+        background-color: rgb(96 139 168 / 0.2);
+        flex-shrink: 1;
+        width: 50px;
+        height: 50px;
+    }
+
+</style>
+
+<div id="flexbox">
+    <div class="items">One</div>
+    <div class="items">Two</div>
+    <div class="items">Three</div>
+    <div class="items">Four</div>
+    <div class="items">Five</div>
+    <div class="items">Six</div>
+</div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("flexbox"));
+
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(500), LayoutUnit(500)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
+
+  FragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
+
+  FlexLayoutAlgorithm algorithm({node, fragment_geometry, space});
+
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometryForTest();
+
+  const Vector<GapIntersectionList> expected_row_intersections = {
+      {GapIntersection(LayoutUnit(2), LayoutUnit(57)),
+       GapIntersection(LayoutUnit(62), LayoutUnit(57))},
+      {GapIntersection(LayoutUnit(2), LayoutUnit(117)),
+       GapIntersection(LayoutUnit(62), LayoutUnit(117))},
+      {GapIntersection(LayoutUnit(62), LayoutUnit(57)),
+       GapIntersection(LayoutUnit(122), LayoutUnit(57))},
+      {GapIntersection(LayoutUnit(62), LayoutUnit(117)),
+       GapIntersection(LayoutUnit(122), LayoutUnit(117))},
+  };
+  const Vector<GapIntersectionList> expected_column_intersections = {
+      {
+          GapIntersection(LayoutUnit(62), LayoutUnit(2)),
+          GapIntersection(LayoutUnit(62), LayoutUnit(57)),
+          GapIntersection(LayoutUnit(62), LayoutUnit(117)),
+          GapIntersection(LayoutUnit(62), LayoutUnit(172)),
+      },
+  };
+
+  const Vector<GapIntersectionList> row_intersections =
+      gap_geometry->GetGapIntersections(kForRows);
+  const Vector<GapIntersectionList> column_intersections =
+      gap_geometry->GetGapIntersections(kForColumns);
+  EXPECT_EQ(row_intersections.size(), 4);
+  EXPECT_EQ(column_intersections.size(), 1);
+
+  VerifyGapIntersections(expected_row_intersections, row_intersections);
+  VerifyGapIntersections(expected_column_intersections, column_intersections);
 }
 
 TEST_F(FlexLayoutAlgorithmTest, DevtoolsBasic) {

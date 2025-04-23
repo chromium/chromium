@@ -387,6 +387,7 @@
 //media/test/data/hls/hls_support_matrix.html
 //media/test/data/hls/init_0.mp4
 //media/test/data/hls/mp_mp4_avc1.m3u8
+//media/test/data/hls/mp_ts_avc1.hls
 //media/test/data/hls/mp_ts_avc1.m3u8
 //media/test/data/hls/multi-bitrate-multivariant-bear/out_0.m3u8
 //media/test/data/hls/multi-bitrate-multivariant-bear/out_00.ts

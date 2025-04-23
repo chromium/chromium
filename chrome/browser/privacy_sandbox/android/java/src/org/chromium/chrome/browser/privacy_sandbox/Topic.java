@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.Objects;
 
 /**
  * Represents a CanonicalTopic consisting of a TopicId and a TaxonomyVersion (see canonical_topic.h)
  * and its display name.
  */
+@NullMarked
 public final class Topic {
     private final int mTopicId;
     private final int mTaxonomyVersion;

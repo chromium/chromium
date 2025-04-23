@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <vector>
@@ -109,7 +110,7 @@ class GPU_GLES2_EXPORT GPUTracer {
   void ClearOngoingTraces(bool have_context);
 
   raw_ptr<Outputter> outputter_ = nullptr;
-  std::vector<TraceMarker> markers_[NUM_TRACER_SOURCES];
+  std::array<std::vector<TraceMarker>, NUM_TRACER_SOURCES> markers_;
   base::circular_deque<scoped_refptr<GPUTrace>> finished_traces_;
   raw_ptr<DecoderContext> decoder_;
   int64_t disjoint_time_ = 0;
@@ -166,7 +167,7 @@ class GPU_GLES2_EXPORT TraceOutputter : public Outputter {
   uint64_t local_trace_device_id_ = 0;
   uint64_t local_trace_service_id_ = 0;
 
-  base::stack<uint64_t> trace_service_id_stack_[NUM_TRACER_SOURCES];
+  std::array<base::stack<uint64_t>, NUM_TRACER_SOURCES> trace_service_id_stack_;
 };
 
 class GPU_GLES2_EXPORT GPUTrace : public base::RefCounted<GPUTrace> {

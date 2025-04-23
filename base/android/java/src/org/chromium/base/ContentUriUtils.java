@@ -410,7 +410,7 @@ public abstract class ContentUriUtils {
     /**
      * @return whether a Uri has content scheme.
      */
-    public static boolean isContentUri(String uri) {
+    public static boolean isContentUri(@Nullable String uri) {
         if (uri == null) return false;
         Uri parsedUri = Uri.parse(uri);
         return parsedUri != null && ContentResolver.SCHEME_CONTENT.equals(parsedUri.getScheme());

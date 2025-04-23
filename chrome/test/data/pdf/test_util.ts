@@ -8,7 +8,7 @@ import type {Bookmark, DocumentDimensions, LayoutOptions, PdfViewerElement, View
 import {resetForTesting as resetMetricsForTesting, UserAction, Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // <if expr="enable_pdf_ink2">
 import type {AnnotationBrush, BeforeUnloadProxy, InkBrushSelectorElement, InkColorSelectorElement, InkSizeSelectorElement, SelectableIconButtonElement, ViewerBottomToolbarDropdownElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {AnnotationBrushType, BeforeUnloadProxyImpl, PluginController, PluginControllerEventType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationBrushType, BeforeUnloadProxyImpl, Ink2Manager, PluginController, PluginControllerEventType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // </if>
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -249,7 +249,7 @@ class TestBookmarksElement extends CrLitElement {
     };
   }
 
-  bookmarks: Bookmark[] = [];
+  accessor bookmarks: Bookmark[] = [];
 }
 
 declare global {
@@ -486,6 +486,57 @@ export function setupTestMockPluginForInk(): MockPdfPluginElement {
   return mockPlugin;
 }
 
+// Sets up zoomable viewport and a dummy plugin for Ink. This combines the
+// functionality of getZoomableViewport() and setupTestMockPluginForInk(), which
+// are mutually exclusive since they both attempt to call setContent() on the
+// viewport. Returns a reference to the new viewport and plugin.
+export function setupTestViewportAndMockPluginForInk():
+    {viewport: Viewport, mockPlugin: MockPdfPluginElement} {
+  // Clear the DOM and create dummy content.
+  document.body.innerHTML = '';
+  const dummyContent = document.createElement('div');
+  document.body.appendChild(dummyContent);
+
+  // Create the viewport.
+  const mockWindow = new MockElement(100, 100, null);
+  const mockSizer = new MockSizer();
+  const viewport = new Viewport(
+      mockWindow as unknown as HTMLElement, mockSizer as unknown as HTMLElement,
+      dummyContent, /*scrollbarWidth=*/ 0, /*defaultZoom=*/ 1);
+  viewport.setZoomFactorRange([0.25, 0.4, 0.5, 1, 2]);
+  const documentDimensions = new MockDocumentDimensions(0, 0);
+  documentDimensions.addPage(90, 90);
+  viewport.setDocumentDimensions(documentDimensions);
+
+  // Create mock plugin.
+  const mockPlugin = createMockPdfPluginForTest();
+  mockPlugin.id = 'plugin';
+  mockPlugin.src = 'data:text/plain,plugin-content';
+  mockPlugin.setMessageReply('getAnnotationBrush', {
+    data: {
+      type: AnnotationBrushType.PEN,
+      size: 3,
+      color: {r: 0, g: 0, b: 0},
+    },
+  });
+
+  // Initialize controller. This also calls setContent() on the viewport.
+  const controller = PluginController.getInstance();
+  controller.init(mockPlugin, viewport, () => false, () => null);
+
+  // Initialize the ink manager and update its viewport parameters with the
+  // new dummy viewport.
+  const manager = Ink2Manager.getInstance();
+  manager.setViewport(viewport);
+  manager.viewportChanged();
+
+  // Use setViewportChangedCallback to subscribe the manager to viewport
+  // changes. In prod these are piped through the top level pdf-viewer element.
+  viewport.setViewportChangedCallback(() => manager.viewportChanged());
+
+  return {viewport, mockPlugin};
+}
+
 /**
  * Sets the reply to any getAnnotationBrush messages to `mockPlugin`.
  * @param mockPlugin The mock plugin receiving and replying to messages.
@@ -610,5 +661,10 @@ export async function clickDropdownButton(
   const dropdownButton = getRequiredElement(dropdown, 'cr-button');
   dropdownButton.click();
   await microtasksFinished();
+}
+
+export function assertDeepEquals(
+    value1: object|any[]|undefined|null, value2: object|any[]|undefined|null) {
+  chrome.test.assertTrue(chrome.test.checkDeepEq(value1, value2));
 }
 // </if>

@@ -182,8 +182,8 @@ ComponentLoader::ComponentExtensionInfo::operator=(
 ComponentLoader::ComponentExtensionInfo::~ComponentExtensionInfo() = default;
 
 // static
-ComponentLoader* ComponentLoader::Get(Profile* profile) {
-  return ComponentLoaderFactory::GetForBrowserContext(profile);
+ComponentLoader* ComponentLoader::Get(content::BrowserContext* context) {
+  return ComponentLoaderFactory::GetForBrowserContext(context);
 }
 
 ComponentLoader::ComponentLoader(Profile* profile)

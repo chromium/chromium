@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.customtabs.FirstMeaningfulPaintObserver;
 import org.chromium.chrome.browser.customtabs.HiddenTabHolder.HiddenTab;
 import org.chromium.chrome.browser.customtabs.PageLoadMetricsObserver;
 import org.chromium.chrome.browser.customtabs.TwaOfflineDataProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -56,6 +57,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParams;
+import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelInitializer;
@@ -230,8 +232,9 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
     }
 
     public void setUpInitialTab(Tab hiddenTab) {
-        if (mSavedInstanceStateSupplier.get() == null
-                && CustomTabsConnection.getInstance().hasWarmUpBeenFinished()) {
+        if ((mSavedInstanceStateSupplier.get() == null
+                        && CustomTabsConnection.getInstance().hasWarmUpBeenFinished())
+                || checkIfTabReparentingParamsExistForIntent(mIntent)) {
             mTabModelInitializer.initializeTabModels();
 
             if (hiddenTab == null) {
@@ -349,7 +352,8 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
 
         // This cannot be done before because we want to do the reparenting only
         // when we have compositor related controllers.
-        if (mode == TabCreationMode.HIDDEN) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_EARLY_NAV)
+                && mode == TabCreationMode.HIDDEN) {
             TabReparentingParams params =
                     (TabReparentingParams)
                             AsyncTabParamsManagerSingleton.getInstance().remove(tab.getId());
@@ -411,7 +415,17 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
                 ProfileProvider.getOrCreateProfile(
                         mProfileProviderSupplier.get(), mIntentDataProvider.isOffTheRecord());
         Tab tab = null;
-        if (WarmupManager.getInstance().isCctPrewarmTabFeatureEnabled(true)
+        if (checkIfTabReparentingParamsExistForIntent(mIntent)) {
+            int reparentingTabIdFromIntent = IntentHandler.getTabId(mIntent);
+            AsyncTabParams params =
+                    AsyncTabParamsManagerSingleton.getInstance().remove(reparentingTabIdFromIntent);
+            tab = params.getTabToReparent();
+            ReparentingTask.from(tab)
+                    .finish(
+                            ReparentingDelegateFactory.createReparentingTaskDelegate(
+                                    null, mWindowAndroid, mCustomTabDelegateFactory),
+                            null);
+        } else if (WarmupManager.getInstance().isCctPrewarmTabFeatureEnabled(true)
                 && warmupManager.hasSpareTab(profile, mIntentDataProvider.hasTargetNetwork())) {
             tab = warmupManager.takeSpareTab(profile, false, TabLaunchType.FROM_EXTERNAL_APP);
             TabAssociatedApp.from(tab)
@@ -528,7 +542,16 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
             observer.onContentChanged(tab);
         }
 
-        if (!isHiddenTab) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_EARLY_NAV) && isHiddenTab) {
+            TabReparentingParams params =
+                    (TabReparentingParams)
+                            AsyncTabParamsManagerSingleton.getInstance().remove(tab.getId());
+            ReparentingTask.from(tab)
+                    .finish(
+                            ReparentingDelegateFactory.createReparentingTaskDelegate(
+                                    null, mWindowAndroid, mCustomTabDelegateFactory),
+                            (params == null ? null : params.getFinalizeCallback()));
+        } else {
             addTabNavigationObservers(
                     mTabObserverRegistrar,
                     mCustomTabObserver,
@@ -603,5 +626,19 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         var handler = CustomTabsConnection.getInstance().getEngagementSignalsHandler(mSession);
         if (handler == null) return;
         handler.setTabObserverRegistrar(mTabObserverRegistrar);
+    }
+
+    private boolean checkIfTabReparentingParamsExistForIntent(Intent intent) {
+        int tabId = IntentHandler.getTabId(intent);
+        AsyncTabParamsManager paramsManager = AsyncTabParamsManagerSingleton.getInstance();
+
+        if (!paramsManager.hasParamsForTabId(tabId)) {
+            return false;
+        }
+
+        AsyncTabParams params = paramsManager.remove(tabId);
+        paramsManager.add(tabId, params);
+
+        return params.getTabToReparent() != null;
     }
 }

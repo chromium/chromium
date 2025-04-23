@@ -9,10 +9,12 @@ import android.content.Context;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.animation.RunOnNextLayout;
 import org.chromium.ui.animation.RunOnNextLayoutDelegate;
 
 /** Container view for the Hub. */
+@NullMarked
 public class HubContainerView extends FrameLayout implements RunOnNextLayout {
     private static final String TAG = "HubContainerView";
     private final RunOnNextLayoutDelegate mRunOnNextLayoutDelegate;

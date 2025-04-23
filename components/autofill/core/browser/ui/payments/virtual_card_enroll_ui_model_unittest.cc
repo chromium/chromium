@@ -44,7 +44,7 @@ struct CancelActionTextTestData {
 class VirtualCardEnrollUiModelCancelActionTextTest
     : public testing::TestWithParam<CancelActionTextTestData> {};
 
-// Parametrized test ensures the cancel_action_text is set.
+// Parameterized test ensures the cancel_action_text is set.
 TEST_P(VirtualCardEnrollUiModelCancelActionTextTest, CancelActionText) {
   CancelActionTextTestData config = GetParam();
   VirtualCardEnrollmentFields enrollment_fields;

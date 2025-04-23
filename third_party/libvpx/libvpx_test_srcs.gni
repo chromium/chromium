@@ -32,7 +32,6 @@ libvpx_test_srcs_generic_headers = [
   "//third_party/libvpx/source/libvpx/third_party/libwebm/mkvparser/mkvparser.h",
   "//third_party/libvpx/source/libvpx/third_party/libwebm/mkvparser/mkvreader.h",
   "//third_party/libvpx/source/libvpx/tools_common.h",
-  "//third_party/libvpx/source/libvpx/vp9/simple_encode.h",
   "//third_party/libvpx/source/libvpx/vpx_ports/arm.h",
   "//third_party/libvpx/source/libvpx/vpx_ports/loongarch.h",
   "//third_party/libvpx/source/libvpx/vpx_ports/mips.h",

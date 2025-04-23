@@ -8,7 +8,9 @@
 
 #import "base/apple/bundle_locations.h"
 #import "base/check.h"
+#import "build/branding_buildflags.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/share_extension/share_extension_delegate.h"
 
@@ -34,6 +36,12 @@ CGFloat const kSharedImageHeight = 181;
 
 // Custom radius for the half sheet presentation.
 CGFloat const kHalfSheetCornerRadius = 20;
+
+// The coefficient to multiply the title view font with to get the logo size.
+constexpr CGFloat kLogoTitleFontMultiplier = 1.25;
+
+// The spacing between the sheet's title and icon.
+CGFloat const kTitleViewSpacing = 3.0;
 
 // Custom detent identifier for when the bottom sheet is minimized.
 NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
@@ -68,7 +76,8 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
 
   self.customScrollViewBottomInsets = 0;
   self.customGradientViewHeight = 0;
-  self.titleView = [self configureSheetTitleLabel];
+
+  self.titleView = [self configureSheetTitleView];
 
   self.underTitleView = [self configureMainView];
   self.dismissBarButtonSystemItem = UIBarButtonSystemItemClose;
@@ -77,6 +86,13 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
   [super viewDidLoad];
   [self setUpBottomSheetPresentationController];
   [self setUpBottomSheetDetents];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+  [super viewWillDisappear:animated];
+  if (!self.dismissedFromSheetAction) {
+    [self.delegate shareExtensionSheetWillDisappear:self];
+  }
 }
 
 #pragma mark - Public
@@ -199,11 +215,34 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
       kCustomMinimizedDetentIdentifier;
 }
 
-- (UILabel*)configureSheetTitleLabel {
-  UILabel* titleLabel = [[UILabel alloc] init];
+- (UIView*)configureSheetTitleView {
+  BrandedNavigationItemTitleView* titleView =
+      [[BrandedNavigationItemTitleView alloc]
+          initWithFont:[UIFont systemFontOfSize:UIFont.labelFontSize]];
+  titleView.title = _appName;
+  UIImageSymbolConfiguration* titleViewIconConfiguration =
+      [UIImageSymbolConfiguration
+          configurationWithPointSize:UIFont.labelFontSize *
+                                     kLogoTitleFontMultiplier
+                              weight:UIImageSymbolWeightMedium
+                               scale:UIImageSymbolScaleMedium];
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  UIImage* titleViewSymbol = [UIImage imageNamed:@"multicolor_chromeball"
+                                        inBundle:nil
+                               withConfiguration:titleViewIconConfiguration];
+  titleView.imageLogo = [titleViewSymbol
+      imageByApplyingSymbolConfiguration:
+          [UIImageSymbolConfiguration configurationPreferringMulticolor]];
 
-  titleLabel.text = _appName;
-  return titleLabel;
+#else
+  titleView.imageLogo = [UIImage imageNamed:@"chrome_product"
+                                   inBundle:nil
+                          withConfiguration:titleViewIconConfiguration];
+#endif
+
+  titleView.titleLogoSpacing = kTitleViewSpacing;
+
+  return titleView;
 }
 
 - (UIView*)configureMainView {
@@ -291,9 +330,31 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
 
 - (UIView*)configureSharedTextView {
   UILabel* sharedTextLabel = [[UILabel alloc] init];
-  sharedTextLabel.text = self.sharedText;
   sharedTextLabel.numberOfLines = 0;
+  if (!self.displayMaxLimit) {
+    sharedTextLabel.text = self.sharedText;
+    return sharedTextLabel;
+  }
 
+  NSMutableAttributedString* sharedTextAttributedString =
+      [[NSMutableAttributedString alloc] initWithString:self.sharedText];
+
+  NSMutableAttributedString* attributedSpace =
+      [[NSMutableAttributedString alloc] initWithString:@" "];
+  NSMutableAttributedString* maxLimitString = [[NSMutableAttributedString alloc]
+      initWithString:NSLocalizedString(
+                         @"IDS_IOS_SEARCH_MAX_LIMIT",
+                         @"The text at the end of the shared text.")
+          attributes:@{
+            NSForegroundColorAttributeName :
+                [UIColor colorNamed:kTextTertiaryColor],
+            NSFontAttributeName :
+                [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
+          }];
+
+  [sharedTextAttributedString appendAttributedString:attributedSpace];
+  [sharedTextAttributedString appendAttributedString:maxLimitString];
+  sharedTextLabel.attributedText = sharedTextAttributedString;
   return sharedTextLabel;
 }
 
@@ -328,13 +389,13 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
       preferredFontDescriptorWithTextStyle:UIFontTextStyleSubheadline];
   titleLabel.font = [UIFont systemFontOfSize:fontDescriptor.pointSize
                                       weight:UIFontWeightSemibold];
-  titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-  titleLabel.numberOfLines = 0;
+  titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+  titleLabel.numberOfLines = 2;
 
   URLLabel.text = [_sharedURL absoluteString];
   URLLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   URLLabel.textColor = [UIColor colorNamed:kTextTertiaryColor];
-  URLLabel.lineBreakMode = NSLineBreakByWordWrapping;
+  URLLabel.lineBreakMode = NSLineBreakByCharWrapping;
   URLLabel.numberOfLines = 0;
 
   UIStackView* URLStackView =

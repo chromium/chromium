@@ -198,7 +198,7 @@ class DualReadingListModelTest : public testing::Test {
     sync_pb::DataTypeState state;
     state.set_initial_sync_state(
         sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
-    state.set_authenticated_account_id(kTestAccountId);
+    state.set_authenticated_obfuscated_gaia_id(kTestGaiaId.ToString());
     metadata_batch->SetDataTypeState(state);
 
     std::vector<scoped_refptr<ReadingListEntry>> initial_account_entries;
@@ -217,7 +217,7 @@ class DualReadingListModelTest : public testing::Test {
     sync_pb::DataTypeState state;
     state.set_initial_sync_state(
         sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
-    state.set_authenticated_account_id(kTestAccountId);
+    state.set_authenticated_obfuscated_gaia_id(kTestGaiaId.ToString());
     metadata_batch->SetDataTypeState(state);
 
     std::vector<scoped_refptr<ReadingListEntry>> initial_local_entries;
@@ -252,7 +252,7 @@ class DualReadingListModelTest : public testing::Test {
     sync_pb::DataTypeState state;
     state.set_initial_sync_state(
         sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
-    state.set_authenticated_account_id(kTestAccountId);
+    state.set_authenticated_obfuscated_gaia_id(kTestGaiaId.ToString());
     metadata_batch->SetDataTypeState(state);
 
     std::vector<scoped_refptr<ReadingListEntry>> initial_syncable_entries;
@@ -268,7 +268,7 @@ class DualReadingListModelTest : public testing::Test {
 
  protected:
   const GURL kUrl = GURL("http://url.com/");
-  const std::string kTestAccountId = "TestAccountId";
+  const GaiaId kTestGaiaId = GaiaId("TestGaiaId");
   base::SimpleTestClock clock_;
   testing::NiceMock<MockReadingListModelObserver> observer_;
   base::WeakPtr<FakeReadingListModelStorage>
@@ -696,10 +696,11 @@ TEST_F(DualReadingListModelTest,
             StorageStateForTesting::kExistsInBothModels);
 
   EXPECT_TRUE(dual_model_->GetAccountWhereEntryIsSavedTo(kLocalUrl).empty());
+  // TODO(crbug.com/383089506): removed ToString() once GaiaId is returned.
   EXPECT_EQ(dual_model_->GetAccountWhereEntryIsSavedTo(kAccountUrl).ToString(),
-            kTestAccountId);
+            kTestGaiaId.ToString());
   EXPECT_EQ(dual_model_->GetAccountWhereEntryIsSavedTo(kCommonUrl).ToString(),
-            kTestAccountId);
+            kTestGaiaId.ToString());
   EXPECT_TRUE(
       dual_model_
           ->GetAccountWhereEntryIsSavedTo(GURL("http://non_existing_url.com/"))
@@ -714,7 +715,7 @@ TEST_F(DualReadingListModelTest, GetAccountWhereEntryIsSavedToWhenSyncEnabled) {
             StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
 
   EXPECT_EQ(dual_model_->GetAccountWhereEntryIsSavedTo(kUrl).ToString(),
-            kTestAccountId);
+            kTestGaiaId.ToString());
   EXPECT_TRUE(
       dual_model_
           ->GetAccountWhereEntryIsSavedTo(GURL("http://non_existing_url.com/"))

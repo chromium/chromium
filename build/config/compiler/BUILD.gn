@@ -277,6 +277,7 @@ config("compiler") {
   cflags_cc = []
   cflags_objc = []
   cflags_objcc = []
+  rustenv = []
   rustflags = []
   ldflags = []
   defines = []
@@ -540,11 +541,12 @@ config("compiler") {
     # (https://crbug.com/829795).
     cflags += [ "-fmerge-all-constants" ]
 
-    # TODO(crbug.com/345541122): investigate the fuchsia binary size increase.
-    if (is_win) {
-      cflags += [ "/Zc:sizedDealloc-" ]
-    } else {
-      cflags += [ "-fno-sized-deallocation" ]
+    if (!use_sized_deallocation) {
+      if (is_win) {
+        cflags += [ "/Zc:sizedDealloc-" ]
+      } else {
+        cflags += [ "-fno-sized-deallocation" ]
+      }
     }
   }
 
@@ -617,7 +619,7 @@ config("compiler") {
 
     # Enable ELF CREL (see crbug.com/357878242) for all platforms that use ELF
     # (excluding toolchains that use an older version of LLVM).
-    if (is_linux && !llvm_android_mainline &&
+    if (is_linux && use_lld && !llvm_android_mainline &&
         default_toolchain != "//build/toolchain/cros:target") {
       cflags += [ "-Wa,--crel,--allow-experimental-crel" ]
     }
@@ -1079,6 +1081,12 @@ config("compiler") {
       "-Cpanic=abort",
       "-Zpanic_abort_tests",
     ]
+  }
+
+  # crbug.com/397463803: Set this until CrOS' user enumeration is done; its
+  # `lld` will complain otherwise. Should be removable by Q4 2025.
+  if (is_chromeos) {
+    rustenv += [ "CROSTC_IS_AWARE_OF_THIS_USECASE=1" ]
   }
 
   # 64-bit Android sometimes defines __ARM_NEON but not __ARM_NEON__.
@@ -1704,8 +1712,9 @@ config("compiler_arm") {
 
 config("libcxx_module") {
   if (use_libcxx_modules) {
-    modulemap = rebase_path("//third_party/libc++/src/include/module.modulemap",
-                            root_build_dir)
+    modulemap = rebase_path(
+            "${root_gen_dir}/third_party/libc++/src/include/module.modulemap",
+            root_build_dir)
     cflags_cc = [
       "-fmodules",
       "-fmodule-map-file=" + modulemap,
@@ -2003,11 +2012,6 @@ config("default_warnings") {
         # annotation completeness, this warning exception can be removed.
         "-Wno-nullability-completeness",
       ]
-
-      if (llvm_force_head_revision) {
-        # TODO(crbug.com/407622661): Enable broadly, suppress selectively.
-        cflags_cc += [ "-Wno-unnecessary-virtual-specifier" ]
-      }
     }
 
     if (is_wasm) {
@@ -2229,12 +2233,8 @@ config("no_chromium_code") {
       "/wd4800",  # Disable warning when forcing value to bool.
       "/wd4267",  # TODO(jschuh): size_t to int.
     ]
-  } else {
-    if (is_clang && !is_nacl) {
-      # TODO(thakis): Remove !is_nacl once
-      # https://codereview.webrtc.org/1552863002/ made its way into chromium.
-      cflags += [ "-Wall" ]
-    }
+  } else if (is_clang) {
+    cflags += [ "-Wall" ]
   }
 
   if (is_clang) {

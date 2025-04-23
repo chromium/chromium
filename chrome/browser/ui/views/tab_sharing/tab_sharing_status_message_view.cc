@@ -11,13 +11,17 @@
 #include "media/capture/capture_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 using MessageInfo = ::TabSharingStatusMessageView::MessageInfo;
 using TabRole = ::TabSharingInfoBarDelegate::TabRole;
 
 constexpr auto kButtonInsets = gfx::Insets::VH(2, 8);
+constexpr auto kSeparatorInsets = gfx::Insets::TLBR(0, 16, 0, 0);
 
 std::vector<std::u16string> EndpointInfosToStrings(
     const std::vector<TabSharingStatusMessageView::EndpointInfo>&
@@ -90,21 +94,30 @@ MessageInfo GetMessageInfoCapturing(
     TabRole role,
     const TabSharingStatusMessageView::EndpointInfo& shared_tab_info,
     const TabSharingStatusMessageView::EndpointInfo& capturer_info) {
+  if (role == TabRole::kSelfCapturingTab) {
+    return MessageInfo(
+        IDS_TAB_SHARING_INFOBAR_SHARING_CURRENT_TAB_LABEL,
+        {TabSharingStatusMessageView::EndpointInfo(capturer_info.text)});
+  }
+
   if (TabSharingInfoBarDelegate::IsCapturedTab(role)) {
     return MessageInfo(IDS_TAB_SHARING_INFOBAR_SHARING_CURRENT_TAB_LABEL,
                        {capturer_info});
   }
+
   if (shared_tab_info.text.empty()) {
     return MessageInfo(
         IDS_TAB_SHARING_INFOBAR_SHARING_ANOTHER_UNTITLED_TAB_LABEL,
         {capturer_info});
   }
+
   if (base::FeatureList::IsEnabled(features::kTabCaptureInfobarLinks) &&
       TabSharingInfoBarDelegate::IsCapturingTab(role)) {
     return MessageInfo(
         IDS_TAB_SHARING_INFOBAR_SHARING_ANOTHER_TAB_TO_THIS_TAB_LABEL,
         {shared_tab_info});
   }
+
   return MessageInfo(IDS_TAB_SHARING_INFOBAR_SHARING_ANOTHER_TAB_LABEL,
                      {shared_tab_info, capturer_info});
 }
@@ -178,28 +191,32 @@ std::u16string TabSharingStatusMessageView::GetMessageText(
 
 TabSharingStatusMessageView::TabSharingStatusMessageView(
     const MessageInfo& info) {
-  AddChildViews(info);
+  SetupMessage(info);
+  AddChildView(views::Builder<views::Separator>()
+                   .SetProperty(views::kMarginsKey, kSeparatorInsets)
+                   .Build());
 
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal));
   layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
+      views::BoxLayout::CrossAxisAlignment::kStretch);
   layout->set_between_child_spacing(0);
 }
 
 TabSharingStatusMessageView::~TabSharingStatusMessageView() = default;
 
-void TabSharingStatusMessageView::AddChildViews(MessageInfo info) {
-  // Format the message text with one-character replacements and retrieve the
-  // offsets to where the replacements should go. (The replacement needs to be
-  // non-empty for the reordering to work correctly in the next step.)
-  // TODO(crbug.com/380903159): For EndpointInfos without
-  // focus_target_id, pass the text here instead of adding buttons further down.
+void TabSharingStatusMessageView::SetupMessage(MessageInfo info) {
+  // Format the message text and retrieve the offsets to where the replacements
+  // should go.
   std::vector<size_t> offsets;
-  const std::u16string label_text = l10n_util::FormatString(
-      info.format_string,
-      std::vector<std::u16string>(info.endpoint_infos.size(), u" "), &offsets);
+  std::vector<std::u16string> replacements;
+  for (const TabSharingStatusMessageView::EndpointInfo& endpoint_info :
+       info.endpoint_infos) {
+    replacements.emplace_back(endpoint_info.text);
+  }
+  const std::u16string label_text =
+      l10n_util::FormatString(info.format_string, replacements, &offsets);
 
   // Some languages have the replacements in reverse order in the localization
   // string. Swap the offsets and the endpoint_infos if that is the case.
@@ -210,29 +227,44 @@ void TabSharingStatusMessageView::AddChildViews(MessageInfo info) {
     std::swap(info.endpoint_infos[0], info.endpoint_infos[1]);
   }
 
-  // For each endpoint_info (if any), add:
-  // - a label for the text coming before the endpoint_info (if present)
-  // - a button for the endpoint_info
-  for (size_t i = 0; i < info.endpoint_infos.size(); i++) {
-    // Add one to offset to account for the single-character replacement.
-    const size_t start = i == 0 ? 0 : offsets[i - 1] + 1;
-    const size_t length = offsets[i] - start;
-    if (length > 0) {
-      AddChildView(
-          std::make_unique<views::Label>(label_text.substr(start, length)));
+  // For each endpoint_info with a focus_target_id (if any):
+  // - add a label for any plain text coming before the endpoint_info.
+  // - add a button for the endpoint_info.
+  // - update label_start to the end of the corresponding replacement.
+  //
+  // For endpoint_infos without focus_target_id (if any):
+  // - no label or button is added.
+  // - label_start is left unchanged.
+  // This results in the text before the endpoint_info and the replacement text
+  // being added to the next label.
+  size_t label_start = 0;
+  for (size_t i = 0; i < info.endpoint_infos.size(); ++i) {
+    if (!info.endpoint_infos[i].focus_target_id) {
+      continue;
+    }
+    const size_t label_length = offsets[i] - label_start;
+    if (label_length > 0) {
+      AddLabel(label_text.substr(label_start, label_length));
     }
     AddButton(info.endpoint_infos[i]);
+    label_start = offsets[i] + replacements[i].size();
   }
 
   // Add a label for the text after the last button, if any; otherwise, this
   // label covers the entire string.
-  // Add one to offset to account for the single-character replacement.
-  const size_t start = offsets.empty() ? 0 : offsets.back() + 1;
-  const size_t length = label_text.size() - start;
-  if (length > 0) {
-    AddChildView(
-        std::make_unique<views::Label>(label_text.substr(start, length)));
+  const size_t label_length = label_text.size() - label_start;
+  if (label_length > 0) {
+    AddLabel(label_text.substr(label_start, label_length));
   }
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
+  SetAccessibleName(label_text);
+  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+}
+
+void TabSharingStatusMessageView::AddLabel(const std::u16string& text) {
+  AddChildView(std::make_unique<views::Label>(
+      text, views::style::CONTEXT_DIALOG_BODY_TEXT));
 }
 
 void TabSharingStatusMessageView::AddButton(const EndpointInfo& endpoint_info) {
@@ -244,9 +276,13 @@ void TabSharingStatusMessageView::AddButton(const EndpointInfo& endpoint_info) {
   button->SetStyle(ui::ButtonStyle::kTonal);
   button->SetCustomPadding(kButtonInsets);
   button->SetTextColor(views::Button::ButtonState::STATE_NORMAL,
-                       ui::kColorSysOnSurface);
+                       ui::kColorSysPrimary);
+  button->SetTextColor(views::Button::ButtonState::STATE_HOVERED,
+                       ui::kColorSysPrimary);
+  button->SetTextColor(views::Button::ButtonState::STATE_PRESSED,
+                       ui::kColorSysPrimary);
   button->SetBgColorIdOverride(ui::kColorSysNeutralContainer);
-  button->SetLabelStyle(views::style::STYLE_PRIMARY);
+  button->SetLabelStyle(views::style::STYLE_BODY_5_MEDIUM);
 }
 
 BEGIN_METADATA(TabSharingStatusMessageView)

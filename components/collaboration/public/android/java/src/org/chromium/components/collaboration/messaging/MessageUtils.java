@@ -108,6 +108,15 @@ public class MessageUtils {
                 : attribution.tabMetadata.lastKnownUrl;
     }
 
+    /** Returns the previous url of the tab or null. */
+    public static @Nullable String extractPrevTabUrl(@Nullable InstantMessage message) {
+        if (message == null) return null;
+        MessageAttribution attribution = getFirstAttribution(message);
+        return attribution == null || attribution.tabMetadata == null
+                ? null
+                : attribution.tabMetadata.previousUrl;
+    }
+
     private static @Nullable String extractSyncTabGroupId(
             @Nullable MessageAttribution attribution) {
         return attribution == null || attribution.tabGroupMetadata == null

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_signout_continuation.h"
 
+#import "base/check.h"
+#import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -22,28 +24,35 @@
 
 namespace {
 
-// Called by ChangeProfileSignoutContinuation once the sign-out is complete.
-void SignoutDone(base::WeakPtr<Browser> weak_browser,
-                 bool force_snackbar_over_toolbar,
-                 MDCSnackbarMessage* snackbar_message) {
+// Completion for ChangeProfileSignoutContinuation(...) that presents the
+// snackback message (if non-null), invoke the signout completion and then
+// the closure.
+void ChangeProfileSignoutCompletion(
+    base::WeakPtr<Browser> weak_browser,
+    MDCSnackbarMessage* snackbar_message,
+    bool force_snackbar_over_toolbar,
+    SignoutCompletionCallback signout_completion,
+    base::OnceClosure closure) {
   Browser* browser = weak_browser.get();
   if (!browser) {
     return;
   }
 
-  if (!snackbar_message) {
-    return;
+  if (snackbar_message) {
+    id<SnackbarCommands> snackbar_commands_handler =
+        HandlerForProtocol(browser->GetCommandDispatcher(), SnackbarCommands);
+
+    if (force_snackbar_over_toolbar) {
+      [snackbar_commands_handler
+          showSnackbarMessageOverBrowserToolbar:snackbar_message];
+    } else {
+      [snackbar_commands_handler showSnackbarMessage:snackbar_message
+                                        bottomOffset:0];
+    }
   }
 
-  id<SnackbarCommands> snackbar_commands_handler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), SnackbarCommands);
-  if (force_snackbar_over_toolbar) {
-    [snackbar_commands_handler
-        showSnackbarMessageOverBrowserToolbar:snackbar_message];
-  } else {
-    [snackbar_commands_handler showSnackbarMessage:snackbar_message
-                                      bottomOffset:0];
-  }
+  std::move(signout_completion).Run(browser->GetSceneState());
+  std::move(closure).Run();
 }
 
 // Implementation of the continuation that sign-out the profile.
@@ -52,7 +61,7 @@ void ChangeProfileSignoutContinuation(
     BOOL force_snackbar_over_toolbar,
     BOOL should_record_metrics,
     MDCSnackbarMessage* snackbar_message,
-    base::OnceClosure signout_completion,
+    SignoutCompletionCallback signout_completion,
     SceneState* scene_state,
     base::OnceClosure closure) {
   // The regular browser should be used to complete the signout, even if in
@@ -61,13 +70,12 @@ void ChangeProfileSignoutContinuation(
       scene_state.browserProviderInterface.mainBrowserProvider.browser;
   CHECK(browser);
 
-  // Create the closure corresponding to the action to perform once the signout
-  // action completes, chaining `signout_completion` and `closure`.
+  // Create the final completion that will be invoked when the signout
+  // operation completes.
   base::OnceClosure completion =
-      base::BindOnce(&SignoutDone, browser->AsWeakPtr(),
-                     force_snackbar_over_toolbar, snackbar_message)
-          .Then(std::move(signout_completion))
-          .Then(std::move(closure));
+      base::BindOnce(&ChangeProfileSignoutCompletion, browser->AsWeakPtr(),
+                     snackbar_message, force_snackbar_over_toolbar,
+                     std::move(signout_completion), std::move(closure));
 
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
@@ -114,12 +122,12 @@ ChangeProfileContinuation CreateChangeProfileSignoutContinuation(
     BOOL force_snackbar_over_toolbar,
     BOOL should_record_metrics,
     MDCSnackbarMessage* snackbar_message,
-    ProceduralBlock signout_completion) {
+    SignoutCompletionCallback signout_completion) {
+  CHECK(!signout_completion.is_null());
   return base::BindOnce(&ChangeProfileSignoutContinuation,
                         signout_source_metric, force_snackbar_over_toolbar,
                         should_record_metrics, snackbar_message,
-                        signout_completion ? base::BindOnce(signout_completion)
-                                           : base::DoNothing());
+                        std::move(signout_completion));
 }
 
 ChangeProfileContinuation CreateChangeProfileForceSignoutContinuation() {

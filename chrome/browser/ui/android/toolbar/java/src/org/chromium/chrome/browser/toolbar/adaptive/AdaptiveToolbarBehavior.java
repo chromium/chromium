@@ -62,6 +62,14 @@ public interface AdaptiveToolbarBehavior {
     int resultFilter(List<@AdaptiveToolbarButtonVariant Integer> segmentationResults);
 
     /**
+     * Whether the manually chosen button type can be displayed. The button may need to be hidden if
+     * invalid or duplicated with custom action button on Custom Tabs.
+     *
+     * @param manualOverride Manually chosen button from settings.
+     */
+    boolean canShowManualOverride(@AdaptiveToolbarButtonVariant int manualOverride);
+
+    /**
      * Default implementation of {@link AdaptiveToolbarBehavior} that takes into the device form
      * factor into account. Used for tabbed chrome browser and its settings UI, also in tests.
      *
@@ -80,6 +88,11 @@ public interface AdaptiveToolbarBehavior {
             @Override
             public int resultFilter(List<Integer> segmentationResults) {
                 return defaultResultFilter(context, segmentationResults);
+            }
+
+            @Override
+            public boolean canShowManualOverride(int manualOverride) {
+                return true;
             }
 
             @Override

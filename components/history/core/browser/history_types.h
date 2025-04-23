@@ -1250,7 +1250,7 @@ struct HistoryAddPageArgs {
   //       GURL(), base::Time(), nullptr, 0, std::nullopt, GURL(),
   //       RedirectList(), ui::PAGE_TRANSITION_LINK,
   //       false, SOURCE_BROWSED, false, true, false,
-  //       std::nullopt, std::nullopt, std::nullopt, std::nullopt,
+  //       std::nullopt, std::nullopt, std::nullopt, std::nullopt, std::nullopt,
   //       std::nullopt, std::nullopt)
   HistoryAddPageArgs();
   HistoryAddPageArgs(const GURL& url,
@@ -1268,6 +1268,7 @@ struct HistoryAddPageArgs {
                      bool is_ephemeral = false,
                      std::optional<std::u16string> title = std::nullopt,
                      std::optional<GURL> top_level_url = std::nullopt,
+                     std::optional<GURL> frame_url = std::nullopt,
                      std::optional<Opener> opener = std::nullopt,
                      std::optional<int64_t> bookmark_id = std::nullopt,
                      std::optional<std::string> app_id = std::nullopt,
@@ -1297,6 +1298,10 @@ struct HistoryAddPageArgs {
   // `top_level_url` is a GURL representing the top-level frame that this
   // navigation originated from.
   std::optional<GURL> top_level_url;
+  // `frame_url` is a GURL representing the frame that this navigation
+  // originated from. This is distinct from referrer because it persists
+  // regardless of referrer policy.
+  std::optional<GURL> frame_url;
   std::optional<Opener> opener;
   std::optional<int64_t> bookmark_id;
   std::optional<std::string> app_id;

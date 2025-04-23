@@ -327,7 +327,7 @@ Local Modifications:
 Name: Type Definition for Trusted Types
 Short Name: @types/trusted-types
 URL: https://www.npmjs.com/package/@types/trusted-types
-Version: 1.0.6
+Version: 2.0.7
 License: MIT
 Security Critical: no
 Shipped: no
@@ -462,7 +462,7 @@ Local Modifications:
 Name: Lit
 Short Name: lit
 URL: https://lit.dev
-Version: 3.0.2
+Version: 3.2.1
 License: BSD-3-Clause
 License File: node_modules/lit/LICENSE
 Security Critical: no

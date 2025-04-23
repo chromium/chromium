@@ -12,7 +12,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "Apple_(Virtual)",
-            "os": "Mac-14",
+            "os": "Mac",
             "pool": "chromium.tests.macvm"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -28,7 +28,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "Apple_(Virtual)",
-            "os": "Mac-14",
+            "os": "Mac",
             "pool": "chromium.tests.macvm"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",

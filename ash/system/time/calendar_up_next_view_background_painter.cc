@@ -82,7 +82,7 @@ void CalendarUpNextViewBackground::Paint(gfx::Canvas* canvas,
   flags.setBlendMode(SkBlendMode::kSrcOver);
   flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kFill_Style);
-  flags.setColor(color().ConvertToSkColor(view->GetColorProvider()));
+  flags.setColor(color().ResolveToSkColor(view->GetColorProvider()));
 
   // Get the path to draw on the canvas.
   SkPath path = GetPath(view->GetLocalBounds().size());

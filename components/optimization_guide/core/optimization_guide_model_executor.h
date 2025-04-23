@@ -15,6 +15,7 @@
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 #include "services/on_device_model/public/cpp/capabilities.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
@@ -191,6 +192,10 @@ enum class OnDeviceModelEligibilityReason {
 std::ostream& operator<<(std::ostream& out,
                          const OnDeviceModelEligibilityReason& val);
 
+// Simplify an eligibility reason to an availability state.
+std::optional<mojom::ModelUnavailableReason> AvailabilityFromEligibilityReason(
+    OnDeviceModelEligibilityReason);
+
 // Observer that is notified when the on-device model availability changes for
 // the on-device eligible features.
 class OnDeviceModelAvailabilityObserver : public base::CheckedObserver {
@@ -236,9 +241,6 @@ class OptimizationGuideModelExecutor {
   class Session {
    public:
     virtual ~Session() = default;
-
-    // TODO(crbug.com/385173789): Remove hacky multimodal prototype workarounds.
-    virtual on_device_model::mojom::Session& GetSession() = 0;
 
     virtual const TokenLimits& GetTokenLimits() const = 0;
 
@@ -317,6 +319,9 @@ class OptimizationGuideModelExecutor {
     // context will also be cancelled for the clone.
     // TODO: crbug.com/396211270 - Make clone independent of parent.
     virtual std::unique_ptr<Session> Clone() = 0;
+
+    // Sets the priority for this session and any future clones.
+    virtual void SetPriority(on_device_model::mojom::Priority priority) = 0;
   };
 
   // Starts a session which allows streaming input and output from the model.

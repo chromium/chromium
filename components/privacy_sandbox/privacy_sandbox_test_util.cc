@@ -680,11 +680,47 @@ void CheckOutput(
           GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
       auto reporting_origin = GetItemValueForKey<url::Origin>(
           InputKey::kAdMeasurementReportingOrigin, input);
+
+      base::test::ScopedFeatureList scoped_feature_list_{
+          metrics::dwa::kDwaFeature};
+
+      // Ensures that metrics are only counted for this call.
+      // TODO(crbug.com/403946431): Consider implementing a scoped object to
+      // improve ergonomics.
+      metrics::dwa::DwaRecorder::Get()->EnableRecording();
+      metrics::dwa::DwaRecorder::Get()->Purge();
+      ASSERT_THAT(metrics::dwa::DwaRecorder::Get()->GetEntriesForTesting(),
+                  testing::IsEmpty());
+
       std::ignore = privacy_sandbox_settings->IsAttributionReportingAllowed(
           top_frame_origin, reporting_origin);
       auto histogram_value = GetItemValue<int>(output_value);
       histogram_tester.ExpectUniqueSample(
           "PrivacySandbox.IsAttributionReportingAllowed", histogram_value, 1);
+
+      ASSERT_THAT(metrics::dwa::DwaRecorder::Get()->GetEntriesForTesting(),
+                  testing::SizeIs(1));
+      EXPECT_THAT(
+          metrics::dwa::DwaRecorder::Get()
+              ->GetEntriesForTesting()[0]
+              ->event_hash,
+          base::HashMetricName("PrivacySandbox.IsAttributionReportingAllowed"));
+
+      // DWA content sanitization extracts the eTLD+1 from the provided
+      // reporting origin.
+      EXPECT_THAT(
+          metrics::dwa::DwaRecorder::Get()
+              ->GetEntriesForTesting()[0]
+              ->content_hash,
+          base::HashMetricName(
+              net::registry_controlled_domains::GetDomainAndRegistry(
+                  reporting_origin.GetURL(), net::registry_controlled_domains::
+                                                 INCLUDE_PRIVATE_REGISTRIES)));
+      EXPECT_THAT(
+          metrics::dwa::DwaRecorder::Get()->GetEntriesForTesting()[0]->metrics,
+          testing::UnorderedElementsAre(
+              testing::Pair(base::HashMetricName("Status"), histogram_value)));
+
       return;
     }
     case (OutputKey::kMaySendAttributionReportMetric): {

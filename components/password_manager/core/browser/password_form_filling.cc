@@ -163,6 +163,14 @@ LikelyFormFilling SendFillInformationToRenderer(
     }
 
 #endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+    if (!should_show_popup_without_passwords) {
+      client->MaybeShowSavePasswordPrimingPromo(observed_form.url);
+    }
+#endif
+
     driver->InformNoSavedCredentials(should_show_popup_without_passwords);
     metrics_recorder->RecordFillEvent(
         PasswordFormMetricsRecorder::kManagerFillEventNoCredential);
@@ -223,9 +231,7 @@ LikelyFormFilling SendFillInformationToRenderer(
     // If the parser did not find a current password element, don't fill.
     wait_for_username_reason = WaitForUsernameReason::kFormNotGoodForFilling;
   } else if (observed_form.HasUsernameElement() &&
-             observed_form.HasNonEmptyPasswordValue() &&
-             observed_form.server_side_classification_successful &&
-             !observed_form.username_may_use_prefilled_placeholder) {
+             observed_form.HasNonEmptyPasswordValue()) {
     // Password is already filled in and we don't think the username is a
     // placeholder, so don't overwrite.
     wait_for_username_reason = WaitForUsernameReason::kPasswordPrefilled;
@@ -300,8 +306,6 @@ PasswordFormFillData CreatePasswordFormFillData(
     // clicking on each password field so no need in any field identifiers.
     result.username_element_renderer_id =
         form_on_page.username_element_renderer_id;
-    result.username_may_use_prefilled_placeholder =
-        form_on_page.username_may_use_prefilled_placeholder;
 
     result.password_element_renderer_id =
         form_on_page.password_element_renderer_id;

@@ -18,13 +18,8 @@ import org.chromium.chrome.browser.tabmodel.TabCreator.NeedsTabModel;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 /** {@link TabModelSelector} for archived tabs. Must be instantiated and used on the UI thread. */
 public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implements TabModelDelegate {
-    /** Flag set to false when the asynchronous loading of tabs is finished. */
-    private final AtomicBoolean mSessionRestoreCompleted = new AtomicBoolean(true);
-
     private final Profile mProfile;
     private final NextTabPolicySupplier mNextTabPolicySupplier;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
@@ -52,13 +47,11 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
 
     @Override
     public void markTabStateInitialized() {
-        super.markTabStateInitialized();
-        if (!mSessionRestoreCompleted.getAndSet(false)) return;
+        if (isTabStateInitialized()) return;
 
-        // This is the first time we set
-        // |mSessionRestoreCompleted|, so we need to broadcast.
+        super.markTabStateInitialized();
         TabModelImpl model = (TabModelImpl) getModel(false);
-        model.broadcastSessionRestoreComplete();
+        model.completeInitialization();
     }
 
     /**
@@ -175,7 +168,7 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
 
     @Override
     public boolean isSessionRestoreInProgress() {
-        return mSessionRestoreCompleted.get();
+        return false;
     }
 
     private static TabUngrouper createTabUngrouper(

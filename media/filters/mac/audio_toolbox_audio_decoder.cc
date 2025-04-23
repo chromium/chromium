@@ -305,7 +305,7 @@ bool AudioToolboxAudioDecoder::CreateDecoder(const AudioDecoderConfig& config) {
     // Get the decoder's output channel layout.
     UInt32 size;
     result = AudioConverterGetPropertyInfo(
-        decoder_.get(), kAudioConverterOutputChannelLayout, &size, NULL);
+        decoder_.get(), kAudioConverterOutputChannelLayout, &size, nullptr);
     if (result != noErr) {
       OSSTATUS_MEDIA_LOG(ERROR, result, media_log_)
           << "AudioConverterGetPropertyInfo() failed";

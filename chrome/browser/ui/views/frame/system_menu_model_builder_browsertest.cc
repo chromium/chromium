@@ -44,7 +44,9 @@ class SystemMenuModelBuilderGlicTest : public InProcessBrowserTest {
  public:
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        {features::kGlic, features::kTabstripComboButton}, {});
+        {features::kGlic, features::kTabstripComboButton,
+         features::kGlicRollout},
+        {});
     InProcessBrowserTest::SetUp();
   }
 

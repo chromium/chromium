@@ -37,6 +37,9 @@ import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.payments.PaymentFeatureList;
+import org.chromium.components.payments.R;
+import org.chromium.components.payments.test_support.DefaultPaymentFeatureConfig;
 import org.chromium.components.payments.ui.CurrencyFormatter;
 import org.chromium.components.payments.ui.CurrencyFormatterJni;
 import org.chromium.components.payments.ui.InputProtector;
@@ -99,6 +102,8 @@ public class SecurePaymentConfirmationAuthnTest {
 
     @Before
     public void setUp() {
+        DefaultPaymentFeatureConfig.setDefaultFlagConfigurationForTesting();
+
         WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
         setWindowAndroid(windowAndroid, mWebContents);
         Mockito.doReturn(new WeakReference<Context>(RuntimeEnvironment.application))
@@ -185,22 +190,27 @@ public class SecurePaymentConfirmationAuthnTest {
     }
 
     private boolean show() {
-        return show(mPayeeName, mPayeeOrigin, /* enableOptOut= */ false);
+        return show(mPayeeName, mPayeeOrigin, /* enableOptOut= */ false, /* informOnly= */ false);
     }
 
     private boolean showWithPayeeName() {
-        return show(mPayeeName, null, /* enableOptOut= */ false);
+        return show(mPayeeName, null, /* enableOptOut= */ false, /* informOnly= */ false);
     }
 
     private boolean showWithPayeeOrigin() {
-        return show(null, mPayeeOrigin, /* enableOptOut= */ false);
+        return show(null, mPayeeOrigin, /* enableOptOut= */ false, /* informOnly= */ false);
     }
 
     private boolean showWithOptOut() {
-        return show(mPayeeName, mPayeeOrigin, /* enableOptOut= */ true);
+        return show(mPayeeName, mPayeeOrigin, /* enableOptOut= */ true, /* informOnly= */ false);
     }
 
-    private boolean show(String payeeName, Origin payeeOrigin, boolean enableOptOut) {
+    private boolean showInformOnly() {
+        return show(mPayeeName, mPayeeOrigin, /* enableOptOut= */ false, /* informOnly= */ true);
+    }
+
+    private boolean show(
+            String payeeName, Origin payeeOrigin, boolean enableOptOut, boolean informOnly) {
         if (mAuthnController == null) return false;
 
         mIsPaymentConfirmed = false;
@@ -220,7 +230,8 @@ public class SecurePaymentConfirmationAuthnTest {
                 enableOptOut,
                 rpId,
                 mIssuerIcon,
-                mNetworkIcon);
+                mNetworkIcon,
+                informOnly);
     }
 
     private void setWindowAndroid(WindowAndroid windowAndroid, WebContents webContents) {
@@ -518,5 +529,23 @@ public class SecurePaymentConfirmationAuthnTest {
         Assert.assertNotNull(view);
         Assert.assertEquals(View.VISIBLE, view.mOptOutText.getVisibility());
         Assert.assertTrue(view.mOptOutText.getText().toString().contains("rp.example"));
+    }
+
+    @Test
+    @Feature({"Payments"})
+    @EnableFeatures({PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK})
+    public void testShowInformOnly() {
+        createAuthnController();
+        Assert.assertTrue(showInformOnly());
+
+        SecurePaymentConfirmationAuthnView view = mAuthnController.getView();
+        Assert.assertNotNull(view);
+        Context context = mWebContents.getTopLevelNativeWindow().getContext().get();
+        Assert.assertEquals(
+                view.mTitle.getText(),
+                context.getString(R.string.secure_payment_confirmation_inform_only_title));
+        Assert.assertEquals(
+                view.mContinueButton.getText(),
+                context.getString(R.string.payments_confirm_button));
     }
 }

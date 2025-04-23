@@ -485,8 +485,8 @@ void UsbTransferFunction::OnCompleted(UsbTransferStatus status,
     error_args.Append(std::move(transfer_info));
     // Using ErrorWithArguments is discouraged but required to provide the
     // detailed transfer info as the transfer may have partially succeeded.
-    Respond(ErrorWithArguments(std::move(error_args),
-                               ConvertTransferStatusToApi(status)));
+    Respond(ErrorWithArgumentsDoNotUse(std::move(error_args),
+                                       ConvertTransferStatusToApi(status)));
   }
 }
 
@@ -1345,7 +1345,8 @@ void UsbResetDeviceFunction::OnComplete(bool success) {
     error_args.Append(false);
     // Using ErrorWithArguments is discouraged but required to maintain
     // compatibility with existing applications.
-    Respond(ErrorWithArguments(std::move(error_args), kErrorResetDevice));
+    Respond(
+        ErrorWithArgumentsDoNotUse(std::move(error_args), kErrorResetDevice));
   }
 }
 

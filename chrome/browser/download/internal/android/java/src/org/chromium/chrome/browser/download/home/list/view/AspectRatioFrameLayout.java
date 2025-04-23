@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.internal.R;
 
 /**
@@ -30,6 +32,7 @@ import org.chromium.chrome.browser.download.internal.R;
  *         app:layout_aspectRatio="100%" />
  * </org.chromium.chrome.browser.download.home.list.view.AspectRatioFrameLayout>
  */
+@NullMarked
 public class AspectRatioFrameLayout extends FrameLayout {
     /** Creates an instance of {@link AspectRatioFrameLayout}. */
     public AspectRatioFrameLayout(Context context) {
@@ -37,12 +40,12 @@ public class AspectRatioFrameLayout extends FrameLayout {
     }
 
     /** Creates an instance of {@link AspectRatioFrameLayout}. */
-    public AspectRatioFrameLayout(Context context, AttributeSet attrs) {
+    public AspectRatioFrameLayout(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
     /** Creates an instance of {@link AspectRatioFrameLayout}. */
-    public AspectRatioFrameLayout(Context context, AttributeSet attrs, int defStyle) {
+    public AspectRatioFrameLayout(Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 

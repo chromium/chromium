@@ -56,7 +56,6 @@ class WebStateDelegateBrowserAgent
 
  private:
   friend class BrowserUserData<WebStateDelegateBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   WebStateDelegateBrowserAgent(Browser* browser,
                                TabInsertionBrowserAgent* tab_insertion_agent);

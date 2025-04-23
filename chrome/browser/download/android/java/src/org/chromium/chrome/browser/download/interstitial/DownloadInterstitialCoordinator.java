@@ -8,11 +8,13 @@ import android.content.Context;
 import android.view.View;
 
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Coordinator to set up a download interstitial which displays the progress of the most recent
  * download and provides utilities for the download once completed.
  */
+@NullMarked
 public interface DownloadInterstitialCoordinator extends Destroyable {
     /** @return The view containing the download interstitial. */
     View getView();

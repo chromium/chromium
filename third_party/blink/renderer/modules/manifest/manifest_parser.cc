@@ -53,10 +53,10 @@ namespace blink {
 
 namespace {
 static constexpr char kScopeExtensionsMissingKeysErrorMessage[] =
-    "scope_extensions entry ignored, required properties 'type' and 'value' "
+    "scope_extensions entry ignored, required properties 'type' and 'origin' "
     "are missing.";
 static constexpr char kScopeExtensionsTypeKey[] = "type";
-static constexpr char kScopeExtensionsValueKey[] = "value";
+static constexpr char kScopeExtensionsOriginKey[] = "origin";
 static constexpr char kOriginWildcardPrefix[] = "%2A.";
 // Keep in sync with web_app_origin_association_task.cc.
 static wtf_size_t kMaxScopeExtensionsSize = 10;
@@ -1771,7 +1771,7 @@ ManifestParser::ParseScopeExtension(const JSONObject* object) {
           blink::features::kWebAppEnableScopeExtensions) ||
       RuntimeEnabledFeatures::WebAppScopeExtensionsEnabled(execution_context_));
   if (!object->Get(kScopeExtensionsTypeKey) ||
-      !object->Get(kScopeExtensionsValueKey)) {
+      !object->Get(kScopeExtensionsOriginKey)) {
     AddErrorInfo(kScopeExtensionsMissingKeysErrorMessage);
     return std::nullopt;
   }
@@ -1784,7 +1784,7 @@ ManifestParser::ParseScopeExtension(const JSONObject* object) {
   if (scope_extension_type.value() ==
       ScopeExtensionTypeMap[static_cast<int>(ScopeExtensionType::kOrigin)]) {
     const std::optional<String> origin_string =
-        ParseString(object, kScopeExtensionsValueKey, Trim(true));
+        ParseString(object, kScopeExtensionsOriginKey, Trim(true));
     if (!origin_string.has_value()) {
       AddErrorInfo("Scope extension 'value' invalid.");
       return std::nullopt;
@@ -1833,7 +1833,9 @@ ManifestParser::ParseScopeExtensionOrigin(const String& origin_string) {
   String host = origin->Host();
   auto scope_extension = mojom::blink::ManifestScopeExtension::New();
   // Check for wildcard *.
-  if (host.StartsWith(kOriginWildcardPrefix)) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kWebAppEnableScopeExtensions) &&
+      host.StartsWith(kOriginWildcardPrefix)) {
     scope_extension->has_origin_wildcard = true;
     // Trim the wildcard prefix to get the effective host. Minus one to exclude
     // the length of the null terminator.

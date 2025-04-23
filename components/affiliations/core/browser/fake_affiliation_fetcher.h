@@ -37,9 +37,11 @@ class FakeAffiliationFetcher : public AffiliationFetcherInterface {
       RequestInfo request_info,
       base::OnceCallback<void(FetchResult)> result_callback) override;
   const std::vector<FacetURI>& GetRequestedFacetURIs() const override;
+  const RequestInfo& GetRequestInfo() const;
 
  private:
   std::vector<FacetURI> facets_;
+  RequestInfo request_info_;
   base::OnceCallback<void(FetchResult)> result_callback_;
 };
 

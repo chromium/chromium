@@ -126,6 +126,8 @@ TEST_F(ActivityLogEnabledTest, WatchdogSwitch) {
   static_cast<TestExtensionSystem*>(
       ExtensionSystem::Get(profile1.get()))->SetReady();
 
+  auto* extension_registrar1 = ExtensionRegistrar::Get(profile1.get());
+
   ActivityLog* activity_log1 = ActivityLog::GetInstance(profile1.get());
   ActivityLog* activity_log2 = ActivityLog::GetInstance(profile2.get());
 
@@ -145,7 +147,7 @@ TEST_F(ActivityLogEnabledTest, WatchdogSwitch) {
                            .Set("manifest_version", 2))
           .SetID(kExtensionID)
           .Build();
-  ExtensionRegistrar::Get(profile1.get())->AddExtension(extension.get());
+  extension_registrar1->AddExtension(extension.get());
 
   EXPECT_EQ(1,
       profile1->GetPrefs()->GetInteger(prefs::kWatchdogExtensionActive));
@@ -182,7 +184,7 @@ TEST_F(ActivityLogEnabledTest, WatchdogSwitch) {
   // Wait for UninstallExtension to complete to avoid race condition with data
   // cleanup at TearDown.
   base::RunLoop loop;
-  extension_service1->UninstallExtension(
+  extension_registrar1->UninstallExtension(
       kExtensionID, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr,
       loop.QuitClosure());
   loop.Run();
@@ -204,8 +206,8 @@ TEST_F(ActivityLogEnabledTest, WatchdogSwitch) {
                            .Set("manifest_version", 2))
           .SetID("fpofdchlamddhnajleknffcbmnjfahpg")
           .Build();
-  extension_service1->AddExtension(extension.get());
-  extension_service1->AddExtension(extension2.get());
+  extension_registrar1->AddExtension(extension.get());
+  extension_registrar1->AddExtension(extension2.get());
   EXPECT_EQ(2,
       profile1->GetPrefs()->GetInteger(prefs::kWatchdogExtensionActive));
   EXPECT_TRUE(activity_log1->IsDatabaseEnabled());
@@ -225,12 +227,12 @@ TEST_F(ActivityLogEnabledTest, AppAndCommandLine) {
   std::unique_ptr<TestingProfile> profile(CreateTestingProfile());
   // Extension service is destroyed by the profile.
   base::CommandLine no_program_command_line(base::CommandLine::NO_PROGRAM);
-  ExtensionService* extension_service =
-    static_cast<TestExtensionSystem*>(
-        ExtensionSystem::Get(profile.get()))->CreateExtensionService(
-            &no_program_command_line, base::FilePath(), false);
-  static_cast<TestExtensionSystem*>(
-      ExtensionSystem::Get(profile.get()))->SetReady();
+  auto* test_extension_system =
+      static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile.get()));
+  test_extension_system->CreateExtensionService(&no_program_command_line,
+                                                base::FilePath(), false);
+  test_extension_system->SetReady();
+  auto* extension_registrar = ExtensionRegistrar::Get(profile.get());
 
   ActivityLog* activity_log = ActivityLog::GetInstance(profile.get());
   // Allow Activity Log to install extension tracker.
@@ -250,7 +252,7 @@ TEST_F(ActivityLogEnabledTest, AppAndCommandLine) {
                            .Set("manifest_version", 2))
           .SetID(kExtensionID)
           .Build();
-  extension_service->AddExtension(extension.get());
+  extension_registrar->AddExtension(extension.get());
 
   EXPECT_TRUE(activity_log->IsDatabaseEnabled());
   EXPECT_EQ(1,
@@ -260,7 +262,7 @@ TEST_F(ActivityLogEnabledTest, AppAndCommandLine) {
   // Wait for UninstallExtension to complete to avoid race condition with data
   // cleanup at TearDown.
   base::RunLoop loop;
-  extension_service->UninstallExtension(
+  extension_registrar->UninstallExtension(
       kExtensionID, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr,
       loop.QuitClosure());
   loop.Run();
@@ -276,17 +278,16 @@ TEST_F(ActivityLogEnabledTest, AppAndCommandLine) {
 TEST_F(ActivityLogEnabledTest, IncorrectPrefsRecovery) {
   std::unique_ptr<TestingProfile> profile(CreateTestingProfile());
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  ExtensionService* extension_service =
-    static_cast<TestExtensionSystem*>(
-        ExtensionSystem::Get(profile.get()))->CreateExtensionService(
-            &command_line, base::FilePath(), false);
+  auto* test_extension_system =
+      static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile.get()));
+  test_extension_system->CreateExtensionService(&command_line, base::FilePath(),
+                                                false);
 
   // Set the preferences to indicate a cached count of 10.
   profile->GetPrefs()->SetInteger(prefs::kWatchdogExtensionActive, 10);
   ActivityLog* activity_log = ActivityLog::GetInstance(profile.get());
 
-  static_cast<TestExtensionSystem*>(
-      ExtensionSystem::Get(profile.get()))->SetReady();
+  test_extension_system->SetReady();
   base::RunLoop().RunUntilIdle();
 
   // Even though the cached count was 10, the activity log should correctly
@@ -305,7 +306,7 @@ TEST_F(ActivityLogEnabledTest, IncorrectPrefsRecovery) {
                            .Set("manifest_version", 2))
           .SetID(kExtensionID)
           .Build();
-  extension_service->AddExtension(extension.get());
+  ExtensionRegistrar::Get(profile.get())->AddExtension(extension.get());
 
   EXPECT_EQ(
       1, profile->GetPrefs()->GetInteger(prefs::kWatchdogExtensionActive));

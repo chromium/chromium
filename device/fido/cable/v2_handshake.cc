@@ -64,7 +64,7 @@ bool ConstructNonce(uint32_t counter, base::span<uint8_t, 12> out_nonce) {
 
   auto [zeros, counter_span] = out_nonce.split_at<8>();
   std::ranges::fill(zeros, uint8_t{0});
-  counter_span.copy_from(base::numerics::U32ToBigEndian(counter));
+  counter_span.copy_from(base::U32ToBigEndian(counter));
   return true;
 }
 
@@ -105,7 +105,8 @@ namespace tunnelserver {
 
 // kAssignedDomains is the list of defined tunnel server domains. These map
 // to values 0..256.
-static const char* kAssignedDomains[] = {"cable.ua5v.com", "cable.auth.com"};
+static auto kAssignedDomains =
+    std::to_array<const char*>({"cable.ua5v.com", "cable.auth.com"});
 
 std::optional<KnownDomainID> ToKnownDomainID(uint16_t domain) {
   if (domain >= 256 || domain < std::size(kAssignedDomains)) {
@@ -368,7 +369,7 @@ std::optional<Components> Parse(const std::string& qr_url) {
   }
   const cbor::Value::MapValue& qr_contents_map(qr_contents->GetMap());
 
-  base::span<const uint8_t> values[2];
+  std::array<base::span<const uint8_t>, 2> values;
   for (size_t i = 0; i < std::size(values); i++) {
     const cbor::Value::MapValue::const_iterator it =
         qr_contents_map.find(cbor::Value(static_cast<int>(i)));

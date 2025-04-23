@@ -243,7 +243,17 @@ export function createTranslationMap(): TranslationMap {
           params: DynamicMessageParams,
           ) =>
           loadTimeData.getStringF(
-              'getGroupPreviewAriaLabel', params.group.name),
+              'getGroupPreviewAriaLabel', params.group.name) +
+          ' ' +
+          loadTimeData.getStringF(
+              params.group.members.length <= 1 ? 'memberCountSingular' :
+                                                 'memberCountPlural',
+              params.group.members.length) +
+          ' ' +
+          loadTimeData.getStringF(
+              params.payload.mediaCount <= 1 ? 'tabCountSingular' :
+                                               'tabCountPlural',
+              params.payload.mediaCount),
       /** Manage flow */
       [DynamicMessageKey.GET_STOP_SHARING_DIALOG_CONTENT]: () =>
           loadTimeData.getStringF(

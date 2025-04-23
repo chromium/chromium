@@ -147,9 +147,9 @@ class HttpsOnlyModeUpgradeTabHelperTest
   web::FakeWebState web_state_;
 
  private:
-  std::unique_ptr<ProfileIOS> profile_;
-  base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<ProfileIOS> profile_;
 };
 
 // Tests that ShouldAllowResponse properly upgrades navigations and

@@ -1265,6 +1265,7 @@ void AudioContext::OnDevicesChanged(mojom::blink::MediaDeviceType device_type,
       SendLogMessage(__func__,
                      "=> sink was not explicitly specified, falling back to "
                      "default sink.");
+      DispatchEvent(*Event::Create(event_type_names::kError));
       GetExecutionContext()->AddConsoleMessage(
           MakeGarbageCollected<ConsoleMessage>(
               mojom::ConsoleMessageSource::kOther,
@@ -1443,17 +1444,24 @@ void AudioContext::HandleRenderError() {
 
   // Implements
   // https://webaudio.github.io/web-audio-api/#error-handling-on-a-running-audio-context
-  if (ContextState() == V8AudioContextState::Enum::kRunning) {
-    // TODO(https://crbug.com/353641602): starting or stopping the renderer
-    // should happen on the render thread, but this is the current convention.
-    destination()->GetAudioDestinationHandler().StopRendering();
+  switch (ContextState()) {
+    case V8AudioContextState::Enum::kRunning:
+      // TODO(https://crbug.com/353641602): starting or stopping the renderer
+      // should happen on the render thread, but this is the current convention.
+      destination()->GetAudioDestinationHandler().StopRendering();
 
-    DispatchEvent(*Event::Create(event_type_names::kError));
-    suspended_by_user_ = false;
-    SetContextState(V8AudioContextState::Enum::kSuspended);
-  } else if (ContextState() == V8AudioContextState::Enum::kSuspended) {
-    DispatchEvent(*Event::Create(event_type_names::kError));
+      DispatchEvent(*Event::Create(event_type_names::kError));
+      suspended_by_user_ = false;
+      SetContextState(V8AudioContextState::Enum::kSuspended);
+      return;
+    case V8AudioContextState::Enum::kSuspended:
+      DispatchEvent(*Event::Create(event_type_names::kError));
+      return;
+    case V8AudioContextState::Enum::kClosed:
+    case V8AudioContextState::Enum::kInterrupted:
+      return;
   }
+  NOTREACHED();
 }
 
 void AudioContext::invoke_onrendererror_from_platform_for_testing() {

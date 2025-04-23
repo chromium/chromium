@@ -17,10 +17,15 @@
 #include "base/types/strong_alias.h"
 #include "components/data_sharing/internal/protocol/group_data_db.pb.h"
 #include "components/data_sharing/public/group_data.h"
+#include "components/data_sharing/public/protocol/group_data.pb.h"
 #include "components/sqlite_proto/key_value_data.h"
 #include "components/sqlite_proto/key_value_table.h"
 #include "components/sqlite_proto/proto_table_manager.h"
 #include "sql/database.h"
+
+namespace data_sharing_pb {
+class GroupData;
+}  // namespace data_sharing_pb
 
 namespace data_sharing {
 
@@ -53,7 +58,7 @@ class GroupDataStore {
 
   void StoreGroupData(const VersionToken& version_token,
                       const base::Time& last_updated_timestamp,
-                      const GroupData& group_data);
+                      const data_sharing_pb::GroupData& group_data_proto);
   void DeleteGroups(const std::vector<GroupId>& groups_ids);
 
   std::optional<VersionToken> GetGroupVersionToken(

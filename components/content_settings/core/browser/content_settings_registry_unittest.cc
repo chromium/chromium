@@ -47,8 +47,8 @@ TEST_F(ContentSettingsRegistryTest, GetPlatformDependent) {
   EXPECT_FALSE(registry()->Get(ContentSettingsType::JAVASCRIPT));
 #endif
 
-#if (BUILDFLAG(IS_IOS) && !BUILDFLAG(USE_BLINK)) || BUILDFLAG(IS_ANDROID)
-  // Images shouldn't be registered on mobile.
+#if (BUILDFLAG(IS_IOS) && !BUILDFLAG(USE_BLINK))
+  // Images shouldn't be registered on iOS.
   EXPECT_FALSE(registry()->Get(ContentSettingsType::IMAGES));
 #endif
 

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.16)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(OpusPackageVersion)
@@ -71,6 +71,10 @@ set(OPUS_CHECK_ASM_HELP_STR "enable bit-exactness checks between optimized and c
 option(OPUS_CHECK_ASM ${OPUS_CHECK_ASM_HELP_STR} OFF)
 add_feature_info(OPUS_CHECK_ASM OPUS_CHECK_ASM ${OPUS_CHECK_ASM_HELP_STR})
 
+set(OPUS_DNN_FLOAT_DEBUG_HELP_STR "Run DNN computations as float for debugging purposes.")
+option(OPUS_DNN_FLOAT_DEBUG ${OPUS_DNN_FLOAT_DEBUG_HELP_STR} OFF)
+add_feature_info(OPUS_DNN_FLOAT_DEBUG OPUS_DNN_FLOAT_DEBUG ${OPUS_DNN_FLOAT_DEBUG_HELP_STR})
+
 set(OPUS_INSTALL_PKG_CONFIG_MODULE_HELP_STR "install pkg-config module.")
 option(OPUS_INSTALL_PKG_CONFIG_MODULE ${OPUS_INSTALL_PKG_CONFIG_MODULE_HELP_STR} ON)
 add_feature_info(OPUS_INSTALL_PKG_CONFIG_MODULE OPUS_INSTALL_PKG_CONFIG_MODULE ${OPUS_INSTALL_PKG_CONFIG_MODULE_HELP_STR})
@@ -79,10 +83,24 @@ set(OPUS_INSTALL_CMAKE_CONFIG_MODULE_HELP_STR "install CMake package config modu
 option(OPUS_INSTALL_CMAKE_CONFIG_MODULE ${OPUS_INSTALL_CMAKE_CONFIG_MODULE_HELP_STR} ON)
 add_feature_info(OPUS_INSTALL_CMAKE_CONFIG_MODULE OPUS_INSTALL_CMAKE_CONFIG_MODULE ${OPUS_INSTALL_CMAKE_CONFIG_MODULE_HELP_STR})
 
+set(OPUS_DRED_HELP_STR "enable DRED.")
+option(OPUS_DRED ${OPUS_DRED_HELP_STR} OFF)
+add_feature_info(OPUS_DRED OPUS_DRED ${OPUS_DRED_HELP_STR})
+
+set(OPUS_OSCE_HELP_STR "enable OSCE.")
+option(OPUS_OSCE ${OPUS_OSCE_HELP_STR} OFF)
+add_feature_info(OPUS_OSCE OPUS_OSCE ${OPUS_OSCE_HELP_STR})
+
 if(APPLE)
   set(OPUS_BUILD_FRAMEWORK_HELP_STR "build Framework bundle for Apple systems.")
   option(OPUS_BUILD_FRAMEWORK ${OPUS_BUILD_FRAMEWORK_HELP_STR} OFF)
   add_feature_info(OPUS_BUILD_FRAMEWORK OPUS_BUILD_FRAMEWORK ${OPUS_BUILD_FRAMEWORK_HELP_STR})
+endif()
+
+if(MSVC)
+  set(OPUS_STATIC_RUNTIME_HELP_STR "build with static runtime library.")
+  option(OPUS_STATIC_RUNTIME ${OPUS_STATIC_RUNTIME_HELP_STR} OFF)
+  add_feature_info(OPUS_STATIC_RUNTIME OPUS_STATIC_RUNTIME ${OPUS_STATIC_RUNTIME_HELP_STR})
 endif()
 
 set(OPUS_FIXED_POINT_DEBUG_HELP_STR "debug fixed-point implementation.")
@@ -173,13 +191,13 @@ if(OPUS_CPU_X86 OR OPUS_CPU_X64)
                          OFF)
   add_feature_info(OPUS_X86_MAY_HAVE_SSE4_1 OPUS_X86_MAY_HAVE_SSE4_1 ${OPUS_X86_MAY_HAVE_SSE4_1_HELP_STR})
 
-  set(OPUS_X86_MAY_HAVE_AVX_HELP_STR "does runtime check for AVX support.")
-  cmake_dependent_option(OPUS_X86_MAY_HAVE_AVX
-                         ${OPUS_X86_MAY_HAVE_AVX_HELP_STR}
+  set(OPUS_X86_MAY_HAVE_AVX2_HELP_STR "does runtime check for AVX FMA AVX2 support.")
+  cmake_dependent_option(OPUS_X86_MAY_HAVE_AVX2
+                         ${OPUS_X86_MAY_HAVE_AVX2_HELP_STR}
                          ON
-                         "AVX_SUPPORTED; NOT OPUS_DISABLE_INTRINSICS"
+                         "AVX2_SUPPORTED; NOT OPUS_DISABLE_INTRINSICS"
                          OFF)
-  add_feature_info(OPUS_X86_MAY_HAVE_AVX OPUS_X86_MAY_HAVE_AVX ${OPUS_X86_MAY_HAVE_AVX_HELP_STR})
+  add_feature_info(OPUS_X86_MAY_HAVE_AVX2 OPUS_X86_MAY_HAVE_AVX2 ${OPUS_X86_MAY_HAVE_AVX2_HELP_STR})
 
   # PRESUME depends on MAY HAVE, but PRESUME will override runtime detection
   set(OPUS_X86_PRESUME_SSE_HELP_STR "assume target CPU has SSE1 support (override runtime check).")
@@ -220,13 +238,13 @@ if(OPUS_CPU_X86 OR OPUS_CPU_X64)
                          OFF)
   add_feature_info(OPUS_X86_PRESUME_SSE4_1 OPUS_X86_PRESUME_SSE4_1 ${OPUS_X86_PRESUME_SSE4_1_HELP_STR})
 
-  set(OPUS_X86_PRESUME_AVX_HELP_STR "assume target CPU has AVX support (override runtime check).")
-  cmake_dependent_option(OPUS_X86_PRESUME_AVX
-                         ${OPUS_X86_PRESUME_AVX_HELP_STR}
+  set(OPUS_X86_PRESUME_AVX2_HELP_STR "assume target CPU has AVX FMA AVX2 support (override runtime check).")
+  cmake_dependent_option(OPUS_X86_PRESUME_AVX2
+                         ${OPUS_X86_PRESUME_AVX2_HELP_STR}
                          OFF
-                         "OPUS_X86_MAY_HAVE_AVX; NOT OPUS_DISABLE_INTRINSICS"
+                         "OPUS_X86_MAY_HAVE_AVX2; NOT OPUS_DISABLE_INTRINSICS"
                          OFF)
-  add_feature_info(OPUS_X86_PRESUME_AVX OPUS_X86_PRESUME_AVX ${OPUS_X86_PRESUME_AVX_HELP_STR})
+  add_feature_info(OPUS_X86_PRESUME_AVX2 OPUS_X86_PRESUME_AVX2 ${OPUS_X86_PRESUME_AVX2_HELP_STR})
 endif()
 
 feature_summary(WHAT ALL)
@@ -253,6 +271,14 @@ if(OPUS_CUSTOM_MODES)
   list(APPEND Opus_PUBLIC_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/include/opus_custom.h)
 endif()
 
+if(MSVC)
+  if(OPUS_STATIC_RUNTIME)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+  else()
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+  endif()
+endif()
+
 add_library(opus ${opus_headers} ${opus_sources} ${opus_sources_float} ${Opus_PUBLIC_HEADER})
 add_library(Opus::opus ALIAS opus)
 
@@ -274,6 +300,7 @@ target_include_directories(
          $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/opus>
   PRIVATE ${CMAKE_CURRENT_BINARY_DIR}
           ${CMAKE_CURRENT_SOURCE_DIR}
+          ${CMAKE_CURRENT_SOURCE_DIR}/dnn
           celt
           silk)
 
@@ -307,6 +334,10 @@ endif()
 
 if(OPUS_CHECK_ASM)
   target_compile_definitions(opus PRIVATE OPUS_CHECK_ASM)
+endif()
+
+if(NOT OPUS_DNN_FLOAT_DEBUG)
+  target_compile_definitions(opus PRIVATE DISABLE_DEBUG_FLOAT)
 endif()
 
 if(OPUS_VAR_ARRAYS)
@@ -365,11 +396,33 @@ if(NOT OPUS_ENABLE_FLOAT_API)
   target_compile_definitions(opus PRIVATE DISABLE_FLOAT_API)
 endif()
 
+if (OPUS_DEEP_PLC OR OPUS_DRED OR OPUS_OSCE)
+  add_sources_group(opus lpcnet ${deep_plc_headers} ${deep_plc_sources})
+  set(OPUS_DNN TRUE)
+else()
+  set(OPUS_DNN FALSE)
+endif()
+
+if (OPUS_DNN)
+  add_sources_group(opus lpcnet ${deep_plc_headers} ${deep_plc_sources})
+  target_compile_definitions(opus PRIVATE ENABLE_DEEP_PLC)
+endif()
+
+if (OPUS_DRED)
+  add_sources_group(opus lpcnet ${dred_headers} ${dred_sources})
+  target_compile_definitions(opus PRIVATE ENABLE_DRED)
+endif()
+
+if (OPUS_OSCE)
+  add_sources_group(opus lpcnet ${osce_headers} ${osce_sources})
+  target_compile_definitions(opus PRIVATE ENABLE_OSCE)
+endif()
+
 if(NOT OPUS_DISABLE_INTRINSICS)
   if(((OPUS_X86_MAY_HAVE_SSE AND NOT OPUS_X86_PRESUME_SSE) OR
      (OPUS_X86_MAY_HAVE_SSE2 AND NOT OPUS_X86_PRESUME_SSE2) OR
      (OPUS_X86_MAY_HAVE_SSE4_1 AND NOT OPUS_X86_PRESUME_SSE4_1) OR
-     (OPUS_X86_MAY_HAVE_AVX AND NOT OPUS_X86_PRESUME_AVX)) AND
+     (OPUS_X86_MAY_HAVE_AVX2 AND NOT OPUS_X86_PRESUME_AVX2)) AND
       RUNTIME_CPU_CAPABILITY_DETECTION)
     target_compile_definitions(opus PRIVATE OPUS_HAVE_RTCD)
     if(NOT MSVC)
@@ -383,6 +436,9 @@ if(NOT OPUS_DISABLE_INTRINSICS)
     endif()
     add_sources_group(opus celt ${celt_sources_x86_rtcd})
     add_sources_group(opus silk ${silk_sources_x86_rtcd})
+    if (OPUS_DNN)
+      add_sources_group(opus lpcnet ${dnn_sources_x86_rtcd})
+    endif()
   endif()
 
   if(SSE1_SUPPORTED)
@@ -404,9 +460,12 @@ if(NOT OPUS_DISABLE_INTRINSICS)
   if(SSE2_SUPPORTED)
     if(OPUS_X86_MAY_HAVE_SSE2)
       add_sources_group(opus celt ${celt_sources_sse2})
+      if (OPUS_DNN)
+        add_sources_group(opus lpcnet ${dnn_sources_sse2})
+      endif()
       target_compile_definitions(opus PRIVATE OPUS_X86_MAY_HAVE_SSE2)
       if(NOT MSVC)
-        set_source_files_properties(${celt_sources_sse2} PROPERTIES COMPILE_FLAGS -msse2)
+        set_source_files_properties(${celt_sources_sse2} ${dnn_sources_sse2} PROPERTIES COMPILE_FLAGS -msse2)
       endif()
     endif()
     if(OPUS_X86_PRESUME_SSE2)
@@ -421,9 +480,12 @@ if(NOT OPUS_DISABLE_INTRINSICS)
     if(OPUS_X86_MAY_HAVE_SSE4_1)
       add_sources_group(opus celt ${celt_sources_sse4_1})
       add_sources_group(opus silk ${silk_sources_sse4_1})
+      if (OPUS_DNN)
+        add_sources_group(opus lpcnet ${dnn_sources_sse4_1})
+      endif()
       target_compile_definitions(opus PRIVATE OPUS_X86_MAY_HAVE_SSE4_1)
       if(NOT MSVC)
-        set_source_files_properties(${celt_sources_sse4_1} ${silk_sources_sse4_1} PROPERTIES COMPILE_FLAGS -msse4.1)
+        set_source_files_properties(${celt_sources_sse4_1} ${silk_sources_sse4_1} ${dnn_sources_sse4_1} PROPERTIES COMPILE_FLAGS -msse4.1)
       endif()
 
       if(OPUS_FIXED_POINT)
@@ -441,22 +503,41 @@ if(NOT OPUS_DISABLE_INTRINSICS)
     endif()
   endif()
 
-  if(AVX_SUPPORTED)
-    # mostly placeholder in case of avx intrinsics is added
-    if(OPUS_X86_MAY_HAVE_AVX)
-      target_compile_definitions(opus PRIVATE OPUS_X86_MAY_HAVE_AVX)
+  if(AVX2_SUPPORTED)
+    if(OPUS_X86_MAY_HAVE_AVX2)
+      add_sources_group(opus celt ${celt_sources_avx2})
+      add_sources_group(opus silk ${silk_sources_avx2})
+      if (NOT OPUS_FIXED_POINT)
+        add_sources_group(opus silk ${silk_sources_float_avx2})
+      endif()
+      if (OPUS_DNN)
+        add_sources_group(opus lpcnet ${dnn_sources_avx2})
+      endif()
+      target_compile_definitions(opus PRIVATE OPUS_X86_MAY_HAVE_AVX2)
+      if(MSVC)
+        set(AVX2_FLAGS "${AVX2_FLAGS} /arch:AVX2")
+      else()
+        set(AVX2_FLAGS "${AVX2_FLAGS} -mavx2 -mfma -mavx")
+      endif()
+      set_source_files_properties(${celt_sources_avx2} PROPERTIES COMPILE_FLAGS ${AVX2_FLAGS})
+      set_source_files_properties(${silk_sources_avx2} PROPERTIES COMPILE_FLAGS ${AVX2_FLAGS})
+      if (NOT OPUS_FIXED_POINT)
+        set_source_files_properties(${silk_sources_float_avx2} PROPERTIES COMPILE_FLAGS ${AVX2_FLAGS})
+      endif()
+      set_source_files_properties(${dnn_sources_avx2} PROPERTIES COMPILE_FLAGS ${AVX2_FLAGS})
     endif()
-    if(OPUS_X86_PRESUME_AVX)
-      target_compile_definitions(opus PRIVATE OPUS_X86_PRESUME_AVX)
+    if(OPUS_X86_PRESUME_AVX2)
+      target_compile_definitions(opus PRIVATE OPUS_X86_PRESUME_AVX2)
+      target_compile_definitions(opus PRIVATE OPUS_X86_PRESUME_SSE4_1)
       if(NOT MSVC)
-        target_compile_options(opus PRIVATE -mavx)
+        target_compile_options(opus PRIVATE -mavx2 -mfma -mavx)
       endif()
     endif()
   endif()
 
   if(MSVC)
-    if(AVX_SUPPORTED AND OPUS_X86_PRESUME_AVX) # on 64 bit and 32 bits
-      add_definitions(/arch:AVX)
+    if(AVX2_SUPPORTED AND OPUS_X86_PRESUME_AVX2) # on 64 bit and 32 bits
+      add_definitions(/arch:AVX2)
     elseif(OPUS_CPU_X86) # if AVX not supported then set SSE flag
       if((SSE4_1_SUPPORTED AND OPUS_X86_PRESUME_SSE4_1)
          OR (SSE2_SUPPORTED AND OPUS_X86_PRESUME_SSE2))
@@ -486,6 +567,9 @@ if(NOT OPUS_DISABLE_INTRINSICS)
 
     add_sources_group(opus celt ${celt_sources_arm_neon_intr})
     add_sources_group(opus silk ${silk_sources_arm_neon_intr})
+    if (OPUS_DNN)
+      add_sources_group(opus lpcnet ${dnn_sources_arm_neon})
+    endif()
 
     # silk arm neon depends on main_Fix.h
     target_include_directories(opus PRIVATE silk/fixed)
@@ -582,6 +666,7 @@ if(OPUS_BUILD_PROGRAMS)
   target_include_directories(opus_demo PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
   target_include_directories(opus_demo PRIVATE silk) # debug.h
   target_include_directories(opus_demo PRIVATE celt) # arch.h
+  target_include_directories(opus_demo PRIVATE dnn)
   target_link_libraries(opus_demo PRIVATE opus ${OPUS_REQUIRED_LIBRARIES})
   target_compile_definitions(opus_demo PRIVATE OPUS_BUILD)
 
@@ -589,10 +674,6 @@ if(OPUS_BUILD_PROGRAMS)
   add_executable(opus_compare ${opus_compare_sources})
   target_include_directories(opus_compare PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
   target_link_libraries(opus_compare PRIVATE opus ${OPUS_REQUIRED_LIBRARIES})
-  if(MSVC)
-    # move cosmetic warning to level 4 for opus_compare
-    target_compile_options(opus_compare PRIVATE /w44244)
-  endif()
 endif()
 
 if(BUILD_TESTING AND NOT BUILD_SHARED_LIBS)
@@ -636,11 +717,39 @@ if(BUILD_TESTING AND NOT BUILD_SHARED_LIBS)
 
   add_executable(test_opus_encode ${test_opus_encode_sources})
   target_include_directories(test_opus_encode
-                            PRIVATE ${CMAKE_CURRENT_BINARY_DIR} celt)
+                            PRIVATE ${CMAKE_CURRENT_BINARY_DIR} celt dnn)
   target_link_libraries(test_opus_encode PRIVATE opus)
   target_compile_definitions(test_opus_encode PRIVATE OPUS_BUILD)
   add_test(NAME test_opus_encode COMMAND ${CMAKE_COMMAND}
         -DTEST_EXECUTABLE=$<TARGET_FILE:test_opus_encode>
         -DCMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}
         -P "${PROJECT_SOURCE_DIR}/cmake/RunTest.cmake")
+
+  add_executable(test_opus_extensions ${test_opus_extensions_sources})
+  target_include_directories(test_opus_extensions
+                            PRIVATE ${CMAKE_CURRENT_BINARY_DIR} celt dnn)
+  target_link_libraries(test_opus_extensions PRIVATE opus)
+  target_compile_definitions(test_opus_extensions PRIVATE OPUS_BUILD)
+  add_test(NAME test_opus_extensions COMMAND ${CMAKE_COMMAND}
+        -DTEST_EXECUTABLE=$<TARGET_FILE:test_opus_extensions>
+        -DCMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}
+        -P "${PROJECT_SOURCE_DIR}/cmake/RunTest.cmake")
+  if(OPUS_DRED)
+    add_executable(test_opus_dred ${test_opus_dred_sources})
+    target_include_directories(test_opus_dred
+                              PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_link_libraries(test_opus_dred PRIVATE opus)
+    target_compile_definitions(test_opus_dred PRIVATE OPUS_BUILD)
+    add_test(NAME test_opus_dred COMMAND ${CMAKE_COMMAND}
+          -DTEST_EXECUTABLE=$<TARGET_FILE:test_opus_dred>
+          -DCMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}
+          -P "${PROJECT_SOURCE_DIR}/cmake/RunTest.cmake")
+  endif()
+  if(OPUS_CUSTOM_MODES)
+    add_executable(test_opus_custom ${test_opus_custom_sources})
+    target_include_directories(test_opus_custom
+                              PRIVATE ${CMAKE_CURRENT_BINARY_DIR} celt dnn)
+    target_link_libraries(test_opus_custom PRIVATE opus)
+    target_compile_definitions(test_opus_custom PRIVATE OPUS_BUILD)
+  endif()
 endif()

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_audio.h"
 
 #include <algorithm>
@@ -316,12 +311,11 @@ class NumericDiscreteSetContainer {
 
   const char* ApplyConstraintSet(const C& constraint) {
     auto constraint_set = NumericRangeSet<T>::FromConstraint(constraint);
-    for (auto it = allowed_values_.begin(); it != allowed_values_.end();) {
-      if (!constraint_set.Contains(*it))
-        it = allowed_values_.erase(it);
-      else
-        ++it;
-    }
+    auto to_remove = std::ranges::remove_if(
+        allowed_values_, [&constraint_set](const auto& t) {
+          return !constraint_set.Contains(t);
+        });
+    allowed_values_.erase(to_remove.begin(), to_remove.end());
 
     return IsEmpty() ? constraint.GetName() : nullptr;
   }
@@ -1133,8 +1127,7 @@ class DeviceContainer {
     if (failed_constraint_name)
       return failed_constraint_name;
 
-    for (size_t i = 0; i < kNumBooleanContainerIds; ++i) {
-      auto& info = kBooleanPropertyContainerInfoMap[i];
+    for (const auto& info : kBooleanPropertyContainerInfoMap) {
       failed_constraint_name =
           boolean_containers_[info.index].ApplyConstraintSet(
               constraint_set.*(info.constraint_member));
@@ -1144,15 +1137,15 @@ class DeviceContainer {
 
     // For each processing based container, apply the constraints and only fail
     // if all of them failed.
-    for (auto it = processing_based_containers_.begin();
-         it != processing_based_containers_.end();) {
-      DCHECK(!it->IsEmpty());
-      failed_constraint_name = it->ApplyConstraintSet(constraint_set);
-      if (failed_constraint_name)
-        it = processing_based_containers_.erase(it);
-      else
-        ++it;
-    }
+    auto to_remove = std::ranges::remove_if(
+        processing_based_containers_,
+        [&constraint_set, &failed_constraint_name](auto& t) {
+          DCHECK(!t.IsEmpty());
+          failed_constraint_name = t.ApplyConstraintSet(constraint_set);
+          return !!failed_constraint_name;
+        });
+    processing_based_containers_.erase(to_remove.begin(), to_remove.end());
+
     if (processing_based_containers_.empty()) {
       DCHECK_NE(failed_constraint_name, nullptr);
       return failed_constraint_name;
@@ -1350,16 +1343,17 @@ class CandidatesContainer {
 
   const char* ApplyConstraintSet(const ConstraintSet& constraint_set) {
     const char* latest_failed_constraint_name = nullptr;
-    for (auto it = devices_.begin(); it != devices_.end();) {
-      DCHECK(!it->IsEmpty());
-      auto* failed_constraint_name = it->ApplyConstraintSet(constraint_set);
-      if (failed_constraint_name) {
-        latest_failed_constraint_name = failed_constraint_name;
-        it = devices_.erase(it);
-      } else {
-        ++it;
-      }
-    }
+    auto to_remove = std::ranges::remove_if(
+        devices_, [&constraint_set, &latest_failed_constraint_name](auto& t) {
+          DCHECK(!t.IsEmpty());
+          const auto* failed_constraint_name =
+              t.ApplyConstraintSet(constraint_set);
+          if (failed_constraint_name) {
+            latest_failed_constraint_name = failed_constraint_name;
+          }
+          return !!failed_constraint_name;
+        });
+    devices_.erase(to_remove.begin(), to_remove.end());
     return IsEmpty() ? latest_failed_constraint_name : nullptr;
   }
 

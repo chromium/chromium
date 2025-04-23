@@ -78,7 +78,9 @@ source_set("model") {
     "//components/variations/service",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/enterprise/connectors",
+    "//ios/chrome/browser/enterprise/connectors:features",
     "//ios/chrome/browser/enterprise/connectors:util",
+    "//ios/chrome/browser/enterprise/connectors/reporting",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/passwords/model:store_factory",
@@ -109,18 +111,6 @@ optimize_ts("password_protection_ts") {
   deps = [ "//ios/web/public/js_messaging:util_scripts" ]
 }
 
-source_set("features") {
-  sources = [
-    "features.h",
-    "features.mm",
-  ]
-
-  deps = [
-    "//base",
-    "//components/password_manager/core/common:features",
-  ]
-}
-
 source_set("infobar_delegate") {
   sources = [
     "enhanced_safe_browsing_infobar_delegate.h",
@@ -142,7 +132,6 @@ source_set("eg2_tests") {
   ]
   deps = [
     "//base",
-    "//components/password_manager/core/common:features",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/strings",
@@ -207,6 +196,7 @@ source_set("unit_tests") {
     "//components/strings",
     "//components/sync_user_events:test_support",
     "//components/unified_consent",
+    "//ios/chrome/browser/enterprise/connectors:features",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/prerender/model",

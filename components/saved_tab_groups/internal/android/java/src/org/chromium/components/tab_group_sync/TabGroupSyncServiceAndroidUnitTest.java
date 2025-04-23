@@ -251,4 +251,9 @@ public class TabGroupSyncServiceAndroidUnitTest {
             LocalTabGroupId localTabGroupId, int localTabId, String tabTitle) {
         mService.onTabSelected(localTabGroupId, localTabId, tabTitle);
     }
+
+    @CalledByNative
+    public void testUpdateArchivalStatus(String uuid, boolean archivalStatus) {
+        mService.updateArchivalStatus(uuid, archivalStatus);
+    }
 }

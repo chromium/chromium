@@ -470,8 +470,6 @@ impl HelpTemplate<'_, '_> {
         debug!("HelpTemplate::write_args {_category}");
         // The shortest an arg can legally be is 2 (i.e. '-x')
         let mut longest = 2;
-        let mut longest_without_short = 2;
-        let mut has_short = false;
         let mut ord_v = BTreeMap::new();
 
         // Determine the longest
@@ -481,10 +479,6 @@ impl HelpTemplate<'_, '_> {
             // args alignment
             should_show_arg(self.use_long, arg)
         }) {
-            if !has_short && arg.get_short().is_some() {
-                has_short = true;
-            }
-
             if longest_filter(arg) {
                 let width = display_width(&arg.to_string());
                 let actual_width = if arg.is_positional() {
@@ -493,9 +487,6 @@ impl HelpTemplate<'_, '_> {
                     width + SHORT_SIZE
                 };
                 longest = longest.max(actual_width);
-                if !has_short {
-                    longest_without_short = longest_without_short.max(width);
-                }
                 debug!(
                     "HelpTemplate::write_args: arg={:?} longest={}",
                     arg.get_id(),
@@ -507,10 +498,6 @@ impl HelpTemplate<'_, '_> {
             ord_v.insert(key, arg);
         }
 
-        if !has_short {
-            longest = longest_without_short;
-        }
-
         let next_line_help = self.will_args_wrap(args, longest);
 
         for (i, (_, arg)) in ord_v.iter().enumerate() {
@@ -520,22 +507,20 @@ impl HelpTemplate<'_, '_> {
                     self.writer.push_str("\n");
                 }
             }
-            self.write_arg(arg, next_line_help, longest, has_short);
+            self.write_arg(arg, next_line_help, longest);
         }
     }
 
     /// Writes help for an argument to the wrapped stream.
-    fn write_arg(&mut self, arg: &Arg, next_line_help: bool, longest: usize, has_short: bool) {
+    fn write_arg(&mut self, arg: &Arg, next_line_help: bool, longest: usize) {
         let spec_vals = &self.spec_vals(arg);
 
         self.writer.push_str(TAB);
-        if has_short {
-            self.short(arg);
-        }
+        self.short(arg);
         self.long(arg);
         self.writer
             .push_styled(&arg.stylize_arg_suffix(self.styles, None));
-        self.align_to_about(arg, next_line_help, longest, has_short);
+        self.align_to_about(arg, next_line_help, longest);
 
         let about = if self.use_long {
             arg.get_long_help()
@@ -578,7 +563,7 @@ impl HelpTemplate<'_, '_> {
     }
 
     /// Write alignment padding between arg's switches/values and its about message.
-    fn align_to_about(&mut self, arg: &Arg, next_line_help: bool, longest: usize, has_short: bool) {
+    fn align_to_about(&mut self, arg: &Arg, next_line_help: bool, longest: usize) {
         debug!(
             "HelpTemplate::align_to_about: arg={}, next_line_help={}, longest={}",
             arg.get_id(),
@@ -590,10 +575,7 @@ impl HelpTemplate<'_, '_> {
             debug!("HelpTemplate::align_to_about: printing long help so skip alignment");
             0
         } else if !arg.is_positional() {
-            let mut self_len = display_width(&arg.to_string());
-            if has_short {
-                self_len += SHORT_SIZE;
-            }
+            let self_len = display_width(&arg.to_string()) + SHORT_SIZE;
             // Since we're writing spaces from the tab point we first need to know if we
             // had a long and short, or just short
             let padding = if arg.get_long().is_some() {

@@ -103,6 +103,7 @@ class LegacyRunner:
                skip_prompts,
                build_dir,
                additional_test_args=None,
+               swarming_dimensions=None,
                reuse_task=None,
                skip_coverage=False,
                no_rbe=False,
@@ -121,6 +122,7 @@ class LegacyRunner:
       skip_prompts: If True, skip Y/N prompts for warnings.
       build_dir: pathlib.Path to the build dir to build in.
       additional_test_args: List of additional args to pass to the tests.
+      dimensions: List of dimensions to overwrite in the tests.
       reuse_task: String of a swarming task to reuse.
       skip_coverage: If True, skip code coverage instrumentation.
       no_rbe: If True, disables RBE during compile.
@@ -155,6 +157,8 @@ class LegacyRunner:
     input_props['build_dir'] = str(build_dir.absolute())
     if additional_test_args:
       input_props['additional_test_args'] = additional_test_args
+    if swarming_dimensions:
+      input_props['swarming_dimensions'] = swarming_dimensions
     # The recipe will overwrite this property so we have to put it preserve it
     # elsewhere
     if 'recipe' in input_props:

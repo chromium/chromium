@@ -14,13 +14,8 @@ gpu::mojom::Direct3DFeatureLevel
 EnumTraits<gpu::mojom::Direct3DFeatureLevel, D3D_FEATURE_LEVEL>::ToMojom(
     D3D_FEATURE_LEVEL d3d_feature_level) {
   switch (d3d_feature_level) {
-// TODO(crbug.com/362650376): This case is valid only for SDK version
-// 10.0.26100.0 and up. Include it unconditionally once we start requiring this
-// version
-#ifdef NTDDI_WIN11_GE
     case D3D_FEATURE_LEVEL_1_0_GENERIC:
       return gpu::mojom::Direct3DFeatureLevel::k1_0_Generic;
-#endif
     case D3D_FEATURE_LEVEL_1_0_CORE:
       return gpu::mojom::Direct3DFeatureLevel::k1_0_Core;
     case D3D_FEATURE_LEVEL_9_1:

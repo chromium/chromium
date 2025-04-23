@@ -39,6 +39,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.metrics.FetchAccountCapabilitiesFromSystemLibraryResult;
+import org.chromium.google_apis.gaia.GoogleServiceAuthError;
+import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 
 import java.io.IOException;
 
@@ -123,11 +125,15 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
             // This case includes a UserRecoverableNotifiedException, but most clients will have
             // their own retry mechanism anyway.
             throw new AuthException(
-                    AuthException.NONTRANSIENT,
                     "Error while getting token for scope '" + authTokenScope + "'",
-                    ex);
+                    ex,
+                    new GoogleServiceAuthError(
+                            GoogleServiceAuthErrorState.INVALID_GAIA_CREDENTIALS));
         } catch (IOException ex) {
-            throw new AuthException(AuthException.TRANSIENT, ex);
+            throw new AuthException(
+                    "Error while getting token for scope '" + authTokenScope + "'",
+                    ex,
+                    new GoogleServiceAuthError(GoogleServiceAuthErrorState.CONNECTION_FAILED));
         }
     }
 
@@ -136,9 +142,16 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
         try {
             GoogleAuthUtil.clearToken(ContextUtils.getApplicationContext(), authToken);
         } catch (GoogleAuthException ex) {
-            throw new AuthException(AuthException.NONTRANSIENT, ex);
+            throw new AuthException(
+                    "Error while invalidating access token",
+                    ex,
+                    new GoogleServiceAuthError(
+                            GoogleServiceAuthErrorState.INVALID_GAIA_CREDENTIALS));
         } catch (IOException ex) {
-            throw new AuthException(AuthException.TRANSIENT, ex);
+            throw new AuthException(
+                    "Error while invalidating access token",
+                    ex,
+                    new GoogleServiceAuthError(GoogleServiceAuthErrorState.CONNECTION_FAILED));
         }
     }
 

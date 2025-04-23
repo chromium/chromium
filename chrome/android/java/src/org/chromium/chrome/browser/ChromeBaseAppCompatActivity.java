@@ -58,7 +58,6 @@ import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
-import org.chromium.chrome.browser.theme.ThemeModuleUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
@@ -413,6 +412,10 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         if (BuildInfo.getInstance().isAutomotive) {
             DisplayUtil.scaleUpConfigurationForAutomotive(baseContext, overrideConfig);
 
+            RecordHistogram.recordSparseHistogram(
+                    "Android.Automotive.UiScalingFactor",
+                    (int) (100 * DisplayUtil.getTargetScalingFactorForAutomotive(baseContext)));
+
             // Enable web ui scaling for automotive devices.
             CommandLine.getInstance()
                     .appendSwitch(DisplaySwitches.AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED);
@@ -454,16 +457,6 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     /** Apply theme overlay to this activity class. */
     @CallSuper
     protected void applyThemeOverlays() {
-        // Apply the theme overlay before applying dynamic colors. The order ensures the color
-        // attributes for dynamic colors are not overridden by the overlay.
-        if (ThemeModuleUtils.isEnabled()) {
-            int themeModuleOverlay = ThemeModuleUtils.getProviderInstance().getThemeOverlay();
-            if (themeModuleOverlay != 0) {
-                getTheme().applyStyle(themeModuleOverlay, /* force= */ true);
-                mThemeResIds.add(themeModuleOverlay);
-            }
-        }
-
         // Note that if you're adding new overlays here, it's quite likely they're needed
         // in org.chromium.chrome.browser.WarmupManager#applyContextOverrides for Custom Tabs
         // UI that's pre-inflated using a themed application context as part of CCT warmup.
@@ -487,25 +480,23 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         // OS versions.
         if (ChromeFeatureList.sAndroidElegantTextHeight.isEnabled()
                 && Build.VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
-            int elegantTextHeightOverlay = R.style.ThemeOverlay_BrowserUI_ElegantTextHeight;
-            getTheme().applyStyle(elegantTextHeightOverlay, true);
-            mThemeResIds.add(elegantTextHeightOverlay);
+            applySingleThemeOverlay(R.style.ThemeOverlay_BrowserUI_ElegantTextHeight);
         }
 
         if (Build.VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
-            int defaultFontFamilyOverlay =
-                    R.style.ThemeOverlay_BrowserUI_DefaultFontFamilyThemeOverlay;
-            getTheme().applyStyle(defaultFontFamilyOverlay, true);
-            mThemeResIds.add(defaultFontFamilyOverlay);
+            applySingleThemeOverlay(R.style.ThemeOverlay_BrowserUI_DefaultFontFamilyThemeOverlay);
         }
 
         if (EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()
                 || CommandLine.getInstance()
                         .hasSwitch(ChromeSwitches.DISABLE_OPT_OUT_EDGE_TO_EDGE)) {
-            int optOutEdgeToEdge = R.style.ThemeOverlay_BrowserUI_OptOutEdgeToEdge;
-            getTheme().applyStyle(optOutEdgeToEdge, true);
-            mThemeResIds.add(optOutEdgeToEdge);
+            applySingleThemeOverlay(R.style.ThemeOverlay_BrowserUI_OptOutEdgeToEdge);
         }
+    }
+
+    protected void applySingleThemeOverlay(int themeOverlay) {
+        getTheme().applyStyle(themeOverlay, /* force= */ true);
+        mThemeResIds.add(themeOverlay);
     }
 
     /** Sets the default task description that will appear in the recents UI. */

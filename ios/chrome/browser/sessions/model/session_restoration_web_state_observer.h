@@ -71,8 +71,6 @@ class SessionRestorationWebStateObserver final
   int last_committed_item_index_ = -1;
 
   __strong SessionRestorationScrollObserver* scroll_observer_ = nil;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_MODEL_SESSION_RESTORATION_WEB_STATE_OBSERVER_H_

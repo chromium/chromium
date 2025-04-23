@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <memory>
 #include <numeric>
+#include <string>
 
 #include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
@@ -32,6 +33,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -384,6 +386,14 @@ void QuickSettingsFooter::UpdateSettingsButtonState() {
   settings_button_->SetState(settings_icon_enabled
                                  ? views::Button::STATE_NORMAL
                                  : views::Button::STATE_DISABLED);
+  const std::u16string tooltip =
+      settings_icon_enabled
+          ? l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SETTINGS)
+          : l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SETTINGS_DISABLED);
+  settings_button_->SetTooltipText(tooltip);
+
+  settings_button_->GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SETTINGS));
 }
 
 views::View* QuickSettingsFooter::CreateEndContainer() {

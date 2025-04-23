@@ -7,8 +7,17 @@
 
 #include <optional>
 #include <variant>
+#include <vector>
 
-#include "components/country_codes/country_codes.h"
+class PrefService;
+
+namespace country_codes {
+class CountryId;
+}
+
+namespace TemplateURLPrepopulateData {
+struct PrepopulatedEngine;
+}
 
 namespace regional_capabilities {
 
@@ -38,6 +47,18 @@ std::optional<SearchEngineCountryOverride> GetSearchEngineCountryOverride();
 // Returns whether the search engine list is overridden in the command line to
 // return the default list or the list of all eea engines.
 bool HasSearchEngineCountryListOverride();
+
+// Returns the prepopulated engines for the given country.
+std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
+GetPrepopulatedEngines(country_codes::CountryId country_id, PrefService& prefs);
+
+// Returns all the prepopulated engines that are used in the EEA region.
+std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
+GetAllEeaRegionPrepopulatedEngines();
+
+// Returns the set of search engines that is used when the country is unknown.
+std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
+GetDefaultPrepopulatedEngines();
 
 }  // namespace regional_capabilities
 

@@ -4,6 +4,7 @@
 
 #include "google_apis/gaia/oauth2_access_token_fetcher_impl.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -222,7 +223,7 @@ void OAuth2AccessTokenFetcherImpl::StartGetAccessToken() {
 }
 
 void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   CHECK_EQ(GET_ACCESS_TOKEN_STARTED, state_);
   state_ = GET_ACCESS_TOKEN_DONE;
 
@@ -239,7 +240,10 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
 
   int response_code = url_loader_->ResponseInfo()->headers->response_code();
   RecordResponseCodeUma(response_code);
-  std::string response_str = response_body ? *response_body : "";
+  if (!response_body.has_value()) {
+    response_body.emplace();
+  }
+  const std::string& response_str = *response_body;
 
   if (response_code == net::HTTP_OK) {
     OAuth2AccessTokenConsumer::TokenResponse token_response;
@@ -274,7 +278,6 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
 
     case kRateLimitExceeded:
     case kInternalFailure:
-    case kAccessDenied:
       // Transient error.
       error = GoogleServiceAuthError::FromServiceUnavailable(response_str);
       break;
@@ -300,6 +303,12 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
       error = GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
           GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
               kAdminPolicyEnforced);
+      break;
+
+    case kAccessDenied:
+      error = GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
+          GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+              kAccessDenied);
       break;
 
     case kInvalidRequest:
@@ -352,7 +361,7 @@ void OAuth2AccessTokenFetcherImpl::OnGetTokenFailure(
 }
 
 void OAuth2AccessTokenFetcherImpl::OnURLLoadComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   CHECK_EQ(state_, GET_ACCESS_TOKEN_STARTED);
   EndGetAccessToken(std::move(response_body));
 }

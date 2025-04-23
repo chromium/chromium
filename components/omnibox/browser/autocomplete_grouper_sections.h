@@ -204,17 +204,33 @@ class DesktopSRPZpsSection : public ZpsSection {
                                 size_t url_limit);
 };
 
-// Section expressing the Desktop ZPS limits and grouping for the Web.
-// - up to `max_suggestions` suggestions total.
-//  - up to `url_limit` most visited tiles suggestions.
-//  - up to `search_limit` page related suggestions.
-//  - up to `search_limit` personalized suggestions.
-class DesktopWebZpsSection : public ZpsSection {
+// Section expressing the Desktop URL ZPS limits and grouping for the Web.
+// - up to `limit` most visited tiles suggestions.
+class DesktopWebURLZpsSection : public ZpsSection {
  public:
-  explicit DesktopWebZpsSection(omnibox::GroupConfigMap& group_configs,
-                                size_t max_suggestions,
-                                size_t search_limit,
-                                size_t url_limit);
+  explicit DesktopWebURLZpsSection(omnibox::GroupConfigMap& group_configs,
+                                   size_t limit);
+};
+
+// Section expressing the Desktop Search ZPS limits and grouping for the Web.
+// - up to `limit` suggestions total.
+//  - up to `limit` page related or personalized search suggestions.
+//  - up to `contextual_search_limit` contextual search suggestions.
+// TODO(crbug.com/409810808): Extending `ZpsSection` would reorder the matches
+// demoting contextual search suggestions in `ZpsSection::InitFromMatches()`.
+// This is not the desired behavior as those matches should take precedence over
+// the other search suggestions, despite visually appearing after them.
+class DesktopWebSearchZpsSection : public Section {
+ public:
+  explicit DesktopWebSearchZpsSection(omnibox::GroupConfigMap& group_configs,
+                                      size_t limit,
+                                      size_t contextual_search_limit);
+};
+
+// A section to follow contextual search matches with the advert actions.
+class DesktopWebZpsActionsSection : public ZpsSection {
+ public:
+  explicit DesktopWebZpsActionsSection(omnibox::GroupConfigMap& group_configs);
 };
 
 // Section expressing the Desktop ZPS limits and grouping for the Lens

@@ -440,10 +440,8 @@ void WidgetDelegate::SetCanResize(bool can_resize) {
   }
 }
 
-// TODO (kylixrd): This will be removed once Widget no longer "owns" the
-// WidgetDelegate.
-void WidgetDelegate::SetOwnedByWidget(bool owned) {
-  owned_by_widget_ = owned;
+void WidgetDelegate::SetOwnedByWidget(OwnedByWidgetPassKey) {
+  owned_by_widget_ = true;
 }
 
 void WidgetDelegate::SetFocusTraversesOut(bool focus_traverses_out) {

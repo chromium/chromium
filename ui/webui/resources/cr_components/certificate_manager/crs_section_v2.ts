@@ -40,7 +40,10 @@ export class CrsSectionV2Element extends CrsSectionV2ElementBase {
 
   static get properties() {
     return {
-      crsLearnMoreUrl_: String,
+      crsLearnMoreUrl_: {
+        type: String,
+        value: () => loadTimeData.getString('crsLearnMoreUrl'),
+      },
 
       certificateSourceEnum_: {
         type: Object,
@@ -49,7 +52,7 @@ export class CrsSectionV2Element extends CrsSectionV2ElementBase {
     };
   }
 
-  private crsLearnMoreUrl_: string = loadTimeData.getString('crsLearnMoreUrl');
+  declare private crsLearnMoreUrl_: string;
 }
 
 declare global {

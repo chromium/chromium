@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -24,6 +25,7 @@ import java.util.Set;
  * been initialized. Primarily reconciles remote group updates / deletions with the local model and
  * local group additions to remote. Also initializes tab ID mappings for the session.
  */
+@NullMarked
 public class StartupHelper {
     private static final String TAG = "TG.StartupHelper";
     private final TabGroupModelFilter mTabGroupModelFilter;
@@ -155,9 +157,10 @@ public class StartupHelper {
     private Set<LocalTabGroupId> getLocalTabGroupIds() {
         Set<LocalTabGroupId> localTabGroups = new HashSet<>();
         for (int i = 0; i < getTabModel().getCount(); i++) {
-            Tab tab = getTabModel().getTabAt(i);
-            if (tab.getTabGroupId() == null) continue;
-            localTabGroups.add(TabGroupSyncUtils.getLocalTabGroupId(tab));
+            Tab tab = getTabModel().getTabAtChecked(i);
+            LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(tab);
+            if (localTabGroupId == null) continue;
+            localTabGroups.add(localTabGroupId);
         }
         return localTabGroups;
     }

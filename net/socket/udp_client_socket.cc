@@ -257,6 +257,19 @@ void UDPClientSocket::SetIOSNetworkServiceType(int ios_network_service_type) {
 #endif
 }
 
+void UDPClientSocket::RegisterQuicConnectionClosePayload(
+    base::span<uint8_t> payload) {
+#if BUILDFLAG(IS_POSIX)
+  socket_.RegisterQuicConnectionClosePayload(payload);
+#endif
+}
+
+void UDPClientSocket::UnregisterQuicConnectionClosePayload() {
+#if BUILDFLAG(IS_POSIX)
+  socket_.UnregisterQuicConnectionClosePayload();
+#endif
+}
+
 int UDPClientSocket::AdoptOpenedSocket(AddressFamily address_family,
                                        SocketDescriptor socket) {
   int rv = socket_.AdoptOpenedSocket(address_family, socket);

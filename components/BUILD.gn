@@ -607,6 +607,7 @@ test("components_unittests") {
       "//components/site_isolation:unit_tests",
       "//components/spellcheck/browser:unit_tests",
       "//components/spellcheck/renderer:unit_tests",
+      "//components/themes:unit_tests",
     ]
 
     if (!is_win) {  #!iOS and!Windows
@@ -642,8 +643,6 @@ test("components_unittests") {
       "//components/collaboration/internal:messaging_native_java_unittests_java",
       "//components/component_updater/android:embedded_component_loader_java",
       "//components/component_updater/android:embedded_component_loader_unittests",
-      "//components/content_settings/android:native_java_unittests_java",
-      "//components/content_settings/android:unit_tests",
       "//components/crash/android:java",
       "//components/crash/android:unit_tests",
       "//components/credential_management/android:unit_tests",
@@ -1227,6 +1226,7 @@ if (use_blink) {
     sources = [
       "attribution_reporting/aggregatable_utils_perftest.cc",
       "attribution_reporting/privacy_math_perftest.cc",
+      "autofill/core/browser/ml_model/field_classification_model_executor_perftest.cc",
       "discardable_memory/common/discardable_shared_memory_heap_perftest.cc",
       "omnibox/browser/history_quick_provider_performance_unittest.cc",
       "subresource_filter/core/common/perftests/indexed_ruleset_perftest.cc",
@@ -1237,6 +1237,8 @@ if (use_blink) {
     deps = [
       "//base",
       "//components/attribution_reporting",
+      "//components/autofill/content/browser",
+      "//components/autofill/core/common:test_support",
       "//components/bookmarks/test",
       "//components/discardable_memory/common",
       "//components/history/core/test",
@@ -1262,6 +1264,7 @@ if (use_blink) {
     data = [
       "//components/subresource_filter/core/common/perftests/data/",
       "//third_party/subresource-filter-ruleset/data/",
+      "test/data/autofill/",
     ]
 
     if (is_android) {

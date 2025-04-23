@@ -17,6 +17,4 @@ found in the LICENSE file.
     <!-- IDs for Settings row views -->
     <item type="id" name="account_management_account_row" />
     <item type="id" name="account_management_google_services_row" />
-    <!-- IDs for Account Settings switch views -->
-    <item type="id" name="account_section_history_toggle" />
 </resources>

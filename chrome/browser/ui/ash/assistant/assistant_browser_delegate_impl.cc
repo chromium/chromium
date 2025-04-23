@@ -91,7 +91,9 @@ enum class AssistantNewEntryPointEligibility {
   kNotEligibleFlagOff = 3,
   // Not eligible because the new entry point is not installed.
   kNotEligibleNotInstalled = 4,
-  kMaxValue = kNotEligibleNotInstalled,
+  // Not eligible because the build is not Google Chrome.
+  kNotEligibleNonGoogleChrome = 5,
+  kMaxValue = kNotEligibleNonGoogleChrome,
 };
 // LINT.ThenChange(/tools/metrics/histograms/enums.xml:AssistantNewEntryPointEligibility)
 
@@ -111,6 +113,8 @@ AssistantNewEntryPointEligibility ToHistogramEnum(
       return AssistantNewEntryPointEligibility::kNotEligibleFlagOff;
     case AssistantBrowserDelegate::Error::kNewEntryPointNotFound:
       return AssistantNewEntryPointEligibility::kNotEligibleNotInstalled;
+    case AssistantBrowserDelegate::Error::kNonGoogleChromeBuild:
+      return AssistantNewEntryPointEligibility::kNotEligibleNonGoogleChrome;
   }
 
   CHECK(false) << "Invalid error value is specified";
@@ -126,12 +130,21 @@ base::expected<bool, AssistantBrowserDelegate::Error> ToEligibilityBool(
   static constexpr auto non_transient_error =
       base::MakeFixedFlatSet<AssistantBrowserDelegate::Error>(
           {AssistantBrowserDelegate::Error::kNewEntryPointNotEnabled,
-           AssistantBrowserDelegate::Error::kNewEntryPointNotFound});
+           AssistantBrowserDelegate::Error::kNewEntryPointNotFound,
+           AssistantBrowserDelegate::Error::kNonGoogleChromeBuild});
   if (non_transient_error.contains(maybe_web_app.error())) {
     return false;
   }
 
   return base::unexpected(maybe_web_app.error());
+}
+
+bool IsGoogleChrome() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return true;
+#else
+  return false;
+#endif
 }
 
 }  // namespace
@@ -326,6 +339,11 @@ AssistantBrowserDelegateImpl::GetWebAppRegistrarForNewEntryPoint() {
 
 base::expected<const web_app::WebApp*, AssistantBrowserDelegate::Error>
 AssistantBrowserDelegateImpl::ResolveNewEntryPointIfEligible() {
+  if (!IsGoogleChrome() && !is_google_chrome_override_for_testing_) {
+    return base::unexpected(
+        AssistantBrowserDelegate::Error::kNonGoogleChromeBuild);
+  }
+
   ASSIGN_OR_RETURN(const web_app::WebAppRegistrar* web_app_registrar,
                    GetWebAppRegistrarForNewEntryPoint());
 
@@ -412,6 +430,13 @@ void AssistantBrowserDelegateImpl::OverrideEntryPointIdForTesting(
     const std::string& test_entry_point_id) {
   CHECK_IS_TEST();
   entry_point_id_for_testing_ = test_entry_point_id;
+}
+
+void AssistantBrowserDelegateImpl::SetGoogleChromeBuildForTesting() {
+  CHECK_IS_TEST();
+  CHECK(!is_google_chrome_override_for_testing_)
+      << "Already marked as google chrome";
+  is_google_chrome_override_for_testing_ = true;
 }
 
 void AssistantBrowserDelegateImpl::OnExtendedAccountInfoUpdated(

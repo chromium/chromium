@@ -166,12 +166,12 @@ bool IsUnRemovableDefaultApp(const std::string& id) {
          id == file_manager::kFileManagerAppId;
 }
 
-void UninstallExtension(extensions::ExtensionService* service,
+void UninstallExtension(extensions::ExtensionRegistrar* registrar,
                         extensions::ExtensionRegistry* registry,
                         const std::string& id) {
-  if (service && registry->GetInstalledExtension(id)) {
-    service->UninstallExtension(id, extensions::UNINSTALL_REASON_SYNC,
-                                nullptr /* error */);
+  if (registrar && registry && registry->GetInstalledExtension(id)) {
+    registrar->UninstallExtension(id, extensions::UNINSTALL_REASON_SYNC,
+                                  nullptr /* error */);
   }
 }
 
@@ -423,7 +423,8 @@ void AppListSyncableService::SetAppIsDefaultForTest(Profile* profile,
 AppListSyncableService::AppListSyncableService(Profile* profile)
     : profile_(profile),
       extension_system_(extensions::ExtensionSystem::Get(profile)),
-      extension_registry_(extensions::ExtensionRegistry::Get(profile)) {
+      extension_registry_(extensions::ExtensionRegistry::Get(profile)),
+      extension_registrar_(extensions::ExtensionRegistrar::Get(profile)) {
   sync_model_sanitizer_ = std::make_unique<AppListSyncModelSanitizer>(this);
   if (g_model_updater_factory_callback_for_test_) {
     model_updater_ = g_model_updater_factory_callback_for_test_->Run(this);
@@ -1008,8 +1009,7 @@ bool AppListSyncableService::RemoveDefaultApp(const ChromeAppListItem* item,
       AppIsDefault(profile_, item->id())) {
     VLOG(2) << this
             << ": HandleDefaultApp: Uninstall: " << sync_item->ToString();
-    UninstallExtension(extension_system_->extension_service(),
-                       extension_registry_, item->id());
+    UninstallExtension(extension_registrar_, extension_registry_, item->id());
     return true;
   }
 
@@ -1457,6 +1457,10 @@ void AppListSyncableService::Shutdown() {
   if (ash::features::ArePromiseIconsEnabled()) {
     app_service_promise_apps_builder_.reset();
   }
+  // Set `extension_registrar_` and `extension_registry_` to be null to make
+  // sure they won't be used after `Shutdown`.
+  extension_registrar_ = nullptr;
+  extension_registry_ = nullptr;
 }
 
 void AppListSyncableService::SetAppListPreferredOrder(
@@ -1570,8 +1574,8 @@ void AppListSyncableService::ProcessNewSyncItem(SyncItem* sync_item) {
     }
     case sync_pb::AppListSpecifics::TYPE_REMOVE_DEFAULT_APP: {
       VLOG(2) << this << ": Uninstall: " << sync_item->ToString();
-      UninstallExtension(extension_system_->extension_service(),
-                         extension_registry_, sync_item->item_id);
+      UninstallExtension(extension_registrar_, extension_registry_,
+                         sync_item->item_id);
       return;
     }
     case sync_pb::AppListSpecifics::TYPE_FOLDER: {

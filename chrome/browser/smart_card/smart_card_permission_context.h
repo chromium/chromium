@@ -8,8 +8,6 @@
 #include <cstdint>
 #include <map>
 #include <set>
-#include <string>
-#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ref.h"
@@ -31,6 +29,9 @@ class RenderFrameHost;
 namespace settings {
 class SmartCardReaderPermissionsSiteSettingsHandlerTest;
 }  // namespace settings
+namespace site_settings {
+class SiteSettingsHelperChooserExceptionTest;
+}  // namespace site_settings
 
 class SmartCardPermissionContext
     : public permissions::ObjectPermissionContextBase,
@@ -65,39 +66,24 @@ class SmartCardPermissionContext
 
   void RevokeEphemeralPermissions();
   void RevokeAllPermissions();
-  void RevokePersistentPermission(const std::string& reader_name,
-                                  const url::Origin& origin);
-
-  struct ReaderGrants {
-    ReaderGrants(const std::string& reader_name,
-                 const std::vector<url::Origin>& origins);
-    ~ReaderGrants();
-
-    ReaderGrants(const ReaderGrants& other);
-    bool operator==(const ReaderGrants& other) const;
-
-    std::string reader_name;
-    std::vector<url::Origin> origins;
-  };
-
-  // Returns persistent grants, grouped by reader.
-  std::vector<ReaderGrants> GetPersistentReaderGrants();
 
   // Checks whether |origin|'s value of |guard_content_settings_type_| is both:
   // - set to "allow"
   // - set by policy
   bool IsAllowlistedByPolicy(const url::Origin& origin);
 
-  // Overridden to expose a symbolic "All readers" device in case of
-  // allowlisting via policy.
+  // The two methods below are overridden to expose a symbolic "All readers"
+  // device in case of allowlisting via policy.
   std::vector<std::unique_ptr<Object>> GetGrantedObjects(
       const url::Origin& origin) override;
+  std::vector<std::unique_ptr<Object>> GetAllGrantedObjects() override;
 
  private:
   friend class SmartCardPermissionContextTest;
   friend class settings::SmartCardReaderPermissionsSiteSettingsHandlerTest;
   friend class PageInfoBubbleViewInteractiveUiTest;
   friend class ChromeOsSmartCardDelegateBrowserTest;
+  friend class site_settings::SiteSettingsHelperChooserExceptionTest;
 
   class OneTimeObserver;
   class PowerSuspendObserver;

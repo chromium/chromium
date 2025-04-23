@@ -250,7 +250,6 @@ ResourcePrefetchPredictor::ResourcePrefetchPredictor(
     const LoadingPredictorConfig& config,
     Profile* profile)
     : profile_(profile),
-      observer_(nullptr),
       config_(config),
       initialization_state_(NOT_INITIALIZED),
       tables_(PredictorDatabaseFactory::GetForProfile(profile)
@@ -297,8 +296,12 @@ bool ResourcePrefetchPredictor::IsUrlPreconnectable(
   return PredictPreconnectOrigins(main_frame_url, nullptr);
 }
 
-void ResourcePrefetchPredictor::SetObserverForTesting(TestObserver* observer) {
-  observer_ = observer;
+void ResourcePrefetchPredictor::AddObserverForTesting(TestObserver* observer) {
+  test_observer_set_.insert(observer);
+}
+void ResourcePrefetchPredictor::RemoveObserverForTesting(
+    TestObserver* observer) {
+  test_observer_set_.erase(observer);
 }
 
 void ResourcePrefetchPredictor::Shutdown() {
@@ -336,8 +339,9 @@ void ResourcePrefetchPredictor::RecordPageRequestSummary(
                summary.main_frame_url.DeprecatedGetOriginAsURL(),
                summary.origins);
 
-  if (observer_)
-    observer_->OnNavigationLearned(summary);
+  for (auto observer : test_observer_set_) {
+    observer->OnNavigationLearned(summary);
+  }
 }
 
 bool ResourcePrefetchPredictor::PredictPreconnectOrigins(
@@ -424,8 +428,9 @@ void ResourcePrefetchPredictor::OnHistoryAndCacheLoaded() {
     DeleteAllUrls();
     delete_all_data_requested_ = false;
   }
-  if (observer_)
-    observer_->OnPredictorInitialized();
+  for (auto observer : test_observer_set_) {
+    observer->OnPredictorInitialized();
+  }
 }
 
 void ResourcePrefetchPredictor::DeleteAllUrls() {
@@ -635,8 +640,10 @@ void ResourcePrefetchPredictor::LearnLcpp(
   }
   const bool data_updated =
       lcpp_data_->LearnLcpp(initiator_origin, url, inputs);
-  if (data_updated && observer_) {
-    observer_->OnLcppLearned();
+  if (data_updated) {
+    for (auto observer : test_observer_set_) {
+      observer->OnLcppLearned();
+    }
   }
 }
 
@@ -651,6 +658,20 @@ std::optional<LcppStat> ResourcePrefetchPredictor::GetLcppStat(
     return std::nullopt;
   }
   return lcpp_data_->GetLcppStat(initiator_origin, url);
+}
+
+void ResourcePrefetchPredictor::OnLcpUpdatedForTesting(
+    const std::optional<std::string>& element_locator) {
+  for (auto observer : test_observer_set_) {
+    observer->OnLcpUpdated(element_locator);
+  }
+}
+
+void ResourcePrefetchPredictor::OnLcpTimingPredictedForTesting(
+    const std::optional<std::string>& element_locator) {
+  for (auto observer : test_observer_set_) {
+    observer->OnLcpTimingPredicted(element_locator);
+  }
 }
 
 void ResourcePrefetchPredictor::GetPreconnectAndPrefetchRequest(
@@ -710,12 +731,12 @@ void ResourcePrefetchPredictor::ConnectToHistoryService() {
 // TestObserver.
 
 TestObserver::~TestObserver() {
-  predictor_->SetObserverForTesting(nullptr);
+  predictor_->RemoveObserverForTesting(this);
 }
 
 TestObserver::TestObserver(ResourcePrefetchPredictor* predictor)
     : predictor_(predictor) {
-  predictor_->SetObserverForTesting(this);
+  predictor_->AddObserverForTesting(this);
 }
 
 }  // namespace predictors

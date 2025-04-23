@@ -48,7 +48,7 @@ namespace content {
 class BrowserContext;
 class KeepAliveAttributionRequestHelper;
 class KeepAliveRequestTracker;
-class KeepAliveURLBrowserTestBase;
+class KeepAliveRequestBrowserTestBase;
 class KeepAliveURLLoaderService;
 class PolicyContainerHost;
 class RenderFrameHostImpl;
@@ -262,7 +262,7 @@ class CONTENT_EXPORT KeepAliveURLLoader
 
   void DeleteSelf();
 
-  friend class KeepAliveURLBrowserTestBase;
+  friend class KeepAliveRequestBrowserTestBase;
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   //

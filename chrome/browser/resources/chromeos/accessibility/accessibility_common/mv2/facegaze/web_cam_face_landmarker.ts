@@ -4,7 +4,7 @@
 
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {FaceLandmarkerOptions, FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
-import {FaceLandmarker} from 'chrome-extension://egfdjlfmgnehecnclamagfafdccgfndp/accessibility_common/third_party/mediapipe_task_vision/vision_bundle.mjs';
+import {FaceLandmarker} from 'chrome-extension://egfdjlfmgnehecnclamagfafdccgfndp/accessibility_common/mv2/third_party/mediapipe_task_vision/vision_bundle.mjs';
 
 import {PrefNames} from './constants.js';
 
@@ -29,7 +29,7 @@ const VIDEO_FRAME_DIMENSIONS = 192;
 
 /** The wasm loader JS is checked in under this path. */
 const WASM_LOADER_PATH =
-    'accessibility_common/third_party/mediapipe_task_vision/' +
+    'accessibility_common/mv2/third_party/mediapipe_task_vision/' +
     'vision_wasm_internal.js';
 
 /** Handles interaction with the webcam and FaceLandmarker. */
@@ -88,10 +88,7 @@ export class WebCamFaceLandmarker {
             `Couldn't create FaceLandmarker because FaceGaze assets couldn't be
               installed.`);
 
-        chrome.settingsPrivate.setPref(
-            PrefNames.FACE_GAZE_ENABLED_SENTINEL_SHOW_DIALOG, false, undefined,
-            () => chrome.settingsPrivate.setPref(
-                PrefNames.FACE_GAZE_ENABLED_SENTINEL, false));
+        chrome.settingsPrivate.setPref(PrefNames.FACE_GAZE_ENABLED, false);
         return;
       }
 

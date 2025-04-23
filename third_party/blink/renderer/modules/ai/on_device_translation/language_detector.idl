@@ -19,12 +19,12 @@ dictionary LanguageDetectorDetectOptions {
 };
 
 dictionary LanguageDetectionResult {
-  DOMString? detectedLanguage; // null represents unknown language
+  DOMString detectedLanguage;
   double confidence;
 };
 
 [
-  Exposed=(Window, Worker),
+  Exposed=Window,
   RuntimeEnabled=LanguageDetectionAPI,
   SecureContext
 ]
@@ -34,7 +34,8 @@ interface LanguageDetector {
     CallWith=ScriptState,
     RaisesException
   ]
-  static Promise<AIAvailability> availability();
+  static Promise<Availability> availability(
+    optional LanguageDetectorCreateCoreOptions options = {});
 
   [
     MeasureAs=LanguageDetector_Create,

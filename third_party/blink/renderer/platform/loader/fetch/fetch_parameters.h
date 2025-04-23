@@ -69,9 +69,6 @@ class PLATFORM_EXPORT FetchParameters {
                        // ResourceFetcher::non_blocking_loaders_.
   };
 
-  using HasPreloadedResponseCandidate =
-      base::StrongAlias<class HasPreloadedResponseCandidateTag, bool>;
-
   static FetchParameters CreateForTest(ResourceRequest);
 
   FetchParameters(ResourceRequest, ResourceLoaderOptions);
@@ -224,16 +221,6 @@ class PLATFORM_EXPORT FetchParameters {
     return is_potentially_lcp_influencer_;
   }
 
-  void SetIsPreloadedResponseCandidatePresent(bool flag) {
-    is_preloaded_response_candidate_present_ =
-        FetchParameters::HasPreloadedResponseCandidate(flag);
-  }
-
-  FetchParameters::HasPreloadedResponseCandidate
-  IsPreloadedResponseCandidatePresent() const {
-    return is_preloaded_response_candidate_present_;
-  }
-
   void Trace(Visitor* visitor) const { visitor->Trace(options_); }
 
  private:
@@ -256,8 +243,6 @@ class PLATFORM_EXPORT FetchParameters {
       RenderBlockingBehavior::kUnset;
   bool is_potentially_lcp_element_ = false;
   bool is_potentially_lcp_influencer_ = false;
-  HasPreloadedResponseCandidate is_preloaded_response_candidate_present_ =
-      HasPreloadedResponseCandidate(false);
 };
 
 }  // namespace blink

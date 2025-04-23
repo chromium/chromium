@@ -26,7 +26,29 @@ gfx::NativeWindow GetNativeWindowFromDisplayId(int64_t display_id) {
   return screen->GetWindowAtScreenPoint(display.bounds().origin());
 }
 
-std::unique_ptr<views::View> MakeCrostiniAppRestartView() {
+}  // namespace
+
+// static
+void AppRestartDialog::Show(int64_t display_id) {
+  ShowInternal(GetNativeWindowFromDisplayId(display_id));
+}
+
+// static
+void AppRestartDialog::ShowForTesting(gfx::NativeWindow context) {
+  ShowInternal(context);
+}
+
+// static
+void AppRestartDialog::ShowInternal(gfx::NativeWindow context) {
+  auto contents = MakeCrostiniAppRestartView();
+  auto delegate = MakeCrostiniAppRestartDelegate(std::move(contents));
+  views::DialogDelegate::CreateDialogWidget(std::move(delegate), context,
+                                            nullptr)
+      ->Show();
+}
+
+// static
+std::unique_ptr<views::View> AppRestartDialog::MakeCrostiniAppRestartView() {
   auto view = std::make_unique<views::View>();
 
   views::LayoutProvider* provider = views::LayoutProvider::Get();
@@ -45,37 +67,21 @@ std::unique_ptr<views::View> MakeCrostiniAppRestartView() {
   return view;
 }
 
-std::unique_ptr<views::DialogDelegate> MakeCrostiniAppRestartDelegate(
+// static
+std::unique_ptr<views::DialogDelegate>
+AppRestartDialog::MakeCrostiniAppRestartDelegate(
     std::unique_ptr<views::View> contents) {
   auto delegate = std::make_unique<views::DialogDelegate>();
   delegate->set_internal_name("CrostiniAppRestart");
   delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
   delegate->SetContentsView(std::move(contents));
   delegate->SetModalType(ui::mojom::ModalType::kSystem);
-  delegate->SetOwnedByWidget(true);
+  delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
   delegate->SetShowCloseButton(false);
   delegate->set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   return delegate;
-}
-
-void ShowInternal(gfx::NativeWindow context) {
-  auto contents = MakeCrostiniAppRestartView();
-  auto delegate = MakeCrostiniAppRestartDelegate(std::move(contents));
-  views::DialogDelegate::CreateDialogWidget(std::move(delegate), context,
-                                            nullptr)
-      ->Show();
-}
-
-}  // namespace
-
-void ShowAppRestartDialog(int64_t display_id) {
-  ShowInternal(GetNativeWindowFromDisplayId(display_id));
-}
-
-void ShowAppRestartDialogForTesting(gfx::NativeWindow context) {
-  ShowInternal(context);
 }
 
 }  // namespace crostini

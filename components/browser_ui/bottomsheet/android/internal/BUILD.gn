@@ -9,6 +9,7 @@ android_library("java") {
     ":*",
     "../test:*",
     "//chrome/android:chrome_all_java",
+    "//chrome/browser/touch_to_fill/common/android:junit",
   ]
 
   sources = [

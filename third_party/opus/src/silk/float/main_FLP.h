@@ -138,7 +138,8 @@ void silk_find_LPC_FLP(
     silk_encoder_state              *psEncC,                            /* I/O  Encoder state                               */
     opus_int16                      NLSF_Q15[],                         /* O    NLSFs                                       */
     const silk_float                x[],                                /* I    Input signal                                */
-    const silk_float                minInvGain                          /* I    Prediction gain from LTP (dB)               */
+    const silk_float                minInvGain,                         /* I    Prediction gain from LTP (dB)               */
+    int                             arch
 );
 
 /* LTP analysis */
@@ -148,7 +149,8 @@ void silk_find_LTP_FLP(
     const silk_float                r_ptr[],                            /* I    LPC residual                                */
     const opus_int                  lag[  MAX_NB_SUBFR ],               /* I    LTP lags                                    */
     const opus_int                  subfr_length,                       /* I    Subframe length                             */
-    const opus_int                  nb_subfr                            /* I    number of subframes                         */
+    const opus_int                  nb_subfr,                           /* I    number of subframes                         */
+    int                             arch
 );
 
 void silk_LTP_analysis_filter_FLP(
@@ -221,7 +223,8 @@ void silk_corrMatrix_FLP(
     const silk_float                *x,                                 /* I    x vector [ L+order-1 ] used to create X     */
     const opus_int                  L,                                  /* I    Length of vectors                           */
     const opus_int                  Order,                              /* I    Max lag for correlation                     */
-    silk_float                      *XX                                 /* O    X'*X correlation matrix [order x order]     */
+    silk_float                      *XX,                                /* O    X'*X correlation matrix [order x order]     */
+    int                             arch
 );
 
 /* Calculates correlation vector X'*t */
@@ -230,7 +233,8 @@ void silk_corrVector_FLP(
     const silk_float                *t,                                 /* I    Target vector [L]                           */
     const opus_int                  L,                                  /* I    Length of vecors                            */
     const opus_int                  Order,                              /* I    Max lag for correlation                     */
-    silk_float                      *Xt                                 /* O    X'*t correlation vector [order]             */
+    silk_float                      *Xt,                                /* O    X'*t correlation vector [order]             */
+    int                             arch
 );
 
 /* Apply sine window to signal vector.  */

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_OWNERSHIP_FAKE_OWNER_SETTINGS_SERVICE_H_
 #define CHROME_BROWSER_ASH_OWNERSHIP_FAKE_OWNER_SETTINGS_SERVICE_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
@@ -21,6 +22,13 @@ class StubCrosSettingsProvider;
 
 class FakeOwnerSettingsService : public OwnerSettingsServiceAsh {
  public:
+  // Sets up KeyedService injection to replace OwnerSettingsServiceAsh.
+  // This must be called before Profile creation whose service needs to be
+  // injected.
+  static base::CallbackListSubscription SetUpTestingFactory(
+      StubCrosSettingsProvider* provider,
+      const scoped_refptr<ownership::OwnerKeyUtil>& owner_key_util);
+
   FakeOwnerSettingsService(StubCrosSettingsProvider* provider,
                            Profile* profile);
   FakeOwnerSettingsService(

@@ -125,15 +125,16 @@ class ChromeBrowserMainExtraPartsPerformanceManager
   std::unique_ptr<performance_manager::ExtensionWatcher> extension_watcher_;
 #endif
 
+  std::unique_ptr<
+      performance_manager::user_tuning::ProfileDiscardOptOutListHelper>
+      profile_discard_opt_out_list_helper_;
+
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<performance_manager::user_tuning::BatterySaverModeManager>
       battery_saver_mode_manager_;
   std::unique_ptr<
       performance_manager::user_tuning::UserPerformanceTuningManager>
       user_performance_tuning_manager_;
-  std::unique_ptr<
-      performance_manager::user_tuning::ProfileDiscardOptOutListHelper>
-      profile_discard_opt_out_list_helper_;
   std::unique_ptr<base::BatteryStateSampler> battery_state_sampler_;
   std::unique_ptr<performance_manager::user_tuning::PerformanceDetectionManager>
       performance_detection_manager_;

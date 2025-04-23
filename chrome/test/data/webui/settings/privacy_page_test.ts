@@ -87,15 +87,15 @@ suite('PrivacyPage', function() {
   });
 
   function createPage() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-privacy-page');
     page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
+
     return flushTasks();
   }
 
   setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
     testClearBrowsingDataBrowserProxy = new TestClearBrowsingDataBrowserProxy();
     ClearBrowsingDataBrowserProxyImpl.setInstance(
         testClearBrowsingDataBrowserProxy);
@@ -110,6 +110,7 @@ suite('PrivacyPage', function() {
   teardown(function() {
     page.remove();
     Router.getInstance().navigateTo(routes.BASIC);
+    resetRouterForTesting();
   });
 
   // <if expr="use_nss_certs">
@@ -185,26 +186,33 @@ suite('PrivacyPage', function() {
     redesignedPages.forEach(route => Router.getInstance().navigateTo(route));
     await flushTasks();
 
-    // All redesigned pages, except notifications, location, protocol handlers,
-    // pdf documents and protected content (except chromeos and win), will use a
+    // All redesigned pages, except protocol handlers, pdf documents and
+    // protected content (except chromeos and win), will use a
     // settings-category-default-radio-group.
     // <if expr="is_chromeos or is_win">
     assertEquals(
         page.shadowRoot!
             .querySelectorAll('settings-category-default-radio-group')
             .length,
-        redesignedPages.length - 3);
+        redesignedPages.length - 2);
     // </if>
     // <if expr="not is_chromeos and not is_win">
     assertEquals(
         page.shadowRoot!
             .querySelectorAll('settings-category-default-radio-group')
             .length,
-        redesignedPages.length - 4);
+        redesignedPages.length - 3);
     // </if>
   });
 
+  // TODO(crbug.com/340743074): Clean up tests after
+  // `PermissionSiteSettingsRadioButton` launched.
   test('NotificationPage', async function() {
+    loadTimeData.overrideValues({
+      enablePermissionSiteSettingsRadioButton: false,
+    });
+    await createPage();
+
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_NOTIFICATIONS);
     await flushTasks();
 
@@ -218,10 +226,51 @@ suite('PrivacyPage', function() {
   });
 
   test('LocationPage', async function() {
+    loadTimeData.overrideValues({
+      enablePermissionSiteSettingsRadioButton: false,
+    });
+    await createPage();
+
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_LOCATION);
     await flushTasks();
 
     assertTrue(isChildVisible(page, '#locationRadioGroup'));
+    const categorySettingExceptions =
+        page.shadowRoot!.querySelector('category-setting-exceptions');
+    assertTrue(!!categorySettingExceptions);
+    assertTrue(isVisible(categorySettingExceptions));
+    assertEquals(
+        ContentSettingsTypes.GEOLOCATION, categorySettingExceptions.category);
+  });
+
+  test('NotificationPage2', async function() {
+    loadTimeData.overrideValues({
+      enablePermissionSiteSettingsRadioButton: true,
+    });
+    await createPage();
+
+    Router.getInstance().navigateTo(routes.SITE_SETTINGS_NOTIFICATIONS);
+    await flushTasks();
+
+    assertTrue(isChildVisible(page, '#notificationDefaultRadioGroup'));
+    const categorySettingExceptions =
+        page.shadowRoot!.querySelector('category-setting-exceptions');
+    assertTrue(!!categorySettingExceptions);
+    assertTrue(isVisible(categorySettingExceptions));
+    assertEquals(
+        ContentSettingsTypes.NOTIFICATIONS, categorySettingExceptions.category);
+  });
+
+  test('LocationPage2', async function() {
+    loadTimeData.overrideValues({
+      enablePermissionSiteSettingsRadioButton: true,
+    });
+    await createPage();
+
+    Router.getInstance().navigateTo(routes.SITE_SETTINGS_LOCATION);
+    await flushTasks();
+
+    assertTrue(isChildVisible(page, '#locationDefaultRadioGroup'));
     const categorySettingExceptions =
         page.shadowRoot!.querySelector('category-setting-exceptions');
     assertTrue(!!categorySettingExceptions);
@@ -424,8 +473,6 @@ suite(`CookiesSubpage`, function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
-      // This test covers the pre-3PCD subpage.
-      is3pcdCookieSettingsRedesignEnabled: false,
     });
     resetRouterForTesting();
 
@@ -458,18 +505,25 @@ suite(`CookiesSubpage`, function() {
     assertTrue(!!associatedControl);
     assertEquals('thirdPartyCookiesLinkRow', associatedControl.id);
   });
+
+  test('clickCookiesRow', async function() {
+    const thirdPartyCookiesLinkRow =
+        page.shadowRoot!.querySelector<HTMLElement>(
+            '#thirdPartyCookiesLinkRow');
+    assertTrue(!!thirdPartyCookiesLinkRow);
+    thirdPartyCookiesLinkRow.click();
+    // Check that the correct page was navigated to.
+    await flushTasks();
+    assertEquals(
+        routes.COOKIES, Router.getInstance().getCurrentRoute());
+  });
 });
 
-suite(`TrackingProtectionSubpage`, function() {
+suite(`IncognitoTrackingProtectionsSubpage`, function() {
   let page: SettingsPrivacyPageElement;
   let settingsPrefs: SettingsPrefsElement;
-  let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
-    loadTimeData.overrideValues({
-      isPrivacySandboxRestricted: false,
-      is3pcdCookieSettingsRedesignEnabled: true,
-    });
     resetRouterForTesting();
 
     settingsPrefs = document.createElement('settings-prefs');
@@ -478,9 +532,6 @@ suite(`TrackingProtectionSubpage`, function() {
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    metricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
     page = document.createElement('settings-privacy-page');
     page.prefs = settingsPrefs.prefs!;
@@ -492,37 +543,33 @@ suite(`TrackingProtectionSubpage`, function() {
     resetRouterForTesting();
   });
 
-
-  test('cookiesSubpageAttributes', async function() {
-    // The subpage is only in the DOM if the corresponding route is open.
-    const thirdPartyCookiesLinkRow =
-        page.shadowRoot!.querySelector<CrLinkRowElement>(
-            '#thirdPartyCookiesLinkRow');
-    assertTrue(!!thirdPartyCookiesLinkRow);
-    thirdPartyCookiesLinkRow.click();
+  test('clickIncognitoTrackingProtectionsRow', async function() {
+    const incognitoTrackingProtectionsLinkRow =
+        page.shadowRoot!.querySelector<HTMLElement>(
+            '#incognitoTrackingProtectionsLinkRow');
+    assertTrue(!!incognitoTrackingProtectionsLinkRow);
+    incognitoTrackingProtectionsLinkRow.click();
+    // Check that the correct page was navigated to.
     await flushTasks();
-
-    const cookiesSubpage =
-        page.shadowRoot!.querySelector<PolymerElement>('#cookies');
-    assertTrue(!!cookiesSubpage);
     assertEquals(
-        page.i18n('thirdPartyCookiesPageTitle'),
-        cookiesSubpage.getAttribute('page-title'));
-    const associatedControl = cookiesSubpage.get('associatedControl');
-    assertTrue(!!associatedControl);
-    assertEquals('thirdPartyCookiesLinkRow', associatedControl.id);
+        routes.INCOGNITO_TRACKING_PROTECTIONS, Router.getInstance().getCurrentRoute());
   });
 
-  test('clickCookiesRow', async function() {
-    const thirdPartyCookiesLinkRow =
-        page.shadowRoot!.querySelector<HTMLElement>(
-            '#thirdPartyCookiesLinkRow');
-    assertTrue(!!thirdPartyCookiesLinkRow);
-    thirdPartyCookiesLinkRow.click();
-    // Ensure we navigate to the correct page.
+  // TODO(crbug.com/408036586): Remove once kFingerprintingProtectionUx is launched.
+  test('IncognitoTrackingProtectionsRowNotVisible', async function () {
+    loadTimeData.overrideValues({
+      isFingerprintingProtectionUxEnabled: false,
+      isIpProtectionUxEnabled: false,
+      enableIncognitoTrackingProtections: false,
+    });
+
+    page.remove();
+    page = document.createElement('settings-privacy-page');
+    document.body.appendChild(page);
+
     await flushTasks();
-    assertEquals(
-        routes.COOKIES, Router.getInstance().getCurrentRoute());
+
+    assertFalse(isChildVisible(page, '#incognitoTrackingProtectionsLinkRow'));
   });
 });
 

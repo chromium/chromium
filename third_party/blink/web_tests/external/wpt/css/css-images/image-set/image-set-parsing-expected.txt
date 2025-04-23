@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] e.style['background-image'] = "image-set(url(\\"example.png\\") calc(1dppx * sibling-index()))" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['background-image'] = "-webkit-image-set(url(\\"example.png\\") calc(1dppx * sibling-index()))" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['background-image'] = "image-set(url(\\"example.png\\") calc(1dppx * sign(1em - 10px)))" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['background-image'] = "-webkit-image-set(url(\\"example.png\\") calc(1dppx * sign(1em - 10px)))" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

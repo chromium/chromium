@@ -70,6 +70,32 @@ class GlicFocusedTabManager : public BrowserListObserver,
   base::CallbackListSubscription AddFocusedTabChangedCallback(
       FocusedTabChangedCallback callback);
 
+  // Callback for changes to the `WebContents` comprising the focused tab. Only
+  // fired when the `WebContents` for the focused tab changes to/from nullptr or
+  // to different `WebContents` instance.
+  using FocusedTabInstanceChangedCallback =
+      base::RepeatingCallback<void(content::WebContents*)>;
+  base::CallbackListSubscription AddFocusedTabInstanceChangedCallback(
+      FocusedTabInstanceChangedCallback callback);
+
+  // Callback for changes to either the focused tab or the focused tab candidate
+  // instances. If no tab is in focus an error reason is returned indicating
+  // why and maybe a tab candidate with details as to why it cannot be focused.
+  using FocusedTabOrCandidateInstanceChangedCallback =
+      base::RepeatingCallback<void(FocusedTabData)>;
+  base::CallbackListSubscription
+  AddFocusedTabOrCandidateInstanceChangedCallback(
+      FocusedTabOrCandidateInstanceChangedCallback callback);
+
+  // Callback for changes to the tab data representation of the focused tab.
+  // This includes any event that changes tab data -- e.g. favicon/title change
+  // events (where the container does not change), as well as container changed
+  // events.
+  using FocusedTabDataChangedCallback =
+      base::RepeatingCallback<void(const glic::mojom::TabData*)>;
+  base::CallbackListSubscription AddFocusedTabDataChangedCallback(
+      FocusedTabDataChangedCallback callback);
+
  private:
   // Internal state for tracking focused tab. If a "candidate" browser/tab
   // exists, but not a corresponding "focused" browser/tab it means that one or
@@ -146,6 +172,16 @@ class GlicFocusedTabManager : public BrowserListObserver,
   // Calls all registered focused tab changed callbacks.
   void NotifyFocusedTabChanged();
 
+  // Calls all registered focused tab instance changed callbacks.
+  void NotifyFocusedTabInstanceChanged(content::WebContents* web_contents);
+
+  // Calls all registered focused tab or candidate instance changed callbacks.
+  void NotifyFocusedTabOrCandidateInstanceChanged(
+      FocusedTabData focused_tab_data);
+
+  // Calls all registered focused tab data changed callbacks.
+  void NotifyFocusedTabDataChanged(glic::mojom::TabDataPtr tab_data);
+
   // Callback for active browser changes from BrowserWindowInterface.
   void OnBrowserBecameActive(BrowserWindowInterface* browser_interface);
   void OnBrowserBecameInactive(BrowserWindowInterface* browser_interface);
@@ -164,8 +200,24 @@ class GlicFocusedTabManager : public BrowserListObserver,
   // Callback for browser window widget being destroyed.
   void OnWidgetDestroyed(views::Widget* widget) override;
 
+  // Callback for tab data changes to focused tab.
+  void FocusedTabDataChanged(glic::mojom::TabDataPtr tab_data);
+
   // List of callbacks to be notified when focused tab changed.
   base::RepeatingCallbackList<void(FocusedTabData)> focused_callback_list_;
+
+  // List of callbacks to be notified when focused tab instance changed.
+  base::RepeatingCallbackList<void(content::WebContents*)>
+      focused_instance_callback_list_;
+
+  // List of callbacks to be notified when focused tab or candidate instances
+  // changed.
+  base::RepeatingCallbackList<void(FocusedTabData)>
+      focused_or_candidate_instance_callback_list_;
+
+  // List of callbacks to be notified when focused tab data changed.
+  base::RepeatingCallbackList<void(const glic::mojom::TabData*)>
+      focused_data_callback_list_;
 
   // The profile for which to manage focused tabs.
   raw_ptr<Profile> profile_;
@@ -175,6 +227,9 @@ class GlicFocusedTabManager : public BrowserListObserver,
 
   // The currently focused tab data.
   FocusedTabData focused_tab_data_;
+
+  // `TabDataObserver` for the currently focused tab (if one exists).
+  std::unique_ptr<TabDataObserver> focused_tab_data_observer_;
 
   // The last known focused tab state.
   struct FocusedTabState focused_tab_state_;

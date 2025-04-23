@@ -128,6 +128,8 @@ bool DefaultBrowserPromoCompleted() {
       _deviceSwitcherResultDispatcher;
   // User segment retrieved by the Segmentation Platform.
   segmentation_platform::DefaultBrowserUserSegment _userSegment;
+  // YES if price tracking is enabled for the current user.
+  BOOL _priceTrackingEnabled;
 }
 
 #pragma mark - Public
@@ -142,7 +144,8 @@ bool DefaultBrowserPromoCompleted() {
                     (segmentation_platform::SegmentationPlatformService*)
                         segmentationService
      deviceSwitcherResultDispatcher:
-         (segmentation_platform::DeviceSwitcherResultDispatcher*)dispatcher {
+         (segmentation_platform::DeviceSwitcherResultDispatcher*)dispatcher
+               priceTrackingEnabled:(BOOL)priceTrackingEnabled {
   self = [super init];
   if (self) {
     _prefService = prefService;
@@ -219,6 +222,7 @@ bool DefaultBrowserPromoCompleted() {
 
     _consumers = [SetUpListConsumerList
         observersWithProtocol:@protocol(SetUpListConsumer)];
+    _priceTrackingEnabled = priceTrackingEnabled;
   }
   return self;
 }
@@ -260,6 +264,7 @@ bool DefaultBrowserPromoCompleted() {
     if (IsSegmentedDefaultBrowserPromoEnabled()) {
       [item setUserSegment:_userSegment];
     }
+    item.priceTrackingEnabled = _priceTrackingEnabled;
     [allItems addObject:item];
   }
   return allItems;
@@ -498,6 +503,7 @@ bool DefaultBrowserPromoCompleted() {
     if (IsSegmentedDefaultBrowserPromoEnabled()) {
       [item setUserSegment:_userSegment];
     }
+    item.priceTrackingEnabled = _priceTrackingEnabled;
     [items addObject:item];
   }
 
@@ -513,6 +519,7 @@ bool DefaultBrowserPromoCompleted() {
     if (IsSegmentedDefaultBrowserPromoEnabled()) {
       [item setUserSegment:_userSegment];
     }
+    item.priceTrackingEnabled = _priceTrackingEnabled;
     [items addObject:item];
   }
   return items;

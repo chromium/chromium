@@ -207,7 +207,8 @@ public class BookmarkManagerCoordinator
                         mModalDialogManager,
                         this::onEndSearch,
                         () -> IncognitoUtils.isIncognitoModeEnabled(profile),
-                        bookmarkManagerOpener);
+                        bookmarkManagerOpener,
+                        /* nextFocusableView= */ mMainView.findViewById(R.id.list_content));
         mSelectableListLayout.configureWideDisplayStyle();
 
         final @BookmarkRowDisplayPref int displayPref =
@@ -452,7 +453,9 @@ public class BookmarkManagerCoordinator
     }
 
     View buildEmptyStateView(ViewGroup parent) {
-        return inflate(parent, R.layout.empty_state_view);
+        ViewGroup emptyStateView = (ViewGroup) inflate(parent, R.layout.empty_state_view);
+        emptyStateView.setTouchscreenBlocksFocus(true);
+        return emptyStateView;
     }
 
     boolean canShowSigninPromo() {

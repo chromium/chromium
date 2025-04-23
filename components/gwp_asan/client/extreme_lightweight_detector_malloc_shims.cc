@@ -96,7 +96,7 @@ bool TryInitSlow() {
   //
   // This code runs only on the codepaths of deallocations (`free`, `delete`,
   // etc.) and _never_ runs on the codepaths of allocations (`malloc`, `new`,
-  // etc.) because this allocator shim hooks only FreeFn, FreeDefiniteSizeFn,
+  // etc.) because this allocator shim hooks only FreeFn, FreeWithSizeFn,
   // etc. So, it's safe to allocate memory here as it doesn't recurse, however,
   // it's _NOT_ allowed to deallocate memory here as it _does_ recurse.
   //
@@ -218,14 +218,38 @@ void FreeFn(void* address, void* context) {
   MUSTTAIL return allocator_dispatch.next->free_function(address, context);
 }
 
-void FreeDefiniteSizeFn(void* address, size_t size, void* context) {
+void FreeWithSizeFn(void* address, size_t size, void* context) {
   if (sampling_state.Sample()) [[unlikely]] {
     if (Quarantine(address)) [[likely]] {
       return;
     }
   }
-  MUSTTAIL return allocator_dispatch.next->free_definite_size_function(
+  MUSTTAIL return allocator_dispatch.next->free_with_size_function(
       address, size, context);
+}
+
+void FreeWithAlignmentFn(void* address, size_t alignment, void* context) {
+  if (sampling_state.Sample()) [[unlikely]] {
+    if (Quarantine(address)) [[likely]] {
+      return;
+    }
+  }
+  MUSTTAIL return allocator_dispatch.next->free_with_alignment_function(
+      address, alignment, context);
+}
+
+void FreeWithSizeAndAlignmentFn(void* address,
+                                size_t size,
+                                size_t alignment,
+                                void* context) {
+  if (sampling_state.Sample()) [[unlikely]] {
+    if (Quarantine(address)) [[likely]] {
+      return;
+    }
+  }
+  MUSTTAIL return allocator_dispatch.next
+      ->free_with_size_and_alignment_function(address, size, alignment,
+                                              context);
 }
 
 AllocatorDispatch allocator_dispatch = {
@@ -235,17 +259,19 @@ AllocatorDispatch allocator_dispatch = {
     nullptr,  // alloc_aligned_function
     // realloc doesn't always deallocate memory, so the Extreme LUD doesn't
     // support realloc.
-    nullptr,  // realloc_function
-    nullptr,  // realloc_unchecked_function
-    FreeFn,   // free_function
-    nullptr,  // get_size_estimate_function
-    nullptr,  // good_size_function
-    nullptr,  // claimed_address_function
-    nullptr,  // batch_malloc_function
+    nullptr,                     // realloc_function
+    nullptr,                     // realloc_unchecked_function
+    FreeFn,                      // free_function
+    FreeWithSizeFn,              // free_with_size_function
+    FreeWithAlignmentFn,         // free_with_alignment_function
+    FreeWithSizeAndAlignmentFn,  // free_with_size_and_alignment_function
+    nullptr,                     // get_size_estimate_function
+    nullptr,                     // good_size_function
+    nullptr,                     // claimed_address_function
+    nullptr,                     // batch_malloc_function
     // batch_free is rarely used, so the Extreme LUD doesn't support batch_free
     // (at least for now).
-    nullptr,             // batch_free_function
-    FreeDefiniteSizeFn,  // free_definite_size_function
+    nullptr,  // batch_free_function
     // try_free_default is rarely used, so the Extreme LUD doesn't support
     // try_free_default (at least for now).
     nullptr,  // try_free_default_function

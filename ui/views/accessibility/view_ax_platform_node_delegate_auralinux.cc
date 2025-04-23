@@ -186,7 +186,7 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegate,
     data_.id = unique_id_.Get();
     data_.role = ax::mojom::Role::kApplication;
     data_.AddState(ax::mojom::State::kFocusable);
-    ax_platform_node_ = ui::AXPlatformNode::Create(this);
+    ax_platform_node_ = ui::AXPlatformNode::Create(*this);
     DCHECK(ax_platform_node_);
     ui::AXPlatformNodeAuraLinux::SetApplication(ax_platform_node_.get());
     ui::AXPlatformNodeAuraLinux::StaticInitialize();

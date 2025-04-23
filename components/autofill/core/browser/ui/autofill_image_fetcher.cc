@@ -6,10 +6,10 @@
 
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/constants.h"
-#include "components/autofill/core/browser/ui/autofill_image.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/request_metadata.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "ui/gfx/image/image.h"
 
 namespace autofill {
 
@@ -18,17 +18,19 @@ namespace {
 constexpr char kUmaClientName[] = "AutofillImageFetcher";
 
 constexpr net::NetworkTrafficAnnotationTag kCardArtImageTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("autofill_image_fetcher_card_art_image",
+    net::DefineNetworkTrafficAnnotation("autofill_image_fetcher",
                                         R"(
       semantics {
         sender: "Autofill Image Fetcher"
         description:
-          "Fetches customized card art images for credit cards stored in "
-          "Chrome. Images are hosted on Google static content server, "
-          "the data source may come from third parties (credit card issuers)."
-        trigger: "When new credit card data is sent to Chrome if the card "
-          "has a related card art image, and when the credit card data in "
-          "the web database is refreshed and any card art image is missing."
+          "Fetches images for Chrome Autofill data types like credit cards or "
+          "loyalty cards stored in Chrome. Images are hosted on Google static "
+          "content server, the data source may come from third parties (credit "
+          "card or loyalty card issuers)."
+        trigger: "When a new Autofill entry bundled with a custom image URL is "
+          "sent to Chrome or when an Autofill entry in the web database is "
+          "refreshed and any image is missing. Example: credit cards or "
+          "loyalty cards."
         user_data {
           type: NONE
         }
@@ -39,18 +41,18 @@ constexpr net::NetworkTrafficAnnotationTag kCardArtImageTrafficAnnotation =
             email: "chrome-payments-team@google.com"
           }
         }
-        last_reviewed: "2023-05-12"
+        last_reviewed: "2025-04-14"
       }
       policy {
         cookies_allowed: NO
         setting:
           "Users can enable or disable this feature in Chromium settings by "
-          "toggling 'Credit cards and addresses using Google Payments', "
+          "toggling 'Payment methods, offers, and addresses using Google Pay', "
           "under 'Advanced sync settings...'."
         chrome_policy {
-          AutoFillEnabled {
+          AutofillCreditCardEnabled {
             policy_options {mode: MANDATORY}
-            AutoFillEnabled: false
+            AutofillCreditCardEnabled: false
           }
         }
       })");
@@ -59,46 +61,51 @@ constexpr net::NetworkTrafficAnnotationTag kCardArtImageTrafficAnnotation =
 
 AutofillImageFetcher::~AutofillImageFetcher() = default;
 
-void AutofillImageFetcher::FetchImagesForURLs(
+void AutofillImageFetcher::FetchCreditCardArtImagesForURLs(
     base::span<const GURL> image_urls,
-    base::span<const AutofillImageFetcherBase::ImageSize> image_sizes_unused,
-    base::OnceCallback<void(const std::vector<std::unique_ptr<AutofillImage>>&)>
-        callback) {
+    base::span<const AutofillImageFetcherBase::ImageSize> image_sizes_unused) {
   if (!GetImageFetcher()) {
-    std::move(callback).Run({});
     return;
   }
 
-  // Construct a BarrierCallback and so that the inner `callback` is invoked
-  // only when all the images are fetched.
-  const auto barrier_callback =
-      base::BarrierCallback<std::unique_ptr<AutofillImage>>(
-          image_urls.size(), std::move(callback));
-
   for (const auto& image_url : image_urls) {
-    FetchImageForURL(barrier_callback, image_url);
+    FetchImageForURL(
+        image_url, ImageType::kCreditCardArtImage,
+        base::BindOnce(&AutofillImageFetcher::OnCardArtImageFetched,
+                       GetWeakPtr(), image_url, base::TimeTicks::Now()));
   }
 }
 
 // Only implemented in Android clients. Pay with Pix is only available in Chrome
 // on Android.
-void AutofillImageFetcher::FetchPixAccountImages(
+void AutofillImageFetcher::FetchPixAccountImagesForURLs(
     base::span<const GURL> image_urls) {
   NOTREACHED();
 }
 
-GURL AutofillImageFetcher::ResolveCardArtURL(const GURL& card_art_url) {
-  // TODO(crbug.com/40221039): There is only one gstatic card art image we are
-  // using currently, that returns as metadata when it isn't. Remove this logic
-  // and append FIFE URL suffix by default when the static image is deprecated,
-  // and we send rich card art instead.
-  if (card_art_url.spec() == kCapitalOneCardArtUrl) {
-    return card_art_url;
+void AutofillImageFetcher::FetchValuableImagesForURLs(
+    base::span<const GURL> image_urls) {
+  if (!GetImageFetcher()) {
+    return;
   }
 
-  // A FIFE image fetching param suffix is appended to the URL. The image
-  // should be center cropped and of Size(32, 20).
-  return GURL(card_art_url.spec() + "=w32-h20-n");
+  for (const auto& image_url : image_urls) {
+    FetchImageForURL(
+        image_url, ImageType::kValuableImage,
+        base::BindOnce(&AutofillImageFetcher::OnValuableImageFetched,
+                       GetWeakPtr(), image_url));
+  }
+}
+
+const gfx::Image* AutofillImageFetcher::GetCachedImageForUrl(
+    const GURL& image_url,
+    ImageType image_type) const {
+  GURL resolved_url = ResolveImageURL(image_url, image_type);
+  auto it = cached_images_.find(resolved_url);
+  if (it == cached_images_.end() || it->second->IsEmpty()) {
+    return nullptr;
+  }
+  return it->second.get();
 }
 
 gfx::Image AutofillImageFetcher::ResolveCardArtImage(
@@ -110,7 +117,6 @@ gfx::Image AutofillImageFetcher::ResolveCardArtImage(
 AutofillImageFetcher::AutofillImageFetcher() = default;
 
 void AutofillImageFetcher::OnCardArtImageFetched(
-    base::OnceCallback<void(std::unique_ptr<AutofillImage>)> barrier_callback,
     const GURL& card_art_url,
     const std::optional<base::TimeTicks>& fetch_image_request_timestamp,
     const gfx::Image& card_art_image,
@@ -120,8 +126,14 @@ void AutofillImageFetcher::OnCardArtImageFetched(
   // Allow subclasses to specialize the card art image if desired.
   gfx::Image resolved_image = ResolveCardArtImage(card_art_url, card_art_image);
 
-  std::move(barrier_callback)
-      .Run(std::make_unique<AutofillImage>(card_art_url, resolved_image));
+  // Unlike the `CachedImageFetcher`, the `AutofillImageFetcher` stores the
+  // post-processed image in the in-memory cache.
+  if (!resolved_image.IsEmpty()) {
+    // Images are cached by the resolved URLs.
+    GURL resolved_url =
+        ResolveImageURL(card_art_url, ImageType::kCreditCardArtImage);
+    cached_images_[resolved_url] = std::make_unique<gfx::Image>(resolved_image);
+  }
 
   // Log metrics on card fetch success/failure. We only log metrics on either
   // the first attempt to fetch a given URL (whether it succeeded or failed) or
@@ -137,22 +149,35 @@ void AutofillImageFetcher::OnCardArtImageFetched(
   }
 }
 
+void AutofillImageFetcher::OnValuableImageFetched(
+    const GURL& image_url,
+    const gfx::Image& valuable_image,
+    const image_fetcher::RequestMetadata& metadata) {
+  if (!valuable_image.IsEmpty()) {
+    // Images are cached by the resolved URLs.
+    GURL resolved_url = ResolveImageURL(image_url, ImageType::kValuableImage);
+    cached_images_[resolved_url] = std::make_unique<gfx::Image>(valuable_image);
+  }
+}
+
 void AutofillImageFetcher::FetchImageForURL(
-    base::OnceCallback<void(std::unique_ptr<AutofillImage>)> barrier_callback,
-    const GURL& card_art_url) {
-  CHECK(card_art_url.is_valid());
+    const GURL& image_url,
+    ImageType image_type,
+    image_fetcher::ImageFetcherCallback callback) {
+  CHECK(image_url.is_valid());
+
+  // Don't fetch the image if the in-memory cache already contains it.
+  if (GetCachedImageForUrl(image_url, image_type)) {
+    return;
+  }
 
   // Allow subclasses to specialize the URL if desired.
-  GURL resolved_url = ResolveCardArtURL(card_art_url);
+  GURL resolved_url = ResolveImageURL(image_url, image_type);
 
   image_fetcher::ImageFetcherParams params(kCardArtImageTrafficAnnotation,
                                            kUmaClientName);
-  GetImageFetcher()->FetchImage(
-      resolved_url,
-      base::BindOnce(&AutofillImageFetcher::OnCardArtImageFetched, GetWeakPtr(),
-                     std::move(barrier_callback), card_art_url,
-                     base::TimeTicks::Now()),
-      std::move(params));
+  GetImageFetcher()->FetchImage(resolved_url, std::move(callback),
+                                std::move(params));
 }
 
 }  // namespace autofill

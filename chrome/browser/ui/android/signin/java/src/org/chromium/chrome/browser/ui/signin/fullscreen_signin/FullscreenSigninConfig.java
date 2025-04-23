@@ -4,41 +4,36 @@
 
 package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.ui.signin.R;
 
+import java.util.Objects;
+
 /* Class containing IDs of resources for the fullscreen sign-in view. */
-public final class FullscreenSigninConfig implements Parcelable {
+public final class FullscreenSigninConfig {
     public final @StringRes int titleId;
     public final @StringRes int subtitleId;
     public final @StringRes int dismissTextId;
     public final @DrawableRes int logoId;
+    public final boolean shouldDisableSignin;
 
-    public static final Parcelable.Creator<FullscreenSigninConfig> CREATOR =
-            new Parcelable.Creator<FullscreenSigninConfig>() {
-                @Override
-                public FullscreenSigninConfig createFromParcel(Parcel in) {
-                    return new FullscreenSigninConfig(in);
-                }
-
-                @Override
-                public FullscreenSigninConfig[] newArray(int size) {
-                    return new FullscreenSigninConfig[size];
-                }
-            };
-
-    /** Constructor of FullscreenSigninConfig using default values. */
-    public FullscreenSigninConfig() {
+    /**
+     * Constructor of FullscreenSigninConfig using default values.
+     *
+     * @param shouldDisableSignin Whether the sign-in should always be disabled for sign-in flows
+     *     started by the caller. The sign-in screen will show a generic title and a continue
+     *     button.
+     */
+    public FullscreenSigninConfig(boolean shouldDisableSignin) {
         this(
                 /* titleId= */ R.string.signin_fre_title,
                 /* subtitleId= */ R.string.signin_fre_subtitle,
                 /* dismissTextId= */ R.string.signin_fre_dismiss_button,
-                /* logoId= */ 0);
+                /* logoId= */ 0,
+                /* shouldDisableSignin= */ shouldDisableSignin);
     }
 
     /**
@@ -49,38 +44,39 @@ public final class FullscreenSigninConfig implements Parcelable {
      * @param dismissTextId the resource ID of the dismiss button string.
      * @param logoId the resource ID of the logo drawable. Can be set to 0 to use the default
      *     sign-in logo.
+     * @param shouldDisableSignin Whether the sign-in should always be disabled for sign-in flows
+     *     started by the caller. The sign-in screen will show a generic title and a continue
+     *     button.
      */
     public FullscreenSigninConfig(
             @StringRes int titleId,
             @StringRes int subtitleId,
             @StringRes int dismissTextId,
-            @DrawableRes int logoId) {
+            @DrawableRes int logoId,
+            boolean shouldDisableSignin) {
         this.titleId = titleId;
         this.subtitleId = subtitleId;
         this.dismissTextId = dismissTextId;
         this.logoId = logoId;
+        this.shouldDisableSignin = shouldDisableSignin;
     }
 
-    private FullscreenSigninConfig(Parcel in) {
-        this(
-                /* titleId= */ in.readInt(),
-                /* subtitleId= */ in.readInt(),
-                /* dismissTextId= */ in.readInt(),
-                /* logoId= */ in.readInt());
-    }
-
-    /** Implements {@link Parcelable} */
     @Override
-    public int describeContents() {
-        return 0;
+    public boolean equals(@Nullable Object object) {
+        if (!(object instanceof FullscreenSigninConfig)) {
+            return false;
+        }
+
+        FullscreenSigninConfig other = (FullscreenSigninConfig) object;
+        return titleId == other.titleId
+                && subtitleId == other.subtitleId
+                && dismissTextId == other.dismissTextId
+                && logoId == other.logoId
+                && shouldDisableSignin == other.shouldDisableSignin;
     }
 
-    /** Implements {@link Parcelable} */
     @Override
-    public void writeToParcel(Parcel out, int flags) {
-        out.writeInt(titleId);
-        out.writeInt(subtitleId);
-        out.writeInt(dismissTextId);
-        out.writeInt(logoId);
+    public int hashCode() {
+        return Objects.hash(titleId, subtitleId, dismissTextId, logoId, shouldDisableSignin);
     }
 }

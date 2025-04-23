@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ActInFocusedTabParams, ActInFocusedTabResult, AnnotatedPageData, ChromeVersion, CreateTabOptions, DraggableArea, FocusedTabData, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ObservableValue, OpenPanelInfo, OpenSettingsOptions, PanelOpeningData, PanelState, PdfDocumentData, ResizeWindowOptions, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
+import type {ActInFocusedTabParams, ActInFocusedTabResult, AnnotatedPageData, ChromeVersion, CreateTabOptions, DraggableArea, FocusedTabData, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ObservableValue, OpenPanelInfo, OpenSettingsOptions, PanelOpeningData, PanelState, PdfDocumentData, ResizeWindowOptions, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ZeroStateSuggestions} from '../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl} from '../observable.js';
 
 import {replaceProperties} from './conversions.js';
@@ -223,27 +223,31 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     this.osHotkeyState.assignAndSignal({hotkey: state.hotkey});
     this.fitWindow = state.fitWindow;
 
-    if (!state.scrollToEnabled) {
-      (this as GlicBrowserHost).scrollTo = undefined;
+    if (!state.enableScrollTo) {
+      this.scrollTo = undefined;
     }
 
-    if (!state.actInFocusedTabEnabled) {
-      (this as GlicBrowserHost).actInFocusedTab = undefined;
+    if (!state.enableActInFocusedTab) {
+      this.actInFocusedTab = undefined;
     }
 
-    if (!state.dragResizeEnabled) {
-      (this as GlicBrowserHost).enableDragResize = undefined;
+    if (!state.enableDragToResizePanel) {
+      this.enableDragResize = undefined;
     }
 
     if (!state.openOsSettingsApiIsAllowed) {
-      (this as GlicBrowserHost).openOsPermissionSettingsMenu = undefined;
+      this.openOsPermissionSettingsMenu = undefined;
     }
 
     if (state.alwaysDetachedMode) {
-      (this as GlicBrowserHost).attachPanel = undefined;
-      (this as GlicBrowserHost).detachPanel = undefined;
-      (this as GlicBrowserHost).canAttachPanel = undefined;
-      (this as GlicBrowserHost).getPanelState = undefined;
+      this.attachPanel = undefined;
+      this.detachPanel = undefined;
+      this.canAttachPanel = undefined;
+      this.getPanelState = undefined;
+    }
+
+    if (!state.enableZeroStateSuggestions) {
+      this.getZeroStateSuggestionsForFocusedTab = undefined;
     }
   }
 
@@ -470,6 +474,20 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   getOsHotkeyState(): ObservableValueImpl<{hotkey: string}> {
     return this.osHotkeyState;
+  }
+
+  async getZeroStateSuggestionsForFocusedTab?
+      (isFirstRun?: boolean): Promise<ZeroStateSuggestions> {
+    const zeroStateResult = await this.sender.requestWithResponse(
+        'glicBrowserGetZeroStateSuggestionsForFocusedTab', {isFirstRun});
+    if (!zeroStateResult.suggestions) {
+      return {
+        suggestions: [],
+        tabId: '',
+        url: '',
+      };
+    }
+    return zeroStateResult.suggestions;
   }
 }
 

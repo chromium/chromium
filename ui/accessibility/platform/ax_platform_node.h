@@ -45,7 +45,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
 
   // Create an appropriate platform-specific instance. The delegate owns the
   // AXPlatformNode instance (or manages its lifecycle in some other way).
-  static Pointer Create(AXPlatformNodeDelegate* delegate);
+  static Pointer Create(AXPlatformNodeDelegate& delegate);
 
   // Cast a gfx::NativeViewAccessible to an AXPlatformNode if it is one,
   // or return nullptr if it's not an instance of this class.
@@ -55,7 +55,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
   // Return the AXPlatformNode at the root of the tree for a native window.
   static AXPlatformNode* FromNativeWindow(gfx::NativeWindow native_window);
 
-  virtual ~AXPlatformNode() = default;
   AXPlatformNode(const AXPlatformNode&) = delete;
   AXPlatformNode& operator=(const AXPlatformNode&) = delete;
 
@@ -79,6 +78,14 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
   // The focus override is the perceived focus within the popup, and it changes
   // each time a user navigates to a new item within the popup.
   static void SetPopupFocusOverride(gfx::NativeViewAccessible focus_override);
+
+  // Returns true if the instance has been destroyed. Generally, no consumers
+  // should hold a pointer to an instance after calling `Destroy`. On platforms
+  // where an instance may outlive its delegate (e.g., on Windows where an
+  // accessibility tool may hold references to COM objects), it is necessary to
+  // check that an instance hasn't been destroyed before handling an inbound
+  // call from the platform.
+  virtual bool IsDestroyed() const = 0;
 
   // Get the platform-specific accessible object type for this instance.
   // On some platforms this is just a type cast, on others it may be a
@@ -104,7 +111,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
                               AnnouncementType announcement_type) = 0;
 #endif
 
-  // Return this object's delegate.
+  // Return this object's delegate. As with all methods, this must not be called
+  // on an instance that has been destroyed (see `IsDestroyed()`).
   virtual AXPlatformNodeDelegate* GetDelegate() const = 0;
 
   // Return true if this object is equal to or a descendant of |ancestor|.
@@ -124,6 +132,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
 
  protected:
   AXPlatformNode() = default;
+  virtual ~AXPlatformNode() = default;
 
   // Associates a node delegate object to the platform node.
   // Keep it protected. Only AXPlatformNode::Create should be calling this.
@@ -132,11 +141,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
   // (AXPlatformNodeWin) relies on CComObject::CreateInstance() in order to
   // create a platform node instance, and it doesn't allow to pass arguments to
   // the constructor.
-  virtual void Init(AXPlatformNodeDelegate* delegate) = 0;
+  virtual void Init(AXPlatformNodeDelegate& delegate) = 0;
 
   // Call Destroy rather than deleting this, because the subclass may
   // use reference counting.
-  virtual void Destroy() {}
+  virtual void Destroy() = 0;
 
  private:
   static bool allow_ax_mode_changes_;

@@ -329,7 +329,7 @@ TEST_F(AVCConversionTest, ValidAnnexBConstructs) {
   for (size_t i = 0; i < std::size(test_cases); ++i) {
     std::vector<uint8_t> buf;
     std::vector<SubsampleEntry> subsamples;
-    AvcStringToAnnexB(test_cases[i].case_string, &buf, NULL);
+    AvcStringToAnnexB(test_cases[i].case_string, &buf, nullptr);
 
     BitstreamConverter::AnalysisResult expected;
     expected.is_conformant = true;
@@ -385,7 +385,7 @@ TEST_F(AVCConversionTest, InvalidAnnexBConstructs) {
   for (size_t i = 0; i < std::size(test_cases); ++i) {
     std::vector<uint8_t> buf;
     std::vector<SubsampleEntry> subsamples;
-    AvcStringToAnnexB(test_cases[i].case_string, &buf, NULL);
+    AvcStringToAnnexB(test_cases[i].case_string, &buf, nullptr);
     expected.is_keyframe = test_cases[i].is_keyframe;
     EXPECT_PRED2(AnalysesMatch,
                  AVC::AnalyzeAnnexB(buf.data(), buf.size(), subsamples),

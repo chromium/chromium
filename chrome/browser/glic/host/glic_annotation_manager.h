@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_GLIC_HOST_GLIC_ANNOTATION_MANAGER_H_
 #define CHROME_BROWSER_GLIC_HOST_GLIC_ANNOTATION_MANAGER_H_
 
+#include <ostream>
+
 #include "base/callback_list.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom.h"
@@ -37,53 +40,116 @@ class GlicAnnotationManager {
                 mojom::WebClientHandler::ScrollToCallback callback);
 
  private:
-  // Represents the processing of a single `ScrollTo` call. It is currently
-  // destroyed when a failure occurs or when a new request is started.
+  // Represents the processing of a single `ScrollTo` call.
   // Note: The task is currently kept alive after the scroll is triggered and
   // `scroll_to_callback_` is run to keep the text highlight alive in the
-  // renderer (highlighting is removed when `annotation_agent_` is reset).
-  class AnnotationTask : public blink::mojom::AnnotationAgentHost {
+  // renderer (highlighting is removed when `annotation_agent_` is reset). The
+  // highlight is currently persisted until either the page with the highlight
+  // is navigated from or ScrollTo() is called again.
+  class AnnotationTask : public blink::mojom::AnnotationAgentHost,
+                         content::WebContentsObserver {
    public:
-    AnnotationTask(mojo::Remote<blink::mojom::AnnotationAgent> annotation_agent,
+    AnnotationTask(GlicAnnotationManager* manager,
+                   mojo::Remote<blink::mojom::AnnotationAgent> annotation_agent,
                    mojo::PendingReceiver<blink::mojom::AnnotationAgentHost>
                        annotation_agent_host,
-                   mojom::WebClientHandler::ScrollToCallback callback);
+                   mojom::WebClientHandler::ScrollToCallback callback,
+                   content::Page& page);
     ~AnnotationTask() override;
 
-    // Runs the callback with `error_reason` (if the callback hasn't already
-    // been run). Resets mojo connections.
-    void MaybeFailTask(mojom::ScrollToErrorReason error_reason);
+    // Returns true if the task is still running, false if it is complete. The
+    // ScrollTo callback hasn't been run yet if this is true.
+    bool IsRunning() const;
+
+    // Runs the callback with `error_reason` and destroys `this`. Should only
+    // be called when `IsRunning()` is true.
+    void FailTask(mojom::ScrollToErrorReason error_reason);
+
+   private:
+    enum class State {
+      // The initial state of a task. The renderer is searching for the
+      // selected content and `scroll_to_callback_` hasn't run.
+      kRunning,
+
+      // The task failed (before or during the search), and
+      // `scroll_to_callback_` was resolved with a failure. All mojo connections
+      // and subscriptions have been reset.
+      kFailed,
+
+      // The renderer has found the selected content (DidFinishAttachment was
+      // called), and content is being scrolled to and highlighted.
+      // `scroll_to_callback` has been resolved successfully (without an error).
+      kActive,
+
+      // The selection was dropped (after being active initially).
+      // `scroll_to_callback` has been resolved successfully (without an
+      // error). All mojo connections and subscriptions have been reset.
+      kInactive,
+    };
+
+    static std::string ToString(State state);
+    friend std::ostream& operator<<(std::ostream& o, State state) {
+      o << ToString(state);
+      return o;
+    }
+    void SetState(State new_state);
+
+    void RemoteDisconnected();
+    void DropAnnotation();
+    void ResetConnections();
 
     // blink::mojom::AnnotationAgentHost overrides.
     void DidFinishAttachment(
         const gfx::Rect& document_relative_rect,
         blink::mojom::AttachmentResult attachment_result) override;
 
-   private:
+    // content::WebContentsObserver overrides.
+    void PrimaryPageChanged(content::Page& page) override;
+
+    // GlicFocusedTabManager::FocusedTabChangedCallback
+    void OnFocusedTabChanged(FocusedTabData focused_tab_data);
+
+    // Uniquely owns `this`.
+    base::raw_ref<GlicAnnotationManager> annotation_manager_;
+
+    // Used for bi-directional communication with `page_`'s main document's
+    // AnnotationAgent.
     mojo::Remote<blink::mojom::AnnotationAgent> annotation_agent_;
     mojo::Receiver<blink::mojom::AnnotationAgentHost>
         annotation_agent_host_receiver_;
+
+    // Callback for ScrollTo() that's run when the task completes or fails.
     mojom::WebClientHandler::ScrollToCallback scroll_to_callback_;
+
+    // Page this task is running in.
+    base::WeakPtr<content::Page> page_;
+
+    // Subscription to listen to focused tab changes/primary page navigations
+    // while the task is running. Cleared after the task completes/fails.
+    base::CallbackListSubscription tab_change_subscription_;
+
+    // Current state of the task, see documentation for `State`.
+    State state_ = State::kRunning;
   };
 
-  void MaybeFailAndResetTask(glic::mojom::ScrollToErrorReason);
-  void OnFocusedTabChanged(FocusedTabData focused_tab_data);
+  // See documentation for `annotation_agent_container_` below.
+  struct AnnotationAgentContainer {
+    AnnotationAgentContainer();
+    ~AnnotationAgentContainer();
+
+    content::WeakDocumentPtr document;
+    mojo::Remote<blink::mojom::AnnotationAgentContainer> remote;
+  };
 
   // `GlicKeyedService` instance associated with the `GlicWebClientHandler`
   // that owns `this`. Will outlive `this`.
   const raw_ptr<GlicKeyedService> service_;
 
-  // When bound, this is bound to `service_`'s currently focused tab's primary
-  // main frame.
-  mojo::Remote<blink::mojom::AnnotationAgentContainer>
-      annotation_agent_container_;
-
-  // Subscription to listen to focused tab changes/primary page navigations.
-  base::CallbackListSubscription tab_change_subscription_;
-
-  // Currently focused tab's (retrieved from
-  // `GlicKeyedService::GetFocusedTabData`) primary page.
-  base::WeakPtr<content::Page> focused_primary_page_;
+  // Set when this class binds to a remote AnnotationAgentContainer when
+  // ScrollTo is called. It also tracks the specific document it connected to,
+  // which allows us to reuse the connection if we receive another ScrollTo
+  // request for the same document.
+  std::optional<AnnotationAgentContainer> annotation_agent_container_;
 
   // Keeps track of the currently running ScrollTo call. See documentation for
   // `AnnotationTask`.

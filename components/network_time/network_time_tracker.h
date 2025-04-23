@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "components/client_update_protocol/ecdsa.h"
 #include "components/network_time/time_tracker/time_tracker.h"
 #include "url/gurl.h"
 
@@ -115,7 +116,8 @@ class NetworkTimeTracker {
       std::unique_ptr<const base::TickClock> tick_clock,
       PrefService* pref_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::optional<FetchBehavior> fetch_behavior);
+      std::optional<FetchBehavior> fetch_behavior,
+      base::span<const uint8_t> pubkey = base::span<const uint8_t>());
 
   NetworkTimeTracker(const NetworkTimeTracker&) = delete;
   NetworkTimeTracker& operator=(const NetworkTimeTracker&) = delete;
@@ -172,8 +174,6 @@ class NetworkTimeTracker {
 
   void SetMaxResponseSizeForTesting(size_t limit);
 
-  void SetPublicKeyForTesting(std::string_view key);
-
   void SetTimeServerURLForTesting(const GURL& url);
 
   GURL GetTimeServerURLForTesting() const;
@@ -220,7 +220,7 @@ class NetworkTimeTracker {
   base::RepeatingTimer timer_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> time_fetcher_;
-  std::unique_ptr<client_update_protocol::Ecdsa> query_signer_;
+  client_update_protocol::Ecdsa query_signer_;
 
   // The |Clock| and |TickClock| are used to sanity-check one another, allowing
   // the NetworkTimeTracker to notice e.g. suspend/resume events and clock

@@ -96,11 +96,9 @@ void RendererControlMultiplexer::Initialize(
     std::optional<
         std::vector<::mojo::PendingRemote<::media::mojom::DemuxerStream>>>
         streams,
-    media::mojom::MediaUrlParamsPtr media_url_params,
     InitializeCallback callback) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   renderer_remote_->Initialize(std::move(client), std::move(streams),
-                               std::move(media_url_params),
                                std::move(callback));
 }
 

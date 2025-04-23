@@ -9,6 +9,8 @@ import android.view.View;
 
 import androidx.lifecycle.LifecycleOwner;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.R;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -17,11 +19,12 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+@NullMarked
 public class BookmarkBatchUploadCardCoordinator {
     private final BookmarkBatchUploadCardMediator mMediator;
     private final PropertyModel mModel;
 
-    private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
+    private @Nullable PropertyModelChangeProcessor mPropertyModelChangeProcessor;
 
     public BookmarkBatchUploadCardCoordinator(
             Activity activity,

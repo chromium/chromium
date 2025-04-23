@@ -132,11 +132,11 @@ std::unique_ptr<views::View> DiscountsBubbleDialogView::CreateMainPageContent(
 
   auto additional_info_text =
       discount_info.expiry_time_sec.has_value()
-          ? l10n_util::GetStringUTF16(IDS_DISCOUNT_USE_THIS_CODE_AT_CHECKOUT)
-          : l10n_util::GetStringFUTF16(
+          ? l10n_util::GetStringFUTF16(
                 IDS_DISCOUNT_USE_THIS_CODE_AT_CHECKOUT_WITH_EXPIRATION_DATE,
                 TimeFormatShortDate(base::Time::FromSecondsSinceUnixEpoch(
-                    discount_info.expiry_time_sec.value())));
+                    discount_info.expiry_time_sec.value())))
+          : l10n_util::GetStringUTF16(IDS_DISCOUNT_USE_THIS_CODE_AT_CHECKOUT);
 
   if (discount_info.terms_and_conditions.has_value() &&
       !discount_info.terms_and_conditions.value().empty()) {

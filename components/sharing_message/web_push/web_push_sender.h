@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SHARING_MESSAGE_WEB_PUSH_WEB_PUSH_SENDER_H_
 #define COMPONENTS_SHARING_MESSAGE_WEB_PUSH_WEB_PUSH_SENDER_H_
 
+#include <optional>
+
 #include "components/sharing_message/web_push/web_push_common.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -45,7 +47,7 @@ class WebPushSender {
  private:
   void OnMessageSent(std::unique_ptr<network::SimpleURLLoader> url_loader,
                      WebPushCallback callback,
-                     std::unique_ptr<std::string> response_body);
+                     std::optional<std::string> response_body);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 

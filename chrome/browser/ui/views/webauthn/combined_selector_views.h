@@ -77,6 +77,9 @@ class CombinedSelectorRowView : public views::TableLayoutView {
 
   // views::TableLayoutView:
   void RequestFocus() override;
+  bool OnMousePressed(const ui::MouseEvent& event) override;
+  void OnMouseReleased(const ui::MouseEvent& event) override;
+
 
   raw_ptr<views::View> radio_button_;
   RadioStatus radio_status_;

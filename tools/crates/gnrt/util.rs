@@ -3,14 +3,18 @@
 // found in the LICENSE file.
 
 use crate::paths::ChromiumPaths;
-use handlebars::handlebars_helper;
-use std::collections::HashMap;
-use std::fs;
-use std::path::Path;
-use std::process;
-use std::{fmt::Write, path::PathBuf};
 
-use anyhow::{format_err, Context, Result};
+use anyhow::{ensure, format_err, Context, Result};
+use handlebars::handlebars_helper;
+use serde::Serialize;
+use std::{
+    borrow::Cow,
+    collections::HashMap,
+    fmt::Write,
+    fs,
+    path::{Path, PathBuf},
+    process,
+};
 
 pub fn check_spawn(cmd: &mut process::Command, cmd_msg: &str) -> Result<process::Child> {
     cmd.spawn().with_context(|| format!("failed to start {cmd_msg}"))
@@ -155,18 +159,81 @@ pub fn remove_checksums_from_lock(cargo_root: &Path) -> Result<()> {
     Ok(())
 }
 
-pub fn init_handlebars(template_path: &Path) -> Result<handlebars::Handlebars> {
+pub fn init_handlebars<'reg>() -> handlebars::Handlebars<'reg> {
     let mut handlebars = handlebars::Handlebars::new();
+    handlebars.set_strict_mode(true);
 
     // Don't escape output strings; the default is to escape for HTML output. Do
     // not auto-escape for GN either, so that non-string GN may also be passed.
     handlebars.register_escape_fn(handlebars::no_escape);
-    handlebars.register_template_file("template", template_path).context("loading gn template")?;
 
     // Install helper to escape inputs pasted in GN `".."` strings.
     handlebars_helper!(gn_escape: |x: String| escape_for_handlebars(&x));
     handlebars.register_helper("gn_escape", Box::new(gn_escape));
+
+    handlebars
+}
+
+fn template_path_to_registration_name(template_path: &Path) -> String {
+    let filename = template_path
+        .file_name()
+        .map(|filename| filename.to_string_lossy())
+        .unwrap_or(Cow::Borrowed("???no-filename???"));
+    let hash = {
+        use std::hash::{Hash, Hasher};
+        let mut h = std::hash::DefaultHasher::new();
+        template_path.hash(&mut h);
+        h.finish()
+    };
+    format!("{}#{:#x}", filename, hash)
+}
+
+pub fn init_handlebars_with_template_paths<'a>(
+    template_paths: &[&'a Path],
+) -> Result<handlebars::Handlebars<'a>> {
+    let mut handlebars = init_handlebars();
+    for path in template_paths.iter() {
+        // Explicitly check `path.exists()` to get a better error message, even though
+        // TOCTOU means that we may still get an error below.
+        ensure!(path.exists(), "File doesn't exist: {}", path.display());
+
+        let template_name = template_path_to_registration_name(path);
+        handlebars
+            .register_template_file(&template_name, path)
+            .with_context(|| format!("Loading handlebars template: {}", path.display()))?;
+    }
     Ok(handlebars)
+}
+
+pub fn render_handlebars(
+    handlebars: &handlebars::Handlebars,
+    template_path: &Path,
+    data: &impl Serialize,
+    output_path: &Path,
+) -> Result<()> {
+    render_handlebars_named_template(
+        handlebars,
+        &template_path_to_registration_name(template_path),
+        data,
+        output_path,
+    )
+    .with_context(|| format!("Expanding handlebars template `{}`", template_path.display(),))
+}
+
+pub fn render_handlebars_named_template(
+    handlebars: &handlebars::Handlebars,
+    template_name: &str,
+    data: &impl Serialize,
+    output_path: &Path,
+) -> Result<()> {
+    std::fs::File::create(output_path)
+        .map_err(anyhow::Error::new)
+        .and_then(|output_file| {
+            let buffered_output_file = std::io::BufWriter::new(output_file);
+            handlebars.render_to_write(template_name, data, buffered_output_file)?;
+            Ok(())
+        })
+        .with_context(|| format!("Expanding handlebars template into `{}`", output_path.display(),))
 }
 
 fn escape_for_handlebars(x: &str) -> String {

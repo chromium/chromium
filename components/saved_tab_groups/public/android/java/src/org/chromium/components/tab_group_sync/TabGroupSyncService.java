@@ -234,7 +234,7 @@ public interface TabGroupSyncService {
      * @param localGroupId The local ID of the group to be returned.
      * @return The associated {@link SavedTabGroup}.
      */
-    SavedTabGroup getGroup(LocalTabGroupId localGroupId);
+    @Nullable SavedTabGroup getGroup(LocalTabGroupId localGroupId);
 
     /**
      * Updates the in-memory mapping between sync and local tab group IDs.
@@ -308,4 +308,12 @@ public interface TabGroupSyncService {
      *     associated tab group info.
      */
     void recordTabGroupEvent(EventDetails eventDetails);
+
+    /**
+     * Update the archival status of the local tab group.
+     *
+     * @param syncTabGroupId The sync ID of the tab group to be updated.
+     * @param archivalStatus Whether the tab group should be archived locally or not.
+     */
+    void updateArchivalStatus(String syncTabGroupId, boolean archivalStatus);
 }

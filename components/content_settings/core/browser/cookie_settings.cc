@@ -511,13 +511,12 @@ bool CookieSettings::ShouldBlockThirdPartyCookies() const {
 bool CookieSettings::ShouldBlockThirdPartyCookies(
     base::optional_ref<const url::Origin> top_frame_origin,
     net::CookieSettingOverrides overrides) const {
-  if (Are3pcsForceDisabledByOverride(overrides)) {
-    return true;
+  if (std::optional<bool> modifier_decision =
+          MaybeBlockThirdPartyCookiesPerModifiers(top_frame_origin,
+                                                  overrides)) {
+    return modifier_decision.value();
   }
-  if (top_frame_origin &&
-      IsBlockedByTopLevel3pcdOriginTrial(top_frame_origin->GetURL())) {
-    return true;
-  }
+
   base::AutoLock auto_lock(lock_);
   return block_third_party_cookies_;
 }

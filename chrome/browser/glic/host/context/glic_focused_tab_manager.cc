@@ -23,6 +23,21 @@ namespace {
 
 constexpr base::TimeDelta kDebounceDelay = base::Seconds(0.1);
 
+// URLs allowed to be focused despite other URL validity checks.
+// Note: other, non-url-based focus checks still apply.
+const base::flat_set<GURL>& GetURLAllowList() {
+  static const base::flat_set<GURL> kURLAllowList = {
+      // Allow 'blank' pages to avoid flicker during tab creation.
+      GURL(),
+      GURL("about:blank"),
+      GURL(chrome::kChromeUINewTabPageThirdPartyURL),
+      GURL(chrome::kChromeUINewTabPageURL),
+      GURL(chrome::kChromeUINewTabURL),
+      GURL(chrome::kChromeUIWhatsNewURL)};
+
+  return kURLAllowList;
+}
+
 }  // namespace
 
 GlicFocusedTabManager::GlicFocusedTabManager(
@@ -50,6 +65,24 @@ base::CallbackListSubscription
 GlicFocusedTabManager::AddFocusedTabChangedCallback(
     FocusedTabChangedCallback callback) {
   return focused_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription
+GlicFocusedTabManager::AddFocusedTabInstanceChangedCallback(
+    FocusedTabInstanceChangedCallback callback) {
+  return focused_instance_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription
+GlicFocusedTabManager::AddFocusedTabOrCandidateInstanceChangedCallback(
+    FocusedTabOrCandidateInstanceChangedCallback callback) {
+  return focused_or_candidate_instance_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription
+GlicFocusedTabManager::AddFocusedTabDataChangedCallback(
+    FocusedTabDataChangedCallback callback) {
+  return focused_data_callback_list_.Add(std::move(callback));
 }
 
 void GlicFocusedTabManager::OnBrowserAdded(Browser* browser) {
@@ -128,6 +161,16 @@ void GlicFocusedTabManager::PrimaryPageChanged(content::Page& page) {
   MaybeUpdateFocusedTab(/*force_notify=*/true);
 }
 
+void GlicFocusedTabManager::FocusedTabDataChanged(
+    glic::mojom::TabDataPtr tab_data) {
+  // `TabDataObserver` is responsible for firing this when appropriate, we just
+  // forward events along.
+  // Note: we omit calling `MaybeUpdateFocusedTab()` here because observing web
+  // contents for changes that might impact focused tab container or candidate
+  // are handled separately.
+  NotifyFocusedTabDataChanged(std::move(tab_data));
+}
+
 void GlicFocusedTabManager::PanelStateChanged(
     const glic::mojom::PanelState& panel_state,
     Browser*) {
@@ -158,6 +201,12 @@ void GlicFocusedTabManager::PerformMaybeUpdateFocusedTab(bool force_notify) {
   cached_force_notify_ = false;
   struct FocusedTabState new_focused_tab_state = ComputeFocusedTabState();
   bool focus_changed = !focused_tab_state_.IsSame(new_focused_tab_state);
+  bool focused_instance_changed = !IsWeakPtrSame(
+      focused_tab_state_.focused_tab, new_focused_tab_state.focused_tab);
+  bool focused_or_candidate_instance_changed =
+      focused_instance_changed ||
+      !IsWeakPtrSame(focused_tab_state_.candidate_tab,
+                     new_focused_tab_state.candidate_tab);
   if (focus_changed) {
     focused_tab_state_ = new_focused_tab_state;
     focused_tab_data_ = GetFocusedTabData(new_focused_tab_state);
@@ -167,6 +216,23 @@ void GlicFocusedTabManager::PerformMaybeUpdateFocusedTab(bool force_notify) {
   // was never one, or because it's been invalidated, turn off tab candidate
   // observation.
   Observe(focused_tab_state_.candidate_tab.get());
+
+  // Similarly set up or turn off tab data observation for the focused tab.
+  focused_tab_data_observer_ = std::make_unique<TabDataObserver>(
+      focused_tab_state_.focused_tab.get(),
+      /*disconnect_on_primary_page_changed=*/false,
+      base::BindRepeating(&GlicFocusedTabManager::FocusedTabDataChanged,
+                          base::Unretained(this)));
+
+  if (focused_instance_changed) {
+    NotifyFocusedTabInstanceChanged(focused_tab_state_.focused_tab.get());
+    NotifyFocusedTabDataChanged(
+        CreateTabData(focused_tab_state_.focused_tab.get()));
+  }
+
+  if (focused_or_candidate_instance_changed) {
+    NotifyFocusedTabOrCandidateInstanceChanged(focused_tab_data_);
+  }
 
   if (focus_changed || force_notify) {
     NotifyFocusedTabChanged();
@@ -247,6 +313,21 @@ void GlicFocusedTabManager::NotifyFocusedTabChanged() {
   focused_callback_list_.Notify(GetFocusedTabData());
 }
 
+void GlicFocusedTabManager::NotifyFocusedTabInstanceChanged(
+    content::WebContents* web_contents) {
+  focused_instance_callback_list_.Notify(web_contents);
+}
+
+void GlicFocusedTabManager::NotifyFocusedTabOrCandidateInstanceChanged(
+    FocusedTabData focused_tab_data) {
+  focused_or_candidate_instance_callback_list_.Notify(focused_tab_data);
+}
+
+void GlicFocusedTabManager::NotifyFocusedTabDataChanged(
+    glic::mojom::TabDataPtr tab_data) {
+  focused_data_callback_list_.Notify(tab_data ? tab_data.get() : nullptr);
+}
+
 bool GlicFocusedTabManager::IsBrowserValid(
     BrowserWindowInterface* browser_interface) {
   if (!browser_interface) {
@@ -289,7 +370,8 @@ bool GlicFocusedTabManager::IsTabStateValid(
 
   auto url =
       const_cast<content::WebContents*>(web_contents)->GetLastCommittedURL();
-  if (url.SchemeIsHTTPOrHTTPS() || url.SchemeIsFile()) {
+  if (url.SchemeIsHTTPOrHTTPS() || url.SchemeIsFile() ||
+      GetURLAllowList().contains(url)) {
     return true;
   }
 

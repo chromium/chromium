@@ -21,7 +21,7 @@
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/sync_engine.h"
 #include "components/sync/engine/sync_manager.h"
-#include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace syncer {
 
@@ -209,7 +209,7 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   std::unique_ptr<SyncManager> sync_manager_;
 
   // Required for `nigori_controller_` LoadModels().
-  CoreAccountId authenticated_account_id_;
+  GaiaId authenticated_gaia_id_;
 
   // Initialized in Init().
   std::unique_ptr<DataTypeController> nigori_controller_;

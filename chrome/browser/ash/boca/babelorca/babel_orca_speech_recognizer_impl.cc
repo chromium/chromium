@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/accessibility/live_caption/system_live_caption_service.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_speech_recognizer.h"
@@ -28,15 +29,14 @@ void UnwrapSodaInstallationStatus(
 
 BabelOrcaSpeechRecognizerImpl::BabelOrcaSpeechRecognizerImpl(
     Profile* profile,
-    PrefService* global_prefs,
+    SodaInstaller* soda_installer,
     const std::string& application_locale)
     : ash::SystemLiveCaptionService(
           profile,
           ash::SystemLiveCaptionService::AudioSource::kUserMicrophone),
-      soda_installer_(global_prefs, profile->GetPrefs(), application_locale),
+      soda_installer_(soda_installer),
       speech_recognition_event_handler_(application_locale),
-      primary_profile_(profile) {
-}
+      primary_profile_(profile) {}
 BabelOrcaSpeechRecognizerImpl::~BabelOrcaSpeechRecognizerImpl() = default;
 
 void BabelOrcaSpeechRecognizerImpl::OnSpeechResult(
@@ -52,8 +52,8 @@ void BabelOrcaSpeechRecognizerImpl::OnLanguageIdentificationEvent(
 }
 
 void BabelOrcaSpeechRecognizerImpl::Start() {
-  // TODO(384026579): Notify Producer of error, then retry or alert user.
-  soda_installer_.InstallSoda(base::BindOnce(
+  // If already installed, will immediately begin recognizing.
+  soda_installer_->InstallSoda(base::BindOnce(
       &UnwrapSodaInstallationStatus,
       base::BindOnce(
           &SystemLiveCaptionService::SpeechRecognitionAvailabilityChanged,
@@ -76,6 +76,13 @@ void BabelOrcaSpeechRecognizerImpl::ObserveSpeechRecognition(
 
 void BabelOrcaSpeechRecognizerImpl::RemoveSpeechRecognitionObservation() {
   speech_recognition_event_handler_.RemoveSpeechRecognitionObservation();
+}
+
+media::mojom::RecognizerClientType
+BabelOrcaSpeechRecognizerImpl::GetRecognizerClientType() {
+  return features::IsBocaClientTypeForSpeechRecognitionEnabled()
+             ? media::mojom::RecognizerClientType::kSchoolTools
+             : SystemLiveCaptionService::GetRecognizerClientType();
 }
 
 }  // namespace ash::babelorca

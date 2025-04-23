@@ -94,13 +94,21 @@ class PasswordManagerDriver {
   // `password_element_id` with `old_password` and `new_password_element_id`,
   // `confirm_password_element_id` with `new_password`. Upon completion
   // asynchronously returns `form_data` with filled values.
-  virtual void SubmitChangePasswordForm(
+  virtual void FillChangePasswordForm(
       autofill::FieldRendererId password_element_id,
       autofill::FieldRendererId new_password_element_id,
       autofill::FieldRendererId confirm_password_element_id,
       const std::u16string& old_password,
       const std::u16string& new_password,
-      base::OnceCallback<void(const autofill::FormData&)> form_data_callback) {}
+      base::OnceCallback<void(const std::optional<autofill::FormData>&)>
+          form_data_callback) {}
+
+  // Submits a form based on field id if all conditions for submission with
+  // Enter are satisfied, i.e. the form exists, there is a submit element inside
+  // a form, the submit element is not disabled.
+  virtual void SubmitFormWithEnter(
+      autofill::FieldRendererId field,
+      base::OnceCallback<void(bool)> success_callback) {}
 
   // Tells the driver to fill the currently focused form with the `username` and
   // `password`.

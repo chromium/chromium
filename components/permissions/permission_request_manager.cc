@@ -5,12 +5,14 @@
 #include "components/permissions/permission_request_manager.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -699,7 +701,6 @@ void PermissionRequestManager::Dismiss() {
 void PermissionRequestManager::Ignore() {
   if (ignore_callbacks_from_prompt_)
     return;
-  DCHECK(view_);
   base::AutoReset<bool> block_preempt(&can_preempt_current_request_, false);
   std::vector<raw_ptr<PermissionRequest, VectorExperimental>>::iterator
       requests_iter;
@@ -838,6 +839,8 @@ bool PermissionRequestManager::RecreateView() {
         PermissionPromptDisposition::NONE_VISIBLE;
     if (ShouldDropCurrentRequestIfCannotShowQuietly()) {
       CurrentRequestsDecided(PermissionAction::IGNORED);
+    } else if (IsCurrentRequestEmbeddedPermissionElementInitiated()) {
+      Ignore();
     }
     NotifyPromptRecreateFailed();
     return false;
@@ -1042,7 +1045,8 @@ void PermissionRequestManager::ShowPrompt() {
         GetRequestInitialStatus(requests_[0]),
         hats_shown_callback_.has_value()
             ? std::move(hats_shown_callback_.value())
-            : base::DoNothing());
+            : base::DoNothing(),
+        /*preview_parameters=*/std::nullopt);
 
     hats_shown_callback_.reset();
   }
@@ -1162,7 +1166,7 @@ void PermissionRequestManager::CurrentRequestsDecided(
         DetermineCurrentRequestUIDispositionReasonForUMA(),
         request->GetGestureType(), quiet_ui_reason, time_since_shown,
         current_request_pepc_prompt_position_, GetRequestInitialStatus(request),
-        web_contents());
+        web_contents(), request->get_preview_parameters());
 
     PermissionUmaUtil::RecordEmbargoStatus(RecordActionAndGetEmbargoStatus(
         browser_context, request, permission_action));

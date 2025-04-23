@@ -10,7 +10,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace content {
 class WebContents;
@@ -26,7 +26,7 @@ class PrivacySandboxDialogView : public views::View {
   METADATA_HEADER(PrivacySandboxDialogView, views::View)
 
  public:
-  PrivacySandboxDialogView(Browser* browser,
+  PrivacySandboxDialogView(BrowserWindowInterface* browser,
                            PrivacySandboxService::PromptType dialog_type);
 
   void Close();
@@ -47,7 +47,7 @@ class PrivacySandboxDialogView : public views::View {
   content::WebContents* GetWebContentsForTesting();
 
   raw_ptr<views::WebView> web_view_;
-  raw_ptr<Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_DIALOG_VIEW_H_

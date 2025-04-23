@@ -13,6 +13,7 @@
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/permission_result.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -77,7 +78,10 @@ class GeolocationPermissionContextDelegateTests
     PermissionManagerFactory::GetForProfile(profile())
         ->RequestPermissionsFromCurrentDocument(
             render_frame_host,
-            content::PermissionRequestDescription(permission, user_gesture),
+            content::PermissionRequestDescription(
+                content::PermissionDescriptorUtil::
+                    CreatePermissionDescriptorForPermissionType(permission),
+                user_gesture),
             base::BindOnce(
                 [](base::OnceCallback<void(blink::mojom::PermissionStatus)>
                        callback,
@@ -93,8 +97,10 @@ class GeolocationPermissionContextDelegateTests
       blink::PermissionType permission,
       const url::Origin& origin) {
     return PermissionManagerFactory::GetForProfile(profile)
-        ->GetPermissionResultForOriginWithoutContext(permission, origin,
-                                                     origin);
+        ->GetPermissionResultForOriginWithoutContext(
+            content::PermissionDescriptorUtil::
+                CreatePermissionDescriptorForPermissionType(permission),
+            origin, origin);
   }
 };
 

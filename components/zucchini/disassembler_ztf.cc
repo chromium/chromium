@@ -10,6 +10,7 @@
 #include "components/zucchini/disassembler_ztf.h"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <iterator>
 #include <limits>
@@ -264,9 +265,9 @@ class ZtfWriter {
   void WriteNumber(ztf::dim_t value) {
     size_t size = config_.digits_per_dim + 1;
     DCHECK_LE(size, kMaxDigitCount + 1);
-    char digits[kMaxDigitCount + 1];  // + 1 for terminator.
-    int len =
-        snprintf(digits, size, "%0*u", config_.digits_per_dim, std::abs(value));
+    std::array<char, kMaxDigitCount + 1> digits;  // + 1 for terminator.
+    int len = snprintf(digits.data(), size, "%0*u", config_.digits_per_dim,
+                       std::abs(value));
     DCHECK_EQ(len, config_.digits_per_dim);
     for (int i = 0; i < len; ++i)
       image_.write(offset_++, digits[i]);

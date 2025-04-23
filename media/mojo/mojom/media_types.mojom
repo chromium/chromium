@@ -635,7 +635,7 @@ enum InputStreamErrorCode {
 enum RendererType {
   kRendererImpl = 0,     // RendererImplFactory
   kMojo = 1,             // MojoRendererFactory
-  kMediaPlayer = 2,      // MediaPlayerRendererClientFactory
+  // kMediaPlayer = 2,   // Deprecated
   kCourier = 3,          // CourierRendererFactory
   kFlinging = 4,         // FlingingRendererClientFactory
   kCast = 5,             // CastRendererClientFactory
@@ -653,7 +653,7 @@ enum DemuxerType {
   kMockDemuxer = 1,
   kFFmpegDemuxer = 2,
   kChunkDemuxer = 3,
-  kMediaUrlDemuxer = 4,
+  // kMediaUrlDemuxer = 4,    // Deprecated
   kFrameInjectingDemuxer = 5,
   kStreamProviderDemuxer = 6,
   kManifestDemuxer = 7,
@@ -691,4 +691,24 @@ enum CreateCdmStatus {
   kAndroidFailedToStartProvisioning = 27,
   kAndroidFailedMediaCryptoCreate = 28,
   kAndroidUnsupportedMediaCryptoScheme = 29,
+};
+
+// See media/base/picture_in_picture_events_info.h for description. Typemapped
+// to `media::PictureInPictureEventsInfo::AutoPipReason`.
+enum AutoPipReason {
+  kUnknown = 0,
+  kVideoConferencing = 1,
+  kMediaPlayback = 2,
+};
+
+// See media/base/picture_in_picture_events_info.h for description. Typemapped
+// to `media::PictureInPictureEventsInfo::AutoPipInfo`.
+struct AutoPipInfo {
+  AutoPipReason auto_pip_reason;
+  bool has_audio_focus;
+  bool is_playing;
+  bool was_recently_audible;
+  bool has_safe_url;
+  bool meets_media_engagement_conditions;
+  bool blocked_due_to_content_setting;
 };

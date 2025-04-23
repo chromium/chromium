@@ -4,6 +4,7 @@
 
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_fetcher.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -84,7 +85,7 @@ class WebAppOriginAssociationFetcherTest : public testing::Test {
 };
 
 TEST_F(WebAppOriginAssociationFetcherTest, FileExists) {
-  base::test::TestFuture<std::unique_ptr<std::string>> future;
+  base::test::TestFuture<std::optional<std::string>> future;
   fetcher_->FetchWebAppOriginAssociationFile(
       url::Origin::Create(GURL(server_.base_url())),
       shared_url_loader_factory_.get(), future.GetCallback());
@@ -98,7 +99,7 @@ TEST_F(WebAppOriginAssociationFetcherTest, FileExists) {
 }
 
 TEST_F(WebAppOriginAssociationFetcherTest, FileDoesNotExist) {
-  base::test::TestFuture<std::unique_ptr<std::string>> future;
+  base::test::TestFuture<std::optional<std::string>> future;
   GURL url = server_.GetURL("foo.com", "/");
 
   fetcher_->FetchWebAppOriginAssociationFile(url::Origin::Create(url),
@@ -114,7 +115,7 @@ TEST_F(WebAppOriginAssociationFetcherTest, FileDoesNotExist) {
 }
 
 TEST_F(WebAppOriginAssociationFetcherTest, FileUrlIsInvalid) {
-  base::test::TestFuture<std::unique_ptr<std::string>> future;
+  base::test::TestFuture<std::optional<std::string>> future;
   fetcher_->FetchWebAppOriginAssociationFile(
       url::Origin::Create(GURL("https://co.uk")),
       shared_url_loader_factory_.get(), future.GetCallback());

@@ -89,19 +89,6 @@ class DownloadManagerMediator : public web::DownloadTaskObserver,
   void StopObservingNotifications();
 
  private:
-  // Moves the downloaded file to user's Documents if it exists.
-  void MoveToUserDocumentsIfFileExists(base::FilePath task_path,
-                                       bool file_exists);
-
-  // Removes the downloaded file if it exists.
-  void RemoveIfFileExists(base::FilePath task_path, bool file_exists);
-
-  // Checks if the move has been completed.
-  void MoveComplete(bool move_completed);
-
-  // Checks if the remove has been completed.
-  void RemoveComplete(bool remove_completed);
-
   // Converts DownloadTask progress [0;100] to float progress [0.0f;1.0f].
   float GetDownloadManagerProgress() const;
 
@@ -140,7 +127,6 @@ class DownloadManagerMediator : public web::DownloadTaskObserver,
   raw_ptr<drive::DriveService> drive_service_ = nullptr;
   raw_ptr<PrefService> pref_service_ = nullptr;
   bool is_incognito_;
-  base::FilePath download_path_;
   raw_ptr<web::DownloadTask> download_task_ = nullptr;
   raw_ptr<UploadTask> upload_task_ = nullptr;
   __weak id<DownloadManagerConsumer> consumer_ = nil;

@@ -62,7 +62,6 @@ class SendTabToSelfBrowserAgent
 
  private:
   friend class BrowserUserData<SendTabToSelfBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit SendTabToSelfBrowserAgent(Browser* browser);
 

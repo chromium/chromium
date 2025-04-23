@@ -72,6 +72,7 @@ import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
@@ -81,7 +82,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
-import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
@@ -191,7 +192,7 @@ public class StripLayoutHelperManager
     private final LayoutUpdateHost mUpdateHost;
 
     // Event Filters
-    private final AreaMotionEventFilter mEventFilter;
+    private AreaMotionEventFilter mEventFilter;
 
     // Internal state
     private boolean mIsIncognito;
@@ -357,6 +358,11 @@ public class StripLayoutHelperManager
         @Override
         public void onHoverExit() {
             getActiveStripLayoutHelper().onHoverExit();
+        }
+
+        @Override
+        public void onScroll(float horizontalAxisScroll, float verticalAxisScroll) {
+            getActiveStripLayoutHelper().onScroll(horizontalAxisScroll, verticalAxisScroll);
         }
 
         private long time() {
@@ -525,7 +531,8 @@ public class StripLayoutHelperManager
                         () -> getStripVisibilityState() == StripVisibilityState.VISIBLE,
                         bottomSheetController,
                         multiInstanceManager,
-                        shareDelegateSupplier);
+                        shareDelegateSupplier,
+                        TabGroupListBottomSheetCoordinator::new);
         mIncognitoHelper =
                 new StripLayoutHelper(
                         context,
@@ -543,7 +550,8 @@ public class StripLayoutHelperManager
                         () -> getStripVisibilityState() == StripVisibilityState.VISIBLE,
                         bottomSheetController,
                         multiInstanceManager,
-                        shareDelegateSupplier);
+                        shareDelegateSupplier,
+                        TabGroupListBottomSheetCoordinator::new);
 
         tabHoverCardViewStub.setOnInflateListener(
                 (viewStub, view) -> {
@@ -684,13 +692,18 @@ public class StripLayoutHelperManager
         }
     }
 
-    /** Cleans up internal state. */
+    /** Cleans up internal state. An instance should not be used after this method is called. */
     public void destroy() {
         mTabStripTreeProvider.destroy();
         mTabStripTreeProvider = null;
+        mLifecycleDispatcher.unregister(this);
+        // Remove the observer to prevent any updates on a destroyed EventFilter.
+        mStripVisibilityStateSupplier.removeObserver(mStripVisibilityStateObserver);
+        // Delete the EventFilter to avoid any updates on destroyed StripLayoutHelpers.
+        mEventFilter = null;
+        mTabStripEventHandler = null;
         mIncognitoHelper.destroy();
         mNormalHelper.destroy();
-        mLifecycleDispatcher.unregister(this);
         if (mTabModelSelector != null) {
             mTabModelSelector
                     .getTabGroupModelFilterProvider()
@@ -707,7 +720,6 @@ public class StripLayoutHelperManager
         if (mDesktopWindowStateManager != null) {
             mDesktopWindowStateManager.removeObserver(this);
         }
-        mStripVisibilityStateSupplier.removeObserver(mStripVisibilityStateObserver);
     }
 
     /** Mark whether tab strip is hidden by a height transition. */
@@ -878,7 +890,7 @@ public class StripLayoutHelperManager
                 mWidth - mRightPadding,
                 Math.min(getHeight(), visibleViewportOffsetY));
         // Avoid handling motion events when invisible strip state persists after a size change.
-        if (getStripVisibilityState() == StripVisibilityState.VISIBLE) {
+        if (mEventFilter != null && getStripVisibilityState() == StripVisibilityState.VISIBLE) {
             mEventFilter.setEventArea(mStripFilterArea);
         }
     }

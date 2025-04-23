@@ -75,6 +75,7 @@ class FakeDeviceManagementService : public DeviceManagementService {
   JobAction CaptureRequest(
       enterprise_management::DeviceManagementRequest* request);
   JobAction CaptureTimeout(base::TimeDelta* timeout);
+  JobAction CaptureSendsCookies(bool* sends_cookies);
 
   // Convenience actions to post a task which will call |SetResponseForTesting|
   // on the job.

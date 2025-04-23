@@ -311,8 +311,6 @@ crashpad_static_library("util") {
         "posix/drop_privileges.cc",
         "posix/drop_privileges.h",
         "posix/process_info.h",
-        "posix/spawn_subprocess.cc",
-        "posix/spawn_subprocess.h",
 
         # These map signals to and from strings. While Fuchsia defines some of
         # the common SIGx defines, signals are never raised on Fuchsia, so
@@ -320,6 +318,13 @@ crashpad_static_library("util") {
         "posix/symbolic_constants_posix.cc",
         "posix/symbolic_constants_posix.h",
       ]
+
+      if (crashpad_is_android || crashpad_is_linux || crashpad_is_mac) {
+        sources += [
+          "posix/spawn_subprocess.cc",
+          "posix/spawn_subprocess.h",
+        ]
+      }
     }
   }
 

@@ -21,12 +21,16 @@ namespace visited_url_ranking {
 using ::testing::ElementsAre;
 
 constexpr char kTestUrl[] = "https://www.example1.com/";
+constexpr char kFooUrl1[] = "https://www.foo.com/1";
+constexpr char kFooUrl2[] = "https://www.foo.com/2";
+constexpr char kFooUrl3[] = "https://www.foo.com/3";
 
 URLVisitAggregate CreateVisitForTab(base::TimeDelta time_since_active,
-                                    int tab_id) {
+                                    int tab_id,
+                                    GURL url = GURL(kTestUrl)) {
   base::Time timestamp = base::Time::Now() - time_since_active;
-  auto candidate = CreateSampleURLVisitAggregate(GURL(kTestUrl), 1, timestamp,
-                                                 {Fetcher::kTabModel});
+  auto candidate =
+      CreateSampleURLVisitAggregate(url, 1, timestamp, {Fetcher::kTabModel});
   auto tab_data_it = candidate.fetcher_data_map.find(Fetcher::kTabModel);
   auto* tab_data =
       std::get_if<URLVisitAggregate::TabData>(&tab_data_it->second);
@@ -116,11 +120,19 @@ TEST_F(GroupingHeuristicsTest, HeuristicsEmptyAggregates) {
 }
 
 TEST_F(GroupingHeuristicsTest, RecentlyOpenedHeuristic) {
+  // Reset heuristics so that Recently Opened heuristics is enabled.
+  features_.InitAndEnableFeatureWithParameters(
+      features::kGroupSuggestionService,
+      {{"group_suggestion_enable_recently_opened", "true"}});
+  heuristics_.reset();
+  heuristics_ = std::make_unique<GroupingHeuristics>();
+
   std::vector<URLVisitAggregate> candidates = {};
 
   // 4 tabs are below 600 seconds time limit to be considered recent and should
   // be grouped.
   candidates.push_back(CreateVisitForTab(base::Seconds(60), 111));
+  GetTabMetadata(candidates[0]).is_currently_active = true;
   candidates.push_back(CreateVisitForTab(base::Seconds(250), 112));
   candidates.push_back(CreateVisitForTab(base::Seconds(350), 113));
   candidates.push_back(CreateVisitForTab(base::Seconds(800), 114));
@@ -146,6 +158,7 @@ TEST_F(GroupingHeuristicsTest, RecentlyOpenedHeuristicNoSuggestions) {
 
   // All 3 tabs are over the time limit.
   candidates.push_back(CreateVisitForTab(base::Seconds(700), 111));
+  GetTabMetadata(candidates[0]).is_currently_active = true;
   candidates.push_back(CreateVisitForTab(base::Seconds(800), 112));
   candidates.push_back(CreateVisitForTab(base::Seconds(1000), 113));
 
@@ -162,6 +175,7 @@ TEST_F(GroupingHeuristicsTest, SwitchedBetweenHeuristic) {
   // First 2 tabs have more than 2 foreground switches.
   candidates.push_back(CreateVisitForTab(base::Seconds(60), 111));
   SetRecentFgCount(candidates[0], 2);
+  GetTabMetadata(candidates[0]).is_currently_active = true;
   candidates.push_back(CreateVisitForTab(base::Seconds(250), 112));
   SetRecentFgCount(candidates[1], 3);
   candidates.push_back(CreateVisitForTab(base::Seconds(350), 113));
@@ -179,7 +193,7 @@ TEST_F(GroupingHeuristicsTest, SwitchedBetweenHeuristic) {
   EXPECT_EQ(GroupSuggestion::SuggestionReason::kSwitchedBetween,
             suggestion.suggestion_reason);
   EXPECT_THAT(suggestion.tab_ids, ElementsAre(111, 112));
-  EXPECT_EQ("Group tabs in bottom tab strip?", suggestion.promo_header);
+  EXPECT_EQ("Group recently selected tabs?", suggestion.promo_header);
   EXPECT_EQ("Switch between tabs easily with tab strip at the bottom.",
             suggestion.promo_contents);
   EXPECT_EQ(u"today", suggestion.suggested_name);
@@ -190,6 +204,7 @@ TEST_F(GroupingHeuristicsTest, SwitchedBetweenHeuristicNoSuggestions) {
 
   candidates.push_back(CreateVisitForTab(base::Seconds(700), 111));
   SetRecentFgCount(candidates[0], 1);
+  GetTabMetadata(candidates[0]).is_currently_active = true;
   candidates.push_back(CreateVisitForTab(base::Seconds(800), 112));
 
   std::optional<GroupSuggestions> suggestions =
@@ -204,6 +219,7 @@ TEST_F(GroupingHeuristicsTest, SimilarSourceHeuristic_AutoOpenNotIncluded) {
   // All tabs have the same parent tab ID, but one is not opened by user.
 
   candidates.push_back(CreateVisitForTab(base::Seconds(60), 111));
+  GetTabMetadata(candidates[0]).is_currently_active = true;
   GetTabMetadata(candidates[0]).parent_tab_id = 123;
 
   candidates.push_back(CreateVisitForTab(base::Seconds(250), 112));
@@ -214,7 +230,7 @@ TEST_F(GroupingHeuristicsTest, SimilarSourceHeuristic_AutoOpenNotIncluded) {
   candidates.push_back(CreateVisitForTab(base::Seconds(350), 113));
   GetTabMetadata(candidates[2]).parent_tab_id = 123;
 
-  candidates.push_back(CreateVisitForTab(base::Seconds(800), 114));
+  candidates.push_back(CreateVisitForTab(base::Seconds(500), 114));
   GetTabMetadata(candidates[3]).parent_tab_id = 123;
 
   std::optional<GroupSuggestions> suggestions = GetSuggestionsFor(
@@ -235,12 +251,16 @@ TEST_F(GroupingHeuristicsTest,
   // 3 tabs have same parent tab ID, but the current tab does not.
   candidates.push_back(CreateVisitForTab(base::Seconds(60), 111));
   GetTabMetadata(candidates[0]).parent_tab_id = 456;
+  GetTabMetadata(candidates[0]).is_currently_active = true;
   candidates.push_back(CreateVisitForTab(base::Seconds(250), 112));
   GetTabMetadata(candidates[1]).parent_tab_id = 123;
+  GetTabMetadata(candidates[0]).is_currently_active = false;
   candidates.push_back(CreateVisitForTab(base::Seconds(350), 113));
   GetTabMetadata(candidates[2]).parent_tab_id = 123;
-  candidates.push_back(CreateVisitForTab(base::Seconds(800), 114));
+  GetTabMetadata(candidates[0]).is_currently_active = false;
+  candidates.push_back(CreateVisitForTab(base::Seconds(500), 114));
   GetTabMetadata(candidates[3]).parent_tab_id = 123;
+  GetTabMetadata(candidates[0]).is_currently_active = false;
 
   std::optional<GroupSuggestions> suggestions = GetSuggestionsFor(
       std::move(candidates), GroupSuggestion::SuggestionReason::kSimilarSource);
@@ -253,16 +273,17 @@ TEST_F(GroupingHeuristicsTest, SimilarSourceHeuristic_SameParentTabID) {
 
   // 4 tabs but one has different parent tab ID, so 3 are grouped:
   candidates.push_back(CreateVisitForTab(base::Seconds(60), 111));
+  GetTabMetadata(candidates[0]).is_currently_active = true;
   GetTabMetadata(candidates[0]).parent_tab_id = 123;
 
   candidates.push_back(CreateVisitForTab(base::Seconds(350), 112));
   GetTabMetadata(candidates[1]).parent_tab_id = 123;
 
-  candidates.push_back(CreateVisitForTab(base::Seconds(800), 113));
+  candidates.push_back(CreateVisitForTab(base::Seconds(500), 113));
   // Not used since parent id is different.
   GetTabMetadata(candidates[2]).parent_tab_id = 456;
 
-  candidates.push_back(CreateVisitForTab(base::Seconds(800), 114));
+  candidates.push_back(CreateVisitForTab(base::Seconds(500), 114));
   GetTabMetadata(candidates[3]).parent_tab_id = 123;
 
   std::optional<GroupSuggestions> suggestions = GetSuggestionsFor(
@@ -276,43 +297,73 @@ TEST_F(GroupingHeuristicsTest, SimilarSourceHeuristic_SameParentTabID) {
   EXPECT_THAT(suggestion.tab_ids, ElementsAre(111, 112, 114));
 }
 
-TEST_F(GroupingHeuristicsTest,
-       SimilarSourceHeuristic_LaunchType_InvalidParentID) {
+TEST_F(GroupingHeuristicsTest, SimilarSourceHeuristic_RecentTabs) {
   std::vector<URLVisitAggregate> candidates = {};
 
-  // 3 tabs have the same launch type and the same parent ID, however
-  // their parent tab ID is -1 which indicates that there is no parent
-  // tab, so no clustering.
-
+  // 4 tabs with the same parent tab ID but one is not recent, so 3 are grouped:
   candidates.push_back(CreateVisitForTab(base::Seconds(60), 111));
-  GetTabMetadata(candidates[0]).tab_android_launch_type = 4;
-  GetTabMetadata(candidates[0]).parent_tab_id = -1;
+  GetTabMetadata(candidates[0]).is_currently_active = true;
+  GetTabMetadata(candidates[0]).parent_tab_id = 123;
 
-  candidates.push_back(CreateVisitForTab(base::Seconds(250), 112));
-  GetTabMetadata(candidates[1]).tab_android_launch_type = 4;
-  GetTabMetadata(candidates[1]).parent_tab_id = -1;
+  candidates.push_back(CreateVisitForTab(base::Seconds(350), 112));
+  GetTabMetadata(candidates[1]).parent_tab_id = 123;
 
-  candidates.push_back(CreateVisitForTab(base::Seconds(350), 113));
-  GetTabMetadata(candidates[2]).tab_android_launch_type = 4;
-  GetTabMetadata(candidates[2]).parent_tab_id = -1;
+  // Not used since tab is not recent.
+  candidates.push_back(CreateVisitForTab(base::Seconds(800), 113));
+  GetTabMetadata(candidates[2]).parent_tab_id = 123;
+
+  candidates.push_back(CreateVisitForTab(base::Seconds(500), 114));
+  GetTabMetadata(candidates[3]).parent_tab_id = 123;
 
   std::optional<GroupSuggestions> suggestions = GetSuggestionsFor(
       std::move(candidates), GroupSuggestion::SuggestionReason::kSimilarSource);
 
-  ASSERT_FALSE(suggestions.has_value());
+  ASSERT_TRUE(suggestions.has_value());
+  ASSERT_EQ(1u, suggestions->suggestions.size());
+  const auto& suggestion = suggestions->suggestions[0];
+  EXPECT_EQ(GroupSuggestion::SuggestionReason::kSimilarSource,
+            suggestion.suggestion_reason);
+  EXPECT_THAT(suggestion.tab_ids, ElementsAre(111, 112, 114));
 }
 
-TEST_F(GroupingHeuristicsTest, DisableRecentlyOpen) {
-  // Reset heuristics so that Recently Open heuristics is not enabled.
+TEST_F(GroupingHeuristicsTest, SameOrigin) {
+  // Reset heuristics so that Same Origin heuristics is enabled.
   features_.InitAndEnableFeatureWithParameters(
       features::kGroupSuggestionService,
-      {{"group_suggestion_enable_recently_opened", "false"}});
+      {{"group_suggestion_enable_same_origin", "true"}});
   heuristics_.reset();
   heuristics_ = std::make_unique<GroupingHeuristics>();
 
   std::vector<URLVisitAggregate> candidates = {};
 
+  // 4 tabs with 3 of them from the same origin.
+  candidates.push_back(
+      CreateVisitForTab(base::Seconds(60), 111, GURL(kFooUrl1)));
+  GetTabMetadata(candidates[0]).is_currently_active = true;
+  candidates.push_back(
+      CreateVisitForTab(base::Seconds(250), 112, GURL(kFooUrl2)));
+  candidates.push_back(
+      CreateVisitForTab(base::Seconds(200), 113, GURL(kFooUrl3)));
+  candidates.push_back(
+      CreateVisitForTab(base::Seconds(200), 114, GURL(kTestUrl)));
+
+  std::optional<GroupSuggestions> suggestions = GetSuggestionsFor(
+      std::move(candidates), GroupSuggestion::SuggestionReason::kSameOrigin);
+
+  ASSERT_TRUE(suggestions.has_value());
+  ASSERT_EQ(1u, suggestions->suggestions.size());
+  const auto& suggestion = suggestions->suggestions[0];
+  EXPECT_EQ(GroupSuggestion::SuggestionReason::kSameOrigin,
+            suggestion.suggestion_reason);
+  EXPECT_THAT(suggestion.tab_ids, ElementsAre(111, 112, 113));
+}
+
+TEST_F(GroupingHeuristicsTest, DisableRecentlyOpen) {
+  // Recently Open heuristics is disabled by default.
+  std::vector<URLVisitAggregate> candidates = {};
+
   candidates.push_back(CreateVisitForTab(base::Seconds(60), 111));
+  GetTabMetadata(candidates[0]).is_currently_active = true;
   candidates.push_back(CreateVisitForTab(base::Seconds(250), 112));
   candidates.push_back(CreateVisitForTab(base::Seconds(350), 113));
   candidates.push_back(CreateVisitForTab(base::Seconds(30), 114));
@@ -336,6 +387,7 @@ TEST_F(GroupingHeuristicsTest, DisableSwitchBetween) {
 
   candidates.push_back(CreateVisitForTab(base::Seconds(60), 111));
   SetRecentFgCount(candidates[0], 2);
+  GetTabMetadata(candidates[0]).is_currently_active = true;
   candidates.push_back(CreateVisitForTab(base::Seconds(250), 112));
   SetRecentFgCount(candidates[1], 3);
 
@@ -357,15 +409,35 @@ TEST_F(GroupingHeuristicsTest, DisableSimilarSource) {
   std::vector<URLVisitAggregate> candidates = {};
 
   candidates.push_back(CreateVisitForTab(base::Seconds(60), 111));
-  GetTabMetadata(candidates[0]).launch_package_name = "package1";
+  GetTabMetadata(candidates[0]).parent_tab_id = 123;
+  GetTabMetadata(candidates[0]).is_currently_active = true;
   candidates.push_back(CreateVisitForTab(base::Seconds(250), 112));
-  GetTabMetadata(candidates[1]).launch_package_name = "package1";
+  GetTabMetadata(candidates[1]).parent_tab_id = 123;
   candidates.push_back(CreateVisitForTab(base::Seconds(200), 113));
-  GetTabMetadata(candidates[2]).launch_package_name = "package1";
+  GetTabMetadata(candidates[2]).parent_tab_id = 123;
   candidates.push_back(CreateVisitForTab(base::Seconds(200), 114));
+  GetTabMetadata(candidates[3]).parent_tab_id = 123;
 
   std::optional<GroupSuggestions> suggestions = GetSuggestionsFor(
       std::move(candidates), GroupSuggestion::SuggestionReason::kSimilarSource);
+
+  ASSERT_FALSE(suggestions.has_value());
+}
+
+TEST_F(GroupingHeuristicsTest, DisableSameOrigin) {
+  // Same Origin heuristics is disabled by default.
+  std::vector<URLVisitAggregate> candidates = {};
+
+  candidates.push_back(
+      CreateVisitForTab(base::Seconds(60), 111, GURL(kFooUrl1)));
+  GetTabMetadata(candidates[0]).is_currently_active = true;
+  candidates.push_back(
+      CreateVisitForTab(base::Seconds(250), 112, GURL(kFooUrl2)));
+  candidates.push_back(
+      CreateVisitForTab(base::Seconds(200), 113, GURL(kFooUrl3)));
+
+  std::optional<GroupSuggestions> suggestions = GetSuggestionsFor(
+      std::move(candidates), GroupSuggestion::SuggestionReason::kSameOrigin);
 
   ASSERT_FALSE(suggestions.has_value());
 }
@@ -380,6 +452,7 @@ TEST_F(GroupingHeuristicsTest, SimilarSourceHeuristic_SameParentTabCluster) {
   // (111, 112, 113, 114) will be clustered.
   candidates.push_back(CreateVisitForTab(base::Seconds(60), 111));
   GetTabMetadata(candidates[0]).parent_tab_id = 112;
+  GetTabMetadata(candidates[0]).is_currently_active = true;
 
   candidates.push_back(CreateVisitForTab(base::Seconds(250), 112));
   GetTabMetadata(candidates[1]).parent_tab_id = 114;
@@ -387,14 +460,14 @@ TEST_F(GroupingHeuristicsTest, SimilarSourceHeuristic_SameParentTabCluster) {
   candidates.push_back(CreateVisitForTab(base::Seconds(350), 113));
   GetTabMetadata(candidates[2]).parent_tab_id = 114;
 
-  candidates.push_back(CreateVisitForTab(base::Seconds(800), 114));
+  candidates.push_back(CreateVisitForTab(base::Seconds(500), 114));
   GetTabMetadata(candidates[3]).parent_tab_id = 114;
 
   // Not clustered since parent ID is different.
   candidates.push_back(CreateVisitForTab(base::Seconds(350), 115));
   GetTabMetadata(candidates[4]).parent_tab_id = 116;
 
-  candidates.push_back(CreateVisitForTab(base::Seconds(800), 116));
+  candidates.push_back(CreateVisitForTab(base::Seconds(500), 116));
   GetTabMetadata(candidates[4]).parent_tab_id = 116;
 
   std::optional<GroupSuggestions> suggestions = GetSuggestionsFor(

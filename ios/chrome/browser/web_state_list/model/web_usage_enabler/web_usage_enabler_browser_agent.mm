@@ -7,8 +7,6 @@
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent_observer.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 
-BROWSER_USER_DATA_KEY_IMPL(WebUsageEnablerBrowserAgent)
-
 WebUsageEnablerBrowserAgent::WebUsageEnablerBrowserAgent(Browser* browser)
     : browser_(browser) {
   browser_observation_.Observe(browser_.get());

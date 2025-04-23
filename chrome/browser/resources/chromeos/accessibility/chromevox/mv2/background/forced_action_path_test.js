@@ -8,7 +8,7 @@ GEN_INCLUDE(['../testing/chromevox_e2e_test_base.js']);
 /**
  * Test fixture for ForcedActionPath.
  */
-ChromeVoxForcedActionPathTest = class extends ChromeVoxE2ETest {
+ChromeVoxMV2ForcedActionPathTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
@@ -37,7 +37,7 @@ ChromeVoxForcedActionPathTest = class extends ChromeVoxE2ETest {
   }
 };
 
-AX_TEST_F('ChromeVoxForcedActionPathTest', 'UnitTest', async function() {
+AX_TEST_F('ChromeVoxMV2ForcedActionPathTest', 'UnitTest', async function() {
   await this.runWithLoadedTree(this.simpleDoc);
   let finished = false;
   const actions = [
@@ -69,35 +69,36 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'UnitTest', async function() {
   assertEquals(3, monitor.actionIndex_);
 });
 
-AX_TEST_F('ChromeVoxForcedActionPathTest', 'ActionUnitTest', async function() {
-  await this.runWithLoadedTree(this.simpleDoc);
-  const keySequenceActionOne = ForcedActionPath.createAction(
-      {type: 'key_sequence', value: {keys: {keyCode: [KeyCode.SPACE]}}});
-  const keySequenceActionTwo = ForcedActionPath.createAction({
-    type: 'key_sequence',
-    value: new KeySequence(TestUtils.createMockKeyEvent(KeyCode.A)),
-  });
-  const gestureActionOne = ForcedActionPath.createAction(
-      {type: 'gesture', value: Gesture.SWIPE_UP1});
-  const gestureActionTwo = ForcedActionPath.createAction(
-      {type: 'gesture', value: Gesture.SWIPE_UP2});
+AX_TEST_F(
+    'ChromeVoxMV2ForcedActionPathTest', 'ActionUnitTest', async function() {
+      await this.runWithLoadedTree(this.simpleDoc);
+      const keySequenceActionOne = ForcedActionPath.createAction(
+          {type: 'key_sequence', value: {keys: {keyCode: [KeyCode.SPACE]}}});
+      const keySequenceActionTwo = ForcedActionPath.createAction({
+        type: 'key_sequence',
+        value: new KeySequence(TestUtils.createMockKeyEvent(KeyCode.A)),
+      });
+      const gestureActionOne = ForcedActionPath.createAction(
+          {type: 'gesture', value: Gesture.SWIPE_UP1});
+      const gestureActionTwo = ForcedActionPath.createAction(
+          {type: 'gesture', value: Gesture.SWIPE_UP2});
 
-  assertFalse(keySequenceActionOne.equals(keySequenceActionTwo));
-  assertFalse(keySequenceActionOne.equals(gestureActionOne));
-  assertFalse(keySequenceActionOne.equals(gestureActionTwo));
-  assertFalse(keySequenceActionTwo.equals(gestureActionOne));
-  assertFalse(keySequenceActionTwo.equals(gestureActionTwo));
-  assertFalse(gestureActionOne.equals(gestureActionTwo));
+      assertFalse(keySequenceActionOne.equals(keySequenceActionTwo));
+      assertFalse(keySequenceActionOne.equals(gestureActionOne));
+      assertFalse(keySequenceActionOne.equals(gestureActionTwo));
+      assertFalse(keySequenceActionTwo.equals(gestureActionOne));
+      assertFalse(keySequenceActionTwo.equals(gestureActionTwo));
+      assertFalse(gestureActionOne.equals(gestureActionTwo));
 
-  const cloneKeySequenceActionOne = ForcedActionPath.createAction(
-      {type: 'key_sequence', value: {keys: {keyCode: [KeyCode.SPACE]}}});
-  const cloneGestureActionOne = ForcedActionPath.createAction(
-      {type: 'gesture', value: Gesture.SWIPE_UP1});
-  assertTrue(keySequenceActionOne.equals(cloneKeySequenceActionOne));
-  assertTrue(gestureActionOne.equals(cloneGestureActionOne));
-});
+      const cloneKeySequenceActionOne = ForcedActionPath.createAction(
+          {type: 'key_sequence', value: {keys: {keyCode: [KeyCode.SPACE]}}});
+      const cloneGestureActionOne = ForcedActionPath.createAction(
+          {type: 'gesture', value: Gesture.SWIPE_UP1});
+      assertTrue(keySequenceActionOne.equals(cloneKeySequenceActionOne));
+      assertTrue(gestureActionOne.equals(cloneGestureActionOne));
+    });
 
-AX_TEST_F('ChromeVoxForcedActionPathTest', 'Errors', async function() {
+AX_TEST_F('ChromeVoxMV2ForcedActionPathTest', 'Errors', async function() {
   await this.runWithLoadedTree(this.simpleDoc);
   let monitor;
   let caught = false;
@@ -176,7 +177,7 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'Errors', async function() {
   assertTrue(caught);
 });
 
-AX_TEST_F('ChromeVoxForcedActionPathTest', 'Output', async function() {
+AX_TEST_F('ChromeVoxMV2ForcedActionPathTest', 'Output', async function() {
   const mockFeedback = this.createMockFeedback();
   const rootNode = await this.runWithLoadedTree(this.simpleDoc);
   let monitor;
@@ -217,7 +218,7 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'Output', async function() {
 
 // Tests that we can match a single key. Serves as an integration test
 // since we don't directly call a ForcedActionPath function.
-AX_TEST_F('ChromeVoxForcedActionPathTest', 'SingleKey', async function() {
+AX_TEST_F('ChromeVoxMV2ForcedActionPathTest', 'SingleKey', async function() {
   await this.runWithLoadedTree(this.simpleDoc);
   const keyboardHandler = BackgroundKeyboardHandler.instance;
   let finished = false;
@@ -248,7 +249,7 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'SingleKey', async function() {
 
 // Tests that we can match a key sequence. Serves as an integration test
 // since we don't directly call a ForcedActionPath function.
-AX_TEST_F('ChromeVoxForcedActionPathTest', 'MultipleKeys', async function() {
+AX_TEST_F('ChromeVoxMV2ForcedActionPathTest', 'MultipleKeys', async function() {
   await this.runWithLoadedTree(this.simpleDoc);
   const keyboardHandler = BackgroundKeyboardHandler.instance;
   let finished = false;
@@ -301,7 +302,8 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'MultipleKeys', async function() {
 
 // Tests that we can match multiple key sequences.
 AX_TEST_F(
-    'ChromeVoxForcedActionPathTest', 'MultipleKeySequences', async function() {
+    'ChromeVoxMV2ForcedActionPathTest', 'MultipleKeySequences',
+    async function() {
       const mockFeedback = this.createMockFeedback();
       await this.runWithLoadedTree(this.simpleDoc);
       let finished = false;
@@ -352,105 +354,107 @@ AX_TEST_F(
 // Tests that we can provide expectations for ChromeVox commands and block
 // command execution until the desired command is performed. Serves as an
 // integration test since we don't directly call a ForcedActionPath function.
-AX_TEST_F('ChromeVoxForcedActionPathTest', 'BlockCommands', async function() {
-  const mockFeedback = this.createMockFeedback();
-  await this.runWithLoadedTree(this.paragraphDoc);
-  const keyboardHandler = BackgroundKeyboardHandler.instance;
-  let finished = false;
-  const actions = [
-    {
-      type: 'key_sequence',
-      value: {'cvoxModifier': true, 'keys': {'keyCode': [KeyCode.RIGHT]}},
-    },
-    {
-      type: 'key_sequence',
-      value: {'cvoxModifier': true, 'keys': {'keyCode': [KeyCode.LEFT]}},
-    },
-  ];
-  const onFinished = () => finished = true;
+AX_TEST_F(
+    'ChromeVoxMV2ForcedActionPathTest', 'BlockCommands', async function() {
+      const mockFeedback = this.createMockFeedback();
+      await this.runWithLoadedTree(this.paragraphDoc);
+      const keyboardHandler = BackgroundKeyboardHandler.instance;
+      let finished = false;
+      const actions = [
+        {
+          type: 'key_sequence',
+          value: {'cvoxModifier': true, 'keys': {'keyCode': [KeyCode.RIGHT]}},
+        },
+        {
+          type: 'key_sequence',
+          value: {'cvoxModifier': true, 'keys': {'keyCode': [KeyCode.LEFT]}},
+        },
+      ];
+      const onFinished = () => finished = true;
 
-  const nextObject =
-      TestUtils.createMockKeyEvent(KeyCode.RIGHT, {searchKeyHeld: true});
-  const nextLine =
-      TestUtils.createMockKeyEvent(KeyCode.DOWN, {searchKeyHeld: true});
-  const previousObject =
-      TestUtils.createMockKeyEvent(KeyCode.LEFT, {searchKeyHeld: true});
-  const previousLine =
-      TestUtils.createMockKeyEvent(KeyCode.UP, {searchKeyHeld: true});
+      const nextObject =
+          TestUtils.createMockKeyEvent(KeyCode.RIGHT, {searchKeyHeld: true});
+      const nextLine =
+          TestUtils.createMockKeyEvent(KeyCode.DOWN, {searchKeyHeld: true});
+      const previousObject =
+          TestUtils.createMockKeyEvent(KeyCode.LEFT, {searchKeyHeld: true});
+      const previousLine =
+          TestUtils.createMockKeyEvent(KeyCode.UP, {searchKeyHeld: true});
 
-  ForcedActionPath.listenFor(actions).then(onFinished);
-  mockFeedback.expectSpeech('Start')
-      .call(() => {
-        assertEquals('Start', this.getRangeStart().name);
-      })
-      .call(() => {
-        // Calling nextLine doesn't move ChromeVox because ForcedActionPath
-        // expects the nextObject command.
-        keyboardHandler.onKeyDown(nextLine);
-        keyboardHandler.onKeyUp(nextLine);
-        assertEquals('Start', this.getRangeStart().name);
-      })
-      .call(() => {
-        keyboardHandler.onKeyDown(nextObject);
-        keyboardHandler.onKeyUp(nextObject);
-        assertEquals('End', this.getRangeStart().name);
-      })
-      .expectSpeech('End')
-      .call(() => {
-        // Calling previousLine doesn't move ChromeVox because
-        // ForcedActionPath expects the previousObject command.
-        keyboardHandler.onKeyDown(previousLine);
-        keyboardHandler.onKeyUp(previousLine);
-        assertEquals('End', this.getRangeStart().name);
-      })
-      .call(() => {
-        keyboardHandler.onKeyDown(previousObject);
-        keyboardHandler.onKeyUp(previousObject);
-        assertEquals('Start', this.getRangeStart().name);
-      })
-      .expectSpeech('Start');
-  await mockFeedback.replay();
-});
+      ForcedActionPath.listenFor(actions).then(onFinished);
+      mockFeedback.expectSpeech('Start')
+          .call(() => {
+            assertEquals('Start', this.getRangeStart().name);
+          })
+          .call(() => {
+            // Calling nextLine doesn't move ChromeVox because ForcedActionPath
+            // expects the nextObject command.
+            keyboardHandler.onKeyDown(nextLine);
+            keyboardHandler.onKeyUp(nextLine);
+            assertEquals('Start', this.getRangeStart().name);
+          })
+          .call(() => {
+            keyboardHandler.onKeyDown(nextObject);
+            keyboardHandler.onKeyUp(nextObject);
+            assertEquals('End', this.getRangeStart().name);
+          })
+          .expectSpeech('End')
+          .call(() => {
+            // Calling previousLine doesn't move ChromeVox because
+            // ForcedActionPath expects the previousObject command.
+            keyboardHandler.onKeyDown(previousLine);
+            keyboardHandler.onKeyUp(previousLine);
+            assertEquals('End', this.getRangeStart().name);
+          })
+          .call(() => {
+            keyboardHandler.onKeyDown(previousObject);
+            keyboardHandler.onKeyUp(previousObject);
+            assertEquals('Start', this.getRangeStart().name);
+          })
+          .expectSpeech('Start');
+      await mockFeedback.replay();
+    });
 
 // Tests that a user can close ChromeVox (Ctrl + Alt + Z) when ForcedActionPath
 // is active.
-AX_TEST_F('ChromeVoxForcedActionPathTest', 'CloseChromeVox', async function() {
-  await this.runWithLoadedTree(this.simpleDoc);
-  const keyboardHandler = BackgroundKeyboardHandler.instance;
-  let finished = false;
-  let closed = false;
-  const actions =
-      [{type: 'key_sequence', value: {'keys': {'keyCode': [KeyCode.A]}}}];
-  const onFinished = () => finished = true;
-  ForcedActionPath.listenFor(actions).then(onFinished);
-  // Swap in the below function so we don't actually close ChromeVox.
-  ForcedActionPath.closeChromeVox_ = () => {
-    closed = true;
-  };
+AX_TEST_F(
+    'ChromeVoxMV2ForcedActionPathTest', 'CloseChromeVox', async function() {
+      await this.runWithLoadedTree(this.simpleDoc);
+      const keyboardHandler = BackgroundKeyboardHandler.instance;
+      let finished = false;
+      let closed = false;
+      const actions =
+          [{type: 'key_sequence', value: {'keys': {'keyCode': [KeyCode.A]}}}];
+      const onFinished = () => finished = true;
+      ForcedActionPath.listenFor(actions).then(onFinished);
+      // Swap in the below function so we don't actually close ChromeVox.
+      ForcedActionPath.closeChromeVox_ = () => {
+        closed = true;
+      };
 
-  assertFalse(closed);
-  assertFalse(finished);
-  keyboardHandler.onKeyDown(
-      TestUtils.createMockKeyEvent(KeyCode.CONTROL, {ctrlKey: true}));
-  assertFalse(closed);
-  assertFalse(finished);
-  keyboardHandler.onKeyDown(
-      TestUtils.createMockKeyEvent(KeyCode.ALT, {ctrlKey: true, altKey: true}));
-  assertFalse(closed);
-  assertFalse(finished);
-  keyboardHandler.onKeyDown(
-      TestUtils.createMockKeyEvent(KeyCode.Z, {ctrlKey: true, altKey: true}));
-  assertTrue(closed);
-  // |finished| remains false since we didn't press the expected key
-  // sequence.
-  assertFalse(finished);
-});
+      assertFalse(closed);
+      assertFalse(finished);
+      keyboardHandler.onKeyDown(
+          TestUtils.createMockKeyEvent(KeyCode.CONTROL, {ctrlKey: true}));
+      assertFalse(closed);
+      assertFalse(finished);
+      keyboardHandler.onKeyDown(TestUtils.createMockKeyEvent(
+          KeyCode.ALT, {ctrlKey: true, altKey: true}));
+      assertFalse(closed);
+      assertFalse(finished);
+      keyboardHandler.onKeyDown(TestUtils.createMockKeyEvent(
+          KeyCode.Z, {ctrlKey: true, altKey: true}));
+      assertTrue(closed);
+      // |finished| remains false since we didn't press the expected key
+      // sequence.
+      assertFalse(finished);
+    });
 
 // Tests that we can stop propagation of an action, even if it is matched.
 // In this test, we stop propagation of the Control key to avoid executing the
 // stopSpeech command.
 AX_TEST_F(
-    'ChromeVoxForcedActionPathTest', 'StopPropagation', async function() {
+    'ChromeVoxMV2ForcedActionPathTest', 'StopPropagation', async function() {
       await this.runWithLoadedTree(this.simpleDoc);
       const keyboardHandler = BackgroundKeyboardHandler.instance;
       let finished = false;
@@ -476,7 +480,7 @@ AX_TEST_F(
     });
 
 // Tests that we can match a gesture when it's performed.
-AX_TEST_F('ChromeVoxForcedActionPathTest', 'Gestures', async function() {
+AX_TEST_F('ChromeVoxMV2ForcedActionPathTest', 'Gestures', async function() {
   await this.runWithLoadedTree(this.simpleDoc);
   let finished = false;
   const actions = [{type: 'gesture', value: Gesture.SWIPE_RIGHT1}];
@@ -503,7 +507,7 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'Gestures', async function() {
 
 // Tests that we can perform a command when an action has been matched.
 AX_TEST_F(
-    'ChromeVoxForcedActionPathTest', 'AfterActionCommand', async function() {
+    'ChromeVoxMV2ForcedActionPathTest', 'AfterActionCommand', async function() {
       const mockFeedback = this.createMockFeedback();
       await this.runWithLoadedTree(this.simpleDoc);
       const actions = [{

@@ -58,7 +58,6 @@ export class ViewerPdfSidenavElement extends CrLitElement {
       bookmarks: {type: Array},
       clockwiseRotations: {type: Number},
       docLength: {type: Number},
-      pdfCr23Enabled: {type: Boolean},
       strings: {type: Object},
       selectedTab_: {type: Number},
       tabs_: {type: Array},
@@ -70,7 +69,6 @@ export class ViewerPdfSidenavElement extends CrLitElement {
   accessor bookmarks: Bookmark[] = [];
   accessor clockwiseRotations: number = 0;
   accessor docLength: number = 0;
-  accessor pdfCr23Enabled: boolean = false;
   accessor strings: {[key: string]: string}|undefined;
   private accessor selectedTab_: number = 0;
   protected accessor tabs_: Tab[] = [];
@@ -84,15 +82,11 @@ export class ViewerPdfSidenavElement extends CrLitElement {
     }
   }
 
-  private iconsetName_(): string {
-    return this.pdfCr23Enabled ? 'pdf-cr23' : 'pdf';
-  }
-
   private computeTabs_(): Tab[] {
     const tabs = [
       {
         id: TabId.THUMBNAIL,
-        icon: this.iconsetName_() + ':thumbnails',
+        icon: 'pdf:thumbnails',
         title: this.strings ? loadTimeData.getString('tooltipThumbnails') : '',
       },
     ];
@@ -100,7 +94,7 @@ export class ViewerPdfSidenavElement extends CrLitElement {
     if (this.bookmarks.length > 0) {
       tabs.push({
         id: TabId.OUTLINE,
-        icon: this.iconsetName_() + ':doc-outline',
+        icon: 'pdf:doc-outline',
         title: this.strings ? loadTimeData.getString('tooltipDocumentOutline') :
                               '',
       });
@@ -109,7 +103,7 @@ export class ViewerPdfSidenavElement extends CrLitElement {
     if (this.attachments.length > 0) {
       tabs.push({
         id: TabId.ATTACHMENT,
-        icon: this.iconsetName_() + ':attach-file',
+        icon: 'pdf:attach-file',
         title: this.strings ? loadTimeData.getString('tooltipAttachments') : '',
       });
     }

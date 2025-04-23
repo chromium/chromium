@@ -1353,7 +1353,6 @@ crbug.com/1493194 external/wpt/css/cssom/insert-dir-rule-in-iframe-crash.html [ 
 
 # Slow Private Network Access tests
 crbug.com/626703 [ Mac12 ] external/wpt/fetch/private-network-access/mixed-content-fetch.tentative.https.window.html [ Slow ]
-crbug.com/1484710 virtual/fenced-frame-mparch/external/wpt/fetch/private-network-access/fenced-frame-subresource-fetch.tentative.https.window.html?include=from-public [ Slow ]
 
 # Gardener 2023-10-26
 crbug.com/1496281 [ Debug Linux ] external/wpt/html/semantics/embedded-content/bfcache/embedded-js.html [ Slow ]
@@ -1454,3 +1453,5 @@ crbug.com/332938942 [ Mac ] editing/selection/mouse/mouse-selection-sideways-lr.
 crbug.com/332938942 [ Mac ] editing/selection/mouse/mouse-selection-sideways-rl.html [ Slow ]
 crbug.com/332938942 [ Mac ] editing/selection/mouse/mouse-selection-vertical-lr.html [ Slow ]
 crbug.com/332938942 [ Mac ] editing/selection/mouse/mouse-selection-vertical-rl.html [ Slow ]
+
+crbug.com/407795725 http/tests/inspector-protocol/tracing/frame-postmessage.js [ Slow ]

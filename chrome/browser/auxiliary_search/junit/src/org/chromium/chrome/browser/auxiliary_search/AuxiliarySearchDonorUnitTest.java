@@ -195,6 +195,7 @@ public class AuxiliarySearchDonorUnitTest {
                 id,
                 documentTtl,
                 /* score= */ 0,
+                AuxiliarySearchDonor.SOURCE_TAB,
                 counts,
                 currentTime);
         assertEquals(1, counts[type]);
@@ -231,6 +232,7 @@ public class AuxiliarySearchDonorUnitTest {
                 id,
                 documentTtl,
                 /* score= */ 0,
+                AuxiliarySearchDonor.SOURCE_TAB,
                 counts,
                 currentTime);
         assertEquals(1, counts[type]);
@@ -299,6 +301,7 @@ public class AuxiliarySearchDonorUnitTest {
                 id,
                 tabDocumentTtl,
                 /* score= */ 0,
+                AuxiliarySearchDonor.SOURCE_TAB,
                 counts,
                 currentTime);
         testBuildDocumentImplAndVerify(
@@ -310,6 +313,7 @@ public class AuxiliarySearchDonorUnitTest {
                 visitId,
                 historyDocumentTtl,
                 /* score= */ 0,
+                AuxiliarySearchDonor.SOURCE_CUSTOM_TAB,
                 counts,
                 currentTime);
         testBuildDocumentImplAndVerify(
@@ -321,6 +325,7 @@ public class AuxiliarySearchDonorUnitTest {
                 visitId3,
                 historyDocumentTtl,
                 AuxiliarySearchTestHelper.SCORE_1,
+                AuxiliarySearchDonor.SOURCE_TOP_SITE,
                 counts,
                 currentTime);
         assertEquals(1, counts[type]);
@@ -337,6 +342,7 @@ public class AuxiliarySearchDonorUnitTest {
             int id,
             long documentTtlMs,
             int score,
+            String source,
             int[] counts,
             long currentTime) {
         Bitmap bitmap = Bitmap.createBitmap(100, 100, Config.RGB_565);
@@ -350,6 +356,7 @@ public class AuxiliarySearchDonorUnitTest {
         assertEquals(lastAccessTimeStamp, webPage.getCreationTimestampMillis());
         assertEquals(documentTtlMs, webPage.getDocumentTtlMillis());
         assertEquals(score, webPage.getDocumentScore());
+        assertEquals(source, webPage.getSource());
         assertTrue(
                 Arrays.equals(
                         AuxiliarySearchUtils.bitmapToBytes(bitmap),

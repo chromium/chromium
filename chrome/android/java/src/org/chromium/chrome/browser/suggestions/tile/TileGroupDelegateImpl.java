@@ -17,11 +17,15 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSites;
+import org.chromium.chrome.browser.suggestions.tile.tile_edit_dialog.CustomTileEditCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
+import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
@@ -35,7 +39,7 @@ import java.util.Set;
  * the {@link TileGroup} should not know about.
  */
 public class TileGroupDelegateImpl implements TileGroup.Delegate {
-    private static final Set<Integer> MVTilesClickForUserAction =
+    private static final Set<Integer> sMvtClickForUserAction =
             new HashSet<>(
                     Arrays.asList(
                             WindowOpenDisposition.CURRENT_TAB,
@@ -46,6 +50,8 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
     private final SnackbarManager mSnackbarManager;
     private final SuggestionsNavigationDelegate mNavigationDelegate;
     private final MostVisitedSites mMostVisitedSites;
+
+    private @Nullable ModalDialogManager mModalDialogManager;
 
     private boolean mIsDestroyed;
     private SnackbarController mTileRemovedSnackbarController;
@@ -160,6 +166,17 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
     }
 
     @Override
+    public CustomTileEditCoordinator createCustomTileEditCoordinator(@Nullable Tile originalTile) {
+        assert !mIsDestroyed;
+
+        if (mModalDialogManager == null) {
+            mModalDialogManager =
+                    new ModalDialogManager(new AppModalPresenter(mContext), ModalDialogType.APP);
+        }
+        return CustomTileEditCoordinator.make(mModalDialogManager, mContext, originalTile);
+    }
+
+    @Override
     public void destroy() {
         assert !mIsDestroyed;
         mIsDestroyed = true;
@@ -212,7 +229,7 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
         if (windowDisposition != WindowOpenDisposition.NEW_WINDOW) {
             BrowserUiUtils.recordModuleClickHistogram(ModuleTypeOnStartAndNtp.MOST_VISITED_TILES);
         }
-        if (MVTilesClickForUserAction.contains(windowDisposition)) {
+        if (sMvtClickForUserAction.contains(windowDisposition)) {
             RecordUserAction.record("Suggestions.Tile.Tapped.NewTabPage");
         }
     }

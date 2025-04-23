@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.download.home.list.holder;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
 
 import android.graphics.Matrix;
@@ -14,6 +15,8 @@ import android.widget.ImageView;
 
 import androidx.annotation.CallSuper;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.home.filter.Filters;
 import org.chromium.chrome.browser.download.home.list.ListItem;
 import org.chromium.chrome.browser.download.home.list.ListProperties;
@@ -34,6 +37,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Helper that supports all typical actions for OfflineItems. */
+@NullMarked
 class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuDelegate {
     /** The {@link View} that visually represents the selected state of this list item. */
     protected final SelectionView mSelectionView;
@@ -44,9 +48,9 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuDelega
     private final ListMenuButton mMore;
 
     // Persisted 'More' button properties.
-    private Runnable mShareCallback;
-    private Runnable mDeleteCallback;
-    private Runnable mRenameCallback;
+    private @Nullable Runnable mShareCallback;
+    private @Nullable Runnable mDeleteCallback;
+    private @Nullable Runnable mRenameCallback;
 
     // flag to hide rename list menu option for offline pages
     private boolean mCanRename;
@@ -94,17 +98,18 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuDelega
                 mThumbnail.setImageResizer(
                         new BitmapResizer(mThumbnail, Filters.fromOfflineItem(offlineItem)));
                 mThumbnail.setAsyncImageDrawable(
-                        (consumer, width, height) -> {
-                            return properties
-                                    .get(ListProperties.PROVIDER_VISUALS)
-                                    .getVisuals(
-                                            offlineItem,
-                                            width,
-                                            height,
-                                            (id, visuals) -> {
-                                                consumer.onResult(onThumbnailRetrieved(visuals));
-                                            });
-                        },
+                        (consumer, width, height) ->
+                                properties
+                                        .get(ListProperties.PROVIDER_VISUALS)
+                                        .getVisuals(
+                                                offlineItem,
+                                                width,
+                                                height,
+                                                (id, visuals) ->
+                                                        consumer.onResult(
+                                                                assumeNonNull(
+                                                                        onThumbnailRetrieved(
+                                                                                visuals)))),
                         offlineItem.id);
             }
         }
@@ -190,7 +195,7 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuDelega
      * @param visuals The {@link OfflineItemVisuals} from the async request.
      * @return A {@link Drawable} to use for the thumbnail.
      */
-    protected Drawable onThumbnailRetrieved(OfflineItemVisuals visuals) {
+    protected @Nullable Drawable onThumbnailRetrieved(@Nullable OfflineItemVisuals visuals) {
         if (visuals == null || visuals.icon == null) return null;
         return new BitmapDrawable(itemView.getResources(), visuals.icon);
     }
@@ -221,7 +226,7 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuDelega
         }
 
         @Override
-        public void maybeResizeImage(Drawable drawable) {
+        public void maybeResizeImage(@Nullable Drawable drawable) {
             Matrix matrix = null;
 
             if (drawable instanceof BitmapDrawable) {
@@ -233,7 +238,7 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuDelega
                     matrix == null ? ImageView.ScaleType.CENTER_CROP : ImageView.ScaleType.MATRIX);
         }
 
-        private Matrix upscaleBitmapIfNecessary(BitmapDrawable drawable) {
+        private @Nullable Matrix upscaleBitmapIfNecessary(BitmapDrawable drawable) {
             if (drawable == null) return null;
 
             int width = drawable.getBitmap().getWidth();

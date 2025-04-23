@@ -34,6 +34,8 @@ chromium-metrics-reviews@google.com.
   <variant name="ComposeProactiveNudge"
       summary="For Compose feature; shown on autofill popup."/>
   <variant name="Glic" summary="Glic toggle on settings page."/>
+  <variant name="GlicAppMenuNewBadge"
+      summary="Glic menu item in the three dot menu."/>
   <variant name="GlicKeyboardShortcutNewBadge"
       summary="Glic keyboard shortcut input on settings page."/>
   <variant name="LensOverlay"
@@ -46,6 +48,8 @@ chromium-metrics-reviews@google.com.
       summary="For plus address creation; shown in the autofill popup."/>
   <variant name="PlusAddressFallbackFromContextMenu"
       summary="Plus address manual fallback entry point in the context menu."/>
+  <variant name="SideBySide"
+      summary="Promotion for Split View in the tab context menu"/>
   <variant name="TabOrganization"
       summary="Promotion for Organize Tabs in the app menu."/>
   <variant name="TabstripDeclutter"
@@ -99,6 +103,7 @@ chromium-metrics-reviews@google.com.
   <variant name="SearchBoxSuggestions"
       summary="the module for Search Box Suggestions"/>
   <variant name="SidePanelPinning" summary="the module for Side Panel Pinning"/>
+  <variant name="TabGroupsSync" summary="the module for Tab Groups that Sync"/>
   <variant name="TabOrganizer" summary="the module for Tab Organizer"/>
   <variant name="TestDefaultModule"
       summary="the default module used for testing only"/>
@@ -250,7 +255,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.MessageShown.TimeInQueue" units="ms"
-    expires_after="2025-06-29">
+    expires_after="2025-10-12">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>

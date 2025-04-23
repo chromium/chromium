@@ -1249,8 +1249,9 @@ TEST_P(JSONReaderTest, ReadingJsonIntoDictAndList) {
   }
 }
 
-static void CanParseAnythingWithoutCrashing(const std::string& input) {
-  JSONReader::Read(input, JSON_PARSE_CHROMIUM_EXTENSIONS);
+static void CanParseAnythingWithoutCrashing(std::string_view input,
+                                            int options) {
+  JSONReader::Read(input, options);
 }
 
 FUZZ_TEST(JSONReaderTest, CanParseAnythingWithoutCrashing);

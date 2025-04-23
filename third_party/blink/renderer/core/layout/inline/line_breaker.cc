@@ -913,6 +913,7 @@ void LineBreaker::NextLine(LineInfo* line_info) {
   // If the line-clamp ellipsis would overflow, the entire line is replaced.
   if (line_clamp_ellipsis_width_ && !CanFitOnLine()) {
     Rewind(0, line_info);
+    line_info->SetIsLastLine(false);
   }
 
   if (!should_create_line_box) {

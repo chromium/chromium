@@ -239,6 +239,12 @@ SavedTabGroup& SavedTabGroup::SetCollaborationId(
   return *this;
 }
 
+SavedTabGroup& SavedTabGroup::SetSharedGroupStatus(
+    SharedGroupStatus shared_group_status) {
+  shared_group_status_ = shared_group_status;
+  return *this;
+}
+
 SavedTabGroup& SavedTabGroup::SetOriginatingTabGroupGuid(
     std::optional<base::Uuid> originating_tab_group_guid,
     bool use_originating_tab_group_guid) {

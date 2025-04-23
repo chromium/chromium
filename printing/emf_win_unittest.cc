@@ -92,7 +92,7 @@ TEST_F(EmfPrintingTest, Enumerate) {
 
   // Initialize it.
   PrintingContextWin context(this,
-                             PrintingContext::ProcessBehavior::kOopDisabled);
+                             PrintingContext::OutOfProcessBehavior::kDisabled);
   EXPECT_EQ(mojom::ResultCode::kSuccess,
             context.InitWithSettingsForTest(std::move(settings)));
 

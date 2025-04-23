@@ -43,6 +43,7 @@ void SpotlightSessionManager::OnSessionStarted(
 
   in_session_ = true;
   spotlight_crd_manager_->OnSessionStarted(producer.email());
+  teacher_name_ = producer.full_name();
 }
 
 void SpotlightSessionManager::OnSessionEnded(const std::string& session_id) {
@@ -51,7 +52,10 @@ void SpotlightSessionManager::OnSessionEnded(const std::string& session_id) {
   in_session_ = false;
   request_in_progress_ = false;
   spotlight_crd_manager_->OnSessionEnded();
+  teacher_name_ = "";
+  notification_handler_->StopSpotlightCountdown();
 }
+
 void SpotlightSessionManager::OnConsumerActivityUpdated(
     const std::map<std::string, ::boca::StudentStatus>& activities) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -74,18 +78,26 @@ void SpotlightSessionManager::OnConsumerActivityUpdated(
   }
 
   if (device->second.has_view_screen_config()) {
-    if (device->second.view_screen_config().view_screen_state() ==
-            ::boca::ViewScreenConfig::REQUESTED &&
-        !request_in_progress_) {
-      request_in_progress_ = true;
-      spotlight_crd_manager_->InitiateSpotlightSession(
-          base::BindOnce(&SpotlightSessionManager::OnConnectionCodeReceived,
-                         weak_ptr_factory_.GetWeakPtr()));
-    } else if (device->second.view_screen_config().view_screen_state() ==
-                   ::boca::ViewScreenConfig::INACTIVE &&
-               request_in_progress_) {
-      notification_handler_->StopSpotlightCountdown();
-      request_in_progress_ = false;
+    switch (device->second.view_screen_config().view_screen_state()) {
+      case ::boca::ViewScreenConfig::REQUESTED:
+        if (request_in_progress_) {
+          return;
+        }
+        request_in_progress_ = true;
+        spotlight_crd_manager_->InitiateSpotlightSession(
+            base::BindOnce(&SpotlightSessionManager::OnConnectionCodeReceived,
+                           weak_ptr_factory_.GetWeakPtr()));
+        break;
+      case ::boca::ViewScreenConfig::ACTIVE:
+        spotlight_crd_manager_->ShowPersistentNotification(teacher_name_);
+        break;
+      case ::boca::ViewScreenConfig::INACTIVE:
+        request_in_progress_ = false;
+        notification_handler_->StopSpotlightCountdown();
+        spotlight_crd_manager_->HidePersistentNotification();
+        break;
+      default:
+        break;
     }
   }
 }
@@ -95,15 +107,6 @@ void SpotlightSessionManager::OnConnectionCodeReceived(
   CHECK(spotlight_service_);
   notification_handler_->StartSpotlightCountdownNotification();
 
-  spotlight_service_->RegisterScreen(
-      connection_code, BocaAppClient::Get()->GetSchoolToolsServerBaseUrl(),
-      base::BindOnce(&SpotlightSessionManager::OnRegisterScreenRequestSent,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void SpotlightSessionManager::RegisterStudentScreen(
-    const std::string& connection_code) {
-  CHECK(spotlight_service_);
   spotlight_service_->RegisterScreen(
       connection_code, BocaAppClient::Get()->GetSchoolToolsServerBaseUrl(),
       base::BindOnce(&SpotlightSessionManager::OnRegisterScreenRequestSent,

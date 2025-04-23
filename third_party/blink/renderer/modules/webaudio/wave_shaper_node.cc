@@ -23,13 +23,9 @@
  * DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/modules/webaudio/wave_shaper_node.h"
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_wave_shaper_options.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
@@ -130,7 +126,7 @@ NotShared<DOMFloat32Array> WaveShaperNode::curve() const {
   unsigned size = curve->size();
 
   NotShared<DOMFloat32Array> result(DOMFloat32Array::Create(size));
-  memcpy(result->Data(), curve->data(), sizeof(float) * size);
+  UNSAFE_TODO(memcpy(result->Data(), curve->data(), sizeof(float) * size));
 
   return result;
 }

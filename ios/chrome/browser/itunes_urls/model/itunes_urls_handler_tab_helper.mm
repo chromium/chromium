@@ -141,5 +141,3 @@ void ITunesUrlsHandlerTabHelper::HandleITunesUrl(const GURL& url) {
         showAppStoreWithParameters:ExtractITunesProductParameters(url)];
   }
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(ITunesUrlsHandlerTabHelper)

@@ -4,7 +4,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -17,6 +16,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -81,8 +81,7 @@ class UploadExtensionToAccountDialogBrowserTest
                     .Build();
 
     ASSERT_TRUE(extension);
-    ExtensionSystem::Get(browser()->profile())
-        ->extension_service()
+    ExtensionRegistrar::Get(browser()->profile())
         ->AddExtension(extension.get());
 
     // Sign in AFTER the extension has been added so there is an active account

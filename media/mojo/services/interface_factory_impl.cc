@@ -255,15 +255,6 @@ void InterfaceFactoryImpl::CreateCastRenderer(
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-void InterfaceFactoryImpl::CreateMediaPlayerRenderer(
-    mojo::PendingRemote<mojom::MediaPlayerRendererClientExtension>
-        client_extension_ptr,
-    mojo::PendingReceiver<mojom::Renderer> receiver,
-    mojo::PendingReceiver<mojom::MediaPlayerRendererExtension>
-        renderer_extension_receiver) {
-  NOTREACHED();
-}
-
 void InterfaceFactoryImpl::CreateFlingingRenderer(
     const std::string& audio_device_id,
     mojo::PendingRemote<mojom::FlingingRendererClientExtension>

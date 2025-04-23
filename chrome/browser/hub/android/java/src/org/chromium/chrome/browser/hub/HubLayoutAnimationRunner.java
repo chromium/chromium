@@ -5,7 +5,8 @@
 package org.chromium.chrome.browser.hub;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
+
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -36,6 +37,7 @@ import java.lang.annotation.RetentionPolicy;
  * This is the listening and execution portion of the {@link AnimatorSet} API, with additional
  * functionality required for {@link HubLayout} interaction.
  */
+@NullMarked
 public interface HubLayoutAnimationRunner {
     @IntDef({
         AnimationState.INITIALIZING,
@@ -86,5 +88,5 @@ public interface HubLayoutAnimationRunner {
      *
      * @param animationListener The {@link HubLayoutAnimationListener} to add.
      */
-    void addListener(@NonNull HubLayoutAnimationListener animationListener);
+    void addListener(HubLayoutAnimationListener animationListener);
 }

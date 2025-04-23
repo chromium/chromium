@@ -25,5 +25,5 @@ found in the LICENSE file.
       android:layout_gravity="end"
       android:layout_margin="@dimen/page_zoom_site_settings_delete_button_padding"
       android:text="@string/site_settings_clear_all_zoom_levels_button_text"
-      app:verticalInset="@dimen/section_tab_selected_bg_elevation" />
+      app:verticalInset="@dimen/site_settings_zoom_button_vertical_inset" />
 </merge>

@@ -32,10 +32,12 @@ using testing::SaveArg;
 
 namespace {
 
+static constexpr int kSampleRate = 3000;
+
 AudioDecoderConfig CreateAudioConfig(AudioCodec codec) {
   return AudioDecoderConfig(codec, kSampleFormatPlanarF32,
-                            CHANNEL_LAYOUT_STEREO, 1000, EmptyExtraData(),
-                            EncryptionScheme::kUnencrypted);
+                            CHANNEL_LAYOUT_STEREO, kSampleRate,
+                            EmptyExtraData(), EncryptionScheme::kUnencrypted);
 }
 
 VideoDecoderConfig CreateVideoConfig(VideoCodec codec, int w, int h) {

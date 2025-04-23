@@ -42,24 +42,10 @@ VideoPlayerTestEnvironment* VideoPlayerTestEnvironment::Create(
     return nullptr;
   }
 
-  // TODO(b/182008564) Add checks to make sure no features are duplicated, and
-  // there is no intersection between the enabled and disabled set.
-  std::vector<base::test::FeatureRef> combined_enabled_features(
-      enabled_features);
-  std::vector<base::test::FeatureRef> combined_disabled_features(
-      disabled_features);
-#if BUILDFLAG(USE_VAAPI)
-  // Disable this feature so that the decoder test can test a
-  // resolution which is denied for the sake of performance. See
-  // b/171041334.
-  combined_disabled_features.push_back(
-      media::kVaapiEnforceVideoMinMaxResolution);
-#endif
-
   return new VideoPlayerTestEnvironment(
       std::move(video), validator_type, implementation, linear_output,
-      output_folder, frame_output_config, combined_enabled_features,
-      combined_disabled_features, need_task_environment);
+      output_folder, frame_output_config, enabled_features, disabled_features,
+      need_task_environment);
 }
 
 VideoPlayerTestEnvironment::VideoPlayerTestEnvironment(

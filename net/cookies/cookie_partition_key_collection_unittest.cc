@@ -58,14 +58,13 @@ TEST(CookiePartitionKeyCollectionTest, ContainsAll) {
   EXPECT_TRUE(key_collection.ContainsAllKeys());
 }
 
-TEST(CookiePartitionKeyCollectionTest, FromOptional) {
-  CookiePartitionKeyCollection key_collection =
-      CookiePartitionKeyCollection::FromOptional(std::nullopt);
+TEST(CookiePartitionKeyCollectionTest, OptionalConstructor) {
+  CookiePartitionKeyCollection key_collection(std::nullopt);
   EXPECT_TRUE(key_collection.IsEmpty());
   EXPECT_FALSE(key_collection.ContainsAllKeys());
 
-  key_collection = CookiePartitionKeyCollection::FromOptional(
-      std::make_optional<CookiePartitionKey>(
+  key_collection =
+      CookiePartitionKeyCollection(std::make_optional<CookiePartitionKey>(
           CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com"))));
   EXPECT_FALSE(key_collection.IsEmpty());
   EXPECT_FALSE(key_collection.ContainsAllKeys());

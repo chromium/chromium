@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/extension_registrar.h"
 
 namespace extensions {
 
@@ -32,8 +32,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
                              ui::PAGE_TRANSITION_TYPED, false),
       /*navigation_handle_callback=*/{});
   // Without waiting for the tab to finish, unload the extension.
-  extension_service()->UnloadExtension(extension->id(),
-                                       UnloadedExtensionReason::TERMINATE);
+  extension_registrar()->RemoveExtension(extension->id(),
+                                         UnloadedExtensionReason::TERMINATE);
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   // Wait for the web contents to stop loading.

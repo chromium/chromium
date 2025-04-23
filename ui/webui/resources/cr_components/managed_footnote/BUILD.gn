@@ -9,7 +9,7 @@ assert((!is_android && !is_ios) || is_desktop_android)
 build_webui("build") {
   grd_prefix = "cr_components_managed_footnote"
 
-  non_web_component_files = [
+  ts_files = [
     "managed_footnote.html.ts",
     "managed_footnote.ts",
   ]

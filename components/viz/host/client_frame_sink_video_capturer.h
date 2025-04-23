@@ -88,6 +88,8 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
                                 const gfx::Size& max_size,
                                 bool use_fixed_aspect_ratio);
   void SetAutoThrottlingEnabled(bool enabled);
+  void SetAnimationFpsLockIn(bool enabled,
+                             float majority_damaged_pixel_min_ratio);
   void ChangeTarget(const std::optional<VideoCaptureTarget>& target);
   void ChangeTarget(const std::optional<VideoCaptureTarget>& target,
                     uint32_t sub_capture_target_version);
@@ -158,6 +160,8 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
   std::optional<ResolutionConstraints> resolution_constraints_;
   std::optional<bool> auto_throttling_enabled_;
   std::optional<VideoCaptureTarget> target_;
+  std::optional<bool> animated_content_sampler_enabled_;
+  std::optional<float> majority_damaged_pixel_min_ratio_;
   uint32_t sub_capture_target_version_ = 0;
   // Overlays are owned by the callers of CreateOverlay().
   std::vector<raw_ptr<Overlay, VectorExperimental>> overlays_;

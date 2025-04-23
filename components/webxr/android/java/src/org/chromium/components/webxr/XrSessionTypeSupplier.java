@@ -5,9 +5,13 @@
 package org.chromium.components.webxr;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.webxr.XrSessionCoordinator.SessionType;
 
-/** A thin wrapper/subclass of ObservableSupplierImpl to add some type safety for the Xr SessionType. */
+/**
+ * A thin wrapper/subclass of ObservableSupplierImpl to add some type safety for the Xr SessionType.
+ */
+@NullMarked
 public class XrSessionTypeSupplier extends ObservableSupplierImpl<Integer> {
     public XrSessionTypeSupplier(@SessionType int initialValue) {
         set(initialValue);

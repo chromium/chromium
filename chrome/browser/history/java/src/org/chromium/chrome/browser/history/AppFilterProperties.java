@@ -7,12 +7,14 @@ package org.chromium.chrome.browser.history;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Property model properties for app filter sheet UI. */
+@NullMarked
 class AppFilterProperties {
     public static final ReadableObjectPropertyKey<String> ID = new ReadableObjectPropertyKey();
     public static final ReadableObjectPropertyKey<Drawable> ICON = new ReadableObjectPropertyKey();

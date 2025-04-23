@@ -4,10 +4,14 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.text.TextUtils;
 
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncControllerImpl.TabCreationDelegate;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
@@ -33,6 +37,7 @@ import java.util.Set;
  * Helper class to create, modify, overwrite local tab groups in response to sync updates and
  * startup.
  */
+@NullMarked
 public class LocalTabGroupMutationHelper {
     private static final String TAG = "TG.LocalMutation";
     private final TabGroupModelFilter mTabGroupModelFilter;
@@ -68,11 +73,13 @@ public class LocalTabGroupMutationHelper {
         int position = getTabModel().getCount();
         List<Tab> tabs = new ArrayList<>();
         for (SavedTabGroupTab savedTab : tabGroup.savedTabs) {
+            String title = savedTab.title == null ? "" : savedTab.title;
             Tab newTab =
                     mTabCreationDelegate.createBackgroundTab(
-                            savedTab.url, savedTab.title, /* parent= */ null, position++);
+                            assertNonNull(savedTab.url), title, /* parent= */ null, position++);
+            assert newTab != null;
             tabs.add(newTab);
-            tabIdMappings.put(savedTab.syncId, newTab.getId());
+            tabIdMappings.put(assertNonNull(savedTab.syncId), newTab.getId());
             RecordUserAction.record("TabGroups.Sync.CreatedNewTab");
         }
 
@@ -94,11 +101,14 @@ public class LocalTabGroupMutationHelper {
                 TabGroupSyncUtils.getLocalTabGroupId(mTabGroupModelFilter, rootId);
         assert localTabGroupId != null : "Local tab group ID is null after creating a group!";
         mTabGroupSyncService.updateLocalTabGroupMapping(
-                tabGroup.syncId, localTabGroupId, openingSource);
+                assertNonNull(tabGroup.syncId), localTabGroupId, openingSource);
         for (String syncTabId : tabIdMappings.keySet()) {
             mTabGroupSyncService.updateLocalTabId(
                     localTabGroupId, syncTabId, tabIdMappings.get(syncTabId));
         }
+
+        // On any tab group open through the sync service, reset the archival timestamp and status.
+        mTabGroupSyncService.updateArchivalStatus(tabGroup.syncId, /* archivalStatus= */ false);
     }
 
     /**
@@ -174,14 +184,19 @@ public class LocalTabGroupMutationHelper {
             }
 
             // If the tab exists, navigate to the desired URL. Otherwise, create a new tab.
+            String title = savedTab.title == null ? "" : savedTab.title;
             if (localTab != null) {
-                maybeNavigateToUrl(localTab, savedTab.url, savedTab.title);
+                maybeNavigateToUrl(localTab, assertNonNull(savedTab.url), title);
             } else {
                 localTab =
                         createTabAndAddToGroup(
-                                savedTab.url, savedTab.title, desiredTabModelIndex, parent, rootId);
+                                assertNonNull(savedTab.url),
+                                title,
+                                desiredTabModelIndex,
+                                parent,
+                                rootId);
                 mTabGroupSyncService.updateLocalTabId(
-                        tabGroup.localId, savedTab.syncId, localTab.getId());
+                        tabGroup.localId, assertNonNull(savedTab.syncId), localTab.getId());
             }
 
             // Move tab if required.
@@ -206,12 +221,13 @@ public class LocalTabGroupMutationHelper {
         Tab newTab =
                 mTabCreationDelegate.createBackgroundTab(
                         url, title, parentTab, desiredTabModelIndex);
+        assert newTab != null;
         RecordUserAction.record("TabGroups.Sync.CreatedNewTab");
 
         List<Tab> tabsToMerge = new ArrayList<>();
         tabsToMerge.add(newTab);
         mTabGroupModelFilter.mergeListOfTabsToGroup(
-                tabsToMerge, getTabModel().getTabById(rootId), /* notify= */ false);
+                tabsToMerge, getTabModel().getTabByIdChecked(rootId), /* notify= */ false);
         return newTab;
     }
 
@@ -293,7 +309,7 @@ public class LocalTabGroupMutationHelper {
         mTabCreationDelegate.navigateToUrl(tab, syncUrl, title, isCurrentTab);
     }
 
-    private Tab getLocalTabInGroup(Integer tabId, int rootId) {
+    private @Nullable Tab getLocalTabInGroup(@Nullable Integer tabId, int rootId) {
         Tab tab = tabId == null ? null : getTabModel().getTabById(tabId);
         // Check if the tab is still attached to the same root ID. If not, it belongs to another
         // group. Don't touch it and rather create a new one in subsequent step.

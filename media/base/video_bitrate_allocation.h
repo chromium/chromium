@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
+#include <array>
 #include <string>
 
 #include "media/base/bitrate.h"
@@ -80,7 +82,8 @@ class MEDIA_EXPORT VideoBitrateAllocation {
   // A bitrate representing a cached sum of the elements of |bitrates_|, for
   // performance.
   Bitrate sum_bitrate_;
-  uint32_t bitrates_[kMaxSpatialLayers][kMaxTemporalLayers] = {};
+  std::array<std::array<uint32_t, kMaxTemporalLayers>, kMaxSpatialLayers>
+      bitrates_ = {};
 };
 
 }  // namespace media

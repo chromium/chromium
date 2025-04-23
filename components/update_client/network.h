@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -27,7 +28,7 @@ class NetworkFetcher {
   // If the request does not have an X-Retry-After header, implementations
   // should pass -1 for |xheader_retry_after_sec|.
   using PostRequestCompleteCallback =
-      base::OnceCallback<void(std::unique_ptr<std::string> response_body,
+      base::OnceCallback<void(std::optional<std::string> response_body,
                               int net_error,
                               const std::string& header_etag,
                               const std::string& header_x_cup_server_proof,

@@ -49,7 +49,7 @@ class TabCollectionStorageTest : public ::testing::Test {
                                            GetTabStripModel());
       tabs::TabModel* tab_model_ptr = tab_model.get();
 
-      tabs::TabModel* inserted_tab_model_ptr =
+      tabs::TabInterface* inserted_tab_model_ptr =
           GetTabCollectionStorage()->AddTab(
               std::move(tab_model),
               GetTabCollectionStorage()->GetChildrenCount());
@@ -59,7 +59,7 @@ class TabCollectionStorageTest : public ::testing::Test {
     }
   }
 
-  void SetTabID(tabs::TabModel* tab_model, int id) {
+  void SetTabID(tabs::TabInterface* tab_model, int id) {
     std::string identifier =
         "T" + base::NumberToString(reinterpret_cast<uintptr_t>(tab_model));
     storage_children_to_id_map_[identifier] = "T" + base::NumberToString(id);
@@ -76,8 +76,8 @@ class TabCollectionStorageTest : public ::testing::Test {
     int collection_i = 0;
     const auto& children = GetTabCollectionStorage()->GetChildren();
     for (const auto& child : children) {
-      if (std::holds_alternative<std::unique_ptr<tabs::TabModel>>(child)) {
-        SetTabID(std::get<std::unique_ptr<tabs::TabModel>>(child).get(),
+      if (std::holds_alternative<std::unique_ptr<tabs::TabInterface>>(child)) {
+        SetTabID(std::get<std::unique_ptr<tabs::TabInterface>>(child).get(),
                  start + tab_i);
         tab_i += 1;
       } else if (std::holds_alternative<std::unique_ptr<tabs::TabCollection>>(
@@ -95,11 +95,11 @@ class TabCollectionStorageTest : public ::testing::Test {
     const auto& children = GetTabCollectionStorage()->GetChildren();
     for (const auto& child : children) {
       std::string identifier;
-      if (std::holds_alternative<std::unique_ptr<tabs::TabModel>>(child)) {
-        tabs::TabModel* tab_model =
-            std::get<std::unique_ptr<tabs::TabModel>>(child).get();
+      if (std::holds_alternative<std::unique_ptr<tabs::TabInterface>>(child)) {
+        tabs::TabInterface* tab =
+            std::get<std::unique_ptr<tabs::TabInterface>>(child).get();
         identifier =
-            "T" + base::NumberToString(reinterpret_cast<uintptr_t>(tab_model));
+            "T" + base::NumberToString(reinterpret_cast<uintptr_t>(tab));
       } else if (std::holds_alternative<std::unique_ptr<tabs::TabCollection>>(
                      child)) {
         tabs::TabCollection* collection =
@@ -175,10 +175,10 @@ TEST_F(TabCollectionStorageTest, RemoveTabOperation) {
   EXPECT_EQ(collection_storage->GetChildrenCount(), 5ul);
   ResetStorageChildrenIDs(0);
 
-  auto removed_tab_model = collection_storage->RemoveTab(tab_model_one_ptr);
+  auto removed_tab = collection_storage->RemoveTab(tab_model_one_ptr);
 
   EXPECT_EQ(collection_storage->GetChildrenCount(), 4ul);
-  EXPECT_EQ(removed_tab_model.get(), tab_model_one_ptr);
+  EXPECT_EQ(removed_tab.get(), tab_model_one_ptr);
   // `tab_model_one_ptr` was removed from index 3.
   EXPECT_EQ(StorageCollectionChildrenString(),
             (std::vector<std::string>{"T0", "T1", "T2", "T4"}));
@@ -253,13 +253,13 @@ TEST_F(TabCollectionStorageTest, DISABLED_InvalidArgumentsTabOperations) {
 
   EXPECT_DEATH_IF_SUPPORTED(
       {
-        std::unique_ptr<tabs::TabModel> tab_model =
+        std::unique_ptr<tabs::TabInterface> tab =
             collection_storage->RemoveTab(tab_model_one.get());
       },
       "");
   EXPECT_DEATH_IF_SUPPORTED(
       {
-        std::unique_ptr<tabs::TabModel> tab_model =
+        std::unique_ptr<tabs::TabInterface> tab =
             collection_storage->RemoveTab(nullptr);
       },
       "");

@@ -7,6 +7,7 @@ package org.chromium.components.download;
 import android.net.Uri;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Helper class for providering some helper method needed by DownloadCollectionBridge. */
 @NullMarked
@@ -33,7 +34,7 @@ public class DownloadDelegate {
      * @param originalUrl String representation of the originating URL.
      * @return A valid Uri that can be accepted by DownloadManager.
      */
-    public Uri parseOriginalUrl(String originalUrl) {
+    public @Nullable Uri parseOriginalUrl(String originalUrl) {
         return Uri.parse(originalUrl);
     }
 

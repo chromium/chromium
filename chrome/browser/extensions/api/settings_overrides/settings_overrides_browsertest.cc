@@ -8,18 +8,16 @@
 
 #include "base/check_deref.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/extension_browsertest.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/extension_platform_browsertest.h"
-#else
+#if !BUILDFLAG(IS_ANDROID)
 #include "base/command_line.h"
 #include "base/containers/to_vector.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/settings_overrides/settings_overrides_api.h"
-#include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/prefs/session_startup_pref.h"  // nogncheck
@@ -47,6 +45,7 @@
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/features/feature_channel.h"
+#include "extensions/common/switches.h"
 #endif
 
 namespace extensions {
@@ -294,7 +293,7 @@ class ExtensionsDisabledWithSettingsOverrideAPI : public ExtensionBrowserTest {
     const char* test_name =
         testing::UnitTest::GetInstance()->current_test_info()->name();
     if (!base::StartsWith(test_name, "PRE_", base::CompareCase::SENSITIVE)) {
-      command_line->AppendSwitch(::switches::kDisableExtensions);
+      command_line->AppendSwitch(switches::kDisableExtensions);
     }
   }
 
@@ -345,11 +344,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsDisabledWithSettingsOverrideAPI,
 
 #else
 
-#if BUILDFLAG(IS_ANDROID)
-using ExtensionSettingsOverrideTest = ExtensionPlatformBrowserTest;
-#else
 using ExtensionSettingsOverrideTest = ExtensionBrowserTest;
-#endif
 
 IN_PROC_BROWSER_TEST_F(ExtensionSettingsOverrideTest,
                        SettingsOverridesDisallowed) {

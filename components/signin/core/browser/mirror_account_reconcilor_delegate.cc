@@ -15,7 +15,7 @@ MirrorAccountReconcilorDelegate::MirrorAccountReconcilorDelegate(
     IdentityManager* identity_manager)
     : identity_manager_(identity_manager) {
   DCHECK(identity_manager_);
-  identity_manager_->AddObserver(this);
+  identity_manager_observation_.Observe(identity_manager_);
   reconcile_enabled_ =
       identity_manager_->HasPrimaryAccount(GetConsentLevelForPrimaryAccount());
 }
@@ -83,6 +83,12 @@ void MirrorAccountReconcilorDelegate::OnPrimaryAccountChanged(
   } else {
     reconcilor()->DisableReconcile(true /* logout_all_gaia_accounts */);
   }
+}
+
+void MirrorAccountReconcilorDelegate::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  identity_manager_observation_.Reset();
+  identity_manager_ = nullptr;
 }
 
 }  // namespace signin

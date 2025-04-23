@@ -16,6 +16,7 @@ class MockPasswordManagerUtilBridge
 
   MOCK_METHOD(bool, IsInternalBackendPresent, (), (override));
   MOCK_METHOD(bool, IsPlayStoreAppPresent, (), (override));
+  MOCK_METHOD(bool, IsGooglePlayServicesUpdatable, (), (override));
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_MOCK_PASSWORD_MANAGER_UTIL_BRIDGE_H_

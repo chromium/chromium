@@ -93,7 +93,7 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
   Transaction* CreateVersionChangeTransaction(
       int64_t id,
       const std::set<int64_t>& scope,
-      std::unique_ptr<Transaction::Delegate> backing_store_transaction);
+      std::unique_ptr<BackingStore::Transaction> backing_store_transaction);
 
   // Checks if the client is in inactive state and disallow it from activation
   // if so. This is called when the client is not supposed to be inactive,
@@ -109,7 +109,7 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
 
   void AbortTransactionAndTearDownOnError(Transaction* transaction,
                                           const DatabaseError& error);
-  void CloseAndReportForceClose();
+  void CloseAndReportForceClose(const std::string& message);
 
   int scheduling_priority() const { return scheduling_priority_; }
 
@@ -223,7 +223,8 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
 
   // The return value is `callbacks_`, passing ownership.
   std::unique_ptr<DatabaseCallbacks> AbortTransactionsAndClose(
-      CloseErrorHandling error_handling);
+      CloseErrorHandling error_handling,
+      const std::string& message);
 
   // Returns the last error that occurred, if there is any.
   Status AbortAllTransactionsAndIgnoreErrors(const DatabaseError& error);

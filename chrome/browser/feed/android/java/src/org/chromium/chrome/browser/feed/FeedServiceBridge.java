@@ -102,8 +102,6 @@ public final class FeedServiceBridge {
     }
 
     /** Reports that a user action occurred which is independent of any feed stream. */
-    // TODO(crbug.com/404592444): Add the usage of this function for NTP Customization Discover
-    // Feed bottom sheet.
     public static void reportOtherUserAction(@FeedUserActionType int userAction) {
         FeedServiceBridgeJni.get().reportOtherUserAction(userAction);
     }

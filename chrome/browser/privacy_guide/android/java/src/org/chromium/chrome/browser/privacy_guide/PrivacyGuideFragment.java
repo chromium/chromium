@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.privacy_guide;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -13,8 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
@@ -26,6 +26,9 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -41,6 +44,7 @@ import java.util.List;
 /**
  * Fragment containing the Privacy Guide (a walk-through of the most important privacy settings).
  */
+@NullMarked
 public class PrivacyGuideFragment extends Fragment
         implements BackPressHandler, ProfileDependentSetting {
     /**
@@ -104,10 +108,9 @@ public class PrivacyGuideFragment extends Fragment
         mHandleBackPressChangedSupplier = new ObservableSupplierImpl<>();
     }
 
-    @Nullable
     @Override
-    public View onCreateView(
-            @NonNull LayoutInflater inflater,
+    public @Nullable View onCreateView(
+            LayoutInflater inflater,
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         modifyAppBar();
@@ -168,7 +171,7 @@ public class PrivacyGuideFragment extends Fragment
     private void modifyAppBar() {
         AppCompatActivity settingsActivity = (AppCompatActivity) getActivity();
         settingsActivity.setTitle(R.string.privacy_guide_fragment_title);
-        settingsActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        assumeNonNull(settingsActivity.getSupportActionBar()).setDisplayHomeAsUpEnabled(false);
     }
 
     private void nextStep() {
@@ -242,7 +245,7 @@ public class PrivacyGuideFragment extends Fragment
     }
 
     @Override
-    public void onAttachFragment(@NonNull Fragment childFragment) {
+    public void onAttachFragment(Fragment childFragment) {
         if (childFragment instanceof ProfileDependentSetting) {
             ((ProfileDependentSetting) childFragment).setProfile(mProfile);
         }
@@ -254,14 +257,14 @@ public class PrivacyGuideFragment extends Fragment
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();
         inflater.inflate(R.menu.privacy_guide_toolbar_menu, menu);
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.close_menu_id) {
             getActivity().finish();
             return true;
@@ -271,7 +274,7 @@ public class PrivacyGuideFragment extends Fragment
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
+    public void onSaveInstanceState(Bundle outState) {
         mPrivacyGuideMetricsDelegate.saveState(outState);
         super.onSaveInstanceState(outState);
     }
@@ -290,18 +293,20 @@ public class PrivacyGuideFragment extends Fragment
         return mViewPager.getCurrentItem() > 0;
     }
 
+    @Initializer
     public void setBottomSheetControllerSupplier(
             OneshotSupplier<BottomSheetController> bottomSheetControllerSupplier) {
         mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
     }
 
     void setPrivacyGuideMetricsDelegateForTesting(
-            @Nullable PrivacyGuideMetricsDelegate privacyGuideMetricsDelegate) {
+            PrivacyGuideMetricsDelegate privacyGuideMetricsDelegate) {
         var oldValue = mPrivacyGuideMetricsDelegate;
         mPrivacyGuideMetricsDelegate = privacyGuideMetricsDelegate;
         ResettersForTesting.register(() -> mPrivacyGuideMetricsDelegate = oldValue);
     }
 
+    @Initializer
     @Override
     public void setProfile(Profile profile) {
         mProfile = profile;

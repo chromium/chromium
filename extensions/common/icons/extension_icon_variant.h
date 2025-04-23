@@ -8,6 +8,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -48,6 +49,10 @@ class ExtensionIconVariant {
   const base::flat_map<Size, Path>& GetSizes() const { return sizes_; }
 
  private:
+  // Returns true if the given path can be used for an icon. Otherwise adds a
+  // warning and returns false.
+  bool ValidateIconPath(std::string_view path);
+
   // Helper methods that add to `this` object if the parameter is valid.
   void MaybeAddColorSchemes(const base::Value& value);
   void MaybeAddSizeEntry(

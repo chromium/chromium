@@ -12,6 +12,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "components/update_client/net/network_chromium.h"
 #include "components/update_client/network.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -63,6 +64,7 @@ class NetworkFetcherImpl : public NetworkFetcher {
 
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_network_factory_;
   SendCookiesPredicate cookie_predicate_;
+  base::WeakPtrFactory<NetworkFetcherImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace update_client

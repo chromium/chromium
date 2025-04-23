@@ -225,7 +225,9 @@ PrefService* GetPrefService() {
 // Checks if the given `language` is supported by Coral.
 bool IsLanguageSupported(std::string_view language) {
   static constexpr auto kSupportedLanguages =
-      base::MakeFixedFlatSet<std::string_view>({"en", "ja", "de", "fr"});
+      base::MakeFixedFlatSet<std::string_view>({"en", "ja", "fr", "de", "da",
+                                                "es", "fi", "it", "nl", "no",
+                                                "pt", "sv"});
   if (!base::FeatureList::IsEnabled(
           ash::features::kCoralFeatureMultiLanguage)) {
     return language == "en";

@@ -186,9 +186,9 @@ class PopupMenuMediatorTest : public PlatformTest {
  protected:
   PopupMenuMediator* CreateMediator(BOOL is_incognito) {
     mediator_ =
-        [[PopupMenuMediator alloc] initWithIsIncognito:is_incognito
-                                      readingListModel:reading_list_model_
-                                browserPolicyConnector:nil];
+        [[PopupMenuMediator alloc] initWithReadingListModel:reading_list_model_
+                                            policyConnector:nil
+                                                  incognito:is_incognito];
     return mediator_;
   }
 
@@ -196,9 +196,9 @@ class PopupMenuMediatorTest : public PlatformTest {
       BOOL is_incognito,
       BrowserPolicyConnectorIOS* browser_policy_connector) {
     mediator_ = [[PopupMenuMediator alloc]
-           initWithIsIncognito:is_incognito
-              readingListModel:reading_list_model_
-        browserPolicyConnector:browser_policy_connector];
+        initWithReadingListModel:reading_list_model_
+                 policyConnector:browser_policy_connector
+                       incognito:is_incognito];
     return mediator_;
   }
 

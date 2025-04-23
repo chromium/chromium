@@ -161,7 +161,7 @@ var testRoutines = {
   },
   createConfigConnectForBind: function() {
     chrome.vpnProvider.onPlatformMessage.addListener(function(config_name,
-                                                              message, error) {
+                                                              message) {
       if (message === 'connected') {
         chrome.test.assertEq(config_name, 'testconfig');
         chrome.vpnProvider.notifyConnectionStateChanged('connected', () => {
@@ -211,7 +211,7 @@ var testRoutines = {
                                                       onNotifyComplete);
     };
     chrome.vpnProvider.onPlatformMessage.addListener(function(config_name,
-                                                              message, error) {
+                                                              message) {
       chrome.test.assertEq(config_name, 'testconfig');
       if (expectDisconnect) {
         chrome.test.assertEq(message, 'disconnected');
@@ -254,7 +254,7 @@ var testRoutines = {
   },
   destroyConnectedConfigSetup: function() {
     chrome.vpnProvider.onPlatformMessage.addListener(function(config_name,
-                                                              message, error) {
+                                                              message) {
       chrome.test.assertEq(message, 'disconnected');
       chrome.test.succeed();
     });
@@ -276,11 +276,10 @@ var testRoutines = {
       chrome.test.succeed();
     });
     chrome.vpnProvider.onPlatformMessage.addListener(function(config_name,
-                                                              message, error) {
+                                                              message) {
       chrome.test.assertEq(i, 0);
       chrome.test.assertEq(config_name, 'testconfig');
       chrome.test.assertEq(message, 'error');
-      chrome.test.assertEq(error, 'error_message');
       i++;
     });
     chrome.vpnProvider.onUIEvent.addListener(function(event, id) {
@@ -305,7 +304,7 @@ var testRoutines = {
   platformMessage: function () {
     let i = 0;
     chrome.vpnProvider.onPlatformMessage.addListener((config_name,
-                                                      message, error) => {
+                                                      message) => {
       chrome.test.assertEq(config_name, 'testconfig');
       if (message === 'connected') {
         chrome.test.assertEq(i, 0);

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ephemeraltab;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -12,6 +14,10 @@ import org.chromium.base.Callback;
 import org.chromium.base.SysUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -42,6 +48,7 @@ import org.chromium.url.GURL;
  * Central class for ephemeral tab, responsible for spinning off other classes necessary to display
  * short-lived WebContents on bottom sheet UI.
  */
+@NullMarked
 public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
     private final Context mContext;
     private final ActivityWindowAndroid mWindow;
@@ -52,13 +59,13 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
     private final EphemeralTabMediator mMediator;
     private final boolean mCanPromoteToNewTab;
 
-    private WebContents mWebContents;
-    private ContentView mContentView;
-    private EphemeralTabSheetContent mSheetContent;
-    private EmptyBottomSheetObserver mSheetObserver;
+    private @Nullable WebContents mWebContents;
+    private @Nullable ContentView mContentView;
+    private @Nullable EphemeralTabSheetContent mSheetContent;
+    private @Nullable EmptyBottomSheetObserver mSheetObserver;
 
-    private GURL mUrl;
-    private GURL mFullPageUrl;
+    private @MonotonicNonNull GURL mUrl;
+    private @Nullable GURL mFullPageUrl;
     private int mCurrentMaxViewHeight;
     private boolean mPeeked;
     private boolean mFullyOpened;
@@ -146,7 +153,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
      * @param profile Profile associated with the ephemeral tab.
      */
     public void requestOpenSheetWithFullPageUrl(
-            GURL url, GURL fullPageUrl, String title, Profile profile) {
+            GURL url, @Nullable GURL fullPageUrl, String title, Profile profile) {
         mUrl = url;
         mFullPageUrl = fullPageUrl;
         if (mWebContents == null) {
@@ -155,7 +162,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
             mSheetObserver =
                     new EmptyBottomSheetObserver() {
                         @Override
-                        public void onSheetContentChanged(BottomSheetContent newContent) {
+                        public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {
                             if (newContent != mSheetContent) {
                                 mPeeked = false;
                                 destroyWebContents();
@@ -211,6 +218,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
         if (tracker.isInitialized()) tracker.notifyEvent(EventConstants.EPHEMERAL_TAB_USED);
     }
 
+    @EnsuresNonNull({"mWebContents", "mContentView"})
     private void createWebContents(Profile profile) {
         assert mWebContents == null;
 
@@ -248,6 +256,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
 
     private void openInNewTab() {
         if (mCanPromoteToNewTab && mUrl != null) {
+            assumeNonNull(mSheetContent);
             mBottomSheetController.hideContent(
                     mSheetContent, /* animate= */ true, StateChangeReason.PROMOTE_TAB);
             GURL url = mFullPageUrl != null ? mFullPageUrl : mUrl;
@@ -269,29 +278,24 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
         }
     }
 
-    /**
-     * @return The WebContents that this Ephemeral tab currently holds.
-     */
-    public WebContents getWebContentsForTesting() {
+    /** Returns the WebContents that this Ephemeral tab currently holds. */
+    public @Nullable WebContents getWebContentsForTesting() {
         return mWebContents;
     }
 
-    /**
-     * @return The current url that this Ephemeral tab is displaying.
-     */
-    public GURL getUrlForTesting() {
+    /** Returns the current url that this Ephemeral tab is displaying. */
+    public @Nullable GURL getUrlForTesting() {
         return mUrl;
     }
 
-    /**
-     * @return The current full page url that this Ephemeral tab is displaying.
-     */
-    public GURL getFullPageUrlForTesting() {
+    /** Returns the current full page url that this Ephemeral tab is displaying. */
+    public @Nullable GURL getFullPageUrlForTesting() {
         return mFullPageUrl;
     }
 
     /** Close the ephemeral tab. */
     public void close() {
+        assumeNonNull(mSheetContent);
         mBottomSheetController.hideContent(mSheetContent, /* animate= */ true);
     }
 

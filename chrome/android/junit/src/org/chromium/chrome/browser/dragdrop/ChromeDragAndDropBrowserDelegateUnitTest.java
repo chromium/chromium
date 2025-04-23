@@ -41,7 +41,7 @@ import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -258,7 +258,7 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
         var data = mDelegate.buildClipData(dropData);
         assertEquals(
                 "The browser clip data is not as expected",
-                dropData.buildTabClipDataText(),
+                dropData.buildTabClipDataText(mApplicationContext),
                 data.getItemAt(0).getText());
         assertNull("The clip data should not have intent set.", data.getItemAt(0).getIntent());
         if (isGroupDrag) {

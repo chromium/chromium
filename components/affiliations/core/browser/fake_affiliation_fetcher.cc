@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -21,12 +22,14 @@ void FakeAffiliationFetcher::SimulateSuccess(
   FetchResult result;
   result.data = fake_result_data;
   result.http_status_code = net::HTTP_OK;
+  result.network_status = net::OK;
   std::move(result_callback_).Run(std::move(result));
 }
 
 void FakeAffiliationFetcher::SimulateFailure() {
   FetchResult result;
   result.http_status_code = net::HTTP_INTERNAL_SERVER_ERROR;
+  result.network_status = net::ERR_HTTP_RESPONSE_CODE_FAILURE;
   std::move(result_callback_).Run(result);
 }
 
@@ -35,11 +38,17 @@ void FakeAffiliationFetcher::StartRequest(
     RequestInfo request_info,
     base::OnceCallback<void(FetchResult)> result_callback) {
   facets_ = facet_uris;
+  request_info_ = request_info;
   result_callback_ = std::move(result_callback);
 }
 const std::vector<FacetURI>&
 FakeAffiliationFetcher::GetRequestedFacetURIs() const {
   return facets_;
+}
+
+const AffiliationFetcherInterface::RequestInfo&
+FakeAffiliationFetcher::GetRequestInfo() const {
+  return request_info_;
 }
 
 FakeAffiliationFetcherFactory::

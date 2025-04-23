@@ -143,7 +143,6 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
     // Called from PrerenderHost::OnWaitingForHeadersFinished when we are
     // done blocking navigation waiting for headers.
     virtual void OnWaitingForHeadersFinished(
-        NavigationHandle& navigation_handle,
         WaitingForHeadersFinishedReason reason) {}
 
     // Called from PrerenderHost::RecordFailedFinalStatusImpl when prerendering
@@ -423,8 +422,7 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   void OnWaitingForHeadersStarted(NavigationHandle& navigation_handle,
                                   WaitingForHeadersStartedReason reason);
   // Called when we stop blocking navigation while waiting for headers.
-  void OnWaitingForHeadersFinished(NavigationHandle& navigation_handle,
-                                   WaitingForHeadersFinishedReason reason);
+  void OnWaitingForHeadersFinished(WaitingForHeadersFinishedReason reason);
 
   // Returns true iff prefetch ahead of prerender is not available for this
   // prerender and this prerender should be aborted.

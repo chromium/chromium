@@ -208,5 +208,3 @@ void BlockedPopupTabHelper::RegisterAsInfoBarManagerObserverIfNeeded(
   DCHECK(!scoped_observation_.IsObserving());
   scoped_observation_.Observe(infobar_manager);
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(BlockedPopupTabHelper)

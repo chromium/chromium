@@ -46,6 +46,12 @@ Status StubChrome::GetActivePageByWebViewId(const std::string& id,
   return Status(kOk);
 }
 
+Status StubChrome::NewHiddenTarget(const std::string& target_id,
+                                   bool w3c_compliant,
+                                   std::string* window_handle) {
+  return Status(kOk);
+}
+
 Status StubChrome::NewWindow(const std::string& target_id,
                              WindowType type,
                              bool is_background,

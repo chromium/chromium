@@ -90,10 +90,10 @@ class DesktopAndroidExtensionSystem : public ExtensionSystem {
   // KeyedService implementation:
   void Shutdown() override;
 
-  bool AddExtension(scoped_refptr<Extension> extension, std::string& error);
-  void ReloadExtension(const std::string& extension_id);
-
-  const Extension* LoadExtensionFromDirectory(const base::FilePath& file_path);
+  // DO NOT ADD MORE METHODS HERE.
+  // Calling methods directly on DesktopAndroidExtensionSystem results in code
+  // that is not portable between different OSes and is also incompatible with
+  // unit tests (which may use test versions of the ExtensionSystem).
 
   // ExtensionSystem implementation:
   void InitForRegularProfile(bool extensions_enabled) override;
@@ -120,8 +120,6 @@ class DesktopAndroidExtensionSystem : public ExtensionSystem {
   void PerformActionBasedOnOmahaAttributes(
       const std::string& extension_id,
       const base::Value::Dict& attributes) override;
-  bool FinishDelayedInstallationIfReady(const std::string& extension_id,
-                                        bool install_immediately) override;
 
  private:
   raw_ptr<content::BrowserContext> browser_context_;  // Not owned.

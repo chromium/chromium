@@ -16,7 +16,7 @@ import org.chromium.base.test.transit.ConditionStatus;
 /** Check that the card at this position in the tab switcher exists in the tab model. */
 public class CardAtPositionCondition extends Condition {
     private final int mExpectedCardIndex;
-    private final Supplier<View> mRecyclerViewElementSupplier;
+    private final Supplier<RecyclerView> mRecyclerViewElementSupplier;
     private final Supplier<View> mCardViewElementSupplier;
 
     /**
@@ -30,7 +30,7 @@ public class CardAtPositionCondition extends Condition {
      */
     public CardAtPositionCondition(
             int expectedCardIndex,
-            Supplier<View> recyclerViewSupplier,
+            Supplier<RecyclerView> recyclerViewSupplier,
             Supplier<View> cardViewSupplier) {
         super(/* isRunOnUiThread= */ false);
         mExpectedCardIndex = expectedCardIndex;
@@ -40,8 +40,7 @@ public class CardAtPositionCondition extends Condition {
 
     @Override
     protected ConditionStatus checkWithSuppliers() {
-        View view = mRecyclerViewElementSupplier.get();
-        RecyclerView recyclerView = (RecyclerView) view;
+        RecyclerView recyclerView = mRecyclerViewElementSupplier.get();
 
         LayoutManager layoutManager = recyclerView.getLayoutManager();
         if (layoutManager == null) {

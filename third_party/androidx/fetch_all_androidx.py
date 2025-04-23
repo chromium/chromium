@@ -70,6 +70,12 @@ _OVERRIDES = [
      'https://androidx.dev/snapshots/builds/13297744/artifacts/repository/'
      'androidx/compose/material3/material3-android/1.4.0-SNAPSHOT/'
      'material3-android-1.4.0-20250401.133516-1.aar'),
+    # TODO(crbug.com/408228583): Unpin once test failures are resolved on newer
+    # versions.
+    ('androidx_compose_ui_ui_android/ui-android-1.9.0-SNAPSHOT.aar',
+     'https://androidx.dev/snapshots/builds/13346628/artifacts/repository/'
+     'androidx/compose/ui/ui-android/1.9.0-SNAPSHOT/'
+     'ui-android-1.9.0-20250411.131721-1.aar'),
 ]
 
 _FILES_TO_COMMIT = [

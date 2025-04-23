@@ -19,9 +19,6 @@ import androidx.test.espresso.action.Press;
 import androidx.test.espresso.action.Swipe;
 import androidx.test.espresso.action.ViewActions;
 
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.Matcher;
-
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
@@ -48,19 +45,19 @@ import java.util.List;
  * @param <HostStationT> the type of host {@link Station} this is scoped to.
  */
 public class MessageFacility<HostStationT extends PageStation> extends Facility<HostStationT> {
-    public static final Matcher<View> MESSAGE_TITLE_MATCHER = withId(R.id.message_title);
-    public static final Matcher<View> MESSAGE_PRIMARY_BUTTON_MATCHER =
-            withId(R.id.message_primary_button);
-
-    public static final ViewSpec MESSAGE_BANNER = viewSpec(withId(R.id.message_banner));
-    public static final ViewSpec MESSAGE_ICON = viewSpec(withId(R.id.message_icon));
+    public ViewElement<View> bannerElement;
+    public ViewElement<View> iconElement;
 
     @CallSuper
     @Override
     public void declareElements(Elements.Builder elements) {
         // Unscoped because other messages can appear and fail the exit condition.
-        elements.declareView(MESSAGE_BANNER, ViewElement.unscopedOption());
-        elements.declareView(MESSAGE_ICON, ViewElement.unscopedOption());
+        bannerElement =
+                elements.declareView(
+                        viewSpec(withId(R.id.message_banner)), ViewElement.unscopedOption());
+        iconElement =
+                elements.declareView(
+                        viewSpec(withId(R.id.message_icon)), ViewElement.unscopedOption());
     }
 
     /** Dismiss the message banner. */
@@ -87,27 +84,23 @@ public class MessageFacility<HostStationT extends PageStation> extends Facility<
         } else {
             mHostStation.exitFacilitySync(
                     this,
-                    () ->
-                            MESSAGE_BANNER.perform(
-                                    ViewActions.actionWithAssertions(
-                                            new GeneralSwipeAction(
-                                                    Swipe.FAST,
-                                                    GeneralLocation.CENTER,
-                                                    GeneralLocation.TOP_CENTER,
-                                                    Press.FINGER))));
+                    bannerElement.performTrigger(
+                            ViewActions.actionWithAssertions(
+                                    new GeneralSwipeAction(
+                                            Swipe.FAST,
+                                            GeneralLocation.CENTER,
+                                            GeneralLocation.TOP_CENTER,
+                                            Press.FINGER))));
         }
     }
 
     /** Create a {@link ViewSpec} expecting the message's |title|. */
-    protected static ViewSpec titleViewSpec(String title) {
-        Matcher<View> viewMatcher = CoreMatchers.allOf(MESSAGE_TITLE_MATCHER, withText(title));
-        return viewSpec(viewMatcher);
+    protected static ViewSpec<View> titleViewSpec(String title) {
+        return viewSpec(withId(R.id.message_title), withText(title));
     }
 
     /** Create a {@link ViewSpec} expecting the message's primary button with |text|. */
-    protected static ViewSpec primaryButtonViewSpec(String text) {
-        Matcher<View> viewMatcher =
-                CoreMatchers.allOf(MESSAGE_PRIMARY_BUTTON_MATCHER, withText(text));
-        return viewSpec(viewMatcher);
+    protected static ViewSpec<View> primaryButtonViewSpec(String text) {
+        return viewSpec(withId(R.id.message_primary_button), withText(text));
     }
 }

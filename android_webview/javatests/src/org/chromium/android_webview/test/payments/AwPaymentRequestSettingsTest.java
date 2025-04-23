@@ -88,40 +88,6 @@ public class AwPaymentRequestSettingsTest extends AwParameterizedTest {
     }
 
     /**
-     * If the WEB_PAYMENTS feature is not explicitly modified and the WebView settings are not
-     * changed, then the PaymentRequest interface is undefined in JavaScript.
-     */
-    @Test
-    public void testPaymentRequestInterfaceUndefinedByDefault() throws Exception {
-        loadPage();
-
-        JSUtils.clickNodeWithUserGesture(
-                mAwContents.getWebContents(), "checkPaymentRequestDefined");
-
-        Assert.assertEquals(
-                "PaymentRequest is not defined.",
-                mWebMessageListener.waitForOnPostMessage().getAsString());
-    }
-
-    /**
-     * If the WEB_PAYMENTS feature is not explicitly modified and the WebView setting enables
-     * PaymentRequest, then then PaymentRequest interface is undefined in JavaScript, because the
-     * default state for WEB_PAYMENTS feature flag in WebView is "disabled".
-     */
-    @Test
-    public void testPaymentRequestUndefinedWithDefaultWebPaymentsFeature() throws Exception {
-        mAwContents.getSettings().setPaymentRequestEnabled(true);
-        loadPage();
-
-        JSUtils.clickNodeWithUserGesture(
-                mAwContents.getWebContents(), "checkPaymentRequestDefined");
-
-        Assert.assertEquals(
-                "PaymentRequest is not defined.",
-                mWebMessageListener.waitForOnPostMessage().getAsString());
-    }
-
-    /**
      * If the WEB_PAYMENTS feature flag is disabled, then the PaymentRequest API interface stays
      * undefined in JavaScript, even if the WebView setting for PaymentRequest API is enabled.
      */
@@ -131,25 +97,6 @@ public class AwPaymentRequestSettingsTest extends AwParameterizedTest {
             throws Exception {
         mAwContents.getSettings().setPaymentRequestEnabled(true);
         mAwContents.getSettings().setHasEnrolledInstrumentEnabled(true);
-        loadPage();
-
-        JSUtils.clickNodeWithUserGesture(
-                mAwContents.getWebContents(), "checkPaymentRequestDefined");
-
-        Assert.assertEquals(
-                "PaymentRequest is not defined.",
-                mWebMessageListener.waitForOnPostMessage().getAsString());
-    }
-
-    /**
-     * By default, when no settings are changed, PaymentRequest API interface is undefined in
-     * JavaScript.
-     */
-    @Test
-    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
-    public void testPaymentRequestJavaScriptInterfaceIsUndefinedWithDefaultSettings()
-            throws Exception {
-        // Intentionally do not enable or disable PaymentRequest API or hasEnrolledInstrument().
         loadPage();
 
         JSUtils.clickNodeWithUserGesture(

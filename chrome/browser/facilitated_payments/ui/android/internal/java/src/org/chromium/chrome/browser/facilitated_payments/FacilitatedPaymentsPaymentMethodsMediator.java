@@ -48,7 +48,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
-import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsComponent.Delegate;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.AdditionalInfoProperties;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties;
@@ -359,8 +358,8 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         Optional<Bitmap> ewalletIconOptional = Optional.empty();
         if (ewallet.getDisplayIconUrl() != null && ewallet.getDisplayIconUrl().isValid()) {
             ewalletIconOptional =
-                    PersonalDataManagerFactory.getForProfile(mProfile)
-                            .getCustomImageForAutofillSuggestionIfAvailable(
+                    AutofillImageFetcherFactory.getForProfile(mProfile)
+                            .getImageIfAvailable(
                                     ewallet.getDisplayIconUrl(),
                                     AutofillUiUtils.CardIconSpecs.create(context, ImageSize.LARGE));
         }

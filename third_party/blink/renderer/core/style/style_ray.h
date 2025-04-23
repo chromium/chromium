@@ -47,7 +47,7 @@ class StyleRay : public BasicShape {
   const BasicShapeCenterCoordinate& CenterX() const { return center_x_; }
   const BasicShapeCenterCoordinate& CenterY() const { return center_y_; }
 
-  Path GetPath(const gfx::RectF&, float) const override;
+  Path GetPath(const gfx::RectF&, float, float) const override;
 
   ShapeType GetType() const override { return kStyleRayType; }
 

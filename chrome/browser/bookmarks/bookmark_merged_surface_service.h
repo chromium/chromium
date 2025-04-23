@@ -15,12 +15,12 @@
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_observer.h"
 #include "chrome/browser/bookmarks/bookmark_parent_folder.h"
 #include "chrome/browser/bookmarks/bookmark_parent_folder_children.h"
+#include "chrome/browser/bookmarks/permanent_folder_ordering_tracker.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-class PermanentFolderOrderingTracker;
 class Browser;
 
 namespace base {
@@ -37,8 +37,10 @@ class ManagedBookmarkService;
 // It maintains the order between local and account bookmark children
 // nodes of permanent bookmark nodes.
 // Merged UI surfaces should use this class for bookmark operations.
-class BookmarkMergedSurfaceService : public KeyedService,
-                                     public bookmarks::BookmarkModelObserver {
+class BookmarkMergedSurfaceService
+    : public KeyedService,
+      public bookmarks::BookmarkModelObserver,
+      public PermanentFolderOrderingTracker::Delegate {
  public:
   // `model` must not be null and must outlive this object.
   // `managed_bookmark_service` may be null.
@@ -178,6 +180,9 @@ class BookmarkMergedSurfaceService : public KeyedService,
   void BookmarkAllUserNodesRemoved(const std::set<GURL>& removed_urls,
                                    const base::Location& location) override;
 
+  // PermanentFolderOrderingTracker::Delegate:
+  void TrackedOrderingChanged() override;
+
  private:
   class BookmarkModelLoadedObserver;
 
@@ -220,6 +225,8 @@ class BookmarkMergedSurfaceService : public KeyedService,
   // `ids_reassigned`. The full observer must be added after permanent folder
   // trackers are initialized.
   std::unique_ptr<BookmarkModelLoadedObserver> model_loaded_observer_;
+
+  std::unique_ptr<BookmarkMergedSurfaceOrderingStorage> storage_;
 
   ShowMoveStorageDialogCallback show_move_storage_dialog_for_testing_;
 

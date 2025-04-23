@@ -161,44 +161,6 @@ public class HomeModulesConfigManagerUnitTest {
     }
 
     @Test
-    public void testGetTabResumptionListItemSingleTabShownFirst() {
-        // Verifies that the return list of getModuleListShownInSettings() contains and only
-        // SINGLE_TAB.
-        registerModuleConfigCheckerWithEligibility(ModuleType.SINGLE_TAB, true);
-        List<Integer> moduleList = mHomeModulesConfigManager.getModuleListShownInSettings();
-        assertEquals(1, moduleList.size());
-        assertEquals(ModuleType.SINGLE_TAB, (int) moduleList.get(0));
-
-        // Verifies that the return list of getModuleListShownInSettings contains only one of
-        // SINGLE_TAB and TAB_RESUMPTION.
-        registerModuleConfigCheckerWithEligibility(ModuleType.TAB_RESUMPTION, true);
-        moduleList = mHomeModulesConfigManager.getModuleListShownInSettings();
-        assertEquals(1, moduleList.size());
-        assertTrue(
-                moduleList.contains(ModuleType.SINGLE_TAB)
-                        || moduleList.contains(ModuleType.TAB_RESUMPTION));
-    }
-
-    @Test
-    public void testGetTabResumptionListItemTabResumptionShownFirst() {
-        // Verifies that the return list of getModuleListShownInSettings() contains and only
-        // TAB_RESUMPTION.
-        registerModuleConfigCheckerWithEligibility(ModuleType.TAB_RESUMPTION, true);
-        List<Integer> moduleList = mHomeModulesConfigManager.getModuleListShownInSettings();
-        assertEquals(1, moduleList.size());
-        assertEquals(ModuleType.TAB_RESUMPTION, (int) moduleList.get(0));
-
-        // Verifies that the return list of getModuleListShownInSettings contains only one of
-        // SINGLE_TAB and TAB_RESUMPTION.
-        registerModuleConfigCheckerWithEligibility(ModuleType.SINGLE_TAB, true);
-        moduleList = mHomeModulesConfigManager.getModuleListShownInSettings();
-        assertEquals(1, moduleList.size());
-        assertTrue(
-                moduleList.contains(ModuleType.SINGLE_TAB)
-                        || moduleList.contains(ModuleType.TAB_RESUMPTION));
-    }
-
-    @Test
     public void testGetEducationalTipListItemShown() {
         for (@ModuleType int tipModule : getEducationalTipModuleList()) {
             registerModuleConfigCheckerWithEligibility(tipModule, true);
@@ -215,7 +177,7 @@ public class HomeModulesConfigManagerUnitTest {
     public void testGetMultipleListItemShown() {
         List<Integer> moduleTypeList =
                 Arrays.asList(
-                        ModuleType.TAB_RESUMPTION,
+                        ModuleType.SINGLE_TAB,
                         ModuleType.SAFETY_HUB,
                         ModuleType.QUICK_DELETE_PROMO,
                         ModuleType.PRICE_CHANGE);
@@ -234,10 +196,7 @@ public class HomeModulesConfigManagerUnitTest {
     @Test
     public void testGetMultipleListItemShownSomeComplex() {
         List<Integer> eligibleTypeList =
-                Arrays.asList(
-                        ModuleType.TAB_RESUMPTION,
-                        ModuleType.SAFETY_HUB,
-                        ModuleType.AUXILIARY_SEARCH);
+                Arrays.asList(ModuleType.SAFETY_HUB, ModuleType.AUXILIARY_SEARCH);
         List<Integer> notEligibleTypeList =
                 Arrays.asList(ModuleType.SINGLE_TAB, ModuleType.PRICE_CHANGE);
 
@@ -260,9 +219,9 @@ public class HomeModulesConfigManagerUnitTest {
 
     @Test
     public void testGetSettingsPreferenceKey() {
-        String tabResumptionPreferenceKey =
+        String singleTabPreferenceKey =
                 ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(
-                        String.valueOf(ModuleType.TAB_RESUMPTION));
+                        String.valueOf(ModuleType.SINGLE_TAB));
         String defaultBrowserPromoPreferenceKey =
                 ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(
                         String.valueOf(ModuleType.DEFAULT_BROWSER_PROMO));
@@ -270,17 +229,12 @@ public class HomeModulesConfigManagerUnitTest {
                 ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(
                         String.valueOf(ModuleType.PRICE_CHANGE));
 
-        assertFalse(TextUtils.equals(tabResumptionPreferenceKey, priceChangePreferenceKey));
+        assertFalse(TextUtils.equals(singleTabPreferenceKey, priceChangePreferenceKey));
         assertFalse(TextUtils.equals(defaultBrowserPromoPreferenceKey, priceChangePreferenceKey));
 
-        // Verifies that the SINGLE_TAB and TAB_RESUMPTION modules are shared with the same
-        // preference key.
         assertEquals(
-                tabResumptionPreferenceKey,
+                singleTabPreferenceKey,
                 mHomeModulesConfigManager.getSettingsPreferenceKey(ModuleType.SINGLE_TAB));
-        assertEquals(
-                tabResumptionPreferenceKey,
-                mHomeModulesConfigManager.getSettingsPreferenceKey(ModuleType.TAB_RESUMPTION));
 
         // Verifies that all the educational tip modules are shared with the same preference key.
         assertEquals(

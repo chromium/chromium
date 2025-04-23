@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "base/types/zip.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/signatures.h"
@@ -578,41 +579,38 @@ void AutofillDriverRouter::ExtractForm(
 
 void AutofillDriverRouter::SendTypePredictionsToRenderer(
     RoutedCallback<const std::vector<FormDataPredictions>&> callback,
-    const std::vector<FormDataPredictions>& browser_fdps) {
-  // Splits each FrameDataPredictions according to the respective FormData's
-  // renderer forms, and groups these FormDataPredictions by the renderer form's
-  // frame. We uso "fdp" as abbreviation of FormDataPredictions.
+    const FormDataPredictions& browser_fdp) {
+  // Splits the FrameDataPredictions according to the FormData's renderer forms,
+  // and groups these FormDataPredictions by the renderer form's frame. We uso
+  // "fdp" as abbreviation of FormDataPredictions.
   std::map<LocalFrameToken, std::vector<FormDataPredictions>> renderer_fdps;
-  for (const FormDataPredictions& browser_fdp : browser_fdps) {
-    // Builds an index of the field predictions by the field's global ID.
-    std::map<FieldGlobalId, FormFieldDataPredictions> field_predictions;
-    DCHECK_EQ(browser_fdp.data.fields().size(), browser_fdp.fields.size());
-    for (size_t i = 0; i < std::min(browser_fdp.data.fields().size(),
-                                    browser_fdp.fields.size());
-         ++i) {
-      field_predictions.emplace(browser_fdp.data.fields()[i].global_id(),
-                                browser_fdp.fields[i]);
-    }
 
-    // Builds the FormDataPredictions of each renderer form and groups them by
-    // the renderer form's frame in |renderer_fdps|.
-    internal::FormForest::RendererForms renderer_forms =
-        form_forest_.GetRendererFormsOfBrowserFields(
-            browser_fdp.data.fields(), {&browser_fdp.data.main_frame_origin(),
-                                        &browser_fdp.data.main_frame_origin(),
-                                        /*field_type_map=*/nullptr});
-    for (FormData& renderer_form : renderer_forms.renderer_forms) {
-      LocalFrameToken frame = renderer_form.host_frame();
-      FormDataPredictions renderer_fdp;
-      renderer_fdp.data = std::move(renderer_form);
-      renderer_fdp.signature = browser_fdp.signature;
-      renderer_fdp.alternative_signature = browser_fdp.alternative_signature;
-      for (const FormFieldData& field : renderer_fdp.data.fields()) {
-        renderer_fdp.fields.push_back(
-            std::move(field_predictions[field.global_id()]));
-      }
-      renderer_fdps[frame].push_back(std::move(renderer_fdp));
+  // Builds an index of the field predictions by the field's global ID.
+  std::map<FieldGlobalId, FormFieldDataPredictions> field_predictions;
+  DCHECK_EQ(browser_fdp.data.fields().size(), browser_fdp.fields.size());
+  for (auto [field, field_prediction] :
+       base::zip(browser_fdp.data.fields(), browser_fdp.fields)) {
+    field_predictions.emplace(field.global_id(), field_prediction);
+  }
+
+  // Builds the FormDataPredictions of each renderer form and groups them by
+  // the renderer form's frame in |renderer_fdps|.
+  internal::FormForest::RendererForms renderer_forms =
+      form_forest_.GetRendererFormsOfBrowserFields(
+          browser_fdp.data.fields(), {&browser_fdp.data.main_frame_origin(),
+                                      &browser_fdp.data.main_frame_origin(),
+                                      /*field_type_map=*/nullptr});
+  for (FormData& renderer_form : renderer_forms.renderer_forms) {
+    LocalFrameToken frame = renderer_form.host_frame();
+    FormDataPredictions renderer_fdp;
+    renderer_fdp.data = std::move(renderer_form);
+    renderer_fdp.signature = browser_fdp.signature;
+    renderer_fdp.alternative_signature = browser_fdp.alternative_signature;
+    for (const FormFieldData& field : renderer_fdp.data.fields()) {
+      renderer_fdp.fields.push_back(
+          std::move(field_predictions[field.global_id()]));
     }
+    renderer_fdps[frame].push_back(std::move(renderer_fdp));
   }
 
   // Sends the predictions of the renderer forms to the individual frames.

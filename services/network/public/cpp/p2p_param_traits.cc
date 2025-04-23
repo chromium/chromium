@@ -37,36 +37,36 @@ namespace IPC {
 
 namespace mojo {
 network::mojom::EcnMarking
-EnumTraits<network::mojom::EcnMarking, rtc::EcnMarking>::ToMojom(
-    rtc::EcnMarking input) {
+EnumTraits<network::mojom::EcnMarking, webrtc::EcnMarking>::ToMojom(
+    webrtc::EcnMarking input) {
   switch (input) {
-    case rtc::EcnMarking::kNotEct:
+    case webrtc::EcnMarking::kNotEct:
       return network::mojom::EcnMarking::kNotEct;
-    case rtc::EcnMarking::kEct1:
+    case webrtc::EcnMarking::kEct1:
       return network::mojom::EcnMarking::kEct1;
-    case rtc::EcnMarking::kEct0:
+    case webrtc::EcnMarking::kEct0:
       return network::mojom::EcnMarking::kEct0;
-    case rtc::EcnMarking::kCe:
+    case webrtc::EcnMarking::kCe:
       return network::mojom::EcnMarking::kCe;
   }
   NOTREACHED();
 }
 
-bool EnumTraits<network::mojom::EcnMarking, rtc::EcnMarking>::FromMojom(
+bool EnumTraits<network::mojom::EcnMarking, webrtc::EcnMarking>::FromMojom(
     network::mojom::EcnMarking input,
-    rtc::EcnMarking* output) {
+    webrtc::EcnMarking* output) {
   switch (input) {
     case network::mojom::EcnMarking::kNotEct:
-      *output = rtc::EcnMarking::kNotEct;
+      *output = webrtc::EcnMarking::kNotEct;
       return true;
     case network::mojom::EcnMarking::kEct1:
-      *output = rtc::EcnMarking::kEct1;
+      *output = webrtc::EcnMarking::kEct1;
       return true;
     case network::mojom::EcnMarking::kEct0:
-      *output = rtc::EcnMarking::kEct0;
+      *output = webrtc::EcnMarking::kEct0;
       return true;
     case network::mojom::EcnMarking::kCe:
-      *output = rtc::EcnMarking::kCe;
+      *output = webrtc::EcnMarking::kCe;
       return true;
   }
   return false;

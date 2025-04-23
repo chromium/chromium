@@ -33,7 +33,28 @@ class GlicBorderView : public views::View,
   METADATA_HEADER(GlicBorderView, views::View)
 
  public:
-  explicit GlicBorderView(Browser* browser);
+  // Note: We should avoid add test-only code in production as it is an
+  // anti-pattern. There is a planned effort to remove these codes and migrate
+  // to unittests + pixel tests. See https://crbug.com/412335211
+  class Tester;
+  // Allows the test to inject the tester at the border's creation.
+  class Factory {
+   public:
+    static std::unique_ptr<GlicBorderView> Create(Browser* browser);
+    static void set_factory(Factory* factory) { factory_ = factory; }
+
+   protected:
+    Factory() = default;
+    virtual ~Factory() = default;
+
+    // For tests to override.
+    virtual std::unique_ptr<GlicBorderView> CreateBorderView(
+        Browser* browser) = 0;
+
+   private:
+    static Factory* factory_;
+  };
+
   GlicBorderView(const GlicBorderView&) = delete;
   GlicBorderView& operator=(const GlicBorderView&) = delete;
   ~GlicBorderView() override;
@@ -71,7 +92,11 @@ class GlicBorderView : public views::View,
     virtual void EmphasisRestarted() = 0;
     virtual void RampDownStarted() = 0;
   };
-  void set_tester(Tester* tester) { tester_ = tester; }
+  Tester* tester() const { return tester_.get(); }
+
+ protected:
+  friend class Factory;
+  explicit GlicBorderView(Browser* browser, std::unique_ptr<Tester> tester);
 
  private:
   void Show();
@@ -135,7 +160,9 @@ class GlicBorderView : public views::View,
                           content::GpuDataManagerObserver>
       gpu_data_manager_observer_{this};
 
-  raw_ptr<Tester> tester_ = nullptr;
+  // Empty in production environment.
+  const std::unique_ptr<Tester> tester_;
+
   raw_ptr<ui::Compositor> compositor_ = nullptr;
   raw_ptr<ThemeService> theme_service_ = nullptr;
   raw_ptr<Browser> browser_ = nullptr;

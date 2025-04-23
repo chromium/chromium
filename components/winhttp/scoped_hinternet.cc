@@ -25,12 +25,6 @@ ScopedHInternet CreateSessionHandle(std::wstring_view user_agent,
     return session_handle;
   }
 
-  if (DWORD protocol_flag = WINHTTP_PROTOCOL_FLAG_HTTP2; !::WinHttpSetOption(
-          session_handle.get(), WINHTTP_OPTION_ENABLE_HTTP_PROTOCOL,
-          &protocol_flag, sizeof(protocol_flag))) {
-    VLOG(1) << "Failed to configure WINHTTP_OPTION_ENABLE_HTTP_PROTOCOL";
-  }
-
   if (DWORD decompression_flag = WINHTTP_DECOMPRESSION_FLAG_ALL;
       !::WinHttpSetOption(session_handle.get(), WINHTTP_OPTION_DECOMPRESSION,
                           &decompression_flag, sizeof(decompression_flag))) {

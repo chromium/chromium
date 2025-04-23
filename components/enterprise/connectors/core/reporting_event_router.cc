@@ -5,10 +5,12 @@
 #include "components/enterprise/connectors/core/reporting_event_router.h"
 
 #include "base/containers/contains.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/enterprise/connectors/core/realtime_reporting_client_base.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
+#include "components/prefs/pref_service.h"
 #include "components/url_matcher/url_matcher.h"
 
 namespace enterprise_connectors {
@@ -118,6 +120,48 @@ void ReportingEventRouter::OnPasswordBreach(
       base::Time::Now(), /*include_profile_user_name=*/true);
 }
 
+void ReportingEventRouter::OnPasswordReuse(const GURL& url,
+                                           const std::string& user_name,
+                                           bool is_phishing_url,
+                                           bool warning_shown) {
+  std::optional<ReportingSettings> settings =
+      reporting_client_->GetReportingSettings();
+  if (!settings.has_value() ||
+      settings->enabled_event_names.count(kKeyPasswordReuseEvent) == 0) {
+    return;
+  }
+
+  base::Value::Dict event;
+  event.Set(kKeyUrl, url.spec());
+  event.Set(kKeyUserName, user_name);
+  event.Set(kKeyIsPhishingUrl, is_phishing_url);
+  event.Set(kKeyEventResult,
+            EventResultToString(warning_shown ? EventResult::WARNED
+                                              : EventResult::ALLOWED));
+
+  reporting_client_->ReportEventWithTimestampDeprecated(
+      kKeyPasswordReuseEvent, std::move(settings.value()), std::move(event),
+      base::Time::Now(),
+      /*include_profile_user_name=*/true);
+}
+
+void ReportingEventRouter::OnPasswordChanged(const std::string& user_name) {
+  std::optional<ReportingSettings> settings =
+      reporting_client_->GetReportingSettings();
+  if (!settings.has_value() ||
+      settings->enabled_event_names.count(kKeyPasswordChangedEvent) == 0) {
+    return;
+  }
+
+  base::Value::Dict event;
+  event.Set(kKeyUserName, user_name);
+
+  reporting_client_->ReportEventWithTimestampDeprecated(
+      kKeyPasswordChangedEvent, std::move(settings.value()), std::move(event),
+      base::Time::Now(),
+      /*include_profile_user_name=*/true);
+}
+
 void ReportingEventRouter::OnUrlFilteringInterstitial(
     const GURL& url,
     const std::string& threat_type,
@@ -143,6 +187,59 @@ void ReportingEventRouter::OnUrlFilteringInterstitial(
 
   reporting_client_->ReportEventWithTimestampDeprecated(
       kKeyUrlFilteringInterstitialEvent, std::move(settings.value()),
+      std::move(event), base::Time::Now(), /*include_profile_user_name=*/true);
+}
+
+void ReportingEventRouter::OnSecurityInterstitialProceeded(
+    const GURL& url,
+    const std::string& reason,
+    int net_error_code) {
+  std::optional<enterprise_connectors::ReportingSettings> settings =
+      reporting_client_->GetReportingSettings();
+  if (!settings.has_value() ||
+      settings->enabled_event_names.count(
+          enterprise_connectors::kKeyInterstitialEvent) == 0) {
+    return;
+  }
+  base::Value::Dict event;
+  event.Set(kKeyUrl, url.spec());
+  event.Set(kKeyReason, reason);
+  event.Set(kKeyNetErrorCode, net_error_code);
+  event.Set(kKeyClickedThrough, true);
+  event.Set(kKeyEventResult, enterprise_connectors::EventResultToString(
+                                 enterprise_connectors::EventResult::BYPASSED));
+  reporting_client_->ReportEventWithTimestampDeprecated(
+      enterprise_connectors::kKeyInterstitialEvent, std::move(settings.value()),
+      std::move(event), base::Time::Now(), /*include_profile_user_name=*/true);
+}
+
+void ReportingEventRouter::OnSecurityInterstitialShown(
+    const GURL& url,
+    const std::string& reason,
+    int net_error_code,
+    bool proceed_anyway_disabled) {
+  std::optional<enterprise_connectors::ReportingSettings> settings =
+      reporting_client_->GetReportingSettings();
+  if (!settings.has_value() ||
+      settings->enabled_event_names.count(
+          enterprise_connectors::kKeyInterstitialEvent) == 0) {
+    return;
+  }
+
+  enterprise_connectors::EventResult event_result =
+      proceed_anyway_disabled ? enterprise_connectors::EventResult::BLOCKED
+                              : enterprise_connectors::EventResult::WARNED;
+
+  base::Value::Dict event;
+  event.Set(kKeyUrl, url.spec());
+  event.Set(kKeyReason, reason);
+  event.Set(kKeyNetErrorCode, net_error_code);
+  event.Set(kKeyClickedThrough, false);
+  event.Set(kKeyEventResult,
+            enterprise_connectors::EventResultToString(event_result));
+
+  reporting_client_->ReportEventWithTimestampDeprecated(
+      enterprise_connectors::kKeyInterstitialEvent, std::move(settings.value()),
       std::move(event), base::Time::Now(), /*include_profile_user_name=*/true);
 }
 

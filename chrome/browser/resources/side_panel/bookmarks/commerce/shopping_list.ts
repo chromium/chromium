@@ -65,9 +65,9 @@ export class ShoppingListElement extends PolymerElement {
     };
   }
 
-  productInfos: BookmarkProductInfo[];
-  private untrackedItems_: BookmarkProductInfo[];
-  private open_: boolean;
+  declare productInfos: BookmarkProductInfo[];
+  declare private untrackedItems_: BookmarkProductInfo[];
+  declare private open_: boolean;
   private bookmarksApi_: BookmarksApiProxy =
       BookmarksApiProxyImpl.getInstance();
   private priceTrackingProxy_: PriceTrackingBrowserProxy =

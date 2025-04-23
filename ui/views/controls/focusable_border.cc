@@ -74,7 +74,7 @@ void FocusableBorder::SetCornerRadius(float radius) {
 }
 
 SkColor FocusableBorder::GetCurrentColor(const View& view) const {
-  SkColor resolved_color = color().ConvertToSkColor(view.GetColorProvider());
+  SkColor resolved_color = color().ResolveToSkColor(view.GetColorProvider());
   return view.GetEnabled() ? resolved_color
                            : color_utils::BlendTowardMaxContrast(
                                  resolved_color, gfx::kDisabledControlAlpha);

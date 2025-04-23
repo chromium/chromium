@@ -85,7 +85,6 @@ MediaGalleriesDialogViews::MediaGalleriesDialogViews(
   SetModalType(ui::mojom::ModalType::kChild);
   SetShowCloseButton(false);
   SetTitle(controller_->GetHeader());
-  SetOwnedByWidget(false);
   RegisterDeleteDelegateCallback(
       RegisterDeleteCallbackPassKey(),
       base::BindOnce(

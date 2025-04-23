@@ -56,6 +56,7 @@ if (is_android) {
     visibility = [
       ":*",
       "//chrome/android:*",
+      "//chrome/android/junit:*",
       "//chrome/browser/feed/android:*",
       "//chrome/browser/ui/android/hats:*",
       "//chrome/browser/ui/android/hats/*:*",
@@ -114,6 +115,7 @@ if (is_win || is_linux || is_android || is_chromeos) {
     visibility = [
       ":traffic_annotation_proto",
       ":traffic_annotation_proto_gen",
+      ":traffic_annotation_proto_input_group",
     ]
     sources = [ "$root_gen_dir" +
                 "/chrome/browser/privacy/proto/chrome_settings.proto" ]
@@ -133,6 +135,7 @@ if (is_win || is_linux || is_android || is_chromeos) {
     visibility = [
       ":traffic_annotation_proto",
       ":traffic_annotation_proto_gen",
+      ":traffic_annotation_proto_input_group",
     ]
     sources = [
       "//components/policy/proto/chrome_device_policy.proto",
@@ -145,7 +148,7 @@ if (is_win || is_linux || is_android || is_chromeos) {
 
   proto_library("traffic_annotation_proto") {
     sources = [ "traffic_annotation.proto" ]
-    proto_deps = [
+    deps = [
       ":chrome_settings",
       ":device_policy_and_policy_common_definitions",
     ]

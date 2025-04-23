@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/accessibility/ui/accessibility_focusable_widget_delegate.h"
 #include "ash/animation/animation_change_type.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_features.h"
@@ -265,10 +266,11 @@ class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
 // The contents view of the Shelf. In an active session, this is used to
 // display a semi-opaque background behind the shelf. Outside of an active
 // session, this also contains the login shelf view.
-class ShelfWidgetDelegateView : public views::WidgetDelegate,
-                                public views::AccessiblePaneView,
-                                public ShelfBackgroundAnimatorObserver,
-                                public HotseatTransitionAnimator::Observer {
+class ShelfWidgetDelegateView
+    : public AccessibilityFocusable<views::WidgetDelegate>,
+      public views::AccessiblePaneView,
+      public ShelfBackgroundAnimatorObserver,
+      public HotseatTransitionAnimator::Observer {
  public:
   ShelfWidgetDelegateView(ShelfWidget* shelf_widget, Shelf* shelf);
 
@@ -276,12 +278,6 @@ class ShelfWidgetDelegateView : public views::WidgetDelegate,
   ShelfWidgetDelegateView& operator=(const ShelfWidgetDelegateView&) = delete;
 
   ~ShelfWidgetDelegateView() override;
-
-  void set_focus_cycler(FocusCycler* focus_cycler) {
-    focus_cycler_ = focus_cycler;
-  }
-
-  FocusCycler* focus_cycler() { return focus_cycler_; }
 
   void SetParentLayer(ui::Layer* layer);
 
@@ -341,7 +337,6 @@ class ShelfWidgetDelegateView : public views::WidgetDelegate,
   // |opaque_background_| during animations.
   bool hide_background_for_transitions_ = false;
   const raw_ptr<ShelfWidget> shelf_widget_;
-  raw_ptr<FocusCycler> focus_cycler_ = nullptr;
 
   // A background layer that may be visible depending on a
   // ShelfBackgroundAnimator.
@@ -374,7 +369,7 @@ ShelfWidgetDelegateView::ShelfWidgetDelegateView(ShelfWidget* shelf_widget,
   opaque_background_.Initialize();
 
   DCHECK(shelf_widget_);
-  SetOwnedByWidget(true);
+  SetOwnedByWidget(OwnedByWidgetPassKey());
 
   set_allow_deactivate_on_esc(true);
 
@@ -720,7 +715,6 @@ void ShelfWidget::Shutdown() {
 
   // Don't need to observe focus/activation during shutdown.
   Shell::Get()->focus_cycler()->RemoveWidget(this);
-  SetFocusCycler(nullptr);
 
   if (auto* overview_controller = Shell::Get()->overview_controller()) {
     overview_controller->RemoveObserver(this);
@@ -739,12 +733,13 @@ void ShelfWidget::RegisterHotseatWidget(HotseatWidget* hotseat_widget) {
 
 void ShelfWidget::PostCreateShelf() {
   ash::FocusCycler* focus_cycler = Shell::Get()->focus_cycler();
-  SetFocusCycler(focus_cycler);
+
+  focus_cycler->AddWidget(this);
 
   // Add widgets to |focus_cycler| in the desired focus order in LTR.
   focus_cycler->AddWidget(navigation_widget());
   focus_cycler->AddWidget(desk_button_widget());
-  hotseat_widget()->SetFocusCycler(focus_cycler);
+  focus_cycler->AddWidget(hotseat_widget());
   focus_cycler->AddWidget(status_area_widget());
 
   shelf_layout_manager_->UpdateAutoHideState();
@@ -753,16 +748,6 @@ void ShelfWidget::PostCreateShelf() {
 
 bool ShelfWidget::IsShowingMenu() const {
   return hotseat_widget()->GetShelfView()->IsShowingMenu();
-}
-
-void ShelfWidget::SetFocusCycler(FocusCycler* focus_cycler) {
-  delegate_view_->set_focus_cycler(focus_cycler);
-  if (focus_cycler)
-    focus_cycler->AddWidget(this);
-}
-
-FocusCycler* ShelfWidget::GetFocusCycler() {
-  return delegate_view_->focus_cycler();
 }
 
 gfx::Rect ShelfWidget::GetScreenBoundsOfItemIconForWindow(

@@ -13,7 +13,7 @@ build_webui("build") {
     "untrusted_index.html",
   ]
 
-  non_web_component_files = [ "untrusted_index.ts" ]
+  ts_files = [ "untrusted_index.ts" ]
 
   ts_path_mappings = [ "//os-feedback/help_content.js|" + rebase_path(
                            "$root_gen_dir/ash/webui/os_feedback_ui/resources/tsc/help_content.d.ts",

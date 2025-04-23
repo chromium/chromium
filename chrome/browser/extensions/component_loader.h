@@ -31,6 +31,10 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 
+namespace content {
+class BrowserContext;
+}
+
 namespace extensions {
 
 class Extension;
@@ -39,7 +43,7 @@ class ExtensionSystem;
 // For registering, loading, and unloading component extensions.
 class ComponentLoader : public KeyedService {
  public:
-  static ComponentLoader* Get(Profile* profile);
+  static ComponentLoader* Get(content::BrowserContext* context);
 
   ComponentLoader(const ComponentLoader&) = delete;
   ComponentLoader& operator=(const ComponentLoader&) = delete;

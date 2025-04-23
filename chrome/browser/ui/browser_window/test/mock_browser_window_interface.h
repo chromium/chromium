@@ -90,6 +90,12 @@ class MockBrowserWindowInterface : public BrowserWindowInterface {
                base::OnceCallback<void(content::NavigationHandle&)>
                    navigation_handle_callback),
               (override));
+
+  MOCK_METHOD(bool, CanShowCallToAction, (), (const, override));
+  MOCK_METHOD(std::unique_ptr<ScopedWindowCallToAction>,
+              ShowCallToAction,
+              (),
+              (override));
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_TEST_MOCK_BROWSER_WINDOW_INTERFACE_H_

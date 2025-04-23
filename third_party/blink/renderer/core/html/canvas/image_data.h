@@ -193,6 +193,10 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   PredefinedColorSpace GetPredefinedColorSpace() const { return color_space_; }
   SkColorType GetSkColorType() const { return color_type_; }
 
+  // Returns a span to the raw bytes of the underlying data. Requires that the
+  // buffer is attached.
+  base::span<uint8_t> RawByteSpan() const;
+
   // Return an SkPixmap that references this data directly.
   SkPixmap GetSkPixmap() const;
 

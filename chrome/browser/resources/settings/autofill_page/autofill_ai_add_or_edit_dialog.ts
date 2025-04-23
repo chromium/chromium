@@ -162,17 +162,17 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
     };
   }
 
-  entityInstance: EntityInstance|null;
-  dialogTitle: string;
-  private completeAttributeInstanceList_: AttributeInstance[];
-  private countryList_: CountryEntry[];
-  private completeAttributeTypesList_: AttributeType[];
-  private allFieldsAreEmpty_: boolean;
-  private canSave_: boolean;
-  private userClickedSaveButton_: boolean;
-  private months_: string[];
-  private days_: string[];
-  private years_: string[];
+  declare entityInstance: EntityInstance|null;
+  declare dialogTitle: string;
+  declare private completeAttributeInstanceList_: AttributeInstance[];
+  declare private countryList_: CountryEntry[];
+  declare private completeAttributeTypesList_: AttributeType[];
+  declare private allFieldsAreEmpty_: boolean;
+  declare private canSave_: boolean;
+  declare private userClickedSaveButton_: boolean;
+  declare private months_: string[];
+  declare private days_: string[];
+  declare private years_: string[];
 
   private entityDataManager_: EntityDataManagerProxy =
       EntityDataManagerProxyImpl.getInstance();

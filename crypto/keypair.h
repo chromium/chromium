@@ -27,6 +27,9 @@ class CRYPTO_EXPORT PrivateKey {
   PrivateKey(PrivateKey&& other);
   PrivateKey(const PrivateKey& other);
 
+  PrivateKey& operator=(PrivateKey&& other);
+  PrivateKey& operator=(const PrivateKey& other);
+
   // These functions generate fresh, random RSA private keys of the named sizes
   // with e = 65537.
   // If you believe you need an RSA key of a size other than these, or with a
@@ -78,6 +81,9 @@ class CRYPTO_EXPORT PublicKey {
   ~PublicKey();
   PublicKey(PublicKey&& other);
   PublicKey(const PublicKey& other);
+
+  PublicKey& operator=(PublicKey&& other);
+  PublicKey& operator=(const PublicKey& other);
 
   // Produces the PublicKey corresponding to the given PrivateKey. This is
   // mostly useful in tests but is fine to use in production as well.

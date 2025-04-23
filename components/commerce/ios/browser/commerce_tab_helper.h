@@ -68,8 +68,6 @@ class CommerceTabHelper : public web::WebStateObserver,
   // track of this because the URL kepkt by the backing WebContents will have
   // changed before we get the signal for it.
   GURL previous_main_frame_url_;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 }  // namespace commerce

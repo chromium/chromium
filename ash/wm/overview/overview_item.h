@@ -258,9 +258,6 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
 
   // Responsible for mirrors that look like the window on all displays during
   // dragging.
-  // TODO(sammiequon): We need two, one for the `item_widget_` and one for the
-  // source window (if not minimized). If DragWindowController supports multiple
-  // windows in the future, combine these.
   std::unique_ptr<DragWindowController> window_mirror_for_dragging_;
 
   // Disable animations on the contained window while it is being managed by the

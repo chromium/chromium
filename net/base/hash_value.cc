@@ -24,21 +24,6 @@ namespace {
 
 constexpr std::string_view kSha256Slash = "sha256/";
 
-// LessThan comparator for use with std::binary_search() in determining
-// whether a SHA-256 HashValue appears within a sorted array of
-// SHA256HashValues.
-struct SHA256ToHashValueComparator {
-  bool operator()(const SHA256HashValue& lhs, const HashValue& rhs) const {
-    DCHECK_EQ(HASH_VALUE_SHA256, rhs.tag());
-    return lhs < rhs.span();
-  }
-
-  bool operator()(const HashValue& lhs, const SHA256HashValue& rhs) const {
-    DCHECK_EQ(HASH_VALUE_SHA256, lhs.tag());
-    return lhs.span() < rhs;
-  }
-};
-
 }  // namespace
 
 
@@ -69,7 +54,7 @@ bool HashValue::FromString(std::string_view value) {
 }
 
 std::string HashValue::ToString() const {
-  std::string base64_str = base::Base64Encode(*this);
+  std::string base64_str = base::Base64Encode(span());
   switch (tag_) {
     case HASH_VALUE_SHA256:
       return std::string(kSha256Slash) + base64_str;
@@ -134,24 +119,6 @@ bool operator<=(const HashValue& lhs, const HashValue& rhs) {
 
 bool operator>=(const HashValue& lhs, const HashValue& rhs) {
   return !(lhs < rhs);
-}
-
-bool IsSHA256HashInSortedArray(const HashValue& hash,
-                               base::span<const SHA256HashValue> array) {
-  return std::binary_search(array.begin(), array.end(), hash,
-                            SHA256ToHashValueComparator());
-}
-
-bool IsAnySHA256HashInSortedArray(base::span<const HashValue> hashes,
-                                  base::span<const SHA256HashValue> array) {
-  for (const auto& hash : hashes) {
-    if (hash.tag() != HASH_VALUE_SHA256)
-      continue;
-
-    if (IsSHA256HashInSortedArray(hash, array))
-      return true;
-  }
-  return false;
 }
 
 }  // namespace net

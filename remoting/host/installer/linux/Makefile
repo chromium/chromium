@@ -25,6 +25,7 @@ CORE_LIBNAME = $(BUILD_DIR)/libremoting_core.so
 CORE_DEBUGFILE = $(CORE_LIBNAME).debug
 CRASH_UPLOADER_PROGNAME = $(BUILD_DIR)/remoting_crash_uploader
 CRASH_UPLOADER_DEBUGFILE = $(CRASH_UPLOADER_PROGNAME).debug
+CRASHPAD_DB_PROGNAME = $(BUILD_DIR)/remoting_crashpad_db
 CRASHPAD_HANDLER_PROGNAME = $(BUILD_DIR)/remoting_crashpad_handler
 ME2ME_PROGNAME = $(BUILD_DIR)/remoting_me2me_host
 ME2ME_DEBUGFILE = $(ME2ME_PROGNAME).debug
@@ -106,6 +107,10 @@ endif
 
 ifneq ("$(wildcard $(CRASHPAD_HANDLER_PROGNAME))", "")
 	install "$(CRASHPAD_HANDLER_PROGNAME)" "$(INSTALL_DIR)/crashpad-handler"
+endif
+
+ifneq ("$(wildcard $(CRASHPAD_DB_PROGNAME))", "")
+	install "$(CRASHPAD_DB_PROGNAME)" "$(INSTALL_DIR)/crashpad-db"
 endif
 
 	install "$(ME2ME_PROGNAME)" \

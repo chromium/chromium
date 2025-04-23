@@ -22,6 +22,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "base/win/registry.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
@@ -40,6 +41,13 @@ namespace {
 // TODO(crbug.com/407891291): Remove this feature flag in Chrome 139.
 BASE_FEATURE(kDisableUiaProviderWhenJawsIsRunning,
              "DisableUiaProviderWhenJawsIsRunning",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Killswitch to turn off this feature remotely in case it affects performance.
+// This is temporary. TODO(crbug.com/407891291): Remove this feature flag in
+// Chrome 139.
+BASE_FEATURE(kDiscoverAssistiveTechOnUiThread,
+             "DiscoverAssistiveTechOnUiThread",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 const wchar_t kNarratorRegistryKey[] = L"Software\\Microsoft\\Narrator\\NoRoam";
@@ -154,6 +162,23 @@ JawsMajorVersion MapModuleVersionToJaws(const ModuleVersion& version) {
   return JawsMajorVersion::kLegacy;
 }
 
+// Older versions of JAWS are known to not work well with text fields when we
+// expose the native UIA provider. Disable it when we detect an older version
+// version of JAWS. JAWS fixed the issue in versions:
+//   * 2022.2402.1+
+//   * 2023.2402.1+
+//   * 2024.2312.99+
+//   * 2025+
+bool IsJawsCompatibleWithUIA(const ModuleVersion& version) {
+  return !(version.IsLowerThan(ModuleVersion{2022, 0, 0, 0}) ||
+           (version.major == 2022 &&
+            version.IsLowerThan(ModuleVersion{2022, 2402, 1, 0})) ||
+           (version.major == 2023 &&
+            version.IsLowerThan(ModuleVersion{2023, 2402, 1, 0})) ||
+           (version.major == 2024 &&
+            version.IsLowerThan(ModuleVersion{2024, 2312, 99, 0})));
+}
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
@@ -221,7 +246,8 @@ std::vector<AssistiveTechInfo> DiscoverAssistiveTech() {
   DWORD narrator_value = 0;
   if (base::win::RegKey(HKEY_CURRENT_USER, kNarratorRegistryKey,
                         KEY_QUERY_VALUE)
-          .ReadValueDW(kNarratorRunningStateValueName, &narrator_value) &&
+              .ReadValueDW(kNarratorRunningStateValueName, &narrator_value) ==
+          ERROR_SUCCESS &&
       narrator_value) {
     discovered_ats.push_back({AccessibilityTarget::kNarrator, std::nullopt});
   }
@@ -416,17 +442,26 @@ BrowserAccessibilityStateImplWin::BrowserAccessibilityStateImplWin() {
 }
 
 void BrowserAccessibilityStateImplWin::RefreshAssistiveTech() {
-  if (!awaiting_known_assistive_tech_computation_) {
-    awaiting_known_assistive_tech_computation_ = true;
-    // Using base::Unretained() instead of a weak pointer as the lifetime of
-    // this is tied to BrowserMainLoop.
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&DiscoverAssistiveTech),
-        base::BindOnce(
-            &BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech,
-            base::Unretained(this)));
+  if (awaiting_known_assistive_tech_computation_) {
+    return;
   }
+
+  awaiting_known_assistive_tech_computation_ = true;
+
+  if (base::FeatureList::IsEnabled(kDiscoverAssistiveTechOnUiThread)) {
+    TRACE_EVENT("accessibility", "DiscoverAssistiveTechOnUiThread");
+    OnDiscoveredAssistiveTech(DiscoverAssistiveTech());
+    return;
+  }
+
+  // Using base::Unretained() instead of a weak pointer as the lifetime of
+  // this is tied to BrowserMainLoop.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&DiscoverAssistiveTech),
+      base::BindOnce(
+          &BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech,
+          base::Unretained(this)));
 }
 
 void BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech(
@@ -434,15 +469,20 @@ void BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech(
   awaiting_known_assistive_tech_computation_ = false;
 
   // Older versions of JAWS are known to not work well with text fields when we
-  // expose the native UIA provider. Disable it when we detect a JAWS version
-  // older than 2025.
+  // expose the native UIA provider. Disable it when we detect an older version
+  // version of JAWS. JAWS fixed the issue in versions:
+  //   * 2022.2402.1+
+  //   * 2023.2402.1+
+  //   * 2024.2312.99+
+  //   * 2025+
   if (base::FeatureList::IsEnabled(kDisableUiaProviderWhenJawsIsRunning) &&
       ui::AXPlatform::GetInstance().IsUiaProviderEnabled()) {
     for (const auto& info : at_infos) {
-      if (info.tech == AccessibilityTarget::kJaws && info.version.has_value() &&
-          info.version->IsLowerThan({2025, 0, 0, 0})) {
-        ui::AXPlatform::GetInstance().DisableActiveUiaProvider();
-        break;
+      if (info.tech == AccessibilityTarget::kJaws && info.version.has_value()) {
+        if (!IsJawsCompatibleWithUIA(*info.version)) {
+          ui::AXPlatform::GetInstance().DisableActiveUiaProvider();
+          break;
+        }
       }
     }
   }
@@ -544,6 +584,8 @@ void BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech(
   // Histograms for the JAWS and NVDA versions.
   for (const auto& info : at_infos) {
     if (info.tech == AccessibilityTarget::kJaws && info.version) {
+      UMA_HISTOGRAM_BOOLEAN("Accessibility.WinJAWSCompatibleWithUIA",
+                            IsJawsCompatibleWithUIA(*info.version));
       JawsMajorVersion jaws_version = MapModuleVersionToJaws(*info.version);
       base::UmaHistogramEnumeration("Accessibility.WinJAWSVersion",
                                     jaws_version);

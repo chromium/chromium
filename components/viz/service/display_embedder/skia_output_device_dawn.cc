@@ -69,7 +69,7 @@ SkiaOutputDeviceDawn::SkiaOutputDeviceDawn(
     base::PassKey<SkiaOutputDeviceDawn>)
     : SkiaOutputDevice(
           /*gr_context=*/nullptr,
-          context_state->graphite_context(),
+          context_state->graphite_shared_context(),
           memory_tracker,
           did_swap_buffer_complete_callback),
       context_state_(std::move(context_state)) {
@@ -98,7 +98,7 @@ bool SkiaOutputDeviceDawn::Initialize(gpu::SurfaceHandle surface_handle) {
   switch (context_state_->dawn_context_provider()->backend_type()) {
     case wgpu::BackendType::D3D11:
     case wgpu::BackendType::D3D12:
-      child_window_.Initialize();
+      child_window_.Initialize(/*remove_redirection_bitmap=*/true);
       window_handle_to_draw_to = child_window_.window();
       break;
     default:

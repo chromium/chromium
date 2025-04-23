@@ -8,9 +8,8 @@
 // but we need to keep this IDL for the extension API.
 
 [
-  Exposed=(Window,Worker),
-  SecureContext,
-  RuntimeEnabled=AIPromptAPI
+  Exposed(Window AIPromptAPI, Worker AIPromptAPIForWorkers),
+  SecureContext
 ]
 interface LanguageModelFactory {
   [
@@ -26,7 +25,7 @@ interface LanguageModelFactory {
     CallWith=ScriptState,
     RaisesException
   ]
-  Promise<AIAvailability> availability(
+  Promise<Availability> availability(
     optional LanguageModelCreateCoreOptions options = {}
   );
   [

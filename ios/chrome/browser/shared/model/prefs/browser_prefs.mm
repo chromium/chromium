@@ -54,6 +54,7 @@
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "components/proxy_config/pref_proxy_config_tracker_impl.h"
+#import "components/regional_capabilities/regional_capabilities_prefs.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/saved_tab_groups/public/pref_names.h"
 #import "components/search_engines/template_url_prepopulate_data.h"
@@ -371,6 +372,21 @@ void MigrateTimePrefFromProfilePrefsToLocalStatePrefs(
                   profile_pref_service);
 }
 
+void MigrateBooleanFromUserDefaultsToProfilePrefs(
+    NSString* user_defaults_key,
+    std::string_view pref_name,
+    PrefService* profile_pref_service) {
+  auto* pref = profile_pref_service->FindPreference(pref_name);
+  CHECK(pref);
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  // Only migrate if the pref is not set in the prefs.
+  if (pref->IsDefaultValue()) {
+    profile_pref_service->SetBoolean(pref_name,
+                                     [defaults boolForKey:user_defaults_key]);
+  }
+  [defaults removeObjectForKey:user_defaults_key];
+}
+
 }  // namespace
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -459,6 +475,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kRestrictAccountsToPatterns);
   registry->RegisterIntegerPref(prefs::kBrowserSigninPolicy,
                                 static_cast<int>(BrowserSigninMode::kEnabled));
+  registry->RegisterBooleanPref(prefs::kSigninAllowedOnDevice, true);
   registry->RegisterBooleanPref(prefs::kAppStoreRatingPolicyEnabled, true);
   registry->RegisterBooleanPref(kIosParcelTrackingPolicyEnabled, true);
 
@@ -576,6 +593,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kNTPHomeCustomizationNewBadgeImpressionCount, 0);
 
+  registry->RegisterBooleanPref(prefs::kHasSwitchedAccountsViaWebFlow, false);
+
   // Deprecated 07/2024 (migrated to profile prefs).
   registry->RegisterTimePref(prefs::kTabPickupLastDisplayedTime, base::Time());
   registry->RegisterStringPref(prefs::kTabPickupLastDisplayedURL,
@@ -664,6 +683,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   PrefProxyConfigTrackerImpl::RegisterProfilePrefs(registry);
   PushNotificationService::RegisterProfilePrefs(registry);
   RegisterPriceTrackingPromoPrefs(registry);
+  regional_capabilities::prefs::RegisterProfilePrefs(registry);
   shop_card_prefs::RegisterPrefs(registry);
   tips_prefs::RegisterPrefs(registry);
   RegisterVoiceSearchBrowserStatePrefs(registry);
@@ -758,6 +778,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // already shown.
   registry->RegisterBooleanPref(
       policy::policy_prefs::kUserPolicyNotificationWasShown, false);
+
+  registry->RegisterBooleanPref(policy::policy_prefs::kSyncDisabledAlertShown,
+                                false);
 
   registry->RegisterIntegerPref(prefs::kIosShareChromeCount, 0,
                                 PrefRegistry::LOSSY_PREF);
@@ -981,6 +1004,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterBooleanPref(prefs::kProvisionalNotificationsAllowedByPolicy,
                                 true);
+
+  registry->RegisterTimePref(prefs::kIosSyncInfobarErrorLastDismissedTimestamp,
+                             base::Time());
 
   // Deprecated 05/2024.
   registry->RegisterBooleanPref(kAutologinEnabled, true);
@@ -1223,6 +1249,11 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
   // Added 04/2025.
   prefs->ClearPref(kMixedContentAutoupgradeEnabled);
+
+  // Added 04/2025
+  MigrateBooleanFromUserDefaultsToProfilePrefs(
+      @"SyncDisabledAlertShown", policy::policy_prefs::kSyncDisabledAlertShown,
+      prefs);
 }
 
 void MigrateObsoleteUserDefault() {

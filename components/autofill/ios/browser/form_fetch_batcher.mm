@@ -81,7 +81,7 @@ void FormFetchBatcher::PushRequest(
 
 void FormFetchBatcher::Run() {
   // There should be at least one fetch request in the batch when running it.
-  CHECK_GT(fetch_requests_.size(), 0u, base::NotFatalUntil::M133);
+  CHECK_GT(fetch_requests_.size(), 0u);
   // Running the batch should only be done when there was an actual batch
   // scheduled.
   CHECK(batch_scheduled_);
@@ -103,7 +103,7 @@ void FormFetchBatcher::Run() {
 void FormFetchBatcher::Complete(
     std::optional<std::vector<autofill::FormData>> forms) {
   // Complete() should only be done when there are queued requests.
-  CHECK_GT(fetch_requests_.size(), 0u, base::NotFatalUntil::M133);
+  CHECK_GT(fetch_requests_.size(), 0u);
   // Completing the batch should only be done when there was an actual batch
   // scheduled.
   CHECK(batch_scheduled_);

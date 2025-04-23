@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_label_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/option_list.h"
@@ -212,10 +213,6 @@ bool ShouldSkipSubtree(const LayoutObject& object) {
     return true;
   }
 
-  if (DynamicTo<LayoutSVGRoot>(object)) {
-    return true;
-  }
-
   return false;
 }
 
@@ -256,6 +253,21 @@ void ProcessImageNode(const LayoutImage& layout_image,
 
   // TODO(crbug.com/382558422): Include image source origin.
   attributes.image_info = std::move(image_info);
+}
+
+void ProcessSVGNode(const LayoutSVGRoot& layout_svg,
+                    mojom::blink::AIPageContentAttributes& attributes) {
+  attributes.attribute_type = mojom::blink::AIPageContentAttributeType::kSVG;
+  CHECK(IsVisible(layout_svg));
+
+  auto* element = DynamicTo<Element>(layout_svg.GetNode());
+  if (!element) {
+    return;
+  }
+
+  auto svg_data = mojom::blink::AIPageContentSVGData::New();
+  svg_data->inner_text = element->innerText();
+  attributes.svg_data = std::move(svg_data);
 }
 
 void ProcessAnchorNode(const HTMLAnchorElement& anchor_element,
@@ -324,7 +336,11 @@ void ProcessFormControlNode(const HTMLFormControlElement& form_control_element,
   form_control_data->is_required = form_control_element.IsRequired();
   if (const auto* text_control_element =
           DynamicTo<TextControlElement>(form_control_element)) {
-    form_control_data->field_value = text_control_element->Value();
+    // Don't include password values as they are sensitive.
+    if (form_control_data->form_control_type !=
+        mojom::blink::FormControlType::kInputPassword) {
+      form_control_data->field_value = text_control_element->Value();
+    }
     form_control_data->placeholder =
         text_control_element->GetPlaceholderValue();
   }
@@ -371,6 +387,25 @@ void ProcessTableRowNode(const LayoutTableRow& layout_table_row,
   auto table_row_data = mojom::blink::AIPageContentTableRowData::New();
   table_row_data->row_type = GetTableRowType(layout_table_row);
   attributes.table_row_data = std::move(table_row_data);
+}
+
+// Adds the control node id if this is a label associated with a form
+// control. This includes both explicit association using for, or
+// implicit association when the input node is a descendant of the label
+// node.
+void AddForDomNodeId(const LayoutObject& object,
+                     mojom::blink::AIPageContentNodeInteractionInfo& info) {
+  auto* label = DynamicTo<HTMLLabelElement>(object.GetNode());
+  if (!label) {
+    return;
+  }
+
+  auto* control = label->Control();
+  if (!control) {
+    return;
+  }
+
+  info.for_dom_node_id = DOMNodeIds::IdForNode(control);
 }
 
 // Records latency metrics for the given latency and total latency.
@@ -745,11 +780,15 @@ bool AIPageContentAgent::ContentBuilder::WalkChildren(
     bool child_has_visible_content = false;
     auto child_content_node = MaybeGenerateContentNode(*child, document_style);
     if (child_content_node &&
-        child_content_node->content_attributes->attribute_type ==
-            mojom::blink::AIPageContentAttributeType::kIframe) {
-      // If the child is an iframe, it does its own tree walk.
-      // TODO(crbug.com/405173553): Moving ProcessIframe here might simplify
-      // tree construction and keep stack depth counting in one place.
+        // If the child is an iframe, it does its own tree walk.
+        // TODO(crbug.com/405173553): Moving ProcessIframe here might simplify
+        // tree construction and keep stack depth counting in one place.
+        (child_content_node->content_attributes->attribute_type ==
+             mojom::blink::AIPageContentAttributeType::kIframe ||
+         // We don't capture the SVG layout internally so there's no need to
+         // walk their tree.
+         child_content_node->content_attributes->attribute_type ==
+             mojom::blink::AIPageContentAttributeType::kSVG)) {
     } else {
       if (child_content_node) {
         stack_depth_++;
@@ -864,6 +903,13 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
       return nullptr;
     }
     ProcessImageNode(To<LayoutImage>(object), attributes);
+  } else if (object.IsSVGRoot()) {
+    // Since we add the full text under SVG directly, don't add anything if the
+    // SVG is hidden.
+    if (!IsVisible(object)) {
+      return nullptr;
+    }
+    ProcessSVGNode(To<LayoutSVGRoot>(object), attributes);
   } else if (const auto* anchor_element =
                  DynamicTo<HTMLAnchorElement>(object.GetNode())) {
     ProcessAnchorNode(*anchor_element, attributes);
@@ -933,10 +979,37 @@ void AIPageContentAgent::ContentBuilder::AddLabel(
 
   // TODO(khushalsagar): Look at `AXNodeObject::TextAlternative` which has other
   // sources for this.
-  const auto& value = element->FastGetAttribute(html_names::kAriaLabelAttr);
-  if (!value.GetString().ContainsOnlyWhitespaceOrEmpty()) {
-    attributes.label = value;
+  StringBuilder accumulated_text;
+  const auto& aria_label =
+      element->FastGetAttribute(html_names::kAriaLabelAttr);
+  if (!aria_label.GetString().ContainsOnlyWhitespaceOrEmpty()) {
+    accumulated_text.Append(aria_label);
   }
+
+  const GCedHeapVector<Member<Element>>* aria_labelledby_elements =
+      element->ElementsFromAttributeOrInternals(
+          html_names::kAriaLabelledbyAttr);
+  if (!aria_labelledby_elements) {
+    attributes.label = accumulated_text.ToString();
+    return;
+  }
+
+  for (const auto& label_element : *aria_labelledby_elements) {
+    // We need to use textContent instead of innerText since aria labelled by
+    // nodes don't need to be in the layout.
+    auto text_content = label_element->textContent(true);
+    if (text_content.ContainsOnlyWhitespaceOrEmpty()) {
+      continue;
+    }
+
+    if (!accumulated_text.empty()) {
+      accumulated_text.Append(" ");
+    }
+
+    accumulated_text.Append(text_content);
+  }
+
+  attributes.label = accumulated_text.ToString();
 }
 
 void AIPageContentAgent::ContentBuilder::AddAnnotatedRoles(
@@ -1212,6 +1285,7 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
     attributes.node_interaction_info =
         mojom::blink::AIPageContentNodeInteractionInfo::New();
     *attributes.node_interaction_info = node_interaction_info;
+    AddForDomNodeId(object, *attributes.node_interaction_info);
   }
 }
 

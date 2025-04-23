@@ -1363,7 +1363,7 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
     if (!root_) {
       ACCESSIBILITY_TREE_UNSERIALIZE_ERROR_HISTOGRAM(
           AXTreeUnserializeError::kNoRoot);
-      RecordError(update_state, "Tree has no root.", true);
+      RecordError(update_state, "Tree has no root.", false);
       return false;
     }
 
@@ -2991,8 +2991,8 @@ AXSelection AXTree::GetSelection() const {
   return AXSelection(*this);
 }
 
-AXSelection AXTree::GetUnignoredSelection(bool non_text_endpoints) const {
-  return GetSelection().ToUnignoredSelection(non_text_endpoints);
+AXSelection AXTree::GetUnignoredSelection() const {
+  return GetSelection().ToUnignoredSelection();
 }
 
 bool AXTree::GetTreeUpdateInProgressState() const {

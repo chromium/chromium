@@ -70,7 +70,10 @@
 #include "chrome/browser/performance_manager/extension_watcher.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/performance_manager/policies/process_rank_policy_android.h"
+#else
 #include "chrome/browser/performance_manager/policies/memory_saver_mode_policy.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/performance_manager/policies/urgent_page_discarding_policy.h"
@@ -82,7 +85,7 @@
 #include "components/performance_manager/freezing/freezer.h"
 #include "components/performance_manager/freezing/freezing_policy.h"
 #include "components/performance_manager/public/freezing/freezing.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
 #include "base/path_service.h"
@@ -177,17 +180,18 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
           performance_manager::policies::ReportPageProcessesPolicy>());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_ANDROID)
   using performance_manager::policies::DiscardEligibilityPolicy;
-  using performance_manager::policies::FreezingOptOutChecker;
-
-  graph->PassToGraph(FormInteractionTabHelper::CreateGraphObserver());
-
   auto discard_eligibility_policy =
       std::make_unique<DiscardEligibilityPolicy>();
   auto weak_discard_eligibility_policy =
       discard_eligibility_policy->GetWeakPtr();
   graph->PassToGraph(std::move(discard_eligibility_policy));
+
+#if !BUILDFLAG(IS_ANDROID)
+  using performance_manager::policies::FreezingOptOutChecker;
+
+  graph->PassToGraph(FormInteractionTabHelper::CreateGraphObserver());
+
   graph->PassToGraph(
       std::make_unique<performance_manager::policies::PageDiscardingHelper>());
 
@@ -251,6 +255,15 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          chrome::android::kProcessRankPolicyAndroid)) {
+    graph->PassToGraph(
+        std::make_unique<
+            performance_manager::policies::ProcessRankPolicyAndroid>());
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if !BUILDFLAG(IS_ANDROID)
   if (auto* voting_system = graph->GetRegisteredObjectAs<
                             performance_manager::execution_context_priority::
@@ -287,7 +300,14 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
 
   g_browser_process->profile_manager()->AddObserver(this);
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(chrome::android::kProtectedTabsAndroid)) {
+    // performance_manager::policies::DiscardEligibilityPolicy requires
+    // performance_manager::user_tuning::ProfileDiscardOptOutListHelper.
+    profile_discard_opt_out_list_helper_ = std::make_unique<
+        performance_manager::user_tuning::ProfileDiscardOptOutListHelper>();
+  }
+#else
   profile_discard_opt_out_list_helper_ = std::make_unique<
       performance_manager::user_tuning::ProfileDiscardOptOutListHelper>();
   // Create the UserPerformanceTuningManager and BatterySaverMode here so that
@@ -395,7 +415,9 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostMainMessageLoopRun() {
   page_live_state_data_helper_.reset();
   page_load_metrics_observer_.reset();
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  profile_discard_opt_out_list_helper_.reset();
+#else
   battery_saver_mode_manager_.reset();
   user_performance_tuning_manager_.reset();
   performance_detection_manager_.reset();
@@ -416,7 +438,11 @@ void ChromeBrowserMainExtraPartsPerformanceManager::OnProfileAdded(
   performance_manager::PerformanceManagerRegistry::GetInstance()
       ->NotifyBrowserContextAdded(profile);
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  if (profile_discard_opt_out_list_helper_) {
+    profile_discard_opt_out_list_helper_->OnProfileAdded(profile);
+  }
+#else
   profile_discard_opt_out_list_helper_->OnProfileAdded(profile);
 #endif
 }
@@ -432,7 +458,11 @@ void ChromeBrowserMainExtraPartsPerformanceManager::OnProfileWillBeDestroyed(
   performance_manager::PerformanceManagerRegistry::GetInstance()
       ->NotifyBrowserContextRemoved(profile);
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  if (profile_discard_opt_out_list_helper_) {
+    profile_discard_opt_out_list_helper_->OnProfileWillBeRemoved(profile);
+  }
+#else
   profile_discard_opt_out_list_helper_->OnProfileWillBeRemoved(profile);
 #endif
 }

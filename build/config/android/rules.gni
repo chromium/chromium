@@ -1266,7 +1266,7 @@ if (!is_robolectric && enable_java_templates) {
       # 66%, which makes sharding more effective.
       tiered_stop_at_level_one = true
 
-      is_robolectric = true
+      requires_robolectric = true
       include_android_sdk = true
       alternative_android_sdk_dep =
           "//third_party/robolectric:robolectric_test_sdk_java"
@@ -1813,23 +1813,35 @@ if (!is_robolectric && enable_java_templates) {
   #     ]
   #   }
   template("android_library") {
-    java_library(target_name) {
+    java_library_impl(target_name) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+      type = "java_library"
 
-      supports_android = true
-      requires_android = true
-
-      if (!defined(jar_excluded_patterns)) {
-        jar_excluded_patterns = []
+      if (!defined(requires_robolectric)) {
+        supports_android = true
+        requires_android = true
       }
-      jar_excluded_patterns += [
-        "*/R.class",
-        "*/R\$*.class",
-        "*/Manifest.class",
-        "*/Manifest\$*.class",
-        "*/*GEN_JNI.class",
-      ]
+
+      # Using JNI Zero via srcjar_deps. jni_zero.gni enforces "jni" in the name.
+      if (defined(srcjar_deps) &&
+          filter_include(srcjar_deps, [ "*jni*" ]) != []) {
+        if (!defined(jar_excluded_patterns)) {
+          jar_excluded_patterns = []
+        }
+        jar_excluded_patterns += [ "*/*GEN_JNI.class" ]
+      }
+
+      # Strip generated R.java classes if they are being generated.
+      if (defined(resources_package)) {
+        if (!defined(jar_excluded_patterns)) {
+          jar_excluded_patterns = []
+        }
+        jar_excluded_patterns += [
+          "*/R.class",
+          "*/R\$*.class",
+        ]
+      }
     }
   }
 
@@ -1860,27 +1872,16 @@ if (!is_robolectric && enable_java_templates) {
   #     ]
   #   }
   template("robolectric_library") {
-    java_library(target_name) {
+    android_library(target_name) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
       testonly = true
 
-      is_robolectric = true
+      requires_robolectric = true
       include_android_sdk = true
       alternative_android_sdk_dep =
           "//third_party/robolectric:robolectric_test_sdk_java"
-
-      if (!defined(jar_excluded_patterns)) {
-        jar_excluded_patterns = []
-      }
-      jar_excluded_patterns += [
-        "*/R.class",
-        "*/R\$*.class",
-        "*/Manifest.class",
-        "*/Manifest\$*.class",
-        "*/*GEN_JNI.class",
-      ]
 
       if (!defined(deps)) {
         deps = []
@@ -1905,9 +1906,13 @@ if (!is_robolectric && enable_java_templates) {
   #     ]
   #   }
   template("android_java_prebuilt") {
-    android_library(target_name) {
+    java_library_impl(target_name) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+      type = "java_library"
+
+      supports_android = true
+      requires_android = true
     }
   }
 

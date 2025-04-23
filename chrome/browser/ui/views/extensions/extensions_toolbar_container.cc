@@ -152,9 +152,11 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
                                views::MaximumFlexSizeRule::kPreferred)
           .WithWeight(0);
   GetTargetLayoutManager()
-      ->SetFlexAllocationOrder(views::FlexAllocationOrder::kReverse)
+      ->SetFlexAllocationOrder(views::FlexAllocationOrder::kNormal)
       .SetDefault(views::kFlexBehaviorKey,
-                  hide_icon_flex_specification.WithOrder(3));
+                  hide_icon_flex_specification.WithOrder(
+                      ExtensionsToolbarContainerViewController::
+                          kFlexOrderExtensionsButton));
 
   switch (display_mode) {
     case DisplayMode::kNormal:

@@ -11,6 +11,7 @@ import androidx.annotation.ColorInt;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -25,6 +26,7 @@ import org.chromium.ui.util.ColorUtils;
  * conditions such as dark mode settings, incognito mode, security state, etc.
  * <p>The theme color is only updated when the supplied tab is non-null.
  */
+@NullMarked
 public class TopUiThemeColorProvider extends ThemeColorProvider {
     private final CurrentTabObserver mTabObserver;
 

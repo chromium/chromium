@@ -18,6 +18,8 @@ class MockEncodedVideoFrame : public EncodedVideoFrame {
   MOCK_CONST_METHOD0(Codec, media::VideoCodec());
   MOCK_CONST_METHOD0(IsKeyFrame, bool());
   MOCK_CONST_METHOD0(ColorSpace, std::optional<gfx::ColorSpace>());
+  MOCK_CONST_METHOD0(Transformation,
+                     std::optional<media::VideoTransformation>());
   MOCK_CONST_METHOD0(Resolution, gfx::Size());
 };
 

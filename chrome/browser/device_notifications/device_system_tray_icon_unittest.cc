@@ -29,6 +29,7 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -112,23 +113,17 @@ void DeviceSystemTrayIconTestBase::AddExtensionToProfile(
   extensions::ExtensionService* extension_service =
       extension_system->extension_service();
   if (!extension_service) {
-    extension_service = extension_system->CreateExtensionService(
+    extension_system->CreateExtensionService(
         base::CommandLine::ForCurrentProcess(), base::FilePath(),
         /*autoupdate_enabled=*/false);
   }
-  extension_service->AddExtension(extension);
+  extensions::ExtensionRegistrar::Get(profile)->AddExtension(extension);
 }
 
 void DeviceSystemTrayIconTestBase::UnloadExtensionFromProfile(
     Profile* profile,
     const extensions::Extension* extension) {
-  extensions::TestExtensionSystem* extension_system =
-      static_cast<extensions::TestExtensionSystem*>(
-          extensions::ExtensionSystem::Get(profile));
-  extensions::ExtensionService* extension_service =
-      extension_system->extension_service();
-  CHECK(extension_service);
-  extension_service->UnloadExtension(
+  extensions::ExtensionRegistrar::Get(profile)->RemoveExtension(
       extension->id(), extensions::UnloadedExtensionReason::UNINSTALL);
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

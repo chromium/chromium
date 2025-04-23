@@ -37,6 +37,18 @@ AIWritingAssistanceBase<Writer,
 
 // static
 template <>
+network::mojom::PermissionsPolicyFeature
+AIWritingAssistanceBase<Writer,
+                        mojom::blink::AIWriter,
+                        mojom::blink::AIManagerCreateWriterClient,
+                        WriterCreateCoreOptions,
+                        WriterCreateOptions,
+                        WriterWriteOptions>::GetPermissionsPolicy() {
+  return network::mojom::PermissionsPolicyFeature::kWriter;
+}
+
+// static
+template <>
 void AIWritingAssistanceBase<Writer,
                              mojom::blink::AIWriter,
                              mojom::blink::AIManagerCreateWriterClient,

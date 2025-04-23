@@ -51,11 +51,7 @@ namespace {
 const uint32_t kLargestOcrResolution = 2048 * 2048;
 
 // How often it would be checked that the service is idle and can be shutdown.
-constexpr base::TimeDelta kIdleCheckingDelay = base::Minutes(5);
-
-// How long after all clients are disconnected, it is checked if service is
-// idle.
-constexpr base::TimeDelta kCoolDownTime = base::Seconds(10);
+constexpr base::TimeDelta kIdleCheckingDelay = base::Seconds(3);
 
 // How long to wait for a request to the library be responded, before assuming
 // that the library is not responsive.
@@ -240,7 +236,7 @@ ScreenAIService::ScreenAIService(
       ocr_receiver_(this),
       main_content_extraction_receiver_(this) {
   screen2x_main_content_extractors_.set_disconnect_handler(
-      base::BindRepeating(&ScreenAIService::CheckIdleStateAfterDelay,
+      base::BindRepeating(&ScreenAIService::MceReceiverDisconnected,
                           weak_ptr_factory_.GetWeakPtr()));
   screen_ai_annotators_.set_disconnect_handler(
       base::BindRepeating(&ScreenAIService::OcrReceiverDisconnected,
@@ -325,7 +321,7 @@ void ScreenAIService::InitializeMainContentExtraction(
       std::move(main_content_extractor_service_receiver));
 
   std::move(callback).Run(true);
-  main_content_extraction_last_used_ = base::TimeTicks::Now();
+  mce_last_used_ = base::TimeTicks::Now();
 }
 
 void ScreenAIService::InitializeOCR(
@@ -471,6 +467,27 @@ void ScreenAIService::SetClientType(mojom::MceClientType client_type) {
       client_type;
 }
 
+void ScreenAIService::OcrReceiverDisconnected() {
+  auto entry = ocr_client_types_.find(screen_ai_annotators_.current_receiver());
+  if (entry != ocr_client_types_.end()) {
+    ocr_client_types_.erase(entry);
+  }
+  // Modify last used time to ensure the service does not shutdown while a
+  // client is disconnecting.
+  ocr_last_used_ = base::TimeTicks::Now();
+}
+
+void ScreenAIService::MceReceiverDisconnected() {
+  auto entry = mce_client_types_.find(
+      screen2x_main_content_extractors_.current_receiver());
+  if (entry != mce_client_types_.end()) {
+    mce_client_types_.erase(entry);
+  }
+  // Modify last used time to ensure the service does not shutdown while a
+  // client is disconnecting.
+  mce_last_used_ = base::TimeTicks::Now();
+}
+
 void ScreenAIService::PerformOcrAndReturnAnnotation(
     const SkBitmap& image,
     PerformOcrAndReturnAnnotationCallback callback) {
@@ -548,7 +565,7 @@ bool ScreenAIService::ExtractMainContentInternalAndRecordMetrics(
     std::optional<std::vector<int32_t>>& content_node_ids) {
   CHECK(base::Contains(mce_client_types_,
                        screen2x_main_content_extractors_.current_receiver()));
-  main_content_extraction_last_used_ = base::TimeTicks::Now();
+  mce_last_used_ = base::TimeTicks::Now();
   MainContentExtractionClientTypeForMetrics client_type = GetClientType(
       mce_client_types_[screen2x_main_content_extractors_.current_receiver()]);
 
@@ -625,24 +642,6 @@ ui::AXNodeID ScreenAIService::ComputeMainNodeForTesting(
   return ComputeMainNode(tree, content_node_ids);
 }
 
-void ScreenAIService::OcrReceiverDisconnected() {
-  auto entry = ocr_client_types_.find(screen_ai_annotators_.current_receiver());
-  if (entry != ocr_client_types_.end()) {
-    ocr_client_types_.erase(entry);
-  }
-
-  CheckIdleStateAfterDelay();
-}
-
-void ScreenAIService::CheckIdleStateAfterDelay() {
-  // Check if service is idle, a little after the client disconnects.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&ScreenAIService::ShutDownIfNoClients,
-                     weak_ptr_factory_.GetWeakPtr()),
-      kCoolDownTime);
-}
-
 bool* ScreenAIService::StartProcessNotResponsiveKillTimer(bool request_is_ocr) {
   // Ownership of this unique pointer is passed to the delayed task and a raw
   // pointer to the variable is returned to the caller. If the delayed task runs
@@ -676,7 +675,7 @@ void ScreenAIService::ShutDownIfNoClients() {
       !screen_ai_annotators_.size() || ocr_last_used_ < kIdlenessThreshold;
   bool main_content_extractioncan_not_needed =
       !screen2x_main_content_extractors_.size() ||
-      main_content_extraction_last_used_ < kIdlenessThreshold;
+      mce_last_used_ < kIdlenessThreshold;
 
   if (ocr_not_needed && main_content_extractioncan_not_needed) {
     screen_ai_shutdown_handler_->ShuttingDownOnIdle();

@@ -34,8 +34,9 @@ mojom::ActivationState ComputeActivationState(
 
   IndexedRulesetMatcher matcher(ruleset->data());
   mojom::ActivationState activation_state = parent_activation_state;
-  if (activation_state.filtering_disabled_for_document)
+  if (activation_state.filtering_disabled_for_document) {
     return activation_state;
+  }
 
   // TODO(pkalinnikov): Match several activation types in a batch.
   if (matcher.ShouldDisableFilteringForDocument(
@@ -188,8 +189,9 @@ void AsyncDocumentSubresourceFilter::GetLoadPolicyForSubdocumentURLs(
 }
 
 void AsyncDocumentSubresourceFilter::ReportDisallowedLoad() {
-  if (!first_disallowed_load_callback_.is_null())
+  if (!first_disallowed_load_callback_.is_null()) {
     std::move(first_disallowed_load_callback_).Run();
+  }
 }
 
 void AsyncDocumentSubresourceFilter::UpdateWithMoreAccurateState(
@@ -197,8 +199,10 @@ void AsyncDocumentSubresourceFilter::UpdateWithMoreAccurateState(
   // DISABLED activation level implies that the ruleset is somehow invalid. Make
   // sure that we don't update the state in that case.
   CHECK(has_activation_state(), base::NotFatalUntil::M129);
-  if (activation_state_->activation_level == mojom::ActivationLevel::kDisabled)
+  if (activation_state_->activation_level ==
+      mojom::ActivationLevel::kDisabled) {
     return;
+  }
 
   // TODO(csharrison): Split mojom::ActivationState into multiple structs, with
   // one that includes members that are inherited from the parent without
@@ -257,8 +261,9 @@ mojom::ActivationState AsyncDocumentSubresourceFilter::Core::Initialize(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(verified_ruleset, base::NotFatalUntil::M129);
 
-  if (!verified_ruleset->Get())
+  if (!verified_ruleset->Get()) {
     return mojom::ActivationState();
+  }
 
   mojom::ActivationState activation_state = ComputeActivationState(
       params.document_url, params.parent_document_origin,

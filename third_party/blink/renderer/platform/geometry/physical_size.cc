@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/geometry/physical_size.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -68,7 +69,7 @@ PhysicalSize LayoutRatioFromSizeF(gfx::SizeF ratio) {
       break;
     }
 
-    int a = floorf(x);
+    const int a = base::ClampFloor<int>(x);
     ClampedInt h2 = (h1 * a) + h0;
     ClampedInt k2 = (k1 * a) + k0;
 

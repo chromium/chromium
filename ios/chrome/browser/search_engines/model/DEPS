@@ -6,4 +6,5 @@ include_rules = [
   "+ios/chrome/browser/regional_capabilities/model",
   "+ios/chrome/browser/google/model",
   "+services/data_decoder/public",
+  "+ios/chrome/browser/signin/model/signin_util.h",
 ]

@@ -28,7 +28,7 @@ class ScopedAllowSyncPrimitivesForWebRtcDataStreamAdapter
     : public base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {};
 
 WebrtcDataStreamAdapter::WebrtcDataStreamAdapter(
-    rtc::scoped_refptr<webrtc::DataChannelInterface> channel)
+    webrtc::scoped_refptr<webrtc::DataChannelInterface> channel)
     : channel_(channel.get()) {
   channel_->RegisterObserver(this);
   DCHECK_EQ(channel_->state(), webrtc::DataChannelInterface::kConnecting);
@@ -42,11 +42,12 @@ WebrtcDataStreamAdapter::~WebrtcDataStreamAdapter() {
     // Destroy |channel_| asynchronously as it may be on stack.
     // TODO(dcheng): This could probably be ReleaseSoon() however that method
     // expects a scoped_refptr from //base whereas |channel_| is an
-    // rtc::scoped_refptr.
+    // webrtc::scoped_refptr.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce([](rtc::scoped_refptr<webrtc::DataChannelInterface>) {},
-                       std::move(channel_)));
+        base::BindOnce(
+            [](webrtc::scoped_refptr<webrtc::DataChannelInterface>) {},
+            std::move(channel_)));
   }
 }
 
@@ -65,7 +66,7 @@ void WebrtcDataStreamAdapter::Start(EventHandler* event_handler) {
 
 void WebrtcDataStreamAdapter::Send(google::protobuf::MessageLite* message,
                                    base::OnceClosure done) {
-  rtc::CopyOnWriteBuffer buffer;
+  webrtc::CopyOnWriteBuffer buffer;
   buffer.SetSize(message->ByteSizeLong());
   message->SerializeWithCachedSizesToArray(buffer.MutableData());
   pending_outgoing_messages_.emplace(

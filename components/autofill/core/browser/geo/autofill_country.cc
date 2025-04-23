@@ -180,10 +180,8 @@ AutofillCountry::address_format_extensions() const {
           : base::span(fr_extensions).first(1u);  // first<1>() => type mismatch
   overrides.emplace_back("FR", fr_extensions_span);
   overrides.emplace_back("DE", de_extensions);
+  overrides.emplace_back("PL", pl_extensions);
 
-  if (base::FeatureList::IsEnabled(features::kAutofillUsePLAddressModel)) {
-    overrides.emplace_back("PL", pl_extensions);
-  }
   if (base::FeatureList::IsEnabled(
           features::kAutofillSupportPhoneticNameForJP)) {
     overrides.emplace_back("JP", jp_extensions);

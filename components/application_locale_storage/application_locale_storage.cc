@@ -14,7 +14,7 @@ ApplicationLocaleStorage::ApplicationLocaleStorage() = default;
 
 ApplicationLocaleStorage::~ApplicationLocaleStorage() = default;
 
-const std::string& ApplicationLocaleStorage::Get() {
+const std::string& ApplicationLocaleStorage::Get() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return locale_;
 }

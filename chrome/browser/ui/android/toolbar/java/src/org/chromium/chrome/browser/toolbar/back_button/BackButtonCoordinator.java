@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.back_button;
 
 import android.animation.ObjectAnimator;
 import android.content.res.ColorStateList;
+import android.graphics.Rect;
 import android.view.View;
 import android.widget.ImageButton;
 
@@ -138,6 +139,17 @@ public class BackButtonCoordinator {
      */
     public void setOnKeyListener(View.OnKeyListener listener) {
         mMediator.setOnKeyListener(listener);
+    }
+
+    /**
+     * Gets an area of the button that are touchable/clickable.
+     *
+     * @return a {@link Rect} that contains touchable/clickable area.
+     */
+    public Rect getHitRect() {
+        final var rect = new Rect();
+        mView.getHitRect(rect);
+        return rect;
     }
 
     /**

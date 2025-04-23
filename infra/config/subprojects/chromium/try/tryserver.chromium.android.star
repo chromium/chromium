@@ -261,6 +261,21 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-14-automotive-landscape-x64-rel",
+    mirrors = [
+        "ci/android-14-automotive-landscape-x64-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-14-automotive-landscape-x64-rel",
+            "release_try_builder",
+        ],
+    ),
+    contact_team_email = "clank-engprod@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "android-14-x64-rel",
     mirrors = [
         "ci/android-14-x64-rel",
@@ -618,20 +633,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android-cronet-arm64-gn2bp-dbg",
-    mirrors = ["ci/android-cronet-arm64-gn2bp-dbg"],
-    gn_args = "ci/android-cronet-arm64-gn2bp-dbg",
-    contact_team_email = "cronet-team@google.com",
-    main_list_view = "try",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-    tryjob = try_.job(
-        location_filters = [
-            "components/cronet/gn2bp/.+",
-        ],
-    ),
-)
-
-try_.builder(
     name = "android-cronet-arm64-rel",
     mirrors = ["ci/android-cronet-arm64-rel"],
     # TODO(crbug.com/40462241): Switch this back to debug try builder when cronet's
@@ -645,55 +646,6 @@ try_.builder(
     name = "android-cronet-asan-arm-rel",
     mirrors = ["ci/android-cronet-asan-arm-rel"],
     gn_args = "ci/android-cronet-asan-arm-rel",
-    contact_team_email = "cronet-team@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "android-cronet-mainline-clang-arm64-dbg",
-    mirrors = ["ci/android-cronet-mainline-clang-arm64-dbg"],
-    gn_args = "ci/android-cronet-mainline-clang-arm64-dbg",
-    contact_team_email = "cronet-team@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "android-cronet-mainline-clang-arm64-rel",
-    mirrors = ["ci/android-cronet-mainline-clang-arm64-rel"],
-    gn_args = "ci/android-cronet-mainline-clang-arm64-rel",
-    contact_team_email = "cronet-team@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "android-cronet-mainline-clang-riscv64-dbg",
-    mirrors = ["ci/android-cronet-mainline-clang-riscv64-dbg"],
-    gn_args = "ci/android-cronet-mainline-clang-riscv64-dbg",
-    contact_team_email = "cronet-team@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "android-cronet-mainline-clang-riscv64-rel",
-    mirrors = ["ci/android-cronet-mainline-clang-riscv64-rel"],
-    gn_args = "ci/android-cronet-mainline-clang-riscv64-rel",
-    contact_team_email = "cronet-team@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "android-cronet-mainline-clang-x86-dbg",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
-    mirrors = ["ci/android-cronet-mainline-clang-x86-dbg"],
-    gn_args = "ci/android-cronet-mainline-clang-x86-dbg",
-    contact_team_email = "cronet-team@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "android-cronet-mainline-clang-x86-rel",
-    mirrors = ["ci/android-cronet-mainline-clang-x86-rel"],
-    gn_args = "ci/android-cronet-mainline-clang-x86-rel",
     contact_team_email = "cronet-team@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -1102,15 +1054,19 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android-chrome-pie-x86-wpt-fyi-rel",
-    mirrors = ["ci/android-chrome-pie-x86-wpt-fyi-rel"],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/android-chrome-pie-x86-wpt-fyi-rel",
-            "release_try_builder",
-            "strip_debug_info",
-        ],
-    ),
+    name = "android-15-chrome-wpt-fyi-rel",
+    mirrors = ["ci/android-15-chrome-wpt-fyi-rel"],
+    gn_args = "ci/android-15-chrome-wpt-fyi-rel",
+    contact_team_email = "chrome-product-engprod@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "android-15-webview-wpt-fyi-rel",
+    mirrors = ["ci/android-15-webview-wpt-fyi-rel"],
+    gn_args = "ci/android-15-webview-wpt-fyi-rel",
+    contact_team_email = "chrome-product-engprod@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -1179,13 +1135,6 @@ try_.builder(
         ],
     ),
     contact_team_email = "woa-engprod@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "android-webview-pie-x86-wpt-fyi-rel",
-    mirrors = ["ci/android-webview-pie-x86-wpt-fyi-rel"],
-    gn_args = "ci/android-webview-pie-x86-wpt-fyi-rel",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -1331,25 +1280,6 @@ try_.builder(
             "android_fastbuild",
         ],
     ),
-)
-
-try_.builder(
-    name = "android-arm64-all-targets-dbg",
-    mirrors = [
-        "ci/Android arm64 Builder All Targets (dbg)",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "android_builder",
-            "debug_try_builder",
-            "enable_android_secondary_abi",
-            "remoteexec",
-            "compile_only",
-            "arm64",
-            "android_fastbuild",
-        ],
-    ),
-    execution_timeout = 8 * time.hour,
 )
 
 try_.builder(

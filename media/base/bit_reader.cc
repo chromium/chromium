@@ -16,7 +16,7 @@ BitReader::BitReader(const uint8_t* data, int size)
       data_(data),
       bytes_left_(size),
       bit_reader_core_(this) {
-  DCHECK(data != NULL);
+  DCHECK(data != nullptr);
   DCHECK_GE(size, 0);
 }
 

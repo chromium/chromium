@@ -5,6 +5,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -44,8 +45,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.collaboration.CollaborationService;
-import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
@@ -55,6 +54,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 /** Unit tests for {@link TabGroupListBottomSheetMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -71,8 +71,6 @@ public class TabGroupListBottomSheetMediatorUnitTest {
     @Mock private TabGroupCreationCallback mTabGroupCreationCallback;
     @Mock private FaviconResolver mFaviconResolver;
     @Mock private TabGroupSyncService mTabGroupSyncService;
-    @Mock private DataSharingService mDataSharingService;
-    @Mock private CollaborationService mCollaborationService;
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
     @Mock private Tab mTab3;
@@ -100,8 +98,6 @@ public class TabGroupListBottomSheetMediatorUnitTest {
                         mTabGroupCreationCallback,
                         mFaviconResolver,
                         mTabGroupSyncService,
-                        mDataSharingService,
-                        mCollaborationService,
                         mBottomSheetController,
                         mDelegate,
                         /* showNewGroupRow= */ true);
@@ -121,6 +117,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
         mToken1 = Token.createRandom();
         mToken2 = Token.createRandom();
         mToken3 = Token.createRandom();
+        when(mFilter.getAllTabGroupIds()).thenReturn(Set.of(mToken1, mToken2));
 
         when(mTab1.getId()).thenReturn(1);
         when(mTab2.getId()).thenReturn(2);
@@ -226,6 +223,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
     public void testPopulateList_withGroups() {
         when(mDelegate.requestShowContent()).thenReturn(true);
         mMediator.requestShowContent(Arrays.asList(mTab1, mTab2));
+        verify(mTabGroupSyncService).getAllGroupIds();
 
         // New group row, plus two rows representing existing groups.
         assertEquals(3, mModelList.size());
@@ -242,11 +240,39 @@ public class TabGroupListBottomSheetMediatorUnitTest {
     }
 
     @Test
+    public void testPopulateList_incognito() {
+        mMediator =
+                new TabGroupListBottomSheetMediator(
+                        mModelList,
+                        mFilter,
+                        mTabGroupCreationCallback,
+                        mFaviconResolver,
+                        /* tabGroupSyncService= */ null,
+                        mBottomSheetController,
+                        mDelegate,
+                        /* showNewGroupRow= */ true);
+
+        when(mDelegate.requestShowContent()).thenReturn(true);
+        mMediator.requestShowContent(Arrays.asList(mTab1, mTab2));
+        verify(mTabGroupSyncService, never()).getAllGroupIds();
+
+        // New group row, plus two rows representing existing groups.
+        assertEquals(3, mModelList.size());
+        assertEquals(RowType.NEW_GROUP, mModelList.get(0).type);
+        assertEquals(RowType.EXISTING_GROUP, mModelList.get(1).type);
+        assertEquals(RowType.EXISTING_GROUP, mModelList.get(2).type);
+
+        assertNull(mModelList.get(1).model.get(TabGroupRowProperties.TIMESTAMP_EVENT));
+        assertNull(mModelList.get(2).model.get(TabGroupRowProperties.TIMESTAMP_EVENT));
+    }
+
+    @Test
     public void testPopulateList_noHiddenGroups() {
         mSavedTabGroup3.localId = new LocalTabGroupId(mToken3);
 
         when(mDelegate.requestShowContent()).thenReturn(true);
         mMediator.requestShowContent(Arrays.asList(mTab1, mTab2));
+        verify(mTabGroupSyncService).getAllGroupIds();
 
         // New group row, plus three rows representing existing groups.
         assertEquals(4, mModelList.size());
@@ -301,8 +327,6 @@ public class TabGroupListBottomSheetMediatorUnitTest {
                         mTabGroupCreationCallback,
                         mFaviconResolver,
                         mTabGroupSyncService,
-                        mDataSharingService,
-                        mCollaborationService,
                         mBottomSheetController,
                         mDelegate,
                         /* showNewGroupRow= */ false);

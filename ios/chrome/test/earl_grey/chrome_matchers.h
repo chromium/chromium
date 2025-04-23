@@ -198,6 +198,9 @@ id<GREYMatcher> TabShareButton();
 // `[ChromeEarlGrey  showTabSwitcher]` or `[ChromeEarlGreyUI openTabGrid]`.
 id<GREYMatcher> ShowTabsButton();
 
+// Returns a matcher for the blue dot on the show tabs button.
+id<GREYMatcher> BlueDotOnShowTabsButton();
+
 // Returns a matcher for Add to reading list button.
 id<GREYMatcher> AddToReadingListButton();
 
@@ -556,6 +559,14 @@ id<GREYMatcher> TabStripCellAtIndex(unsigned int index);
 // Returns a matcher for the group cell at `index` in the tab strip.
 id<GREYMatcher> TabStripGroupCellAtIndex(unsigned int index);
 
+// Returns a matcher for the blue dot view on the cell at `index` in the tab
+// strip.
+id<GREYMatcher> BlueDotOnTabStripCellAtIndex(unsigned int index);
+
+// Returns a matcher for the notification dot view on the group cell at `index`
+// in the tab strip.
+id<GREYMatcher> NotificationDotOnTabStripGroupCellAtIndex(unsigned int index);
+
 // Returns a matcher for the group cell at `index` in the tab groups panel.
 id<GREYMatcher> TabGroupsPanelCellAtIndex(unsigned int index);
 
@@ -563,6 +574,18 @@ id<GREYMatcher> TabGroupsPanelCellAtIndex(unsigned int index);
 // for the given `group_name` and `tab_count`.
 id<GREYMatcher> TabGroupsPanelCellWithName(NSString* group_name,
                                            NSInteger tab_count);
+
+// Returns a matcher for the recent activity log cell at `index` in the recent
+// activity in the tab group.
+id<GREYMatcher> TabGroupRecentActivityCellAtIndex(unsigned int index);
+
+// Returns a matcher for the activity label on the group cell at `index` in the
+// tab grid.
+id<GREYMatcher> TabGroupActivityLabelOnGroupCellAtIndex(unsigned int index);
+
+// Returns a matcher for the activity label on the grid cell at `index` in the
+// tab grid.
+id<GREYMatcher> TabGroupActivityLabelOnGridCellAtIndex(unsigned int index);
 
 // Returns a matcher for the button that closes the tab grid.
 id<GREYMatcher> TabGridDoneButton();
@@ -843,6 +866,13 @@ id<GREYMatcher> TabGroupOverflowMenuButton();
 // Returns the matcher for the back button in the tab group view.
 id<GREYMatcher> TabGroupBackButton();
 
+// Returns the matcher for the activity summary cell in the tab group view.
+id<GREYMatcher> TabGroupActivitySummaryCell();
+
+// Returns the matcher for the close button in the activity summary cell in the
+// tab group view.
+id<GREYMatcher> TabGroupActivitySummaryCellCloseButton();
+
 #pragma mark - Tab Groups Context Menus
 
 // Returns the matcher for `Add Tab to New Group` button in the context menu.
@@ -882,6 +912,10 @@ id<GREYMatcher> ShareGroupButton();
 // Returns the matcher for the manage group button in the context menu of a tab
 // group.
 id<GREYMatcher> ManageGroupButton();
+
+// Returns the matcher for the recent activity button in the context menu of a
+// tab group.
+id<GREYMatcher> RecentActivityButton();
 
 // Returns the matcher for `Leave Group` button in the context menu of a shared
 // tab group.

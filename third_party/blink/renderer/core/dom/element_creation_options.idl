@@ -6,4 +6,5 @@
 
 dictionary ElementCreationOptions {
   DOMString is;
+  [RuntimeEnabled=ScopedCustomElementRegistry] CustomElementRegistry customElementRegistry;
 };

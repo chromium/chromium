@@ -72,6 +72,7 @@ source_set("eg2_tests") {
     ":features",
     "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/download/model:eg_test_support+eg2",
     "//ios/chrome/browser/download/model:mime_types",
     "//ios/chrome/browser/download/model:test_support",
     "//ios/chrome/browser/infobars/ui_bundled/banners:public",

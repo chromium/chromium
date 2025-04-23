@@ -369,6 +369,14 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
   return self;
 }
 
+- (void)disconnect {
+  [_safeBrowsingPreference stop];
+  _safeBrowsingPreference = nil;
+
+  [_enhancedSafeBrowsingPreference stop];
+  _enhancedSafeBrowsingPreference = nil;
+}
+
 - (void)setConsumer:(id<SafetyCheckConsumer>)consumer {
   if (_consumer == consumer) {
     return;

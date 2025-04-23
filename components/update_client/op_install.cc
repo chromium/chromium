@@ -27,6 +27,7 @@
 #include "components/crx_file/crx_verifier.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/crx_cache.h"
+#include "components/update_client/pipeline_util.h"
 #include "components/update_client/protocol_definition.h"
 #include "components/update_client/task_traits.h"
 #include "components/update_client/unpacker.h"
@@ -80,25 +81,6 @@ class CallbackChecker : public base::RefCountedThreadSafe<CallbackChecker> {
   CrxInstaller::ProgressCallback progress_callback_;
 };
 
-base::Value::Dict MakeEvent(const CategorizedError& error) {
-  base::Value::Dict event;
-  event.Set("eventtype", protocol_request::kEventCrx3);
-  event.Set("eventresult",
-            static_cast<int>(error.category_ == ErrorCategory::kNone
-                                 ? protocol_request::kEventResultSuccess
-                                 : protocol_request::kEventResultError));
-  if (error.category_ != ErrorCategory::kNone) {
-    event.Set("errorcat", static_cast<int>(error.category_));
-  }
-  if (error.code_ != 0) {
-    event.Set("errorcode", error.code_);
-  }
-  if (error.extra_ != 0) {
-    event.Set("extracode1", error.extra_);
-  }
-  return event;
-}
-
 // Runs on the original sequence.
 void InstallComplete(
     base::OnceCallback<void(const CrxInstaller::Result&)>
@@ -108,10 +90,11 @@ void InstallComplete(
     base::RepeatingCallback<void(base::Value::Dict)> event_adder,
     base::FilePath crx_file,
     const CrxInstaller::Result& result) {
-  event_adder.Run(MakeEvent(result.result));
+  event_adder.Run(
+      MakeSimpleOperationEvent(result.result, protocol_request::kEventCrx3));
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(installer_result_callback), result));
-  if (result.result.category_ != ErrorCategory::kNone) {
+  if (result.result.category != ErrorCategory::kNone) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), base::unexpected(result.result)));
@@ -141,9 +124,9 @@ void Install(base::OnceCallback<void(const CrxInstaller::Result&)> callback,
              const Unpacker::Result& result) {
   if (result.error != UnpackerError::kNone) {
     std::move(callback).Run(
-        CrxInstaller::Result({.category_ = ErrorCategory::kUnpack,
-                              .code_ = static_cast<int>(result.error),
-                              .extra_ = result.extended_error}));
+        CrxInstaller::Result({.category = ErrorCategory::kUnpack,
+                              .code = static_cast<int>(result.error),
+                              .extra = result.extended_error}));
     return;
   }
 

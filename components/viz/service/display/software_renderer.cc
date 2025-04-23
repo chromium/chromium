@@ -537,19 +537,21 @@ void SoftwareRenderer::DrawTileQuad(const TileDrawQuad* quad) {
 void SoftwareRenderer::DrawRenderPassQuad(
     const AggregatedRenderPassDrawQuad* quad) {
   auto it = render_pass_bitmaps_.find(quad->render_pass_id);
-  if (it == render_pass_bitmaps_.end())
-    return;
-  SkBitmap& source_bitmap = it->second.bitmap;
+  // Set to `nullptr` if there is no bitmap (e.g. if the backing has empty
+  // size), in case this RPDQ contains a filter that does not require an input
+  // image (e.g. a solid color fill).
+  const SkBitmap* source_bitmap =
+      it != render_pass_bitmaps_.end() ? &it->second.bitmap : nullptr;
 
   SkRect dest_rect = gfx::RectToSkRect(quad->rect);
   SkRect dest_visible_rect = gfx::RectToSkRect(quad->visible_rect);
   SkRect content_rect = RectFToSkRect(quad->tex_coord_rect);
 
-  if (content_rect.isEmpty()) {
+  if (source_bitmap && content_rect.isEmpty()) {
     // In case someone forgets to set it, we're treating an empty
     // `tex_coord_rect` as "the full image".
     content_rect = gfx::RectToSkRect(
-        gfx::Rect(source_bitmap.width(), source_bitmap.height()));
+        gfx::Rect(source_bitmap->width(), source_bitmap->height()));
   }
 
   sk_sp<SkImage> filter_image;
@@ -563,9 +565,9 @@ void SoftwareRenderer::DrawRenderPassQuad(
       SkIRect result_rect;
       // TODO(ajuma): Apply the filter in the same pass as the content where
       // possible (e.g. when there's no origin offset). See crbug.com/308201.
-      filter_image =
-          ApplyImageFilter(image_filter.get(), quad, source_bitmap,
-                           /* offset_expanded_bounds = */ true, &result_rect);
+      filter_image = ApplyImageFilter(
+          image_filter.get(), quad, source_bitmap ? *source_bitmap : SkBitmap(),
+          /*offset_expanded_bounds=*/true, &result_rect);
       if (result_rect.isEmpty()) {
         return;
       }
@@ -581,7 +583,12 @@ void SoftwareRenderer::DrawRenderPassQuad(
 
   sk_sp<SkShader> shader;
   if (!filter_image) {
-    shader = source_bitmap.makeShader(current_sampling_, content_mat);
+    if (!source_bitmap) {
+      // There is no render pass backing bitmap and no filter that can possibly
+      // draw pixels.
+      return;
+    }
+    shader = source_bitmap->makeShader(current_sampling_, content_mat);
   } else {
     shader = filter_image->makeShader(current_sampling_, content_mat);
   }
@@ -820,8 +827,16 @@ sk_sp<SkImage> SoftwareRenderer::ApplyImageFilter(
   cc::ScopedSubnormalFloatDisabler disabler;
   paint.setImageFilter(filter->makeWithLocalMatrix(local_matrix));
   surface->getCanvas()->translate(-canvas_offset.x(), -canvas_offset.y());
-  surface->getCanvas()->drawImage(to_filter.asImage(), quad->rect.x(),
-                                  quad->rect.y(), SkSamplingOptions(), &paint);
+  if (!to_filter.drawsNothing()) {
+    surface->getCanvas()->drawImage(to_filter.asImage(), quad->rect.x(),
+                                    quad->rect.y(), SkSamplingOptions(),
+                                    &paint);
+  } else {
+    // It's possible to have filters that don't require an input image. We still
+    // want the filter to paint even if `to_filter` is empty, since `drawImage`
+    // may exit early if its input image draws nothing.
+    surface->getCanvas()->drawRect(SkRect::Make(*result_rect), paint);
+  }
   return surface->makeImageSnapshot();
 }
 
@@ -872,12 +887,12 @@ sk_sp<SkShader> SoftwareRenderer::GetBackdropFilterShader(
       BackdropFiltersForPass(quad->render_pass_id);
   if (!ShouldApplyBackdropFilters(backdrop_filters, quad))
     return nullptr;
-  std::optional<gfx::RRectF> backdrop_filter_bounds =
+  std::optional<SkPath> backdrop_filter_bounds =
       BackdropFilterBoundsForPass(quad->render_pass_id);
 
   if (backdrop_filter_bounds.has_value()) {
-    backdrop_filter_bounds->Scale(quad->filters_scale.x(),
-                                  quad->filters_scale.y());
+    backdrop_filter_bounds->transform(
+        SkMatrix::Scale(quad->filters_scale.x(), quad->filters_scale.y()));
   }
 
   gfx::Transform contents_device_transform =
@@ -905,7 +920,8 @@ sk_sp<SkShader> SoftwareRenderer::GetBackdropFilterShader(
   gfx::Point image_offset = gfx::Point(0, 0);
   if (backdrop_filter_bounds.has_value()) {
     gfx::Rect filter_clip = gfx::ToEnclosingRect(cc::MathUtil::MapClippedRect(
-        backdrop_filter_bounds_transform, backdrop_filter_bounds->rect()));
+        backdrop_filter_bounds_transform,
+        gfx::SkRectToRectF(backdrop_filter_bounds->getBounds())));
     filter_clip.Intersect(
         gfx::Rect(backdrop_bitmap.width(), backdrop_bitmap.height()));
     if (filter_clip.IsEmpty())
@@ -960,8 +976,8 @@ sk_sp<SkShader> SoftwareRenderer::GetBackdropFilterShader(
   if (backdrop_filter_bounds) {
     canvas.setMatrix(
         gfx::TransformToFlattenedSkMatrix(backdrop_filter_bounds_transform));
-    canvas.clipRRect(SkRRect(*backdrop_filter_bounds), SkClipOp::kIntersect,
-                     true /* antialias */);
+    canvas.clipPath(*backdrop_filter_bounds, SkClipOp::kIntersect,
+                    true /* antialias */);
     canvas.resetMatrix();
   }
 

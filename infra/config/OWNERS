@@ -38,3 +38,8 @@ per-file subprojects/chromium/try/tryserver.chromium.android.star=wnwen@chromium
 # Autosharder owners
 per-file targets/autoshard_exceptions.json=chromium-autosharder@chops-service-accounts.iam.gserviceaccount.com
 per-file generated/builders/*/*/targets/*=chromium-autosharder@chops-service-accounts.iam.gserviceaccount.com
+
+# CBRI Branch Day Automation go/automate-branch-day
+per-file generated/...=chrome-branch-day@chops-service-accounts.iam.gserviceaccount.com
+per-file milestones.json=chrome-branch-day@chops-service-accounts.iam.gserviceaccount.com
+per-file settings.json=chrome-branch-day@chops-service-accounts.iam.gserviceaccount.com

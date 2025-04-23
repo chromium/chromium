@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_DEMO_SURFACELESS_GL_RENDERER_H_
 #define UI_OZONE_DEMO_SURFACELESS_GL_RENDERER_H_
 
+#include <array>
 #include <memory>
 
 #include "ui/gfx/geometry/rect_f.h"
@@ -65,9 +66,10 @@ class SurfacelessGlRenderer : public RendererBase {
     unsigned int gl_tex_ = 0;
   };
 
-  std::unique_ptr<BufferWrapper> buffers_[2];
+  std::array<std::unique_ptr<BufferWrapper>, 2> buffers_;
 
-  std::unique_ptr<BufferWrapper> overlay_buffers_[kMaxLayers][2];
+  std::array<std::array<std::unique_ptr<BufferWrapper>, 2>, kMaxLayers>
+      overlay_buffers_;
   size_t overlay_cnt_ = 0;
   bool disable_primary_plane_ = false;
   gfx::Rect primary_plane_rect_;

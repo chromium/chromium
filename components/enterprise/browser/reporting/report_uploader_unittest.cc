@@ -42,10 +42,19 @@ auto ScheduleResponse(policy::CloudPolicyClient::Result result) {
   };
 }
 
+// Returns a function that schedules a callback it is passed as second parameter
+// with the given result. Useful to test `UploadReport` function.
+auto ScheduleProfileResponse(policy::CloudPolicyClient::Result result) {
+  return [result](bool /*use_cookies*/, auto /*report*/, auto callback) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), result));
+  };
+}
+
 }  // namespace
 
 class ReportUploaderTest : public ::testing::Test {
- public:
+ protected:
   // Different CloudPolicyClient functions will be used in test cases based
   // on the current operation system. They share same retry and error handling
   // behaviors provided by ReportUploader.
@@ -90,7 +99,9 @@ class ReportUploaderTest : public ::testing::Test {
     }
     has_responded_ = false;
     uploader_->SetRequestAndUpload(
-        GetReportType(), std::move(requests),
+        ReportGenerationConfig(GetReportType(), SecuritySignalsMode::kNoSignals,
+                               use_cookies_),
+        std::move(requests),
         base::BindOnce(&ReportUploaderTest::OnReportUploaded,
                        base::Unretained(this), expected_status));
   }
@@ -131,12 +142,18 @@ class ReportUploaderTest : public ::testing::Test {
   std::unique_ptr<ReportUploader> uploader_;
   ::testing::StrictMock<policy::MockCloudPolicyClient> client_;
   bool has_responded_ = false;
+  bool use_cookies_ = false;
   base::HistogramTester histogram_tester_;
 };
 
 class ReportUploaderTestWithTransientError
     : public ReportUploaderTest,
       public ::testing::WithParamInterface<policy::DeviceManagementStatus> {};
+
+class ReportUploaderTestWithProfileReportType : public ReportUploaderTest {
+ public:
+  ReportType GetReportType() override { return ReportType::kProfileReport; }
+};
 
 class ReportUploaderTestWithReportType
     : public ReportUploaderTest,
@@ -155,8 +172,10 @@ TEST_F(ReportUploaderTest, NotRegisteredCrashes) {
   ReportRequestQueue requests;
   requests.push(std::make_unique<ReportRequest>(GetReportType()));
   base::test::TestFuture<ReportUploader::ReportStatus> future;
-  uploader_->SetRequestAndUpload(GetReportType(), std::move(requests),
-                                 future.GetCallback());
+  uploader_->SetRequestAndUpload(
+      ReportGenerationConfig(GetReportType(), SecuritySignalsMode::kNoSignals,
+                             use_cookies_),
+      std::move(requests), future.GetCallback());
   ASSERT_DEATH(std::ignore = future.Get(), "");
 }
 #endif  // defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
@@ -332,6 +351,20 @@ TEST_F(ReportUploaderTest, MultipleReports) {
   ::testing::Mock::VerifyAndClearExpectations(&client_);
 }
 
+TEST_F(ReportUploaderTestWithProfileReportType, ProfileReportWithCookies) {
+  use_cookies_ = true;
+
+  EXPECT_CALL(client_, UploadChromeProfileReport(/*use_cookies=*/true, _, _))
+      .WillOnce(ScheduleProfileResponse(
+          policy::CloudPolicyClient::Result(policy::DM_STATUS_SUCCESS)));
+
+  UploadReportAndSetExpectation(/*number_of_request=*/1,
+                                ReportUploader::kSuccess);
+
+  RunNextTask();
+  EXPECT_TRUE(has_responded_);
+}
+
 // Verified three DM server error that is transient.
 TEST_P(ReportUploaderTestWithTransientError, WithoutRetry) {
   EXPECT_CALL(client_, UploadReport)
@@ -360,8 +393,8 @@ TEST_P(ReportUploaderTestWithReportType, Success) {
               policy::CloudPolicyClient::Result(policy::DM_STATUS_SUCCESS)));
       break;
     case ReportType::kProfileReport:
-      EXPECT_CALL(client_, UploadChromeProfileReport)
-          .WillOnce(ScheduleResponse(
+      EXPECT_CALL(client_, UploadChromeProfileReport(use_cookies_, _, _))
+          .WillOnce(ScheduleProfileResponse(
               policy::CloudPolicyClient::Result(policy::DM_STATUS_SUCCESS)));
       break;
   }

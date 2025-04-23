@@ -8,7 +8,7 @@ GEN_INCLUDE(['../../testing/chromevox_e2e_test_base.js']);
 /**
  * Test fixture for ISearch.
  */
-ChromeVoxISearchTest = class extends ChromeVoxE2ETest {
+ChromeVoxMV2ISearchTest = class extends ChromeVoxE2ETest {
   /** @override */
   get runtimeDeps() {
     return ['ISearch', 'ISearchHandler'];
@@ -67,7 +67,7 @@ class FakeISearchHandler {
 }
 
 
-AX_TEST_F('ChromeVoxISearchTest', 'Simple', async function() {
+AX_TEST_F('ChromeVoxMV2ISearchTest', 'Simple', async function() {
   const rootNode = await this.runWithLoadedTree(this.linksAndHeadingsDoc);
   const handler = new FakeISearchHandler(this);
   const search = new ISearch(new Cursor(rootNode, 0));

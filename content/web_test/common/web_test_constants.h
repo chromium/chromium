@@ -7,8 +7,6 @@
 
 namespace content {
 
-constexpr int kDefaultDatabaseQuota = -1;
-
 extern const char kDictKeyWorkQueueHasItems[];
 
 }  // namespace content

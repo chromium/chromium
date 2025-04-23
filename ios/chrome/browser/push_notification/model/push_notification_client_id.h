@@ -29,4 +29,11 @@ enum class PushNotificationClientId {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:PushNotificationClientId)
 
+// Specifies whether a push notification client (via PushNotificationClientId)
+// operates at the application level or is tied to a specific user Profile.
+enum class PushNotificationClientScope {
+  kAppWide,
+  kPerProfile,
+};
+
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_CLIENT_ID_H_

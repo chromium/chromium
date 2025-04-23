@@ -210,22 +210,20 @@ NetworkServiceNetworkDelegate::OnGetStorageAccessStatus(
         .GetStorageAccessStatus(
             redirect_info->new_url, redirect_info->new_site_for_cookies,
             request.isolation_info().top_frame_origin(),
-            request.cookie_setting_overrides(), GetPermissionsPolicy(request));
+            request.cookie_setting_overrides(), request.cookie_partition_key(),
+            GetPermissionsPolicy(request));
   }
   return network_context_->cookie_manager()
       ->cookie_settings()
       .GetStorageAccessStatus(request.url(), request.site_for_cookies(),
                               request.isolation_info().top_frame_origin(),
                               request.cookie_setting_overrides(),
+                              request.cookie_partition_key(),
                               GetPermissionsPolicy(request));
 }
 
-bool NetworkServiceNetworkDelegate::OnIsStorageAccessHeaderEnabled(
-    const url::Origin* top_frame_origin,
-    const GURL& url) const {
-  return network_context_->cookie_manager()
-      ->cookie_settings()
-      .IsStorageAccessHeadersEnabled(url, top_frame_origin);
+bool NetworkServiceNetworkDelegate::OnIsStorageAccessHeaderEnabled() const {
+  return CookieSettings::IsStorageAccessHeadersEnabled();
 }
 
 bool NetworkServiceNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(

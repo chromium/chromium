@@ -55,10 +55,6 @@ namespace storage {
 
 namespace {
 
-// Declared to shorten the line lengths.
-static const blink::mojom::StorageType kTemp =
-    blink::mojom::StorageType::kTemporary;
-
 static constexpr char kDatabaseName[] = "QuotaManager";
 
 bool ContainsBucket(const std::set<BucketLocator>& buckets,
@@ -211,7 +207,6 @@ TEST_P(QuotaDatabaseTest, UpdateOrCreateBucket) {
   ASSERT_GT(created_bucket.id.value(), 0);
   ASSERT_EQ(created_bucket.name, params.name);
   ASSERT_EQ(created_bucket.storage_key, params.storage_key);
-  ASSERT_EQ(created_bucket.type, kTemp);
 
   // Should return the same bucket when querying again.
   ASSERT_OK_AND_ASSIGN(BucketInfo retrieved_bucket,
@@ -219,7 +214,6 @@ TEST_P(QuotaDatabaseTest, UpdateOrCreateBucket) {
   ASSERT_EQ(retrieved_bucket.id, created_bucket.id);
   ASSERT_EQ(retrieved_bucket.name, created_bucket.name);
   ASSERT_EQ(retrieved_bucket.storage_key, created_bucket.storage_key);
-  ASSERT_EQ(retrieved_bucket.type, created_bucket.type);
 
   // Test `max_bucket_count`.
   BucketInitParams params2(
@@ -297,14 +291,12 @@ TEST_P(QuotaDatabaseTest, GetBucket) {
   ASSERT_GT(created_bucket.id.value(), 0);
   ASSERT_EQ(created_bucket.name, bucket_name);
   ASSERT_EQ(created_bucket.storage_key, storage_key);
-  ASSERT_EQ(created_bucket.type, kTemp);
 
   ASSERT_OK_AND_ASSIGN(BucketInfo queried_bucket,
                        db->GetBucket(storage_key, bucket_name));
   EXPECT_EQ(queried_bucket.id, created_bucket.id);
   EXPECT_EQ(queried_bucket.name, created_bucket.name);
   EXPECT_EQ(queried_bucket.storage_key, created_bucket.storage_key);
-  ASSERT_EQ(queried_bucket.type, created_bucket.type);
 
   // Can't retrieve buckets with name mismatch.
   EXPECT_THAT(db->GetBucket(storage_key, "does_not_exist"),
@@ -330,13 +322,11 @@ TEST_P(QuotaDatabaseTest, GetBucketById) {
   ASSERT_GT(created_bucket.id.value(), 0);
   ASSERT_EQ(created_bucket.name, bucket_name);
   ASSERT_EQ(created_bucket.storage_key, storage_key);
-  ASSERT_EQ(created_bucket.type, kTemp);
 
   ASSERT_OK_AND_ASSIGN(BucketInfo queried_bucket,
                        db->GetBucketById(created_bucket.id));
   EXPECT_EQ(queried_bucket.name, created_bucket.name);
   EXPECT_EQ(queried_bucket.storage_key, created_bucket.storage_key);
-  ASSERT_EQ(queried_bucket.type, created_bucket.type);
 
   constexpr BucketId kNonExistentBucketId(7777);
   EXPECT_THAT(db->GetBucketById(BucketId(kNonExistentBucketId)),
@@ -532,9 +522,9 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
             QuotaError::kNone);
 
   BucketLocator bucket_locator = BucketLocator(
-      bucket_id3, storage_key3, kTemp, bucket3->name == kDefaultBucketName);
+      bucket_id3, storage_key3, bucket3->name == kDefaultBucketName);
 
-  // Delete storage_key/type last access time information.
+  // Delete storage_key last access time information.
   ASSERT_OK_AND_ASSIGN(auto deleted, db->DeleteBucketData(bucket_locator));
   EXPECT_EQ(bucket_id3, BucketId::FromUnsafeValue(deleted->bucket_id));
 

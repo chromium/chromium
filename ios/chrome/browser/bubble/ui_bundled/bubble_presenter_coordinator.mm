@@ -187,6 +187,10 @@
       }
       break;
     }
+    case InProductHelpType::kSwitchAccountsWithNTPAccountParticleDisc: {
+      [_presenter presentSwitchAccountsWithNTPAccountParticleDiscBubble];
+      break;
+    }
   }
 }
 

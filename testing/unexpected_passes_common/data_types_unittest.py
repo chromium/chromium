@@ -211,6 +211,16 @@ class ExpectationUnittest(unittest.TestCase):
     self.assertEqual(e.AsExpectationFileString(),
                      'bug [ tag1 tag2 ] foo\\*/* [ Failure ]')
 
+  def testAsExpectationFileStringWithTrailingComment(self):
+    e = data_types.Expectation('foo/test', ['tag2', 'tag1'], 'Failure',
+                               NON_WILDCARD)
+    self.assertEqual(e.AsExpectationFileString(),
+                     e.AsExpectationFileStringWithTrailingComment(None))
+    self.assertEqual(e.AsExpectationFileString(),
+                     e.AsExpectationFileStringWithTrailingComment(''))
+    self.assertEqual(e.AsExpectationFileStringWithTrailingComment(' # comment'),
+                     '[ tag1 tag2 ] foo/test [ Failure ] # comment')
+
 
 class ResultUnittest(unittest.TestCase):
   def testEquality(self) -> None:

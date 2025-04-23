@@ -5,9 +5,8 @@
 #ifndef REMOTING_BASE_UTIL_H_
 #define REMOTING_BASE_UTIL_H_
 
-#include <stddef.h>
-#include <stdint.h>
 #include <string>
+#include <string_view>
 
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
@@ -27,20 +26,11 @@ webrtc::DesktopRect AlignRect(const webrtc::DesktopRect& rect);
 webrtc::DesktopRect GetRowAlignedRect(const webrtc::DesktopRect rect,
                                       int max_right);
 
-// Copy content of a rectangle in a RGB32 image.
-void CopyRGB32Rect(const uint8_t* source_buffer,
-                   int source_stride,
-                   const webrtc::DesktopRect& source_buffer_rect,
-                   uint8_t* dest_buffer,
-                   int dest_stride,
-                   const webrtc::DesktopRect& dest_buffer_rect,
-                   const webrtc::DesktopRect& dest_rect);
-
 // Replaces every occurrence of "\n" in a string by "\r\n".
-std::string ReplaceLfByCrLf(const std::string& in);
+std::string ReplaceLfByCrLf(std::string_view in);
 
 // Replaces every occurrence of "\r\n" in a string by "\n".
-std::string ReplaceCrLfByLf(const std::string& in);
+std::string ReplaceCrLfByLf(std::string_view in);
 
 bool DoesRectContain(const webrtc::DesktopRect& a,
                      const webrtc::DesktopRect& b);

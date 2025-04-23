@@ -27,8 +27,9 @@ bool BrowserProcessTask::IsKillable() {
   return false;
 }
 
-void BrowserProcessTask::Kill() {
+bool BrowserProcessTask::Kill() {
   // Never kill the browser process.
+  return false;
 }
 
 void BrowserProcessTask::Refresh(const base::TimeDelta& update_interval,

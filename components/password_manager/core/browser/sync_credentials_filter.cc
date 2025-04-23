@@ -11,7 +11,6 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -76,11 +75,8 @@ bool SyncCredentialsFilter::ShouldSave(const PasswordForm& form) const {
 
 bool SyncCredentialsFilter::ShouldSaveGaiaPasswordHash(
     const PasswordForm& form) const {
-  if (base::FeatureList::IsEnabled(features::kPasswordReuseDetectionEnabled)) {
-    return !client_->IsOffTheRecord() &&
-           sync_util::IsGaiaCredentialPage(form.signon_realm);
-  }
-  return false;
+  return !client_->IsOffTheRecord() &&
+         sync_util::IsGaiaCredentialPage(form.signon_realm);
 }
 
 bool SyncCredentialsFilter::ShouldSaveEnterprisePasswordHash(

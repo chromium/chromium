@@ -102,7 +102,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/bluetooth:unit_tests",
     "//chrome/browser/ash/boca:unit_tests",
     "//chrome/browser/ash/boca/on_task:unit_tests",
-    "//chrome/browser/ash/boca/spotlight:unit_tests",
     "//chrome/browser/ash/borealis:unit_tests",
     "//chrome/browser/ash/bruschetta:unit_tests",
     "//chrome/browser/ash/calendar:unit_tests",
@@ -231,6 +230,12 @@ source_set("unit_tests") {
     "//chrome/browser/ash/video_conference:unit_tests",
     "//chrome/browser/ash/wallpaper_handlers:unit_tests",
     "//chrome/browser/ui/views/select_file_dialog_extension:unit_tests",
+
+    # TODO(crbug.com/410983208): This is for FakeOwnerSettingsService.
+    # Split the target into two, one for the production modules and
+    # the other for test only modules, then let this target depend on
+    # the latter.
+    "//chrome/browser/ash/ownership",
   ]
 
   if (is_cfm) {
@@ -262,6 +267,7 @@ group("browser_tests") {
     "//chrome/browser/ash/base:browser_tests",
     "//chrome/browser/ash/bluetooth:browser_tests",
     "//chrome/browser/ash/boca/on_task:browser_tests",
+    "//chrome/browser/ash/boca/spotlight:browser_tests",
     "//chrome/browser/ash/bruschetta:browser_tests",
     "//chrome/browser/ash/child_accounts:browser_tests",
     "//chrome/browser/ash/crosapi:browser_tests",
@@ -347,7 +353,6 @@ if (is_chromeos_device) {
 
     deps = [
       "//chrome/browser/ash/accessibility:integration_tests",
-      "//chrome/browser/ash/assistant:integration_tests",
       "//chrome/browser/ash/bluetooth:integration_tests",
       "//chrome/browser/ash/child_accounts:integration_tests",
       "//chrome/browser/ash/external_metrics:integration_tests",

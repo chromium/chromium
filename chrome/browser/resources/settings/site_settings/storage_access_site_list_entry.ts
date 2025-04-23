@@ -59,14 +59,16 @@ export class StorageAccessSiteListEntryElement extends
         notify: true,
         value: false,
       },
+
+      description_: String,
+      expandAriaLabel_: String,
     };
   }
 
-  model: StorageAccessSiteException;
-
-  private description_: string;
-  private expandAriaLabel_: string;
-  private expanded_: boolean;
+  declare model: StorageAccessSiteException;
+  declare private description_: string;
+  declare private expandAriaLabel_: string;
+  declare private expanded_: boolean;
 
   /**
    * Triggered when the top row reset button is clicked.

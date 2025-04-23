@@ -17,6 +17,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -25,6 +26,7 @@ import java.util.Set;
 /** Stores visited sites and logs the count of distinct visits over a week. */
 @Lifetime.Singleton
 @JNINamespace("android_webview")
+@NullMarked
 public final class AwSiteVisitLogger {
     // This uses the same file name as {@link AwOriginVisitLogger} so that
     // only one shared preference XML file needs to be opened on navigation.

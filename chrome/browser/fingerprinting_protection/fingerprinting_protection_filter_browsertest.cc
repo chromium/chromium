@@ -56,6 +56,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
   ASSERT_NO_FATAL_FAILURE(SetRulesetToDisallowURLsWithSubstring(
       "suffix-that-does-not-match-anything"));
   ASSERT_TRUE(NavigateToDestination(url_a));
+  // Update the source of the script to be from non-localhost.
   UpdateIncludedScriptSource(url_b);
   EXPECT_TRUE(
       WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
@@ -72,6 +73,42 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
       NavigateToDestination(GetTestUrl("/frame_with_no_subresources.html")));
   UpdateIncludedScriptSource(url_b);
   EXPECT_FALSE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
+
+  // Navigate to about:blank first to avoid reusing the previous ruleset for
+  // the next check.
+  ASSERT_TRUE(NavigateToDestination(GURL(url::kAboutBlankURL)));
+  SetRulesetToDisallowURLsWithSubstring("frame_with_included_script.html");
+  ASSERT_TRUE(NavigateToDestination(url_a));
+
+  // The root frame document should never be filtered.
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
+}
+
+// There should be no activation on localhosts, except for when
+// --enable-benchmarking switch is active.
+IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
+                       NoMainFrameActivation_Localhost) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // Uses localhost without `UpdateIncludedScriptSource`.
+  GURL url_a = GetTestUrl("/frame_with_included_script.html");
+
+  ASSERT_NO_FATAL_FAILURE(SetRulesetToDisallowURLsWithSubstring(
+      "suffix-that-does-not-match-anything"));
+  ASSERT_TRUE(NavigateToDestination(url_a));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
+
+  // Navigate to about:blank first to avoid reusing the previous ruleset for
+  // the next check.
+  ASSERT_TRUE(NavigateToDestination(GURL(url::kAboutBlankURL)));
+
+  ASSERT_NO_FATAL_FAILURE(
+      SetRulesetToDisallowURLsWithSubstring("included_script.js"));
+  ASSERT_TRUE(
+      NavigateToDestination(GetTestUrl("/frame_with_included_script.html")));
+  EXPECT_TRUE(
       WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
   // Navigate to about:blank first to avoid reusing the previous ruleset for

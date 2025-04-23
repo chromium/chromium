@@ -28,6 +28,7 @@ class MEDIA_EXPORT Rendition {
 
   using Group = RenditionGroup;
   explicit Rendition(base::PassKey<Group>, CtorArgs args);
+  static Rendition CreateRenditionForTesting(CtorArgs args);
 
   Rendition(const Rendition&) = delete;
   Rendition(Rendition&&);
@@ -71,6 +72,8 @@ class MEDIA_EXPORT Rendition {
   bool MayAutoSelect() const { return autoselect_; }
 
  private:
+  explicit Rendition(CtorArgs args);
+
   std::optional<GURL> uri_;
   std::string name_;
   std::optional<std::string> language_;

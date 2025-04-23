@@ -195,6 +195,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_device_id.h"
 #include "content/public/browser/network_service_util.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
@@ -243,6 +244,7 @@
 #include "services/network/public/cpp/not_implemented_url_loader_factory.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
@@ -993,6 +995,24 @@ GURL GetLastDocumentURL(
   return params.url;
 }
 
+// Return true when `mode` is enabled for kAvoidUnnecessaryBeforeUnloadCheckSync
+// feature (see: https://crbug.com/396998476).
+bool IsAvoidUnnecessaryBeforeUnloadCheckSyncEnabledFor(
+    features::AvoidUnnecessaryBeforeUnloadCheckSyncMode mode) {
+  if (!GetContentClient()
+           ->browser()
+           ->SupportsAvoidUnnecessaryBeforeUnloadCheckSync()) {
+    return false;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          features::kAvoidUnnecessaryBeforeUnloadCheckSync)) {
+    return false;
+  }
+
+  return features::kAvoidUnnecessaryBeforeUnloadCheckSyncMode.Get() == mode;
+}
+
 // Returns true if `host` has the Window Management permission granted.
 bool IsWindowManagementGranted(RenderFrameHost* host) {
   content::PermissionController* permission_controller =
@@ -1000,8 +1020,10 @@ bool IsWindowManagementGranted(RenderFrameHost* host) {
   DCHECK(permission_controller);
 
   return permission_controller->GetPermissionStatusForCurrentDocument(
-             blink::PermissionType::WINDOW_MANAGEMENT, host) ==
-         blink::mojom::PermissionStatus::GRANTED;
+             content::PermissionDescriptorUtil::
+                 CreatePermissionDescriptorForPermissionType(
+                     blink::PermissionType::WINDOW_MANAGEMENT),
+             host) == blink::mojom::PermissionStatus::GRANTED;
 }
 
 bool IsOpenGraphMetadataValid(const blink::mojom::OpenGraphMetadata* metadata) {
@@ -1595,7 +1617,9 @@ class DiscardedRFHProcessHelper : public base::SupportsUserData::Data,
 // with this function.
 void RecordNavigationTraceEventsAndMetrics(
     const NavigationRequest::Timeline& timeline,
-    const GURL& url) {
+    const GURL& url,
+    bool is_primary_main_frame,
+    bool is_same_document_navigation) {
   DCHECK(!timeline.start.is_null());
 
   // Record these trace events in a global "Navigations" track, so that it can
@@ -1673,8 +1697,8 @@ void RecordNavigationTraceEventsAndMetrics(
   // and potentially less useful, so just return early after logging a top-level
   // event for the navigation above.
   //
-  // TODO(alexmos): Record a better renderer-side start time for synchronous
-  // renderer commits and create an additional tracing slice for the
+  // TODO(crbug.com/409589669): Record a better renderer-side start time for
+  // synchronous renderer commits and create an additional tracing slice for the
   // renderer-side work involved in synchronous navigations.
   if (timeline.commit_ipc_sent.is_null()) {
     return;
@@ -1791,8 +1815,17 @@ void RecordNavigationTraceEventsAndMetrics(
   // Record the remaining duration of the navigation, moving the start time
   // forward by the amount that was ignored.
   log_trace_event_and_uma("TotalExcludingBeforeUnload", track2, duration_start,
-                          timeline.finish,
-                          /*histogram_name=*/"TotalExcludingBeforeUnload");
+                          timeline.finish);
+
+  // Also record a separate metric for main-frame, cross-document cases for
+  // better comparison with guardrail metrics.
+  bool is_main_frame_cross_doc =
+      is_primary_main_frame && !is_same_document_navigation;
+  if (is_main_frame_cross_doc && (timeline.finish >= duration_start)) {
+    base::UmaHistogramTimes(
+        "Navigation.Timeline.TotalExcludingBeforeUnload.MainFrameOnly.Duration",
+        timeline.finish - duration_start);
+  }
 
   // Most navigation metrics currently ignore everything before the adjusted
   // common_params start time, which is after any beforeunload handling (either
@@ -1808,6 +1841,12 @@ void RecordNavigationTraceEventsAndMetrics(
     log_trace_event_and_uma("IncorrectlyIgnored", track2, duration_start,
                             timeline.common_params_start,
                             /*histogram_name=*/"IgnoredIncorrectly");
+    if (is_main_frame_cross_doc &&
+        (timeline.common_params_start >= duration_start)) {
+      base::UmaHistogramTimes(
+          "Navigation.Timeline.IgnoredIncorrectly.MainFrameOnly.Duration",
+          timeline.common_params_start - duration_start);
+    }
     // Also record what percentage was incorrectly ignored.
     base::TimeDelta ignored_incorrectly =
         timeline.common_params_start - duration_start;
@@ -1820,6 +1859,11 @@ void RecordNavigationTraceEventsAndMetrics(
       base::UmaHistogramPercentage(
           "Navigation.Timeline.IgnoredIncorrectly.Percentage",
           ignored_percentage);
+      if (is_main_frame_cross_doc) {
+        base::UmaHistogramPercentage(
+            "Navigation.Timeline.IgnoredIncorrectly.MainFrameOnly.Percentage",
+            ignored_percentage);
+      }
     }
   }
 }
@@ -6847,6 +6891,13 @@ bool RenderFrameHostImpl::AncestorsAllowSameSiteNoneCookiesOverride(
   return true;
 }
 
+void RenderFrameHostImpl::OnKeepAliveRequestCreated(
+    const network::ResourceRequest& resource_request) {
+  if (delegate_) {
+    delegate_->OnKeepAliveRequestCreated(resource_request, this);
+  }
+}
+
 #if BUILDFLAG(IS_ANDROID)
 void RenderFrameHostImpl::RequestSmartClipExtract(
     ExtractSmartClipDataCallback callback,
@@ -8483,7 +8534,7 @@ bool RenderFrameHostImpl::Reload() {
 }
 
 void RenderFrameHostImpl::SendAccessibilityEventsToManager(
-    const ui::AXUpdatesAndEvents& details) {
+    ui::AXUpdatesAndEvents& details) {
   if (!browser_accessibility_manager_) {
     return;
   }
@@ -9936,12 +9987,10 @@ void RenderFrameHostImpl::SendPrivateAggregationRequestsForFencedFrameEvent(
     const std::string& event_type) {
   if (!base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi) ||
       !blink::features::kPrivateAggregationApiEnabledInProtectedAudience
-           .Get() ||
-      !blink::features::kPrivateAggregationApiProtectedAudienceExtensionsEnabled
            .Get()) {
     mojo::ReportBadMessage(
-        "FLEDGE extensions must be enabled to use reportEvent() for private "
-        "aggregation events.");
+        "Private Aggregation must be enabled in Protected Audience to use "
+        "reportEvent() for private aggregation events.");
     return;
   }
   // Only check if the event type starts with "reserved." - We allow event types
@@ -11691,8 +11740,16 @@ RenderFrameHostImpl::CheckOrDispatchBeforeUnloadForFrame(
   // Only run beforeunload in frames that have registered a beforeunload
   // handler. See description of SendBeforeUnload() for details on simulating
   // beforeunload for legacy reasons.
+  //
+  // If `kAvoidUnnecessaryBeforeUnloadCheckSync` is enabled with
+  // `kWithoutSendBeforeUnload` mode and there is no beforeunload handler for
+  // the navigating frame, then do not simulate a beforeunload handler, and
+  // navigation can continue.
   const bool run_beforeunload_for_legacy_frame =
-      rfh == this && !rfh->has_before_unload_handler_;
+      rfh == this && !rfh->has_before_unload_handler_ &&
+      !IsAvoidUnnecessaryBeforeUnloadCheckSyncEnabledFor(
+          features::AvoidUnnecessaryBeforeUnloadCheckSyncMode::
+              kWithoutSendBeforeUnload);
   const bool should_run_beforeunload =
       rfh->has_before_unload_handler_ || run_beforeunload_for_legacy_frame;
 
@@ -11739,6 +11796,10 @@ RenderFrameHostImpl::CheckOrDispatchBeforeUnloadForFrame(
     // Wait to schedule until all frames have been processed. The legacy
     // beforeunload is not needed if another frame has a beforeunload
     // handler.
+    // Note for `kAvoidUnnecessaryBeforeUnloadCheckSync` feature:
+    // `run_beforeunload_for_legacy_frame` is never true if
+    // `kAvoidUnnecessaryBeforeUnloadCheckSync` is enabled with
+    // `kWithoutSendBeforeUnload` mode.
     *run_beforeunload_for_legacy = true;
     return FrameIterationAction::kContinue;
   }
@@ -14030,8 +14091,7 @@ void RenderFrameHostImpl::CreateDedicatedWorkerHostFactory(
           /*creator=*/GetGlobalId(),
           /*ancestor_render_frame_host_id=*/GetGlobalId(), GetStorageKey(),
           isolation_info_, BuildClientSecurityState(),
-          /*creator_coep_reporter=*/coep_reporter,
-          /*ancestor_coep_reporter=*/coep_reporter),
+          /*creator_coep_reporter=*/coep_reporter),
       std::move(receiver));
 }
 
@@ -15509,8 +15569,9 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
 
   // Record navigation trace events and annotate them with the committed URL,
   // rather than the initial URL.
-  RecordNavigationTraceEventsAndMetrics(navigation_timeline,
-                                        GetLastCommittedURL());
+  RecordNavigationTraceEventsAndMetrics(
+      navigation_timeline, GetLastCommittedURL(), IsInPrimaryMainFrame(),
+      is_same_document_navigation);
 
   return true;
 }
@@ -16357,6 +16418,54 @@ void RenderFrameHostImpl::SendBeforeUnload(
       },
       rfh, for_legacy);
   if (for_legacy) {
+    // We would like to synchronously continue navigation without the following
+    // PostTask in the future to improve performance if the frame being
+    // navigated (and all child frames) do not have beforeunload handlers.
+    // However, as described in
+    // `ContentBrowserClient::SupportsAvoidUnnecessaryBeforeUnloadCheckSync()`,
+    // this can result in re-entrancy issues on navigation. The re-entrancy is
+    // checked by NavigationController's `in_navigate_to_pending_entry` flag.
+    // While this flag is true, we prohibit starting another navigation
+    // synchronously while the existing navigation is still being processed on
+    // the stack (CHECK(!in_navigate_to_pending_entry_)).
+    //
+    // The following `is_eligible_for_avoid_unnecessary_beforeunload` flag is
+    // used to allow synchronous continuation of navigation if the value of
+    // kAvoidUnnecessaryBeforeUnloadCheckSyncMode is either
+    // kWithSendBeforeUnload or kWithoutSendBeforeUnload (To understand these
+    // modes, please refer to the code comment of the
+    // `AvoidUnnecessaryBeforeUnloadCheckSyncMode` enum in the header file).
+    //
+    // The following `can_be_in_navigate_to_pending_entry` flag is used to
+    // investigate whether it is safe to do so, by checking whether the CHECK
+    // would've failed if we continue synchronously instead of posting a task.
+    // This flag is only used when kAvoidUnnecessaryBeforeUnloadCheckSyncMode is
+    // set to kDumpWithoutCrashing.
+    const bool is_eligible_for_avoid_unnecessary_beforeunload =
+        is_waiting_for_beforeunload_completion_ &&
+        unload_ack_is_for_navigation_ &&
+        GetContentClient()
+            ->browser()
+            ->SupportsAvoidUnnecessaryBeforeUnloadCheckSync();
+    const bool can_be_in_navigate_to_pending_entry =
+        is_eligible_for_avoid_unnecessary_beforeunload &&
+        IsAvoidUnnecessaryBeforeUnloadCheckSyncEnabledFor(
+            features::AvoidUnnecessaryBeforeUnloadCheckSyncMode::
+                kDumpWithoutCrashing) &&
+        frame_tree()->controller().in_navigate_to_pending_entry();
+
+    base::TimeTicks beforeunload_end_time_for_legacy = base::TimeTicks::Now();
+
+    if (is_eligible_for_avoid_unnecessary_beforeunload &&
+        IsAvoidUnnecessaryBeforeUnloadCheckSyncEnabledFor(
+            features::AvoidUnnecessaryBeforeUnloadCheckSyncMode::
+                kWithSendBeforeUnload)) {
+      std::move(before_unload_closure)
+          .Run(/*proceed=*/true, send_before_unload_start_time_,
+               beforeunload_end_time_for_legacy);
+      return;
+    }
+
     // Use a high-priority task to continue the navigation. This is safe as it
     // happens early in the navigation flow and shouldn't race with any other
     // tasks associated with this navigation.
@@ -16365,18 +16474,34 @@ void RenderFrameHostImpl::SendBeforeUnload(
             FROM_HERE,
             base::BindOnce(
                 [](blink::mojom::LocalFrame::BeforeUnloadCallback callback,
-                   base::TimeTicks start_time, base::TimeTicks end_time) {
+                   base::TimeTicks start_time, base::TimeTicks end_time,
+                   base::WeakPtr<NavigationControllerImpl>
+                       navigation_controller,
+                   const bool can_be_in_navigate_to_pending_entry) {
                   // Measures the time a posted task spends in the queue before
                   // execution. Recorded only when `for_legacy` is true.
                   base::UmaHistogramTimes(
                       "Navigation.OnBeforeUnloadOverheadTime."
                       "NoBeforeUnloadHandlerRegistered",
                       base::TimeTicks::Now() - end_time);
+                  if (can_be_in_navigate_to_pending_entry &&
+                      navigation_controller) {
+                    navigation_controller
+                        ->set_can_be_in_navigate_to_pending_entry(true);
+                  }
                   std::move(callback).Run(/*proceed=*/true, start_time,
                                           end_time);
+                  if (can_be_in_navigate_to_pending_entry &&
+                      navigation_controller) {
+                    navigation_controller
+                        ->set_can_be_in_navigate_to_pending_entry(false);
+                  }
                 },
                 std::move(before_unload_closure),
-                send_before_unload_start_time_, base::TimeTicks::Now()));
+                send_before_unload_start_time_,
+                beforeunload_end_time_for_legacy,
+                frame_tree()->controller().GetWeakPtr(),
+                can_be_in_navigate_to_pending_entry));
     return;
   }
   auto scope = MakeUrgentMessageScopeIfNeeded();
@@ -18315,7 +18440,10 @@ blink::mojom::PermissionStatus RenderFrameHostImpl::GetPermissionStatus(
     blink::PermissionType permission_type) {
   return GetBrowserContext()
       ->GetPermissionController()
-      ->GetPermissionStatusForCurrentDocument(permission_type, this);
+      ->GetPermissionStatusForCurrentDocument(
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(permission_type),
+          this);
 }
 
 void RenderFrameHostImpl::BindCacheStorageForBucket(
@@ -18400,6 +18528,12 @@ RenderFrameHostImpl::DeviceBoundSessionObserver::~DeviceBoundSessionObserver() =
 void RenderFrameHostImpl::DeviceBoundSessionObserver::
     OnDeviceBoundSessionAccessed(
         const net::device_bound_sessions::SessionAccess& access) {
+  if (!is_terminated_ &&
+      access.access_type ==
+          net::device_bound_sessions::SessionAccess::AccessType::kTermination &&
+      terminated_callback_) {
+    std::move(terminated_callback_).Run();
+  }
   is_terminated_ |=
       access.access_type ==
       net::device_bound_sessions::SessionAccess::AccessType::kTermination;
@@ -18577,7 +18711,10 @@ blink::mojom::PermissionStatus RenderFrameHostImpl::GetCombinedPermissionStatus(
     blink::PermissionType permission_type) {
   return GetBrowserContext()
       ->GetPermissionController()
-      ->GetCombinedPermissionAndDeviceStatus(permission_type, this);
+      ->GetCombinedPermissionAndDeviceStatus(
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(permission_type),
+          this);
 }
 
 media::PictureInPictureEventsInfo::AutoPipReasonCallback
@@ -18587,7 +18724,7 @@ RenderFrameHostImpl::CreateAutoPipReasonCallback() {
         if (rfh == nullptr) {
           return media::PictureInPictureEventsInfo::AutoPipReason::kUnknown;
         }
-        return rfh->delegate()->GetAutoPipReason();
+        return rfh->delegate()->GetAutoPipInfo().auto_pip_reason;
       },
       weak_ptr_factory_.GetWeakPtr());
 }

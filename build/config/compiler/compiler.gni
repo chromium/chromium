@@ -140,6 +140,11 @@ declare_args() {
   # flag set to the same value.
   use_relative_vtables_abi = is_android && current_cpu == "arm64" &&
                              use_custom_libcxx && !is_component_build
+
+  # Enable C++14 sized global deallocation functions.
+  # Disabled by default because of binary size increase.
+  # TODO(crbug.com/345541122): investigate the fuchsia binary size increase.
+  use_sized_deallocation = is_clang && is_asan
 }
 
 # To try out this combination, delete this assert.
@@ -151,6 +156,11 @@ assert(
 assert(!is_cfi || use_thin_lto, "CFI requires ThinLTO")
 assert(!enable_profiling || !is_component_build,
        "Cannot profile component builds (crbug.com/1199271).")
+
+assert(!is_win || is_asan == use_sized_deallocation,
+       "ASan and sized deallocation must be enabled together on Windows.")
+assert(is_clang || !use_sized_deallocation,
+       "Sized deallocation is supported on clang.")
 
 if (use_thin_lto && is_debug) {
   print("WARNING: ThinLTO (use_thin_lto=true) doesn't work with debug" +

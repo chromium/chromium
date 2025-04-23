@@ -100,11 +100,12 @@ class TestInterestGroupPrivateAggregationManager
 
   const url::Origin expected_top_frame_origin_;
 
-  // Contributions received through `ContributeToHistogram()`.
-  std::map<
-      mojo::ReceiverId,
-      std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>>
-      private_aggregation_contributions_;
+  // Contributions received through `ContributeToHistogram()` or
+  // `ContributeToHistogramOnEvent()`. However, note that the debug_mode_details
+  // still needs to be filled in for each request.
+  std::map<mojo::ReceiverId,
+           InterestGroupAuctionReporter::FinalizedPrivateAggregationRequests>
+      private_aggregation_requests_;
 
   // Debug details set through `EnableDebugMode()`.
   std::map<mojo::ReceiverId, blink::mojom::DebugModeDetailsPtr>

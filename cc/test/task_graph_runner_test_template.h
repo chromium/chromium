@@ -103,11 +103,11 @@ class TaskGraphRunnerTestBase {
 
   raw_ptr<TaskGraphRunner> task_graph_runner_ = nullptr;
   std::array<NamespaceToken, kNamespaceCount> namespace_token_;
-  Task::Vector tasks_[kNamespaceCount];
-  Task::Vector dependents_[kNamespaceCount];
-  std::vector<unsigned> run_task_ids_[kNamespaceCount];
+  std::array<Task::Vector, kNamespaceCount> tasks_;
+  std::array<Task::Vector, kNamespaceCount> dependents_;
+  std::array<std::vector<unsigned int>, kNamespaceCount> run_task_ids_;
   base::Lock run_task_ids_lock_;
-  std::vector<unsigned> on_task_completed_ids_[kNamespaceCount];
+  std::array<std::vector<unsigned int>, kNamespaceCount> on_task_completed_ids_;
 };
 
 template <typename TaskRunnerTestDelegate>

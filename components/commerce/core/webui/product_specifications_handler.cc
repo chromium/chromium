@@ -21,14 +21,19 @@ ProductSpecificationsHandler::ProductSpecificationsHandler(
     std::unique_ptr<Delegate> delegate,
     history::HistoryService* history_service,
     PrefService* pref_service,
-    ProductSpecificationsService* product_specs_service)
+    ProductSpecificationsService* product_specs_service,
+    syncer::SyncService* sync_service)
     : remote_page_(std::move(remote_page)),
       receiver_(this, std::move(receiver)),
       delegate_(std::move(delegate)),
       history_service_(history_service),
-      pref_service_(pref_service) {
+      pref_service_(pref_service),
+      sync_service_(sync_service) {
   if (product_specs_service) {
     scoped_product_specs_observer_.Observe(product_specs_service);
+  }
+  if (sync_service_) {
+    sync_service_observation_.Observe(sync_service_);
   }
 }
 
@@ -156,6 +161,15 @@ void ProductSpecificationsHandler::OnProductSpecificationsSetUpdate(
 void ProductSpecificationsHandler::OnProductSpecificationsSetRemoved(
     const ProductSpecificationsSet& set) {
   remote_page_->OnProductSpecificationsSetRemoved(set.uuid());
+}
+
+void ProductSpecificationsHandler::OnStateChanged(syncer::SyncService* sync) {
+  bool is_sync_active =
+      sync->GetTransportState() != syncer::SyncService::TransportState::ACTIVE;
+  if (is_sync_active != is_sync_active_) {
+    is_sync_active_ = is_sync_active;
+    remote_page_->OnSyncStateChanged();
+  }
 }
 
 }  // namespace commerce

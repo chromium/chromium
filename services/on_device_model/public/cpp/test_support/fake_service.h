@@ -89,20 +89,30 @@ class FakeOnDeviceSession final : public mojom::Session {
 
   void Score(const std::string& text, ScoreCallback callback) override;
 
+  void GetProbabilitiesBlocking(
+      const std::string& text,
+      GetProbabilitiesBlockingCallback callback) override;
+
   void Clone(
       mojo::PendingReceiver<on_device_model::mojom::Session> session) override;
+
+  void SetPriority(mojom::Priority priority) override;
 
  private:
   void GenerateImpl(mojom::GenerateOptionsPtr options,
                     mojo::PendingRemote<mojom::StreamingResponder> response);
   void AppendImpl(mojom::AppendOptionsPtr options,
                   mojo::Remote<mojom::ContextClient> client);
+  void CloneImpl(
+      mojo::PendingReceiver<on_device_model::mojom::Session> session);
 
   raw_ptr<FakeOnDeviceServiceSettings> settings_;
   std::string adaptation_model_weight_;
   std::vector<mojom::AppendOptionsPtr> context_;
   raw_ptr<FakeOnDeviceModel> model_;
   Capabilities capabilities_;
+  on_device_model::mojom::Priority priority_ =
+      on_device_model::mojom::Priority::kForeground;
 
   base::WeakPtrFactory<FakeOnDeviceSession> weak_factory_{this};
 };

@@ -37,6 +37,8 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/test/test_context_provider.h"
+#include "components/viz/test/test_context_support.h"
+#include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -62,6 +64,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -92,12 +96,14 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types_3d.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
+#include "third_party/blink/renderer/platform/graphics/opacity_mode.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_memory_buffer_test_platform.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
@@ -155,7 +161,8 @@ class GrDirectContext;
 namespace blink {
 class CanvasResourceHost;
 class ExecutionContext;
-}  // namespace blink
+
+namespace {
 
 using ::base::test::ScopedFeatureList;
 using ::blink_testing::ClearRectFlags;
@@ -174,15 +181,17 @@ using ::cc::SaveLayerOp;
 using ::cc::SaveOp;
 using ::cc::SetMatrixOp;
 using ::cc::TranslateOp;
+using PageVisibilityState = ::blink::mojom::blink::PageVisibilityState;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::InSequence;
+using ::testing::IsNull;
 using ::testing::Message;
 using ::testing::Mock;
+using ::testing::NotNull;
 using ::testing::Optional;
+using ::testing::Pointee;
 using ::testing::SaveArg;
-
-namespace blink {
 
 enum BitmapOpacity { kOpaqueBitmap, kTransparentBitmap };
 
@@ -234,18 +243,43 @@ scoped_refptr<Image> FakeImageSource::GetSourceImageForCanvas(
   return image_;
 }
 
+// Event listener that runs a callback when invoked.
+class CallbackEventListener : public NativeEventListener {
+ public:
+  explicit CallbackEventListener(base::RepeatingClosure callback)
+      : callback_(callback) {}
+  void Invoke(ExecutionContext*, Event*) override { callback_.Run(); }
+
+ private:
+  const base::RepeatingClosure callback_;
+};
+
+void SetDocumentVisibility(Document& document, PageVisibilityState visibility) {
+  document.GetPage()->SetVisibilityState(visibility,
+                                         /*is_initial_state=*/false);
+}
+
+void RunIdleTasks() {
+  ThreadScheduler::Current()
+      ->ToMainThreadScheduler()
+      ->StartIdlePeriodForTesting();
+  blink::test::RunPendingTasks();
+}
+
+}  // namespace
+
 //============================================================================
 
-class CanvasRenderingContext2DTest : public ::testing::Test,
-                                     public PaintTestConfigurations {
+class CanvasRenderingContext2DTestBase : public ::testing::Test,
+                                         public PaintTestConfigurations {
  public:
-  CanvasRenderingContext2DTest();
+  CanvasRenderingContext2DTestBase();
   void SetUp() override;
   virtual bool AllowsAcceleration() { return false; }
 
-  virtual scoped_refptr<viz::TestContextProvider> CreateContextProvider() {
-    return viz::TestContextProvider::Create();
-  }
+  virtual void CreateContextProvider(SetIsContextLost set_context_lost) = 0;
+  virtual void ConfigureContextProvider(
+      viz::TestContextProvider& context_provider) {}
 
   HTMLCanvasElement& CanvasElement() const { return *canvas_element_; }
   cc::PaintCanvas& Canvas() {
@@ -352,14 +386,37 @@ class CanvasRenderingContext2DTest : public ::testing::Test,
   base::test::ScopedFeatureList feature_list_;
 };
 
+class CanvasRenderingContext2DTest : public CanvasRenderingContext2DTestBase {
+ public:
+  void CreateContextProvider(SetIsContextLost set_context_lost) override {
+    test_context_provider_ = viz::TestContextProvider::CreateRaster();
+    InitializeSharedGpuContextRaster(test_context_provider_.get(),
+                                     /*cache=*/nullptr, set_context_lost);
+    ConfigureContextProvider(*test_context_provider_);
+  }
+};
+
 INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTest);
 
-CanvasRenderingContext2DTest::CanvasRenderingContext2DTest()
+class CanvasRenderingContext2DTestGLES2
+    : public CanvasRenderingContext2DTestBase {
+ public:
+  void CreateContextProvider(SetIsContextLost set_context_lost) override {
+    test_context_provider_ = viz::TestContextProvider::Create();
+    InitializeSharedGpuContextGLES2(test_context_provider_.get(),
+                                    /*cache=*/nullptr, set_context_lost);
+    ConfigureContextProvider(*test_context_provider_);
+  }
+};
+
+INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTestGLES2);
+
+CanvasRenderingContext2DTestBase::CanvasRenderingContext2DTestBase()
     : wrap_gradients_(MakeGarbageCollected<WrapGradients>()),
       opaque_bitmap_(gfx::Size(10, 10), kOpaqueBitmap),
       alpha_bitmap_(gfx::Size(10, 10), kTransparentBitmap) {}
 
-void CanvasRenderingContext2DTest::CreateContext(
+void CanvasRenderingContext2DTestBase::CreateContext(
     OpacityMode opacity_mode,
     LatencyMode latency_mode,
     CanvasContextCreationAttributesCore::WillReadFrequently
@@ -377,7 +434,7 @@ void CanvasRenderingContext2DTest::CreateContext(
   canvas->GetCanvasRenderingContext(canvas_type, attributes);
 }
 
-void CanvasRenderingContext2DTest::SetUp() {
+void CanvasRenderingContext2DTestBase::SetUp() {
   base::FieldTrialParams auto_flush_params;
   auto_flush_params["max_pinned_image_kb"] =
       base::NumberToString(kMaxPinnedImageKB);
@@ -386,8 +443,9 @@ void CanvasRenderingContext2DTest::SetUp() {
   feature_list_.InitAndEnableFeatureWithParameters(kCanvas2DAutoFlushParams,
                                                    auto_flush_params);
 
-  test_context_provider_ = CreateContextProvider();
-  InitializeSharedGpuContextGLES2(test_context_provider_.get());
+  // Create a `TestContextProvider` that automatically restores itself after a
+  // GPU context loss.
+  CreateContextProvider(SetIsContextLost::kSetToFalse);
   allow_accelerated_ =
       std::make_unique<ScopedAccelerated2dCanvasForTest>(AllowsAcceleration());
   web_view_helper_ = std::make_unique<frame_test_helpers::WebViewHelper>();
@@ -431,7 +489,7 @@ void CanvasRenderingContext2DTest::SetUp() {
           blink::scheduler::GetSingleThreadTaskRunnerForTesting()));
 }
 
-void CanvasRenderingContext2DTest::TearDown() {
+void CanvasRenderingContext2DTestBase::TearDown() {
   feature_list_.Reset();
   ThreadState::Current()->CollectAllGarbageForTesting(
       ThreadState::StackState::kNoHeapPointers);
@@ -524,8 +582,7 @@ bool SetUpFullAccelerationAndCcLayer(HTMLCanvasElement& canvas_element) {
   // Install a CanvasResourceProvider that is accelerated and supports direct
   // compositing (the latter is necessary for GetOrCreateCcLayerIfNeeded() to
   // succeed).
-  CHECK(canvas_element.GetOrCreateCanvasResourceProvider(
-      RasterModeHint::kPreferGPU));
+  CHECK(canvas_element.GetOrCreateCanvasResourceProvider());
 
   // Put the host in GPU compositing mode.
   canvas_element.SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
@@ -555,18 +612,21 @@ testing::Matcher<base::HistogramTester> OverdrawOpAre(Args... args) {
       std::unordered_set<BaseRenderingContext2D::OverdrawOp>{args...});
 }
 
+// Matches an object (e.g. ContentResourceProvider) that has `IsValid()` ==
+// true.
+MATCHER(IsValid, "") {
+  return arg.IsValid();
+}
+
 TEST_P(CanvasRenderingContext2DTest, NoRecreationOfResourceProviderAfterDraw) {
   CreateContext(kNonOpaque);
   EXPECT_TRUE(CanvasElement().IsResourceValid());
   uint32_t gen_id =
-      CanvasElement()
-          .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
-          ->ContentUniqueID();
+      CanvasElement().GetOrCreateCanvasResourceProvider()->ContentUniqueID();
   Context2D()->fillRect(3, 3, 1, 1);
-  EXPECT_EQ(gen_id,
-            CanvasElement()
-                .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
-                ->ContentUniqueID());
+  EXPECT_EQ(
+      gen_id,
+      CanvasElement().GetOrCreateCanvasResourceProvider()->ContentUniqueID());
 }
 
 TEST_P(CanvasRenderingContext2DTest, NonDisplayedCanvasIsNotRateLimited) {
@@ -696,7 +756,8 @@ TEST_P(CanvasRenderingContext2DTest, GetImageWithAccelerationDisabled) {
   EXPECT_TRUE(CanvasElement().IsResourceValid());
 }
 
-TEST_P(CanvasRenderingContext2DTest, FallbackToSoftwareOnFailedTextureAlloc) {
+TEST_P(CanvasRenderingContext2DTestGLES2,
+       FallbackToSoftwareOnFailedTextureAlloc) {
   CreateContext(kNonOpaque);
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
 
@@ -1469,9 +1530,7 @@ TEST_P(CanvasRenderingContext2DTest,
   EXPECT_TRUE(Context2D()->getContextAttributes()->desynchronized());
   EXPECT_TRUE(CanvasElement().LowLatencyEnabled());
   EXPECT_FALSE(
-      CanvasElement()
-          .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferCPU)
-          ->IsSingleBuffered());
+      CanvasElement().GetOrCreateCanvasResourceProvider()->IsSingleBuffered());
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
 }
 
@@ -1721,6 +1780,11 @@ class CanvasRenderingContext2DTestAccelerated
  protected:
   bool AllowsAcceleration() override { return true; }
 
+  void ConfigureContextProvider(
+      viz::TestContextProvider& context_provider) override {
+    context_provider.GetTestRasterInterface()->set_gpu_rasterization(true);
+  }
+
   void CreateAlotOfCanvasesWithAccelerationExplicitlyDisabled() {
     for (int i = 0; i < 200; ++i) {
       auto* canvas = MakeGarbageCollected<HTMLCanvasElement>(GetDocument());
@@ -1728,7 +1792,7 @@ class CanvasRenderingContext2DTestAccelerated
           kNonOpaque, kNormalLatency,
           CanvasContextCreationAttributesCore::WillReadFrequently::kUndefined,
           canvas);
-      canvas->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+      canvas->GetOrCreateCanvasResourceProvider();
       // Expect that at least the first 10 are accelerated. The exact number
       // depends on the feature params.
       if (i < 10) {
@@ -1747,8 +1811,7 @@ INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTestAccelerated);
 TEST_P(CanvasRenderingContext2DTestAccelerated, GetImage) {
   CreateContext(kNonOpaque);
 
-  ASSERT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider(
-      RasterModeHint::kPreferGPU));
+  ASSERT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider());
   ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
   ASSERT_TRUE(CanvasElement().IsResourceValid());
 
@@ -1769,8 +1832,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
        NoRegenerationOfTransferableResourceWhenAlreadyInCcLayer) {
   CreateContext(kNonOpaque);
 
-  ASSERT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider(
-      RasterModeHint::kPreferGPU));
+  ASSERT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider());
 
   // Invoking PrepareTransferableResource() has a precondition that a CC layer
   // is present.
@@ -1796,24 +1858,101 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
+       ContextLostAndRestoredEventsAreEmittedAfterGPUContextLost) {
+  CreateContext(kNonOpaque);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
+  EXPECT_THAT(CanvasElement().ResourceProvider(), Pointee(IsValid()));
+
+  // Set a minimal restoration delay to make the test fast.
+  Context2D()->SetTryRestoreContextIntervalForTesting(base::Microseconds(10));
+
+  // Lose the GPU context.
+  test_context_provider_->GetTestRasterInterface()->LoseContextCHROMIUM(
+      GL_GUILTY_CONTEXT_RESET_ARB, GL_INNOCENT_CONTEXT_RESET_ARB);
+
+  // Wait for context to be lost.
+  {
+    EXPECT_FALSE(CanvasElement().IsContextLost());
+    base::RunLoop run_loop;
+    CanvasElement().addEventListener(
+        event_type_names::kContextlost,
+        MakeGarbageCollected<CallbackEventListener>(run_loop.QuitClosure()));
+    run_loop.Run();
+    EXPECT_TRUE(CanvasElement().IsContextLost());
+    EXPECT_THAT(CanvasElement().ResourceProvider(), IsNull());
+  }
+
+  // Wait for context to be restored.
+  {
+    EXPECT_TRUE(CanvasElement().IsContextLost());
+    base::RunLoop run_loop;
+    CanvasElement().addEventListener(
+        event_type_names::kContextrestored,
+        MakeGarbageCollected<CallbackEventListener>(run_loop.QuitClosure()));
+    run_loop.Run();
+    EXPECT_FALSE(CanvasElement().IsContextLost());
+    EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
+    EXPECT_THAT(CanvasElement().ResourceProvider(), Pointee(IsValid()));
+  }
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated,
+       ContextRestorationAbortsAfterRetry) {
+  // Configure context provider to stay lost after context losses.
+  CreateContextProvider(SetIsContextLost::kNotModifyValue);
+
+  CreateContext(kNonOpaque);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
+  EXPECT_THAT(CanvasElement().ResourceProvider(), Pointee(IsValid()));
+
+  // Set a minimal restoration delay to make the test fast.
+  Context2D()->SetTryRestoreContextIntervalForTesting(base::Microseconds(10));
+
+  // Lose the GPU context.
+  test_context_provider_->GetTestRasterInterface()->LoseContextCHROMIUM(
+      GL_GUILTY_CONTEXT_RESET_ARB, GL_INNOCENT_CONTEXT_RESET_ARB);
+
+  // Wait for context to be lost.
+  {
+    EXPECT_FALSE(CanvasElement().IsContextLost());
+    base::RunLoop run_loop;
+    CanvasElement().addEventListener(
+        event_type_names::kContextlost,
+        MakeGarbageCollected<CallbackEventListener>(run_loop.QuitClosure()));
+    run_loop.Run();
+    EXPECT_TRUE(CanvasElement().IsContextLost());
+    EXPECT_THAT(CanvasElement().ResourceProvider(), IsNull());
+  }
+
+  // Context restoration will fail, wait for the context to give up.
+  {
+    EXPECT_TRUE(CanvasElement().IsContextLost());
+    base::RunLoop run_loop;
+    Context2D()->SetRestoreFailedCallbackForTesting(run_loop.QuitClosure());
+    run_loop.Run();
+    EXPECT_TRUE(CanvasElement().IsContextLost());
+    EXPECT_THAT(CanvasElement().ResourceProvider(), IsNull());
+  }
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated,
        GetResourceProviderAfterContextLoss) {
   CreateContext(kNonOpaque);
 
-  EXPECT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider(
-      RasterModeHint::kPreferGPU));
+  EXPECT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider());
   EXPECT_TRUE(CanvasElement().IsResourceValid());
 
-  test_context_provider_->TestContextGL()->set_context_lost(true);
-  EXPECT_EQ(nullptr, CanvasElement().GetOrCreateCanvasResourceProvider(
-                         RasterModeHint::kPreferGPU));
+  test_context_provider_->GetTestRasterInterface()->set_context_lost(true);
+  EXPECT_EQ(nullptr, CanvasElement().GetOrCreateCanvasResourceProvider());
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
        PrepareTransferableResourceAfterContextLoss) {
   CreateContext(kNonOpaque);
 
-  ASSERT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider(
-      RasterModeHint::kPreferGPU));
+  ASSERT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider());
 
   // Invoking PrepareTransferableResource() has a precondition that a CC layer
   // is present.
@@ -1828,19 +1967,21 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   // When the context is lost we are not sure if we should still be producing
   // GL frames for the compositor or not, so fail to generate frames.
-  test_context_provider_->TestContextGL()->set_context_lost(true);
+  test_context_provider_->GetTestRasterInterface()->set_context_lost(true);
   EXPECT_FALSE(CanvasElement().PrepareTransferableResource(&resource,
                                                            &release_callback));
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
        FallbackToSoftwareIfContextLost) {
+  // Configure context provider to stay lost after context losses.
+  CreateContextProvider(SetIsContextLost::kNotModifyValue);
+
   CreateContext(kNonOpaque);
 
-  test_context_provider_->TestContextGL()->set_context_lost(true);
+  test_context_provider_->GetTestRasterInterface()->set_context_lost(true);
 
-  ASSERT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider(
-      RasterModeHint::kPreferGPU));
+  ASSERT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider());
 
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
   EXPECT_TRUE(CanvasElement().IsResourceValid());
@@ -1857,7 +1998,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, GetImageAfterContextLoss) {
   EXPECT_TRUE(CanvasElement().IsResourceValid());
   EXPECT_TRUE(Context2D()->GetImage(FlushReason::kTesting));
 
-  test_context_provider_->TestContextGL()->set_context_lost(true);
+  test_context_provider_->GetTestRasterInterface()->set_context_lost(true);
 
   EXPECT_FALSE(Context2D()->GetImage(FlushReason::kTesting));
 }
@@ -1881,7 +2022,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   // Losing the context should result in the resource becoming invalid and the
   // host being unable to produce a TransferableResource from it.
-  test_context_provider_->TestContextGL()->set_context_lost(true);
+  test_context_provider_->GetTestRasterInterface()->set_context_lost(true);
   EXPECT_FALSE(CanvasElement().IsResourceValid());
   EXPECT_FALSE(CanvasElement().PrepareTransferableResource(&resource,
                                                            &release_callback));
@@ -1937,13 +2078,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   UpdateAllLifecyclePhasesForTest();
 
   // Hide element to trigger hibernation (if enabled).
-  GetDocument().GetPage()->SetVisibilityState(
-      mojom::blink::PageVisibilityState::kHidden,
-      /*is_initial_state=*/false);
-  // Run hibernation task.
-  ThreadScheduler::Current()
-      ->ToMainThreadScheduler()
-      ->StartIdlePeriodForTesting();
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
   // The above fillRect() call caused the CanvasPerformanceMonitor to start
   // observing tasks. Reset this task observation before running pending tasks
@@ -1951,7 +2086,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // not being expected to be called at this point in the flow.
   CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
 
-  blink::test::RunPendingTasks();
+  // Run hibernation task.
+  RunIdleTasks();
   // If enabled, hibernation should cause repaint of the painting layer.
   EXPECT_FALSE(box->NeedsPaintPropertyUpdate());
   EXPECT_EQ(features::IsCanvas2DHibernationEnabled(),
@@ -1965,9 +2101,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
       DocumentUpdateReason::kTest);
 
   // Wake up again, which should request repaint of the painting layer.
-  GetDocument().GetPage()->SetVisibilityState(
-      mojom::blink::PageVisibilityState::kVisible,
-      /*is_initial_state=*/false);
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kVisible);
   EXPECT_FALSE(box->NeedsPaintPropertyUpdate());
   EXPECT_EQ(features::IsCanvas2DHibernationEnabled(),
             painting_layer->SelfNeedsRepaint());
@@ -1979,24 +2113,16 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
   CreateContext(kNonOpaque);
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
   auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
-  base::RunLoop run_loop;
-
-  // Install a minimal delay for testing to ensure that the test remains fast
-  // to execute.
-  handler.SetBeforeCompressionDelayForTesting(base::Microseconds(10));
-
   EXPECT_FALSE(handler.IsHibernating());
 
   // Verify that going to the background triggers hibernation asynchronously.
   {
     base::HistogramTester histogram_tester;
-    GetDocument().GetPage()->SetVisibilityState(
-        mojom::blink::PageVisibilityState::kHidden,
-        /*is_initial_state=*/false);
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2004,12 +2130,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     EXPECT_FALSE(handler.IsHibernating());
   }
 
-  // Run the task that initiates hibernation, which has been posted as an idle
-  // task.
-  ThreadScheduler::Current()
-      ->ToMainThreadScheduler()
-      ->StartIdlePeriodForTesting();
-  blink::test::RunPendingTasks();
+  // Run hibernation task.
+  RunIdleTasks();
 
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
   EXPECT_TRUE(handler.IsHibernating());
@@ -2018,9 +2140,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // Verify that coming to the foreground ends hibernation synchronously.
   {
     base::HistogramTester histogram_tester;
-    GetDocument().GetPage()->SetVisibilityState(
-        mojom::blink::PageVisibilityState::kVisible,
-        /*is_initial_state=*/false);
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kVisible);
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2033,28 +2153,99 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
+       ResourcesAreDiscardedAggressivelyOnlyDuringHibernation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
+  CreateContext(kNonOpaque);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
+  CanvasHibernationHandler* handler = CanvasElement().GetHibernationHandler();
+  viz::TestContextSupport* context_support = test_context_provider_->support();
+
+  EXPECT_FALSE(handler->IsHibernating());
+  EXPECT_FALSE(context_support->GetAggressivelyFreeResources());
+
+  // Hide the page, queuing hibernation in an idle task.
+  // Resource should start being aggressively freed immediately.
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
+  EXPECT_TRUE(context_support->GetAggressivelyFreeResources());
+  EXPECT_FALSE(handler->IsHibernating());
+
+  // Run hibernation task.
+  RunIdleTasks();
+  EXPECT_TRUE(context_support->GetAggressivelyFreeResources());
+  EXPECT_TRUE(handler->IsHibernating());
+
+  // Show the page, resources should no longer be freed aggressively.
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kVisible);
+  EXPECT_FALSE(handler->IsHibernating());
+  EXPECT_FALSE(context_support->GetAggressivelyFreeResources());
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated,
+       AggressiveResourceDiscardingCanBeStoppedEvenWhenContextIsLost) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
+  CreateContext(kNonOpaque);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
+  CanvasHibernationHandler* handler = CanvasElement().GetHibernationHandler();
+  viz::TestContextSupport* context_support = test_context_provider_->support();
+
+  // Set a minimal restoration delay to make the test fast.
+  Context2D()->SetTryRestoreContextIntervalForTesting(base::Microseconds(10));
+
+  EXPECT_FALSE(handler->IsHibernating());
+  EXPECT_FALSE(context_support->GetAggressivelyFreeResources());
+
+  // Hide the page, queuing hibernation in an idle task.
+  // Resource should start being aggressively freed immediately.
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
+  EXPECT_TRUE(context_support->GetAggressivelyFreeResources());
+  EXPECT_FALSE(handler->IsHibernating());
+
+  // Simulate GPU context loss while the canvas is hibernated.
+  base::RunLoop run_loop;
+  CanvasElement().addEventListener(
+      event_type_names::kContextrestored,
+      MakeGarbageCollected<CallbackEventListener>(run_loop.QuitClosure()));
+  test_context_provider_->GetTestRasterInterface()->LoseContextCHROMIUM(
+      GL_GUILTY_CONTEXT_RESET_ARB, GL_INNOCENT_CONTEXT_RESET_ARB);
+  EXPECT_FALSE(CanvasElement().IsContextLost());
+  blink::test::RunPendingTasks();
+  EXPECT_TRUE(CanvasElement().IsContextLost());
+
+  // Run hibernation task.
+  RunIdleTasks();
+  EXPECT_TRUE(context_support->GetAggressivelyFreeResources());
+  EXPECT_FALSE(handler->IsHibernating());
+
+  // Show the page, resources should no longer be freed aggressively.
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kVisible);
+  EXPECT_FALSE(handler->IsHibernating());
+  EXPECT_FALSE(context_support->GetAggressivelyFreeResources());
+
+  // Wait for context to be restored.
+  run_loop.Run();
+  EXPECT_FALSE(CanvasElement().IsContextLost());
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
+  EXPECT_THAT(CanvasElement().ResourceProvider(), Pointee(IsValid()));
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated,
        HibernationPostForegroundBackgroundToggleOccursNormally) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
   CreateContext(kNonOpaque);
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
   auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
-
-  // Install a minimal delay for testing to ensure that the test remains fast
-  // to execute.
-  handler.SetBeforeCompressionDelayForTesting(base::Microseconds(10));
-
   EXPECT_FALSE(handler.IsHibernating());
 
   // Verify that going to the background triggers hibernation asynchronously.
   {
     base::HistogramTester histogram_tester;
-    GetDocument().GetPage()->SetVisibilityState(
-        mojom::blink::PageVisibilityState::kHidden,
-        /*is_initial_state=*/false);
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2064,18 +2255,14 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   // Toggle visibility to foreground before the task that enters hibernation
   // gets a chance to run.
-  GetDocument().GetPage()->SetVisibilityState(
-      mojom::blink::PageVisibilityState::kVisible,
-      /*is_initial_state=*/false);
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kVisible);
 
   // Move the page to the background again and verify that hibernation is not
   // newly scheduled, as the hibernation scheduled on the first backgrounding is
   // still pending.
   {
     base::HistogramTester histogram_tester;
-    GetDocument().GetPage()->SetVisibilityState(
-        mojom::blink::PageVisibilityState::kHidden,
-        /*is_initial_state=*/false);
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2083,12 +2270,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     EXPECT_FALSE(handler.IsHibernating());
   }
 
-  // Run the task that initiates hibernation and verify that hibernation
-  // triggers.
-  ThreadScheduler::Current()
-      ->ToMainThreadScheduler()
-      ->StartIdlePeriodForTesting();
-  blink::test::RunPendingTasks();
+  // Run hibernation task.
+  RunIdleTasks();
 
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
   EXPECT_TRUE(handler.IsHibernating());
@@ -2097,9 +2280,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // Verify that coming to the foreground ends hibernation synchronously.
   {
     base::HistogramTester histogram_tester;
-    GetDocument().GetPage()->SetVisibilityState(
-        mojom::blink::PageVisibilityState::kVisible,
-        /*is_initial_state=*/false);
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kVisible);
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2116,23 +2297,16 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, TeardownEndsHibernation) {
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
   CreateContext(kNonOpaque);
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
   auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
-
-  // Install a minimal delay for testing to ensure that the test remains fast
-  // to execute.
-  handler.SetBeforeCompressionDelayForTesting(base::Microseconds(10));
-
   EXPECT_FALSE(handler.IsHibernating());
 
   // Verify that going to the background triggers hibernation asynchronously.
   {
     base::HistogramTester histogram_tester;
-    GetDocument().GetPage()->SetVisibilityState(
-        mojom::blink::PageVisibilityState::kHidden,
-        /*is_initial_state=*/false);
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2140,12 +2314,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, TeardownEndsHibernation) {
     EXPECT_FALSE(handler.IsHibernating());
   }
 
-  // Run the task that initiates hibernation, which has been posted as an idle
-  // task.
-  ThreadScheduler::Current()
-      ->ToMainThreadScheduler()
-      ->StartIdlePeriodForTesting();
-  blink::test::RunPendingTasks();
+  // Run hibernation task.
+  RunIdleTasks();
 
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
   EXPECT_TRUE(handler.IsHibernating());
@@ -2174,23 +2344,16 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
       {features::kIsPaintableChecksResourceProviderInsteadOfBridge});
 
   CreateContext(kNonOpaque);
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
   auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
-
-  // Install a minimal delay for testing to ensure that the test remains fast
-  // to execute.
-  handler.SetBeforeCompressionDelayForTesting(base::Microseconds(10));
-
   EXPECT_FALSE(handler.IsHibernating());
 
   // Verify that going to the background triggers hibernation asynchronously.
   {
     base::HistogramTester histogram_tester;
-    GetDocument().GetPage()->SetVisibilityState(
-        mojom::blink::PageVisibilityState::kHidden,
-        /*is_initial_state=*/false);
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2206,12 +2369,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   {
     base::HistogramTester histogram_tester;
 
-    // Run the task that initiates hibernation, which has been posted as an idle
-    // task.
-    ThreadScheduler::Current()
-        ->ToMainThreadScheduler()
-        ->StartIdlePeriodForTesting();
-    blink::test::RunPendingTasks();
+    // Run hibernation task.
+    RunIdleTasks();
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2233,23 +2392,16 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
       {});
 
   CreateContext(kNonOpaque);
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
   auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
-
-  // Install a minimal delay for testing to ensure that the test remains fast
-  // to execute.
-  handler.SetBeforeCompressionDelayForTesting(base::Microseconds(10));
-
   EXPECT_FALSE(handler.IsHibernating());
 
   // Verify that going to the background triggers hibernation asynchronously.
   {
     base::HistogramTester histogram_tester;
-    GetDocument().GetPage()->SetVisibilityState(
-        mojom::blink::PageVisibilityState::kHidden,
-        /*is_initial_state=*/false);
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2265,12 +2417,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   {
     base::HistogramTester histogram_tester;
 
-    // Run the task that initiates hibernation, which has been posted as an idle
-    // task.
-    ThreadScheduler::Current()
-        ->ToMainThreadScheduler()
-        ->StartIdlePeriodForTesting();
-    blink::test::RunPendingTasks();
+    // Run hibernation task.
+    RunIdleTasks();
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2286,22 +2434,15 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
   CreateContext(kNonOpaque);
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
   ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
-
-  // Install a minimal delay for testing to ensure that the test remains fast
-  // to execute.
-  CanvasElement().GetHibernationHandler()->SetBeforeCompressionDelayForTesting(
-      base::Microseconds(10));
 
   ASSERT_FALSE(CanvasElement().IsHibernating());
 
   // Verify that going to the background triggers hibernation asynchronously.
   {
     base::HistogramTester histogram_tester;
-    GetDocument().GetPage()->SetVisibilityState(
-        mojom::blink::PageVisibilityState::kHidden,
-        /*is_initial_state=*/false);
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2317,12 +2458,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   {
     base::HistogramTester histogram_tester;
 
-    // Run the task that initiates hibernation, which has been posted as an idle
-    // task.
-    ThreadScheduler::Current()
-        ->ToMainThreadScheduler()
-        ->StartIdlePeriodForTesting();
-    blink::test::RunPendingTasks();
+    // Run hibernation task.
+    RunIdleTasks();
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2340,22 +2477,14 @@ TEST_P(
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
   CreateContext(kNonOpaque);
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
   ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
-
-  // Install a minimal delay for testing to ensure that the test remains fast
-  // to execute.
-  CanvasElement().GetHibernationHandler()->SetBeforeCompressionDelayForTesting(
-      base::Microseconds(10));
-
   ASSERT_FALSE(CanvasElement().IsHibernating());
 
   // Verify that going to the background triggers hibernation asynchronously.
   {
     base::HistogramTester histogram_tester;
-    GetDocument().GetPage()->SetVisibilityState(
-        mojom::blink::PageVisibilityState::kHidden,
-        /*is_initial_state=*/false);
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2368,12 +2497,8 @@ TEST_P(
   CanvasElement().EnableAcceleration();
   ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
-  // The toggle from SW back to HW rendering should be a no-op from the POV of
-  // the pending hibernation, which should still occur when initiated.
-  ThreadScheduler::Current()
-      ->ToMainThreadScheduler()
-      ->StartIdlePeriodForTesting();
-  blink::test::RunPendingTasks();
+  // Run hibernation task.
+  RunIdleTasks();
   EXPECT_TRUE(CanvasElement().IsHibernating());
 }
 
@@ -2383,23 +2508,16 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
   CreateContext(kNonOpaque);
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
   auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
-
-  // Install a minimal delay for testing to ensure that the test remains fast
-  // to execute.
-  handler.SetBeforeCompressionDelayForTesting(base::Microseconds(10));
-
   EXPECT_FALSE(handler.IsHibernating());
 
   // Verify that going to the background triggers hibernation asynchronously.
   {
     base::HistogramTester histogram_tester;
-    GetDocument().GetPage()->SetVisibilityState(
-        mojom::blink::PageVisibilityState::kHidden,
-        /*is_initial_state=*/false);
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2408,21 +2526,15 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   }
 
   // Foreground the page while hibernation is pending.
-  GetDocument().GetPage()->SetVisibilityState(
-      mojom::blink::PageVisibilityState::kVisible,
-      /*is_initial_state=*/false);
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kVisible);
 
   // Verify that running the hibernation task aborts hibernation due to the
   // page having been foregrounded.
   {
     base::HistogramTester histogram_tester;
 
-    // Run the task that initiates hibernation, which has been posted as an idle
-    // task.
-    ThreadScheduler::Current()
-        ->ToMainThreadScheduler()
-        ->StartIdlePeriodForTesting();
-    blink::test::RunPendingTasks();
+    // Run hibernation task.
+    RunIdleTasks();
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2449,22 +2561,15 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ContextLossAbortsHibernation) {
   EXPECT_TRUE(CanvasElement().IsResourceValid());
 
   auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
-
-  // Install a minimal delay for testing to ensure that the test remains fast
-  // to execute.
-  handler.SetBeforeCompressionDelayForTesting(base::Microseconds(10));
-
   EXPECT_FALSE(handler.IsHibernating());
 
   // Simulate GPU context loss.
-  test_context_provider_->TestContextGL()->set_context_lost(true);
+  test_context_provider_->GetTestRasterInterface()->set_context_lost(true);
 
   // Verify that going to the background triggers hibernation asynchronously.
   {
     base::HistogramTester histogram_tester;
-    GetDocument().GetPage()->SetVisibilityState(
-        mojom::blink::PageVisibilityState::kHidden,
-        /*is_initial_state=*/false);
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2477,12 +2582,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ContextLossAbortsHibernation) {
   {
     base::HistogramTester histogram_tester;
 
-    // Run the task that initiates hibernation, which has been posted as an idle
-    // task.
-    ThreadScheduler::Current()
-        ->ToMainThreadScheduler()
-        ->StartIdlePeriodForTesting();
-    blink::test::RunPendingTasks();
+    // Run hibernation task.
+    RunIdleTasks();
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2532,11 +2633,13 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
        NoResourceRecyclingWhenPageHidden) {
   CreateContext(kNonOpaque);
 
-  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 0u);
+  EXPECT_THAT(CanvasElement().ResourceProvider(), IsNull());
 
   Context2D()->fillRect(3, 3, 1, 1);
 
-  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
+  const CanvasResourceProvider* provider = CanvasElement().ResourceProvider();
+  ASSERT_THAT(provider, NotNull());
+  EXPECT_EQ(provider->NumInflightResourcesForTesting(), 1);
 
   // Invoking PrepareTransferableResource() has a precondition that a CC layer
   // be present.
@@ -2554,7 +2657,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   // Note that the write did not in of itself trigger copy-on-write since
   // rasterization has not occurred yet.
-  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
+  EXPECT_EQ(provider->NumInflightResourcesForTesting(), 1);
 
   // Emulate sending the canvas' resource to the display compositor, which
   // forces copy-on-write before rasterization as the display compositor has a
@@ -2562,26 +2665,24 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   ASSERT_TRUE(CanvasElement().PrepareTransferableResource(&resources[1],
                                                           &callbacks[1]));
   EXPECT_NE(resources[0].mailbox(), resources[1].mailbox());
-  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 2u);
+  EXPECT_EQ(provider->NumInflightResourcesForTesting(), 2);
 
   // Emulate the display compositor releasing the first resource. The released
   // resource should be saved for recycling (i.e., it should not be dropped).
   std::move(callbacks[0]).Run(gpu::SyncToken(), false);
-  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 2u);
+  EXPECT_EQ(provider->NumInflightResourcesForTesting(), 2);
 
   // Move the page to the background. This should cause resource recycling to be
   // disabled and the previously-released resource to now be dropped.
-  GetDocument().GetPage()->SetVisibilityState(
-      mojom::blink::PageVisibilityState::kHidden,
-      /*is_initial_state=*/false);
-  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
+  EXPECT_EQ(provider->NumInflightResourcesForTesting(), 1);
 
   // Emulate the display compositor releasing the second resource. The resource
   // should not be dropped because it's the current render target for the canvas
   // and so the canvas itself still has a reference on this resource. This
   // resource should be dropped only if the canvas is hibernated.
   std::move(callbacks[1]).Run(gpu::SyncToken(), false);
-  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
+  EXPECT_EQ(provider->NumInflightResourcesForTesting(), 1);
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
@@ -2594,14 +2695,10 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   ASSERT_TRUE(SetUpFullAccelerationAndCcLayer(CanvasElement()));
 
-  GetDocument().GetPage()->SetVisibilityState(
-      mojom::blink::PageVisibilityState::kHidden,
-      /*is_initial_state=*/false);
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
   EXPECT_FALSE(CanvasElement().CcLayer()->needs_set_resource_for_testing());
 
-  GetDocument().GetPage()->SetVisibilityState(
-      mojom::blink::PageVisibilityState::kVisible,
-      /*is_initial_state=*/false);
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kVisible);
   EXPECT_TRUE(CanvasElement().CcLayer()->needs_set_resource_for_testing());
 }
 
@@ -2617,19 +2714,12 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   ASSERT_TRUE(SetUpFullAccelerationAndCcLayer(CanvasElement()));
 
   auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
-
-  // Install a minimal delay for testing to ensure that the test remains fast
-  // to execute.
-  handler.SetBeforeCompressionDelayForTesting(base::Microseconds(10));
-
   EXPECT_FALSE(handler.IsHibernating());
 
   // Verify that going to the background triggers hibernation asynchronously.
   {
     base::HistogramTester histogram_tester;
-    GetDocument().GetPage()->SetVisibilityState(
-        mojom::blink::PageVisibilityState::kHidden,
-        /*is_initial_state=*/false);
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2637,12 +2727,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     EXPECT_FALSE(handler.IsHibernating());
   }
 
-  // Run the task that initiates hibernation, which has been posted as an idle
-  // task.
-  ThreadScheduler::Current()
-      ->ToMainThreadScheduler()
-      ->StartIdlePeriodForTesting();
-  blink::test::RunPendingTasks();
+  // Run hibernation task.
+  RunIdleTasks();
   EXPECT_TRUE(handler.IsHibernating());
 
   // Verify that PrepareTransferableResource() fails while hibernating.
@@ -2660,7 +2746,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
   CreateContext(kNonOpaque);
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
 
   auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
   base::RunLoop run_loop;
@@ -2681,20 +2767,14 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_FALSE(handler.IsHibernating());
 
   // Hide the page to trigger the hibernation task.
-  GetDocument().GetPage()->SetVisibilityState(
-      mojom::blink::PageVisibilityState::kHidden,
-      /*is_initial_state=*/false);
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
   // Hibernation is triggered asynchronously.
   EXPECT_FALSE(handler.is_encoded());
   EXPECT_FALSE(handler.IsHibernating());
 
-  // Run the task that initiates hibernation, which has been posted as an idle
-  // task.
-  ThreadScheduler::Current()
-      ->ToMainThreadScheduler()
-      ->StartIdlePeriodForTesting();
-  blink::test::RunPendingTasks();
+  // Run hibernation task.
+  RunIdleTasks();
   EXPECT_FALSE(CanvasElement().ResourceProvider());
   EXPECT_TRUE(handler.IsHibernating());
 
@@ -2717,8 +2797,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
   CreateContext(kNonOpaque);
-  ASSERT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider(
-      RasterModeHint::kPreferGPU));
+  ASSERT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider());
   ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
   auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
@@ -2740,20 +2819,14 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   ASSERT_FALSE(handler.IsHibernating());
 
   // Hide the page to trigger the hibernation task.
-  GetDocument().GetPage()->SetVisibilityState(
-      mojom::blink::PageVisibilityState::kHidden,
-      /*is_initial_state=*/false);
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
   // Hibernation is triggered asynchronously.
   ASSERT_FALSE(handler.is_encoded());
   ASSERT_FALSE(handler.IsHibernating());
 
-  // Run the task that initiates hibernation, which has been posted as an idle
-  // task.
-  ThreadScheduler::Current()
-      ->ToMainThreadScheduler()
-      ->StartIdlePeriodForTesting();
-  blink::test::RunPendingTasks();
+  // Run hibernation task.
+  RunIdleTasks();
 
   ASSERT_FALSE(CanvasElement().ResourceProvider());
   ASSERT_TRUE(handler.IsHibernating());
@@ -2852,12 +2925,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, HibernationWithUnclosedLayer) {
   blink::test::RunPendingTasks();
 
   // Hibernate the canvas. Hibernation is handled in a idle task.
-  GetDocument().GetPage()->SetVisibilityState(
-      mojom::blink::PageVisibilityState::kHidden, /*is_initial_state=*/false);
-  ThreadScheduler::Current()
-      ->ToMainThreadScheduler()
-      ->StartIdlePeriodForTesting();
-  blink::test::RunPendingTasks();
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
+  RunIdleTasks();
 
   // Hibernating should have rastered paint ops preceding `beginLayer`.
   EXPECT_THAT(hibernation_raster,
@@ -2865,8 +2934,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, HibernationWithUnclosedLayer) {
                                                    FillFlags())));
 
   // Wake up from hibernation.
-  GetDocument().GetPage()->SetVisibilityState(
-      mojom::blink::PageVisibilityState::kVisible, /*is_initial_state=*/false);
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kVisible);
 
   NonThrowableExceptionState exception_state;
   Context2D()->endLayer(exception_state);
@@ -2902,14 +2970,9 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   canvas_element_->ReplaceResourceProvider(nullptr);
 
   // Hide element to trigger hibernation (if enabled).
-  GetDocument().GetPage()->SetVisibilityState(
-      mojom::blink::PageVisibilityState::kHidden,
-      /*is_initial_state=*/false);
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
   // Run hibernation task.
-  ThreadScheduler::Current()
-      ->ToMainThreadScheduler()
-      ->StartIdlePeriodForTesting();
-  blink::test::RunPendingTasks();
+  RunIdleTasks();
 
   // Never hibernate a canvas with no resource provider.
   EXPECT_FALSE(box->NeedsPaintPropertyUpdate());
@@ -2924,9 +2987,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, LowLatencyIsNotSingleBuffered) {
   EXPECT_FALSE(Context2D()->getContextAttributes()->willReadFrequently());
   EXPECT_TRUE(CanvasElement().LowLatencyEnabled());
   EXPECT_FALSE(
-      CanvasElement()
-          .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
-          ->IsSingleBuffered());
+      CanvasElement().GetOrCreateCanvasResourceProvider()->IsSingleBuffered());
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 }
 
@@ -2935,7 +2996,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, DrawImage_Video_Flush) {
 
   CreateContext(kNonOpaque);
   // No need to set-up the layer bridge when testing low latency mode.
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
   gfx::Size visible_size(10, 10);
@@ -2966,7 +3027,7 @@ TEST_P(CanvasRenderingContext2DTest, FlushRestoresClipStack) {
   CreateContext(kNonOpaque);
 
   // Ensure that the ResourceProvider and canvas are created.
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferCPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
 
   // Set a transform.
   Context2D()->translate(5, 0);
@@ -2986,7 +3047,7 @@ TEST_P(CanvasRenderingContext2DTest, PutImageDataRestoresClipStack) {
   CreateContext(kNonOpaque);
 
   // Ensure that the ResourceProvider and canvas are created.
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferCPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
 
   // Set a transform.
   Context2D()->translate(5, 0);
@@ -3028,7 +3089,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   ScopedCanvas2dLayersForTest layer_feature{/*enabled=*/true};
   CreateContext(kNonOpaque);
 
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
 
   NonThrowableExceptionState exception_state;
   Context2D()->fillRect(10, 10, 20, 20);
@@ -3059,10 +3120,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 }
 
 class CanvasRenderingContext2DTestAcceleratedMultipleDisables
-    : public CanvasRenderingContext2DTest {
+    : public CanvasRenderingContext2DTestAccelerated {
  protected:
-  bool AllowsAcceleration() override { return true; }
-
   void CreateAlotOfCanvasesWithAccelerationExplicitlyDisabled() {
     for (int i = 0; i < 100; ++i) {
       auto* canvas = MakeGarbageCollected<HTMLCanvasElement>(GetDocument());
@@ -3070,14 +3129,11 @@ class CanvasRenderingContext2DTestAcceleratedMultipleDisables
           kNonOpaque, kNormalLatency,
           CanvasContextCreationAttributesCore::WillReadFrequently::kUndefined,
           canvas);
-      canvas->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+      canvas->GetOrCreateCanvasResourceProvider();
       EXPECT_TRUE(canvas->IsAccelerated());
       canvas->DisableAcceleration();
     }
   }
-
- private:
-  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform_;
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(
@@ -3089,7 +3145,7 @@ TEST_P(CanvasRenderingContext2DTestAcceleratedMultipleDisables,
   CreateContext(
       kNonOpaque, kNormalLatency,
       CanvasContextCreationAttributesCore::WillReadFrequently::kUndefined);
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
   // Because a bunch of canvases had acceleration explicitly disabled, canvases
   // created with `kUndefined` should start with acceleration disabled.
   EXPECT_FALSE(CanvasElement().IsAccelerated());
@@ -3101,7 +3157,7 @@ TEST_P(CanvasRenderingContext2DTestAcceleratedMultipleDisables,
   CreateContext(
       kNonOpaque, kNormalLatency,
       CanvasContextCreationAttributesCore::WillReadFrequently::kFalse);
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
   // Canvases created with `kFalse` should always start with acceleration
   // enabled regardless of how many canvases had acceleration disabled.
   EXPECT_TRUE(CanvasElement().IsAccelerated());
@@ -3112,7 +3168,7 @@ TEST_P(CanvasRenderingContext2DTestAcceleratedMultipleDisables,
   CreateAlotOfCanvasesWithAccelerationExplicitlyDisabled();
   CreateContext(kNonOpaque, kNormalLatency,
                 CanvasContextCreationAttributesCore::WillReadFrequently::kTrue);
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
   // Canvases created with `kTrue` should always start with acceleration
   // disabled regardless of how many canvases had acceleration explicitly
   // disabled.
@@ -3130,19 +3186,17 @@ class CanvasRenderingContext2DTestImageChromium
         features::kLowLatencyCanvas2dImageChromium);
   }
 
-  scoped_refptr<viz::TestContextProvider> CreateContextProvider() override {
-    auto context_provider = viz::TestContextProvider::Create();
-    auto* test_gl = context_provider->UnboundTestContextGL();
-    test_gl->set_max_texture_size(1024);
-    test_gl->set_supports_gpu_memory_buffer_format(gfx::BufferFormat::BGRA_8888,
-                                                   true);
+  void ConfigureContextProvider(
+      viz::TestContextProvider& context_provider) override {
+    auto* test_raster = context_provider.GetTestRasterInterface();
+    test_raster->set_max_texture_size(1024);
+    test_raster->set_supports_gpu_memory_buffer_format(
+        gfx::BufferFormat::BGRA_8888, true);
+    test_raster->set_gpu_rasterization(true);
 
     gpu::SharedImageCapabilities shared_image_caps;
     shared_image_caps.supports_scanout_shared_images = true;
-    context_provider->SharedImageInterface()->SetCapabilities(
-        shared_image_caps);
-
-    return context_provider;
+    context_provider.SharedImageInterface()->SetCapabilities(shared_image_caps);
   }
 
  private:
@@ -3159,19 +3213,16 @@ TEST_P(CanvasRenderingContext2DTestImageChromium, LowLatencyIsSingleBuffered) {
   EXPECT_FALSE(Context2D()->getContextAttributes()->willReadFrequently());
   EXPECT_TRUE(CanvasElement().LowLatencyEnabled());
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
-  EXPECT_TRUE(CanvasElement()
-                  .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
-                  ->IsSingleBuffered());
-  auto frame1_resource =
-      CanvasElement()
-          .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
-          ->ProduceCanvasResource(FlushReason::kTesting);
+  EXPECT_TRUE(
+      CanvasElement().GetOrCreateCanvasResourceProvider()->IsSingleBuffered());
+  auto frame1_resource = CanvasElement()
+                             .GetOrCreateCanvasResourceProvider()
+                             ->ProduceCanvasResource(FlushReason::kTesting);
   EXPECT_TRUE(frame1_resource);
   DrawSomething();
-  auto frame2_resource =
-      CanvasElement()
-          .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
-          ->ProduceCanvasResource(FlushReason::kTesting);
+  auto frame2_resource = CanvasElement()
+                             .GetOrCreateCanvasResourceProvider()
+                             ->ProduceCanvasResource(FlushReason::kTesting);
   EXPECT_TRUE(frame2_resource);
   EXPECT_EQ(frame1_resource.get(), frame2_resource.get());
 }
@@ -3182,17 +3233,15 @@ class CanvasRenderingContext2DTestSwapChain
   CanvasRenderingContext2DTestSwapChain()
       : CanvasRenderingContext2DTestAccelerated() {}
 
-  scoped_refptr<viz::TestContextProvider> CreateContextProvider() override {
-    auto context_provider = viz::TestContextProvider::Create();
-    auto* test_gl = context_provider->UnboundTestContextGL();
-    test_gl->set_max_texture_size(1024);
+  void ConfigureContextProvider(
+      viz::TestContextProvider& context_provider) override {
+    auto* test_raster = context_provider.GetTestRasterInterface();
+    test_raster->set_max_texture_size(1024);
+    test_raster->set_gpu_rasterization(true);
 
     gpu::SharedImageCapabilities shared_image_caps;
     shared_image_caps.shared_image_swap_chain = true;
-    context_provider->SharedImageInterface()->SetCapabilities(
-        shared_image_caps);
-
-    return context_provider;
+    context_provider.SharedImageInterface()->SetCapabilities(shared_image_caps);
   }
 
  private:
@@ -3209,19 +3258,16 @@ TEST_P(CanvasRenderingContext2DTestSwapChain, LowLatencyIsSingleBuffered) {
   EXPECT_FALSE(Context2D()->getContextAttributes()->willReadFrequently());
   EXPECT_TRUE(CanvasElement().LowLatencyEnabled());
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
-  EXPECT_TRUE(CanvasElement()
-                  .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
-                  ->IsSingleBuffered());
-  auto frame1_resource =
-      CanvasElement()
-          .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
-          ->ProduceCanvasResource(FlushReason::kTesting);
+  EXPECT_TRUE(
+      CanvasElement().GetOrCreateCanvasResourceProvider()->IsSingleBuffered());
+  auto frame1_resource = CanvasElement()
+                             .GetOrCreateCanvasResourceProvider()
+                             ->ProduceCanvasResource(FlushReason::kTesting);
   EXPECT_TRUE(frame1_resource);
   DrawSomething();
-  auto frame2_resource =
-      CanvasElement()
-          .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
-          ->ProduceCanvasResource(FlushReason::kTesting);
+  auto frame2_resource = CanvasElement()
+                             .GetOrCreateCanvasResourceProvider()
+                             ->ProduceCanvasResource(FlushReason::kTesting);
   EXPECT_TRUE(frame2_resource);
   EXPECT_EQ(frame1_resource.get(), frame2_resource.get());
 }

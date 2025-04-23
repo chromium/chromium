@@ -4,10 +4,14 @@
 
 package org.chromium.chrome.browser.back_press;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -19,13 +23,14 @@ import org.chromium.content_public.browser.WebContents;
  * Class responsible for ensuring a web-exposed CloseWatcher is able to intercept a back gesture and
  * perform an app-specific behavior.
  */
+@NullMarked
 public class CloseListenerManager implements BackPressHandler, Destroyable {
     private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplier<Tab> mActivityTabSupplier;
     private final Callback<Tab> mOnTabChanged = this::onTabChanged;
-    private Tab mTab;
-    private TabObserver mTabObserver;
+    private @Nullable Tab mTab;
+    private @Nullable TabObserver mTabObserver;
 
     public CloseListenerManager(ObservableSupplier<Tab> activityTabSupplier) {
         mActivityTabSupplier = activityTabSupplier;
@@ -50,6 +55,7 @@ public class CloseListenerManager implements BackPressHandler, Destroyable {
     public void destroy() {
         mActivityTabSupplier.removeObserver(mOnTabChanged);
         if (mTabObserver != null) {
+            assumeNonNull(mTab);
             mTab.removeObserver(mTabObserver);
             mTabObserver = null;
             mTab = null;
@@ -63,6 +69,7 @@ public class CloseListenerManager implements BackPressHandler, Destroyable {
 
     private void updateObserver() {
         if (mTabObserver != null) {
+            assumeNonNull(mTab);
             mTab.removeObserver(mTabObserver);
             mTabObserver = null;
         }
@@ -93,7 +100,7 @@ public class CloseListenerManager implements BackPressHandler, Destroyable {
         return getFocusedFrameIfCloseWatcherActive() != null;
     }
 
-    private RenderFrameHost getFocusedFrameIfCloseWatcherActive() {
+    private @Nullable RenderFrameHost getFocusedFrameIfCloseWatcherActive() {
         Tab tab = mActivityTabSupplier.get();
         if (tab == null) return null;
         WebContents contents = tab.getWebContents();

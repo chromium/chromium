@@ -70,11 +70,6 @@ double CSSMathFunctionValue::DoubleValue() const {
   return ClampToPermittedRange(expression_->DoubleValue());
 }
 
-double CSSMathFunctionValue::ComputeSeconds() const {
-  DCHECK_EQ(kCalcTime, expression_->Category());
-  return ClampToPermittedRange(*expression_->ComputeValueInCanonicalUnit());
-}
-
 double CSSMathFunctionValue::ComputeDegrees() const {
   DCHECK_EQ(kCalcAngle, expression_->Category());
   return ClampToPermittedRange(*expression_->ComputeValueInCanonicalUnit());
@@ -156,11 +151,6 @@ double CSSMathFunctionValue::ComputeValueInCanonicalUnit(
   return std::isnan(value) ? 0.0 : value;
 }
 
-double CSSMathFunctionValue::ComputeDotsPerPixel() const {
-  DCHECK_EQ(kCalcResolution, expression_->Category());
-  return ClampToPermittedRange(*expression_->ComputeValueInCanonicalUnit());
-}
-
 bool CSSMathFunctionValue::AccumulateLengthArray(CSSLengthArray& length_array,
                                                  double multiplier) const {
   return expression_->AccumulateLengthArray(length_array, multiplier);
@@ -177,9 +167,18 @@ Length CSSMathFunctionValue::ConvertToLength(
 static String BuildCSSText(const String& expression) {
   StringBuilder result;
   result.Append("calc");
-  result.Append('(');
-  result.Append(expression);
-  result.Append(')');
+  // https://drafts.csswg.org/css-values-4/#serialize-a-math-function
+  // “If a result of this serialization starts with a "(" (open parenthesis) and
+  // ends with a ")" (close parenthesis), remove those characters from the
+  // result.”
+  if (expression.StartsWith('(')) {
+    DCHECK(expression.EndsWith(')'));
+    result.Append(expression);
+  } else {
+    result.Append('(');
+    result.Append(expression);
+    result.Append(')');
+  }
   return result.ReleaseString();
 }
 

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
 import("//components/optimization_guide/features.gni")
 import("//pdf/features.gni")
 
@@ -32,7 +33,6 @@ source_set("ai") {
     "//build/config/compiler:wexit_time_destructors",
     "//build/config/compiler:wglobal_constructors",
   ]
-
   public_deps = [
     "//base",
     "//chrome/browser:browser_process",
@@ -43,6 +43,12 @@ source_set("ai") {
     "//components/update_client:update_client",
     "//content/public/browser",
   ]
+  if (enable_glic) {
+    public_deps += [
+      "//chrome/browser/glic:glic",
+      "//chrome/browser/actor:actor",
+    ]
+  }
 }
 
 source_set("impl") {

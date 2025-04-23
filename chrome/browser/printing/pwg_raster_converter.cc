@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/printing/pwg_raster_converter.h"
 
 #include <algorithm>
@@ -109,8 +104,8 @@ void PwgRasterConverterHelper::Convert(
   }
 
   // TODO(thestig): Write `data` into shared memory in the first place, to avoid
-  // this memcpy().
-  memcpy(memory.mapping.memory(), data->data(), data->size());
+  // this copy.
+  memory.mapping.GetMemoryAsSpan<uint8_t>().copy_prefix_from(*data);
   pdf_to_pwg_raster_converter_remote_->Convert(
       std::move(memory.region), settings_, bitmap_settings_,
       base::BindOnce(&PwgRasterConverterHelper::RunCallback, this));

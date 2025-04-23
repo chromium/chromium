@@ -17,6 +17,14 @@
 #include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/installer/util/install_util.h"
+#include "chrome/installer/util/shell_util.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
+#include "ui/base/win/shell.h"
+#endif
+
 namespace glic {
 namespace {
 
@@ -26,11 +34,12 @@ bool UserResizeEnabled() {
   return base::FeatureList::IsEnabled(features::kGlicUserResize);
 }
 
+}  // namespace
+
 class GlicWidgetDelegate : public views::WidgetDelegate {
  public:
   GlicWidgetDelegate() {
     SetFocusTraversesOut(true);
-    SetAccessibleTitle(l10n_util::GetStringUTF16(IDS_GLIC_WINDOW_TITLE));
     RegisterDeleteDelegateCallback(
         RegisterDeleteCallbackPassKey(),
         base::BindOnce(&GlicWidgetDelegate::Destroy, base::Unretained(this)));
@@ -44,7 +53,6 @@ class GlicWidgetDelegate : public views::WidgetDelegate {
  private:
   void Destroy() { delete this; }
 };
-}  // namespace
 
 void* kGlicWidgetIdentifier = &kGlicWidgetIdentifier;
 
@@ -74,7 +82,11 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
 #if BUILDFLAG(IS_WIN)
-  params.dont_show_in_taskbar = true;
+  // If floaty won't be always on top, it should appear in the taskbar and
+  // alt tab list.
+  if (!base::FeatureList::IsEnabled(features::kGlicZOrderChanges)) {
+    params.dont_show_in_taskbar = true;
+  }
   params.force_system_menu_for_frameless = true;
 #endif
   params.bounds = initial_bounds;
@@ -106,6 +118,16 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(
   widget->SetNativeWindowProperty(views::kWidgetIdentifierKey,
                                   kGlicWidgetIdentifier);
 
+#if BUILDFLAG(IS_WIN)
+  HWND hwnd = widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget();
+  if (hwnd != nullptr) {
+    ui::win::PreventWindowFromPinning(hwnd);
+    if (base::FeatureList::IsEnabled(features::kGlicZOrderChanges)) {
+      ui::win::SetAppIdForWindow(
+          ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()), hwnd);
+    }
+  }  // BUILDFLAG(IS_WIN)
+#endif  //
   return widget;
 }
 

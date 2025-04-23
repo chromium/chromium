@@ -2,4 +2,5 @@
 
 Code that handles data extraction for the Continuous Search Project.
 
-The presentation code is located in `chrome/browser/continuous_search`.
+The UI component of this feature is sunsetted, but the data extraction code
+is still in use for related search.

@@ -22,6 +22,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -112,6 +113,11 @@ TEST_F(AppListPresenterImplTest,
 
 // Tests that Assistant UI in tablet mode is closed when open another window.
 TEST_F(AppListPresenterImplTest, HideAssistantUIOnFocusOut) {
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    GTEST_SKIP() << "Assistant is not available if new entry point is enabled. "
+                    "crbug.com/388361414";
+  }
+
   // Enter tablet mode to display the home launcher.
   EnableTabletMode();
   EXPECT_TRUE(presenter()->IsVisibleDeprecated());

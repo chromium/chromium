@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/preloading/search_preload/search_preload_pipeline_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/search_engines/template_url_service_observer.h"
 
@@ -24,6 +25,24 @@ namespace omnibox::mojom {
 enum class NavigationPredictor;
 }
 
+// Roles:
+//
+// - Observes changes of `TemplateURLService` and notifies it to
+//   `SearchPreloadPipelineManager`s.
+// - Routes Omnibox events to `SearchPreloadPipelineManager`s.
+//
+// Note that
+//
+// - Prerender is managed per `WebContents` and we must trigger prerender for
+//   appropriate `WebContents`; and
+// - Prefetch is managed per `BrowserContext` and it's (theoretically) available
+//   even we trigger prefetches over different `WebContents`s.
+//   - Note that current behavior of `PrefetchHandle` is
+//     `PrefetchHandle::dtor()` immediately destroys `PrefetchContainer` and
+//     it's actually not available.
+//
+// So, we manage pipelines in `SearchPreloadPipelineManager` per `WebContents`.
+// It's for the necessity of prerender and the simplicity of prefetch.
 class SearchPreloadService : public KeyedService,
                              public TemplateURLServiceObserver {
  public:
@@ -65,10 +84,16 @@ class SearchPreloadService : public KeyedService,
       content::WebContents* web_contents);
 
  private:
+  // Reference is valid only as rvalue.
+  SearchPreloadPipelineManager& GetOrCreatePipelineManagerWithLimit(
+      content::WebContents& web_contents);
+
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
       observer_{this};
 
   const raw_ptr<Profile> profile_;
+
+  std::optional<base::WeakPtr<SearchPreloadPipelineManager>> pipeline_manager_;
 
   base::WeakPtrFactory<SearchPreloadService> weak_factory_{this};
 };

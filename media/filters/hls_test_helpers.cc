@@ -27,11 +27,20 @@ MockManifestDemuxerEngineHost::~MockManifestDemuxerEngineHost() = default;
 MockHlsRenditionHost::MockHlsRenditionHost() = default;
 MockHlsRenditionHost::~MockHlsRenditionHost() = default;
 
-MockHlsRendition::MockHlsRendition() = default;
+MockHlsRendition::MockHlsRendition(GURL uri) : uri_(std::move(uri)) {}
 MockHlsRendition::~MockHlsRendition() = default;
 
 MockHlsNetworkAccess::MockHlsNetworkAccess() = default;
 MockHlsNetworkAccess::~MockHlsNetworkAccess() = default;
+
+void MockHlsRendition::UpdatePlaylistURI(const GURL& uri) {
+  MockUpdatePlaylistURI(uri);
+  uri_ = uri;
+}
+
+const GURL& MockHlsRendition::MediaPlaylistUri() const {
+  return uri_;
+}
 
 // static
 std::unique_ptr<HlsDataSourceStream>

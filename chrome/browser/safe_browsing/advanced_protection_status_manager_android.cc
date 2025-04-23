@@ -26,6 +26,13 @@ AdvancedProtectionStatusManagerAndroid::
   Java_AdvancedProtectionStatusManagerAndroidBridge_destroy(env, java_manager_);
 }
 
+// static
+bool AdvancedProtectionStatusManagerAndroid::QueryIsUnderAdvancedProtection() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_AdvancedProtectionStatusManagerAndroidBridge_isAdvancedProtectionRequestedByOs(
+      env);
+}
+
 AdvancedProtectionStatusManager::Type
 AdvancedProtectionStatusManagerAndroid::GetAdvancedProtectionType() const {
   return is_under_advanced_protection_ ? Type::kAndroidOs : Type::kNone;
@@ -58,10 +65,8 @@ void AdvancedProtectionStatusManagerAndroid::UpdateState() {
     is_under_advanced_protection_ = true;
     return;
   }
-  JNIEnv* env = base::android::AttachCurrentThread();
   is_under_advanced_protection_ =
-      Java_AdvancedProtectionStatusManagerAndroidBridge_isAdvancedProtectionRequestedByOs(
-          env, java_manager_);
+      AdvancedProtectionStatusManagerAndroid::QueryIsUnderAdvancedProtection();
 }
 
 }  // namespace safe_browsing

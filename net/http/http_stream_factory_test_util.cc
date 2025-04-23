@@ -30,6 +30,7 @@ MockHttpStreamFactoryJob::MockHttpStreamFactoryJob(
     quic::ParsedQuicVersion quic_version,
     bool is_websocket,
     bool enable_ip_based_pooling,
+    std::optional<ConnectionManagementConfig> management_config,
     NetLog* net_log)
     : HttpStreamFactory::Job(delegate,
                              job_type,
@@ -44,6 +45,7 @@ MockHttpStreamFactoryJob::MockHttpStreamFactoryJob(
                              quic_version,
                              is_websocket,
                              enable_ip_based_pooling,
+                             management_config,
                              net_log) {
   DCHECK(!is_waiting());
 }
@@ -73,12 +75,14 @@ std::unique_ptr<HttpStreamFactory::Job> TestJobFactory::CreateJob(
     NetLog* net_log,
     NextProto alternative_protocol = NextProto::kProtoUnknown,
     quic::ParsedQuicVersion quic_version =
-        quic::ParsedQuicVersion::Unsupported()) {
+        quic::ParsedQuicVersion::Unsupported(),
+    std::optional<ConnectionManagementConfig> management_config =
+        std::nullopt) {
   auto job = std::make_unique<MockHttpStreamFactoryJob>(
       delegate, job_type, session, request_info, priority, proxy_info,
       allowed_bad_certs, std::move(destination), origin_url,
       alternative_protocol, quic_version, is_websocket, enable_ip_based_pooling,
-      net_log);
+      management_config, net_log);
 
   // Keep raw pointer to Job but pass ownership.
   switch (job_type) {

@@ -47,9 +47,10 @@ class RTCRtpSenderImplTest : public ::testing::Test {
     main_thread_ = blink::scheduler::GetSingleThreadTaskRunnerForTesting();
     track_map_ = base::MakeRefCounted<blink::WebRtcMediaStreamTrackAdapterMap>(
         dependency_factory_.Get(), main_thread_);
-    peer_connection_ = new rtc::RefCountedObject<blink::MockPeerConnectionImpl>(
-        dependency_factory_.Get(), nullptr);
-    mock_webrtc_sender_ = new rtc::RefCountedObject<MockRtpSender>();
+    peer_connection_ =
+        new webrtc::RefCountedObject<blink::MockPeerConnectionImpl>(
+            dependency_factory_.Get(), nullptr);
+    mock_webrtc_sender_ = new webrtc::RefCountedObject<MockRtpSender>();
   }
 
   void TearDown() override {
@@ -151,8 +152,8 @@ class RTCRtpSenderImplTest : public ::testing::Test {
   Persistent<MockPeerConnectionDependencyFactory> dependency_factory_;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
   scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_map_;
-  rtc::scoped_refptr<blink::MockPeerConnectionImpl> peer_connection_;
-  rtc::scoped_refptr<MockRtpSender> mock_webrtc_sender_;
+  webrtc::scoped_refptr<blink::MockPeerConnectionImpl> peer_connection_;
+  webrtc::scoped_refptr<MockRtpSender> mock_webrtc_sender_;
   std::unique_ptr<RTCRtpSenderImpl> sender_;
 };
 
@@ -228,7 +229,7 @@ TEST_F(RTCRtpSenderImplTest, GetStats) {
 
   // Make the mock return a blink version of the |webtc_report|. The mock does
   // not perform any stats filtering, we just set it to a dummy value.
-  rtc::scoped_refptr<webrtc::RTCStatsReport> webrtc_report =
+  webrtc::scoped_refptr<webrtc::RTCStatsReport> webrtc_report =
       webrtc::RTCStatsReport::Create(webrtc::Timestamp::Micros(0));
   webrtc_report->AddStats(std::make_unique<webrtc::RTCOutboundRtpStreamStats>(
       "stats-id", webrtc::Timestamp::Micros(1234)));

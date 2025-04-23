@@ -33,10 +33,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#endif
-
 using testing::Mock;
 using testing::Return;
 using testing::_;
@@ -87,10 +83,6 @@ class SettingsPrivateApiTest : public ExtensionApiTest,
 
  private:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
-#endif
 };
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,

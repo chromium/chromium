@@ -444,7 +444,7 @@ chrome.test.runTests([
   async function testExitAnnotationMode() {
     chrome.test.assertTrue(isAnnotationMode());
     // Exit annotation mode.
-    viewer.$.toolbar.setAnnotationMode(AnnotationMode.NONE);
+    viewer.$.toolbar.setAnnotationMode(AnnotationMode.OFF);
     await viewer.loaded;
     chrome.test.assertEq('EMBED', contentElement().tagName);
     chrome.test.succeed();

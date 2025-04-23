@@ -31,6 +31,7 @@ source_set("feed_top_section") {
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled",
+    "//ios/chrome/browser/authentication/ui_bundled:continuation",
     "//ios/chrome/browser/authentication/ui_bundled:signin_presenter",
     "//ios/chrome/browser/authentication/ui_bundled/cells",
     "//ios/chrome/browser/content_notification/model:util",

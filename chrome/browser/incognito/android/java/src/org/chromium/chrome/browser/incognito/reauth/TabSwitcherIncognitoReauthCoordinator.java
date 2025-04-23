@@ -4,21 +4,23 @@
 
 package org.chromium.chrome.browser.incognito.reauth;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager.IncognitoReauthCallback;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 
 /** The coordinator responsible for showing the tab-switcher re-auth screen. */
+@NullMarked
 class TabSwitcherIncognitoReauthCoordinator extends IncognitoReauthCoordinatorBase {
     /** A manager which allows to pass the re-auth view to the tab switcher. */
-    private final @NonNull TabSwitcherCustomViewManager mTabSwitcherCustomViewManager;
+    private final TabSwitcherCustomViewManager mTabSwitcherCustomViewManager;
 
     /** A runnable to handle back presses which shows the regular overview mode. */
-    private final @NonNull Runnable mBackPressRunnable;
+    private final Runnable mBackPressRunnable;
 
     /**
      * @param context The {@link Context} to use for fetching the re-auth resources.
@@ -34,12 +36,12 @@ class TabSwitcherIncognitoReauthCoordinator extends IncognitoReauthCoordinatorBa
      *     pass the re-auth view to the tab switcher
      */
     public TabSwitcherIncognitoReauthCoordinator(
-            @NonNull Context context,
-            @NonNull IncognitoReauthManager incognitoReauthManager,
-            @NonNull IncognitoReauthCallback incognitoReauthCallback,
-            @NonNull Runnable seeOtherTabsRunnable,
-            @NonNull Runnable backPressRunnable,
-            @NonNull TabSwitcherCustomViewManager tabSwitcherCustomViewManager) {
+            Context context,
+            IncognitoReauthManager incognitoReauthManager,
+            IncognitoReauthCallback incognitoReauthCallback,
+            Runnable seeOtherTabsRunnable,
+            Runnable backPressRunnable,
+            TabSwitcherCustomViewManager tabSwitcherCustomViewManager) {
         super(context, incognitoReauthManager, incognitoReauthCallback, seeOtherTabsRunnable);
         mTabSwitcherCustomViewManager = tabSwitcherCustomViewManager;
         mBackPressRunnable = backPressRunnable;
@@ -51,7 +53,9 @@ class TabSwitcherIncognitoReauthCoordinator extends IncognitoReauthCoordinatorBa
         prepareToShow(/* menuButtonDelegate= */ null, /* fullscreen= */ false);
         boolean success =
                 mTabSwitcherCustomViewManager.requestView(
-                        getIncognitoReauthView(), mBackPressRunnable, /* clearTabList= */ true);
+                        assumeNonNull(getIncognitoReauthView()),
+                        mBackPressRunnable,
+                        /* clearTabList= */ true);
         assert success : "Unable to signal showing the re-auth screen to tab switcher.";
     }
 

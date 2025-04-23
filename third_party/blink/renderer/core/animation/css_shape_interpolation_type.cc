@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_path_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
+#include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_shape_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -419,15 +420,29 @@ class ShapeInterpolationReader {
 // If the property's value is not a shape(), returns nullptr.
 const BasicShape* GetShapeOrPath(const CSSProperty& property,
                                  const ComputedStyle& style) {
-  // TODO(crbug.com/389713717) support also offset-path
-  CHECK_EQ(property.PropertyID(), CSSPropertyID::kClipPath);
-  auto* shape = DynamicTo<ShapeClipPathOperation>(style.ClipPath());
-  if (!shape) {
-    return nullptr;
+  const BasicShape* shape = nullptr;
+  switch (property.PropertyID()) {
+    case CSSPropertyID::kClipPath: {
+      auto* operation = DynamicTo<ShapeClipPathOperation>(style.ClipPath());
+      if (!operation) {
+        return nullptr;
+      }
+      shape = operation->GetBasicShape();
+      break;
+    }
+    case CSSPropertyID::kOffsetPath: {
+      auto* operation = DynamicTo<ShapeOffsetPathOperation>(style.OffsetPath());
+      if (!operation) {
+        return nullptr;
+      }
+      shape = &operation->GetBasicShape();
+      break;
+    }
+    default:
+      NOTREACHED();
   }
-  if (IsA<StylePath>(shape->GetBasicShape()) ||
-      IsA<StyleShape>(shape->GetBasicShape())) {
-    return shape->GetBasicShape();
+  if (IsA<StylePath>(shape) || IsA<StyleShape>(shape)) {
+    return shape;
   }
   return nullptr;
 }
@@ -547,16 +562,26 @@ void CSSShapeInterpolationType::ApplyStandardPropertyValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue* non_interpolable_value,
     StyleResolverState& state) const {
-  // TODO(crbug.com/389713717) support also offset-path
-  CHECK_EQ(CssProperty().PropertyID(), CSSPropertyID::kClipPath);
-  auto* shape = CreateShape(interpolable_value, non_interpolable_value,
-                            state.CssToLengthConversionData());
-
-  // TODO(nrosenthal): Handle geometry box.
-  state.StyleBuilder().SetClipPath(
-      shape ? MakeGarbageCollected<ShapeClipPathOperation>(
-                  shape, GeometryBox::kBorderBox)
-            : nullptr);
+  BasicShape* shape = CreateShape(interpolable_value, non_interpolable_value,
+                                  state.CssToLengthConversionData());
+  switch (CssProperty().PropertyID()) {
+    case CSSPropertyID::kClipPath:
+      // TODO(nrosenthal): Handle geometry box.
+      state.StyleBuilder().SetClipPath(
+          shape ? MakeGarbageCollected<ShapeClipPathOperation>(
+                      shape, GeometryBox::kBorderBox)
+                : nullptr);
+      break;
+    case CSSPropertyID::kOffsetPath:
+      // TODO(nrosenthal): Handle coord box.
+      state.StyleBuilder().SetOffsetPath(
+          shape ? MakeGarbageCollected<ShapeOffsetPathOperation>(
+                      shape, CoordBox::kBorderBox)
+                : nullptr);
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 void CSSShapeInterpolationType::Composite(
@@ -667,7 +692,7 @@ InterpolationValue CSSShapeInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSShapeInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState&,
     ConversionCheckers&) const {
   const CSSValue* first_value = &value;
   if (const auto* list = DynamicTo<CSSValueList>(value)) {

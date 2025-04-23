@@ -6,16 +6,17 @@ package org.chromium.chrome.browser.safe_browsing;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.permissions.OsAdditionalSecurityPermissionProvider;
 import org.chromium.components.permissions.OsAdditionalSecurityPermissionUtil;
 import org.chromium.ui.base.WindowAndroid;
 
 /** A class for showing UI whenever the Android-OS-supplied advanced-protection state changes. */
+@NullMarked
 public class AdvancedProtectionMediator implements OsAdditionalSecurityPermissionProvider.Observer {
     private WindowAndroid mWindowAndroid;
 
@@ -66,19 +67,21 @@ public class AdvancedProtectionMediator implements OsAdditionalSecurityPermissio
         }
     }
 
-    private void enqueueMessage(@NonNull OsAdditionalSecurityPermissionProvider provider) {
-        var context = assumeNonNull(mWindowAndroid.getContext()).get();
+    private void enqueueMessage(OsAdditionalSecurityPermissionProvider provider) {
+        var context = assumeNonNull(mWindowAndroid.getContext().get());
         var propertyModel =
                 provider.buildAdvancedProtectionMessagePropertyModel(
                         context, /* primaryButtonAction= */ null);
         if (propertyModel == null) {
             return;
         }
-        MessageDispatcherProvider.from(mWindowAndroid)
-                .enqueueWindowScopedMessage(propertyModel, /* highPriority= */ false);
+        MessageDispatcher dispatcher = MessageDispatcherProvider.from(mWindowAndroid);
+        if (dispatcher != null) {
+            dispatcher.enqueueWindowScopedMessage(propertyModel, /* highPriority= */ false);
+        }
     }
 
-    private void updatePref(@NonNull OsAdditionalSecurityPermissionProvider provider) {
+    private void updatePref(OsAdditionalSecurityPermissionProvider provider) {
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(
                         ChromePreferenceKeys.DEFAULT_OS_ADVANCED_PROTECTION_SETTING,

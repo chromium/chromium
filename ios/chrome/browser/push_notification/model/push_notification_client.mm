@@ -4,9 +4,12 @@
 
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_prefs.h"
 #import "ios/chrome/browser/safety_check_notifications/utils/constants.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -16,19 +19,111 @@
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_sender.h"
 
+namespace {
+
+// Logs a failure reason to the appropriate patterned histogram based on
+// `client_id` and `reason`.
+void LogProfileRequestCreationFailure(
+    PushNotificationClientId client_id,
+    ProfileNotificationRequestCreationFailureReason reason) {
+  std::string client_name = PushNotificationClientIdToString(client_id);
+
+  std::string histogram_name =
+      base::StrCat({"IOS.PushNotification.ProfileRequestCreationFailureReason.",
+                    client_name});
+
+  base::UmaHistogramEnumeration(histogram_name, reason);
+}
+
+// Constant string for the error domain related to Profile-based local
+// notifications.
+const NSErrorDomain kIOSProfileLocalNotificationErrorDomain =
+    @"ios_profile_local_notification_error_domain";
+
+// `NSError` error codes specifically for Profile-based iOS notification
+// handling.
+enum class IOSProfileLocalNotificationErrorCode {
+  // Indicates that Profile-based notification scheduling failed due to an
+  // invalid or missing Profile.
+  kInvalidProfile = 1,
+  // Indicates that the `UNNotificationRequest` could not be created for a
+  // Profile-based notification.
+  kRequestCreationFailed = 2,
+};
+
+// Creates a standardized `NSError` for Profile-based notification scheduling
+// failures due to an invalid or missing Profile.
+NSError* CreateInvalidProfileError() {
+  CHECK(IsIOSMultiProfilePushNotificationHandlingEnabled());
+
+  NSDictionary* user_info = @{
+    NSLocalizedDescriptionKey : @"Invalid Profile provided when scheduling "
+                                @"Profile-based local notification.",
+  };
+
+  return [NSError
+      errorWithDomain:kIOSProfileLocalNotificationErrorDomain
+                 code:static_cast<NSInteger>(
+                          IOSProfileLocalNotificationErrorCode::kInvalidProfile)
+             userInfo:user_info];
+}
+
+// Creates a standardized `NSError` for failures to create a
+// `UNNotificationRequest` for a Profile-based notification.
+NSError* CreateRequestCreationError() {
+  CHECK(IsIOSMultiProfilePushNotificationHandlingEnabled());
+
+  NSDictionary* userInfo = @{
+    NSLocalizedDescriptionKey : @"Failed to create the UNNotificationRequest "
+                                @"for Profile-based local notification.",
+  };
+
+  return [NSError errorWithDomain:kIOSProfileLocalNotificationErrorDomain
+                             code:static_cast<NSInteger>(
+                                      IOSProfileLocalNotificationErrorCode::
+                                          kRequestCreationFailed)
+                         userInfo:userInfo];
+}
+
+// Helper function to add the original Profile name to a Profile-based
+// notification content's `userInfo` dictionary.
+void AddProfileNameToNotificationContent(UNMutableNotificationContent* content,
+                                         std::string_view profile_name) {
+  CHECK(IsIOSMultiProfilePushNotificationHandlingEnabled());
+  CHECK(content);
+  CHECK(!profile_name.empty());
+
+  NSMutableDictionary* mutable_user_info =
+      [content.userInfo mutableCopy] ?: [NSMutableDictionary dictionary];
+
+  std::string name = std::string(profile_name);
+
+  mutable_user_info[kOriginatingProfileNameKey] = base::SysUTF8ToNSString(name);
+
+  content.userInfo = mutable_user_info;
+}
+
+}  // namespace
+
 PushNotificationClient::PushNotificationClient(
-    PushNotificationClientId client_id)
-    : client_id_(client_id) {}
+    PushNotificationClientId client_id,
+    PushNotificationClientScope client_scope)
+    : client_id_(client_id), client_scope_(client_scope) {}
 
 PushNotificationClient::~PushNotificationClient() = default;
 
-PushNotificationClientId PushNotificationClient::GetClientId() {
+PushNotificationClientId PushNotificationClient::GetClientId() const {
   return client_id_;
+}
+
+PushNotificationClientScope PushNotificationClient::GetClientScope() const {
+  return client_scope_;
 }
 
 void PushNotificationClient::OnSceneActiveForegroundBrowserReady() {
@@ -74,11 +169,20 @@ void PushNotificationClient::OnSceneActiveForegroundBrowserReady() {
   }
 }
 
-// TODO(crbug.com/41497027): Current implementation returns any Scene. Instead
-// the notification should includes some way to identify the associated profile
-// to use (maybe by including the gaia id of the associated profile).
 Browser* PushNotificationClient::GetSceneLevelForegroundActiveBrowser() {
-  ProfileIOS* profile = GetAnyProfile();
+  for (ProfileIOS* profile :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
+    if (Browser* browser =
+            GetSceneLevelForegroundActiveBrowserForProfile(profile)) {
+      return browser;
+    }
+  }
+
+  return nullptr;
+}
+
+Browser* PushNotificationClient::GetSceneLevelForegroundActiveBrowserForProfile(
+    ProfileIOS* profile) {
   if (!profile) {
     return nullptr;
   }
@@ -93,6 +197,7 @@ Browser* PushNotificationClient::GetSceneLevelForegroundActiveBrowser() {
       return browser;
     }
   }
+
   return nullptr;
 }
 
@@ -132,6 +237,34 @@ void PushNotificationClient::LoadFeedbackWithPayloadAndClientId(
     feedback_data_ = data;
     return;
   }
+}
+
+void PushNotificationClient::ScheduleProfileNotification(
+    ScheduledNotificationRequest request,
+    base::OnceCallback<void(NSError*)> completion,
+    std::string_view profile_name) {
+  CHECK(IsIOSMultiProfilePushNotificationHandlingEnabled());
+
+  if (profile_name.empty()) {
+    std::move(completion).Run(CreateInvalidProfileError());
+
+    return;
+  }
+
+  UNNotificationRequest* notification_request =
+      CreateRequestForProfile(request, profile_name);
+
+  if (!notification_request) {
+    std::move(completion).Run(CreateRequestCreationError());
+
+    return;
+  }
+
+  auto completion_block = base::CallbackToBlock(std::move(completion));
+
+  [UNUserNotificationCenter.currentNotificationCenter
+      addNotificationRequest:notification_request
+       withCompletionHandler:completion_block];
 }
 
 void PushNotificationClient::CheckRateLimitBeforeSchedulingNotification(
@@ -208,13 +341,57 @@ UNNotificationRequest* PushNotificationClient::CreateRequest(
   NOTREACHED();
 }
 
-ProfileIOS* PushNotificationClient::GetAnyProfile() {
-  std::vector<ProfileIOS*> loaded_profiles =
-      GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
+UNNotificationRequest* PushNotificationClient::CreateRequestForProfile(
+    ScheduledNotificationRequest request,
+    std::string_view profile_name) {
+  CHECK(IsIOSMultiProfilePushNotificationHandlingEnabled());
 
-  if (loaded_profiles.empty()) {
-    return nullptr;
+  if (profile_name.empty()) {
+    LogProfileRequestCreationFailure(
+        client_id_,
+        ProfileNotificationRequestCreationFailureReason::kInvalidProfileName);
+    return nil;
   }
 
-  return loaded_profiles.back();
+  if (!request.time_interval.is_positive()) {
+    LogProfileRequestCreationFailure(
+        client_id_,
+        ProfileNotificationRequestCreationFailureReason::kInvalidTimeInterval);
+    return nil;
+  }
+
+  if (!request.identifier || request.identifier.length == 0) {
+    LogProfileRequestCreationFailure(
+        client_id_,
+        ProfileNotificationRequestCreationFailureReason::kInvalidIdentifier);
+    return nil;
+  }
+
+  if (!request.content) {
+    LogProfileRequestCreationFailure(
+        client_id_,
+        ProfileNotificationRequestCreationFailureReason::kInvalidSourceContent);
+    return nil;
+  }
+
+  UNMutableNotificationContent* mutable_content = [request.content mutableCopy];
+
+  if (!mutable_content) {
+    LogProfileRequestCreationFailure(
+        client_id_,
+        ProfileNotificationRequestCreationFailureReason::kContentCopyFailed);
+    return nil;
+  }
+
+  AddProfileNameToNotificationContent(mutable_content, profile_name);
+
+  UNNotificationTrigger* trigger = [UNTimeIntervalNotificationTrigger
+      triggerWithTimeInterval:request.time_interval.InSecondsF()
+                      repeats:NO];
+
+  CHECK(trigger);
+
+  return [UNNotificationRequest requestWithIdentifier:request.identifier
+                                              content:mutable_content
+                                              trigger:trigger];
 }

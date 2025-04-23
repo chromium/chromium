@@ -16,7 +16,6 @@
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_signal.h"
@@ -39,6 +38,7 @@
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/pref_names.h"
@@ -193,8 +193,8 @@ class ExtensionTelemetryServiceTest : public ::testing::Test {
   TestingProfile profile_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<ExtensionTelemetryService> telemetry_service_;
-  raw_ptr<extensions::ExtensionService> extension_service_;
   raw_ptr<extensions::ExtensionPrefs> extension_prefs_;
+  raw_ptr<extensions::ExtensionRegistrar> extension_registrar_;
   raw_ptr<extensions::ExtensionRegistry> extension_registry_;
   std::unique_ptr<policy::MockCloudPolicyClient> cloud_policy_client_;
   base::TimeDelta kStartupUploadCheckDelaySeconds = base::Seconds(20);
@@ -210,6 +210,7 @@ ExtensionTelemetryServiceTest::ExtensionTelemetryServiceTest(
 
   // Create extension prefs and registry instances.
   extension_prefs_ = extensions::ExtensionPrefs::Get(&profile_);
+  extension_registrar_ = extensions::ExtensionRegistrar::Get(&profile_);
   extension_registry_ = extensions::ExtensionRegistry::Get(&profile_);
 
   // Set up and enable ESB telemetry reporting by default.
@@ -228,11 +229,11 @@ ExtensionTelemetryServiceTest::ExtensionTelemetryServiceTest(
   enterprise_connectors::test::SetOnSecurityEventReporting(/*prefs=*/prefs(),
                                                            /*enabled=*/false);
 
-  // Create fake extension service instance.
+  // Create test extension service instance.
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   auto* test_extension_system = static_cast<extensions::TestExtensionSystem*>(
       extensions::ExtensionSystem::Get(&profile_));
-  extension_service_ = test_extension_system->CreateExtensionService(
+  test_extension_system->CreateExtensionService(
       &command_line, base::FilePath() /* install_directory */,
       false /* autoupdate_enabled */);
 
@@ -305,8 +306,8 @@ void ExtensionTelemetryServiceTest::RegisterExtensionWithExtensionService(
       .Serialize(*extension->manifest()->value());
   EXPECT_TRUE(base::PathExists(manifest_path));
 
-  // Register the extension with the extension service.
-  extension_service_->AddExtension(extension.get());
+  // Register the extension.
+  extension_registrar_->AddExtension(extension.get());
 
   extension_prefs_->UpdateExtensionPref(
       extension_id, "last_update_time",
@@ -315,7 +316,7 @@ void ExtensionTelemetryServiceTest::RegisterExtensionWithExtensionService(
 
 void ExtensionTelemetryServiceTest::UnregisterExtensionWithExtensionService(
     const ExtensionId& extension_id) {
-  extension_service_->UnloadExtension(
+  extension_registrar_->RemoveExtension(
       extension_id, extensions::UnloadedExtensionReason::UNINSTALL);
   extension_prefs_->DeleteExtensionPrefs(extension_id);
 }

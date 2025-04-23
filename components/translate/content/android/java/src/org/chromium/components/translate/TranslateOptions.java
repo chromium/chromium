@@ -22,18 +22,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-/**
- * A class that keeps the state of the different translation options and
- * languages.
- */
+/** A class that keeps the state of the different translation options and languages. */
 @NullMarked
 public class TranslateOptions {
     /**
-     * A container for Language Code and it's translated representation and it's native UMA
-     * specific hashcode.
-     * For example for Spanish when viewed from a French locale, this will contain es, Espagnol,
-     *Español, 114573335
-     **/
+     * A container for Language Code and it's translated representation and it's native UMA specific
+     * hashcode. For example for Spanish when viewed from a French locale, this will contain es,
+     * Espagnol, Español, 114573335
+     */
     public static class TranslateLanguageData {
         public final String mLanguageCode;
         public final String mLanguageRepresentation;

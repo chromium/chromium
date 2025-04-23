@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.net.Uri;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuItemDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.content_public.browser.WebContents;
@@ -16,6 +17,7 @@ import org.chromium.ui.base.Clipboard;
 import org.chromium.url.GURL;
 
 /** Handles the context menu item functionality in WebView. */
+@NullMarked
 public class AwContextMenuItemDelegate implements ContextMenuItemDelegate {
     private final Activity mActivity;
     private final WebContents mWebContents;

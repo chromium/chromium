@@ -5,6 +5,7 @@
 #include "components/safe_browsing/content/common/file_type_policies.h"
 
 #include "base/check_op.h"
+#include "base/files/file_path.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -280,6 +281,12 @@ int64_t FileTypePolicies::UmaValueForFile(const base::FilePath& file) const {
   const std::string ext = CanonicalizedExtension(file);
   AutoLock lock(lock_);
   return PolicyForExtension(ext, GURL{}, nullptr).uma_value();
+}
+
+int64_t FileTypePolicies::UmaValueForUTF16FilenameUnsafe(
+    const std::u16string& filename) const {
+  base::FilePath file_path = base::FilePath::FromUTF16Unsafe(filename);
+  return UmaValueForFile(file_path);
 }
 
 bool FileTypePolicies::IsArchiveFile(const base::FilePath& file) const {

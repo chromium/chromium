@@ -5,9 +5,14 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_XDG_SESSION_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_XDG_SESSION_H_
 
+#include <vector>
+
 #include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
+#include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
+#include "ui/ozone/platform/wayland/host/wayland_window_observer.h"
 
 namespace ui {
 
@@ -15,7 +20,7 @@ class WaylandToplevelWindow;
 class XdgSessionManager;
 class XdgToplevelSession;
 
-class XdgSession {
+class XdgSession final : public WaylandWindowObserver {
  public:
   enum class Action {
     kRestore,
@@ -42,7 +47,7 @@ class XdgSession {
              const std::string& requested_id = {});
   XdgSession(const XdgSession&) = delete;
   XdgSession& operator=(const XdgSession&) = delete;
-  ~XdgSession();
+  ~XdgSession() final;
 
   State state() const { return state_; }
   std::string id() const { return id_; }
@@ -51,11 +56,15 @@ class XdgSession {
       WaylandToplevelWindow* toplevel,
       int32_t toplevel_id,
       Action action);
+  void RemoveToplevel(int32_t toplevel_id);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
  private:
+  // WaylandWindowObserver:
+  void OnWindowRemovedFromSession(WaylandWindow* window) final;
+
   // xx_session_v1_listener callbacks:
   static void OnCreated(void* data,
                         struct xx_session_v1* xx_session_v1,
@@ -66,6 +75,10 @@ class XdgSession {
   wl::Object<xx_session_v1> session_;
   State state_ = State::kPending;
   std::string id_;
+
+  std::vector<std::unique_ptr<WaylandWindow>> pending_removals_;
+  base::ScopedObservation<WaylandWindowManager, WaylandWindowObserver>
+      removal_observer_{this};
 
   // XdgSessionManager instance is guaranteed to outlive sessions and sessions
   // are always owned by a session manager, so it's safe to store this as a

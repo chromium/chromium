@@ -2034,6 +2034,10 @@ bool AttributionStorageSql::LazyInit(DbCreationPolicy creation_policy) {
 
   VerifyReports(/*deletion_counts=*/nullptr);
 
+  base::UmaHistogramCustomCounts("Conversions.DistinctReportingOrigins",
+                                 GetAllDataKeys().size(), /*min=*/1,
+                                 /*exclusive_max=*/500, /*buckets=*/50);
+
   return true;
 }
 

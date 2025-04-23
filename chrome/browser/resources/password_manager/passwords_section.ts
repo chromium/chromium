@@ -8,7 +8,6 @@ import '/strings.m.js';
 import './password_list_item.js';
 import './dialogs/add_password_dialog.js';
 import './dialogs/auth_timed_out_dialog.js';
-import './dialogs/move_passwords_dialog.js';
 import './user_utils_mixin.js';
 import './promo_cards/promo_card.js';
 import './promo_cards/promo_cards_browser_proxy.js';
@@ -24,7 +23,6 @@ import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.j
 import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {MoveToAccountStoreTrigger} from './dialogs/move_passwords_dialog.js';
 import type {FocusConfig} from './focus_config.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {getTemplate} from './passwords_section.html.js';
@@ -88,7 +86,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
       showAddPasswordDialog_: Boolean,
       showAuthTimedOutDialog_: Boolean,
-      showMovePasswordsDialog_: Boolean,
 
       movePasswordsText_: String,
 
@@ -147,8 +144,11 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   declare private shownGroupsCount_: number;
   declare private showAddPasswordDialog_: boolean;
   declare private showAuthTimedOutDialog_: boolean;
-  declare private showMovePasswordsDialog_: boolean;
   declare private importPasswordsText_: string;
+  // TODO(crbug.com/410001569): This should check for localPasswordCount
+  // instead, coming from the SyncHandler that queries the batch uploader. This
+  // is needed to align the showing of the trigger and the content (which now
+  // uses the BatchUpload data).
   declare private passwordsOnDevice_: chrome.passwordsPrivate.PasswordUiEntry[];
   declare private showPasswordsDescription_: boolean;
   declare private movePasswordsText_: string;
@@ -280,16 +280,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     return sanitizeInnerHtml(this.movePasswordsText_);
   }
 
-
-  private onMovePasswordsClicked_(e: Event) {
-    e.preventDefault();
-    this.showMovePasswordsDialog_ = true;
-  }
-
-  private onMovePasswordsDialogClose_() {
-    this.showMovePasswordsDialog_ = false;
-  }
-
   private showImportPasswordsOption_(): boolean {
     if (!this.groups_ || this.passwordManagerDisabled_) {
       return false;
@@ -353,11 +343,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
   private showNoPasswordsFound_(): boolean {
     return this.hideGroupsList_() && this.groups_.length > 0;
-  }
-
-  private getMovePasswordsDialogTrigger_(): MoveToAccountStoreTrigger {
-    return MoveToAccountStoreTrigger
-        .EXPLICITLY_TRIGGERED_FOR_MULTIPLE_PASSWORDS_IN_SETTINGS;
   }
 
   private onPasswordDetailsShown_(e: CustomEvent) {

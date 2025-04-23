@@ -10,6 +10,7 @@
 
 #include "third_party/blink/renderer/core/css/css_path_value.h"
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 
@@ -49,11 +50,17 @@ bool StylePath::IsEqualAssumingSameType(const BasicShape& o) const {
   return wind_rule_ == other.wind_rule_ && byte_stream_ == other.byte_stream_;
 }
 
-Path StylePath::GetPath(const gfx::RectF& offset_rect, float zoom) const {
-  Path path = GetPath();
-  path.Transform(AffineTransform::Translation(offset_rect.x(), offset_rect.y())
-                     .Scale(zoom));
-  return path;
+Path StylePath::GetPath(const gfx::RectF& offset_rect,
+                        float zoom,
+                        float path_scale) const {
+  const Path& path = GetPath();
+  const AffineTransform transform =
+      AffineTransform::Translation(offset_rect.x(), offset_rect.y())
+          .Scale(zoom * path_scale);
+
+  return transform.IsIdentity()
+             ? path
+             : PathBuilder(path).Transform(transform).Finalize();
 }
 
 }  // namespace blink

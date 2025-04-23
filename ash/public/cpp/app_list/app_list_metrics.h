@@ -143,8 +143,8 @@ enum SearchResultType {
   OS_SETTINGS,
   // A Plugin VM App Result.
   PLUGIN_VM_APP,
-  // LaCrOS binary.
-  LACROS,
+  // LaCrOS binary. (Deprecated).
+  LACROS_DEPRECATED,
   // A Remote App Result.
   REMOTE_APP,
   // A Borealis App Result.

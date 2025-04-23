@@ -30,16 +30,6 @@ suite('DiscoveryPageTest', function() {
   let nextId = 1;
 
   /**
-   * Compares two unguessable tokens.
-   * @param {*} a
-   * @param {*} b
-   */
-  function assertTokensEqual(a, b) {
-    assertEquals(a.high, b.high);
-    assertEquals(a.low, b.low);
-  }
-
-  /**
    * Compares two share targets.
    * @param {?ShareTarget} a
    * @param {?ShareTarget} b
@@ -47,7 +37,7 @@ suite('DiscoveryPageTest', function() {
   function assertShareTargetsEqual(a, b) {
     assertTrue(!!a);
     assertTrue(!!b);
-    assertTokensEqual(a.id, b.id);
+    assertEquals(a.id, b.id);
   }
 
   /**
@@ -239,7 +229,8 @@ suite('DiscoveryPageTest', function() {
    */
   function createShareTarget(name, for_self_share = false) {
     return {
-      id: {high: BigInt(0), low: BigInt(nextId++)},
+      id: '0'.repeat(16) +
+          (nextId++).toString(16).padStart(16, '0').toUpperCase(),
       name,
       type: ShareTargetType.kPhone,
       imageUrl: {
@@ -355,7 +346,7 @@ suite('DiscoveryPageTest', function() {
     discoveryPageElement.selectedShareTarget = created;
     getButton('#actionButton').click();
     const selectedId = await discoveryManager.whenCalled('selectShareTarget');
-    assertTokensEqual(created.id, selectedId);
+    assertEquals(created.id, selectedId);
   });
 
   test('selects share target with error', async function() {
@@ -400,7 +391,7 @@ suite('DiscoveryPageTest', function() {
 
     discoveryPageElement.selectShareTargetForTesting(targets[0]);
     const selectedId = await discoveryManager.whenCalled('selectShareTarget');
-    assertTokensEqual(created.id, selectedId);
+    assertEquals(created.id, selectedId);
 
     await discoveryManager.whenCalled('selectShareTarget');
     assertEquals('confirmation', eventDetail.page);

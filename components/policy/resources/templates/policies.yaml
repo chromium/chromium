@@ -1336,7 +1336,7 @@ policies:
   1335: GeminiSettings
   1336: GenAISmartGroupingSettings
   1337: GenAiChromeOsSmartActionsSettings
-  1338: RelaunchSupersededReleaseAge
+  1338: RelaunchFastIfOutdated
   1339: ClassManagementCaptionsEnabled
   1340: ClassManagementClassroomIntegrationEnabled
   1341: ClassManagementNetworkRestrictionEnabled
@@ -1350,6 +1350,10 @@ policies:
   1349: HappyEyeballsV3Enabled
   1350: FaceGazeEnabled
   1351: ProvisionalNotificationsAllowed
+  1352: DeviceLoginScreenFaceGazeEnabled
+  1353: EnterpriseLogoUrlForBrowser
+  1354: EnterpriseCustomLabelForBrowser
+  1355: DefaultSmartCardConnectSetting
 
 atomic_groups:
   1: Homepage

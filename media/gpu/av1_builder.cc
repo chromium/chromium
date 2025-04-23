@@ -99,7 +99,9 @@ AV1BitstreamBuilder AV1BitstreamBuilder::BuildFrameHeaderOBU(
   ret.WriteBool(pic_hdr.disable_cdf_update);
   ret.WriteBool(false);  // Disable allow screen content tools.
   ret.WriteBool(false);  // Disable frame size override flag.
-  ret.Write(pic_hdr.order_hint, seq_hdr.order_hint_bits_minus_1 + 1);
+  if (seq_hdr.enable_order_hint) {
+    ret.Write(pic_hdr.order_hint, seq_hdr.order_hint_bits_minus_1 + 1);
+  }
 
   if (pic_hdr.frame_type != libgav1::FrameType::kFrameKey) {
     if (!pic_hdr.error_resilient_mode) {

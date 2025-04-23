@@ -7,7 +7,6 @@
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -34,8 +33,6 @@ class ExtensionInstalledWaiterTest : public BrowserWithTestWindowTest {
             extensions::ExtensionSystem::Get(profile()));
     extension_system->CreateExtensionService(
         base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
-    extension_service_ =
-        extensions::ExtensionSystem::Get(profile())->extension_service();
   }
 
   void TearDown() override {
@@ -71,14 +68,6 @@ class ExtensionInstalledWaiterTest : public BrowserWithTestWindowTest {
   extensions::ExtensionRegistrar* extension_registrar() {
     return extensions::ExtensionRegistrar::Get(profile());
   }
-
-  extensions::ExtensionService* extension_service() {
-    return extension_service_;
-  }
-
- private:
-  raw_ptr<extensions::ExtensionService, DanglingUntriaged> extension_service_ =
-      nullptr;
 };
 
 TEST_F(ExtensionInstalledWaiterTest, ExtensionIsAlreadyInstalled) {
@@ -130,7 +119,7 @@ TEST_F(ExtensionInstalledWaiterTest, ExtensionUninstalledWhileWaiting) {
   EXPECT_EQ(0, done_called_);
 
   extension_registrar()->AddExtension(extension);
-  extension_service()->UnloadExtension(
+  extension_registrar()->RemoveExtension(
       extension->id(), extensions::UnloadedExtensionReason::UNINSTALL);
   EXPECT_EQ(1, giving_up_called_);
 

@@ -15,6 +15,7 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer_delegate.h"
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_capabilities_fetcher.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -110,6 +111,7 @@ enum class AuthenticationFlowInProfileState {
     (signin_ui::SigninCompletionCallback)completion {
   CHECK_EQ(_state, AuthenticationFlowInProfileState::kBegin,
            base::NotFatalUntil::M138);
+  CHECK(!_signInCompletion) << "startSignInWithCompletion was called twice.";
   CHECK(completion);
   _selfRetainer = self;
   _signInCompletion = completion;
@@ -377,12 +379,14 @@ enum class AuthenticationFlowInProfileState {
       _isManagedIdentity ? signin_metrics::SigninAccountType::kManaged
                          : signin_metrics::SigninAccountType::kRegular;
   signin_metrics::LogSigninWithAccountType(accountType);
+  CHECK(_signInCompletion);
   signin_ui::SigninCompletionCallback signInCompletion = _signInCompletion;
   _signInCompletion = nil;
   signInCompletion(SigninCoordinatorResult::SigninCoordinatorResultSuccess);
   [_performer completePostSignInActions:_postSignInActions
                            withIdentity:_identityToSignIn
-                                browser:_browser];
+                                browser:_browser
+                            accessPoint:_accessPoint];
   [self continueFlow];
 }
 
@@ -405,7 +409,8 @@ enum class AuthenticationFlowInProfileState {
   }
   SceneState* sceneState = _browser->GetSceneState();
   [_performer switchToProfileWithName:personalProfileName
-                           sceneState:sceneState];
+                           sceneState:sceneState
+            changeProfileContinuation:DoNothingContinuation()];
 }
 
 - (void)failureCompleteFlowStep {
@@ -413,7 +418,7 @@ enum class AuthenticationFlowInProfileState {
   // signin step get added in the future, then a call to
   // `[_performer signOutImmediatelyFromProfile:...]` should be added here.
   CHECK(!_didSignIn);
-
+  CHECK(_signInCompletion);
   signin_ui::SigninCompletionCallback signInCompletion = _signInCompletion;
   _signInCompletion = nil;
   // If the sign-in failed, the result is `SigninCoordinatorResultInterrupted`.
@@ -479,16 +484,17 @@ enum class AuthenticationFlowInProfileState {
 }
 
 - (void)didFailToSwitchToProfile {
-  // This class only ever switches (back) to the personal profile, which should
-  // never fail.
   NOTREACHED();
 }
 
-- (void)didSwitchToProfileWithNewProfileBrowser:(Browser*)newProfileBrowser {
+- (void)didSwitchToProfileWithNewProfileBrowser:(Browser*)newProfileBrowser
+                                     completion:(base::OnceClosure)completion {
   CHECK(newProfileBrowser);
+  CHECK(completion);
 
   // After the profile switch, `_browser` is not valid anymore.
   _browser = nullptr;
+  std::move(completion).Run();
 }
 
 - (void)didRegisterForUserPolicyWithDMToken:(NSString*)dmToken

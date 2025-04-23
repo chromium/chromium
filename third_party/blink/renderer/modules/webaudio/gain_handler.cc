@@ -55,7 +55,8 @@ void GainHandler::Process(uint32_t frames_to_process) {
       // windows, etc.
       DCHECK_LE(frames_to_process, sample_accurate_gain_values_.size());
       float* gain_values = sample_accurate_gain_values_.Data();
-      gain_->CalculateSampleAccurateValues(gain_values, frames_to_process);
+      gain_->CalculateSampleAccurateValues(
+          sample_accurate_gain_values_.as_span().first(frames_to_process));
       output_bus->CopyWithSampleAccurateGainValuesFrom(*input_bus, gain_values,
                                                        frames_to_process);
 
@@ -87,7 +88,8 @@ void GainHandler::ProcessOnlyAudioParams(uint32_t frames_to_process) {
 
   float values[render_quantum_frames_expected];
 
-  gain_->CalculateSampleAccurateValues(values, frames_to_process);
+  gain_->CalculateSampleAccurateValues(
+      base::span(values).first(frames_to_process));
 }
 
 // As soon as we know the channel count of our input, we can lazily initialize.

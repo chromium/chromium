@@ -30,12 +30,13 @@ public interface SelectionPopupController {
     static final String UMA_MOBILE_ACTION_MODE_SHARE = "MobileActionMode.Share";
 
     /**
-     * @param webContents {@link WebContents} object.
+     * @param webContents A non-destroyed {@link WebContents} object.
      * @return {@link SelectionPopupController} object used for the give WebContents.
-     *         {@code null} if not available.
      */
-    static @Nullable SelectionPopupController fromWebContents(WebContents webContents) {
-        return SelectionPopupControllerImpl.fromWebContents(webContents);
+    static SelectionPopupController fromWebContents(WebContents webContents) {
+        var ret = SelectionPopupControllerImpl.fromWebContents(webContents);
+        assert ret != null;
+        return ret;
     }
 
     /**

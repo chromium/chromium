@@ -43,8 +43,5 @@ gcc_toolchain("wasm") {
     use_custom_libcxx_for_host = false
   }
   executable_extension = ".html"
-  link_outputs = [
-    "{{output_dir}}/{{target_output_name}}.wasm",
-    "{{output_dir}}/{{target_output_name}}.wasm.debug.wasm",
-  ]
+  link_outputs = [ "{{output_dir}}/{{target_output_name}}.wasm" ]
 }

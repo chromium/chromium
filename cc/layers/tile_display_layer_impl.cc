@@ -36,10 +36,8 @@ class TilingOrder {
 
 TileDisplayLayerImpl::TileResource::TileResource(
     const viz::TransferableResource& resource,
-    bool is_premultiplied,
     bool is_checkered)
     : resource(resource),
-      is_premultiplied(is_premultiplied),
       is_checkered(is_checkered) {}
 
 TileDisplayLayerImpl::TileResource::TileResource(const TileResource&) = default;
@@ -124,12 +122,19 @@ void TileDisplayLayerImpl::Tiling::SetTileContents(const TileIndex& key,
       tiles_.erase(it);
     }
   } else {
+    // If there is a valid TileResource, import it in order to track its usage.
+    if (auto* resource = std::get_if<TileResource>(&contents)) {
+      layer_->ImportResource(resource->resource);
+    }
     old_tile = std::exchange(tiles_[key], std::make_unique<Tile>(contents));
   }
 
   if (old_tile) {
     if (auto* resource = std::get_if<TileResource>(&old_tile->contents())) {
-      layer_->discarded_resources_.push_back(resource->resource);
+      // As of now, this will mark only one resource discarded at a time.
+      // TODO(vikassoni): Optimize to discard resources in batch. This will
+      // eventually trigger less IPCs back to the Renderer.
+      layer_->DiscardResource(resource->resource.id);
     }
   }
 }
@@ -268,7 +273,7 @@ void TileDisplayLayerImpl::AppendQuads(const AppendQuadsContext& context,
                      offset_visible_geometry_rect, needs_blending,
                      resource->resource.id, texture_rect,
                      iter.CurrentTiling()->tile_size(),
-                     resource->is_premultiplied, /*nearest_neighbor=*/false,
+                     /*nearest_neighbor=*/false,
                      /*enable_edge_aa=*/false);
         used_resources.push_back(resource->resource);
         has_draw_quad = true;
@@ -299,8 +304,6 @@ void TileDisplayLayerImpl::AppendQuads(const AppendQuadsContext& context,
   shared_quad_state->quad_to_target_transform.Translate(-quad_offset);
   shared_quad_state->quad_layer_rect.Offset(quad_offset);
   shared_quad_state->visible_quad_layer_rect.Offset(quad_offset);
-
-  client_->DidAppendQuadsWithResources(used_resources);
 }
 
 void TileDisplayLayerImpl::GetContentsResourceId(
@@ -330,7 +333,6 @@ void TileDisplayLayerImpl::GetContentsResourceId(
 
   std::vector<viz::TransferableResource> used_resources;
   used_resources.push_back(iter->resource()->resource);
-  client_->DidAppendQuadsWithResources(used_resources);
 }
 
 gfx::Rect TileDisplayLayerImpl::GetDamageRect() const {
@@ -344,6 +346,14 @@ void TileDisplayLayerImpl::ResetChangeTracking() {
 
 void TileDisplayLayerImpl::RecordDamage(const gfx::Rect& damage_rect) {
   damage_rect_.Union(damage_rect);
+}
+
+void TileDisplayLayerImpl::DiscardResource(viz::ResourceId resource) {
+  client_->DiscardResource(std::move(resource));
+}
+
+void TileDisplayLayerImpl::ImportResource(viz::TransferableResource resource) {
+  client_->ImportResource(std::move(resource));
 }
 
 }  // namespace cc

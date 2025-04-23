@@ -87,7 +87,7 @@ class MockAudioOutputIPC : public AudioOutputIPC {
   MOCK_METHOD1(SetVolume, void(double volume));
 };
 
-}  // namespace.
+}  // namespace
 
 class AudioOutputDeviceTest : public testing::Test {
  public:
@@ -462,4 +462,4 @@ TEST_F(AudioOutputDeviceTest, StreamIsFlushed) {
   StopAudioDevice();
 }
 
-}  // namespace media.
+}  // namespace media

@@ -37,6 +37,8 @@ ci.defaults.set(
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
     siso_enabled = True,
+    # TODO(crbug.com/406369220): Remove this when cros compiler_wrapper doesn't crash.
+    siso_experiments = ["fallback-on-exec-error"],
     siso_project = siso.project.DEFAULT_TRUSTED,
     siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )

@@ -54,7 +54,8 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
 
     auto* script_state = scope.GetScriptState();
     stream_wrapper_ = MakeGarbageCollected<TCPWritableStreamWrapper>(
-        script_state, base::DoNothing(), std::move(data_pipe_producer));
+        script_state, base::DoNothing(), std::move(data_pipe_producer),
+        /*inspector_id=*/0);
     return stream_wrapper_.Get();
   }
 

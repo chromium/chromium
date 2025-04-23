@@ -10,12 +10,13 @@
 #import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper_delegate.h"
 #import "ui/base/window_open_disposition.h"
 
+@protocol AutocompleteSuggestion;
 struct AutocompleteMatch;
 class AutocompleteResult;
 @class AutocompleteResultWrapper;
-class OmniboxController;
 @protocol OmniboxAutocompleteControllerDelegate;
 @protocol OmniboxAutocompleteControllerDebuggerDelegate;
+class OmniboxController;
 @class OmniboxTextController;
 class OmniboxViewIOS;
 
@@ -78,7 +79,14 @@ class OmniboxViewIOS;
 /// Notifies of call action.
 - (void)onCallAction;
 
+/// Previews the given autocomplete suggestion.
+- (void)previewSuggestion:(id<AutocompleteSuggestion>)suggestion
+            isFirstUpdate:(BOOL)isFirstUpdate;
+
 #pragma mark - OmniboxText events
+
+/// Ends omnibox edit. Closes the omnibox popup.
+- (void)endEditing;
 
 /// Updates the popup text alignment.
 - (void)setTextAlignment:(NSTextAlignment)alignment;

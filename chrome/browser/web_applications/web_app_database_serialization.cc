@@ -478,6 +478,12 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
     return nullptr;
   }
 
+  // Post-migration check: Scope should not be empty.
+  if (!proto.has_scope() || proto.scope().empty()) {
+    DLOG(ERROR) << "WebApp proto parse error: scope is empty";
+    return nullptr;
+  }
+
   webapps::ManifestId manifest_id;
   if (sync_data.has_relative_manifest_id()) {
     manifest_id =
@@ -495,6 +501,13 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
   if (!sync_data.has_user_display_mode_cros() &&
       !sync_data.has_user_display_mode_default()) {
     DLOG(ERROR) << "WebApp proto parse error: no user_display_mode field";
+    return nullptr;
+  }
+
+  // Post-migration check: Ensure current platform UDM is set.
+  if (!HasCurrentPlatformUserDisplayMode(sync_data)) {
+    DLOG(ERROR) << "WebApp proto parse error: missing user display mode for "
+                   "current platform";
     return nullptr;
   }
 
@@ -571,6 +584,15 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
     return nullptr;
   }
   web_app->SetInstallState(proto.install_state());
+
+  // Because the OS integration current state is saved in a two-phase-commit
+  // flow, where the app is saved to the database first without os integration,
+  // and then after the desired integration is complete the current os
+  // integration state is saved, we don't reject parsing apps where the
+  // install_state is INSTALLED_WITH_OS_INTEGRATION but the current os
+  // integration state is not set.
+  // This is handled in
+  // MaybeInstallAppsFromSyncAndPendingInstallOrSyncOsIntegration.
 
   auto& chromeos_data_proto = proto.chromeos_data();
 
@@ -680,8 +702,8 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
   if (proto.has_latest_install_source()) {
     int install_source = proto.latest_install_source();
     if (install_source >= 0 &&
-        install_source <
-            static_cast<int>(webapps::WebappInstallSource::COUNT)) {
+        install_source <=
+            static_cast<int>(webapps::WebappInstallSource::kMaxValue)) {
       web_app->SetLatestInstallSource(
           static_cast<webapps::WebappInstallSource>(install_source));
     }
@@ -1305,8 +1327,10 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
         syncer::ProtoTimeToTime(proto.first_install_time()));
   }
 
-  if (proto.has_generated_icon_fix() &&
-      generated_icon_fix_util::IsValid(proto.generated_icon_fix())) {
+  if (proto.has_generated_icon_fix()) {
+    if (!generated_icon_fix_util::IsValid(proto.generated_icon_fix())) {
+      return nullptr;
+    }
     web_app->SetGeneratedIconFix(proto.generated_icon_fix());
   }
 
@@ -1666,7 +1690,7 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
     local_data->clear_capture_links();
   }
 
-  if (!web_app.manifest_url().is_empty()) {
+  if (web_app.manifest_url().is_valid()) {
     local_data->set_manifest_url(web_app.manifest_url().spec());
   }
 
@@ -1794,6 +1818,13 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
       auto* mutable_pending_update_info =
           mutable_data->mutable_pending_update_info();
 
+      // Add this check:
+      CHECK_EQ(isolation_data.location().dev_mode(),
+               pending_update_info.location.dev_mode(),
+               base::NotFatalUntil::M138)
+          << "IsolationData dev_mode mismatch between current location and "
+             "pending update location during serialization.";
+
       IsolationDataLocationToProto(pending_update_info.location,
                                    mutable_pending_update_info);
       mutable_pending_update_info->set_version(
@@ -1809,8 +1840,8 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
           isolation_data.integrity_block_data()->ToProto();
     }
 
-    if (const auto& update_manifest_url =
-            isolation_data.update_manifest_url()) {
+    if (const auto& update_manifest_url = isolation_data.update_manifest_url();
+        update_manifest_url.has_value() && update_manifest_url->is_valid()) {
       mutable_data->set_update_manifest_url(update_manifest_url->spec());
     }
 

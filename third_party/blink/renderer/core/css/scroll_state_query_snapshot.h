@@ -14,13 +14,13 @@ namespace blink {
 class Element;
 
 // Created for container-type:scroll-state elements which are queried for
-// scroll-state(stuck) and scroll-state(overflowing). Stores a snapshot of
+// scroll-state(stuck) and scroll-state(scrollable). Stores a snapshot of
 // whether the sticky container is stuck or not by reading the sticky offset
 // from the layout object, and whether the container has scrollable overflow in
 // any directions.
 //
 // The snapshot state is used to update the ContainerValues for the query
-// container so that @container queries with scroll-state(stuck/overflowing)
+// container so that @container queries with scroll-state(stuck/scrollable)
 // evaluate correctly on the subsequent style update.
 class ScrollStateQuerySnapshot
     : public GarbageCollected<ScrollStateQuerySnapshot>,

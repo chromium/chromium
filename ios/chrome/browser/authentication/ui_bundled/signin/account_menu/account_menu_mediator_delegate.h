@@ -34,7 +34,7 @@
 // it’s a success.
 // It should only be called when the current scene is not blocked.
 - (void)signOutFromTargetRect:(CGRect)targetRect
-                   completion:(void (^)(BOOL))completion;
+                   completion:(signin_ui::SignoutCompletionCallback)completion;
 
 // Shows https://myaccount.google.com/ for the account currently signed-in
 // to Chrome. The content is displayed in a new view in the stack, i.e.

@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
@@ -125,13 +126,16 @@ public class ToggleTabStackButtonCoordinator {
             OnLongClickListener onLongClickListener,
             ObservableSupplier<Integer> tabCountSupplier,
             @Nullable ObservableSupplier<Integer> archivedTabCountSupplier,
-            ObservableSupplier<Boolean> tabModelNotificationDotSupplier,
+            ObservableSupplier<TabModelDotInfo> tabModelNotificationDotSupplier,
             @NonNull Runnable archivedTabsIphShownCallback,
             @NonNull Runnable archivedTabsIphDismissedCallback) {
         mToggleTabStackButton.setOnClickListener(onClickListener);
         mToggleTabStackButton.setOnLongClickListener(onLongClickListener);
         mToggleTabStackButton.setSuppliers(
-                tabCountSupplier, tabModelNotificationDotSupplier, mIsIncognitoSupplier);
+                tabCountSupplier,
+                tabModelNotificationDotSupplier,
+                mIsIncognitoSupplier,
+                mUserEducationHelper);
 
         mArchivedTabCountSupplier = archivedTabCountSupplier;
         if (mArchivedTabCountSupplier != null) {

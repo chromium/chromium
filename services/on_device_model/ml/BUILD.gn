@@ -69,6 +69,13 @@ if (use_blink || (is_ios && build_with_internal_optimization_guide)) {
       "//third_party/dawn/src/dawn:proc",
       "//third_party/dawn/src/dawn/native",
     ]
+    if (enable_constraints) {
+      defines += [ "ENABLE_ON_DEVICE_CONSTRAINTS" ]
+      deps += [
+        "//build/rust/allocator",
+        "//third_party/rust/llguidance/v0_7:lib",
+      ]
+    }
     if (use_blink) {
       deps += [ "//gpu/config" ]
     }

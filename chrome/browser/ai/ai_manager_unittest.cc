@@ -38,7 +38,8 @@ class AIManagerTest : public AITestUtils::AITestBase {
  protected:
   void SetUp() override {
     AITestUtils::AITestBase::SetUp();
-    ai_manager_ = std::make_unique<AIManager>(main_rfh()->GetBrowserContext());
+    ai_manager_ = std::make_unique<AIManager>(main_rfh()->GetBrowserContext(),
+                                              main_rfh());
   }
   void TearDown() override {
     ai_manager_.reset();

@@ -66,6 +66,9 @@ class BrowserPolicyConnectorIOS : public policy::BrowserPolicyConnector {
     return machine_level_user_cloud_policy_manager_;
   }
 
+  void SetMachineLevelUserCloudPolicyManagerForTesting(
+      policy::MachineLevelUserCloudPolicyManager* manager);
+
   // BrowserPolicyConnector.
   void Init(PrefService* local_state,
             scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)

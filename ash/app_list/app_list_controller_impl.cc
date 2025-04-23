@@ -86,6 +86,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -2119,14 +2120,15 @@ void AppListControllerImpl::OnAssistantNewEntryPointEligibilityReady(
     bool eligible) {
   if (eligible) {
     std::optional<std::string> name = client_->GetAssistantNewEntryPointName();
+    ui::ImageModel gemini_icon = client_->GetGeminiIcon();
     CHECK(name.has_value()) << "New entry point name must be available "
                                "if new entry point is available";
 
     GetSearchModel()->search_box()->SetShowAssistantNewEntryPointButton(
-        true, name.value());
+        true, name.value(), /*gemini_icon=*/gemini_icon);
   } else {
     GetSearchModel()->search_box()->SetShowAssistantNewEntryPointButton(
-        false, /*name=*/std::string());
+        false, /*name=*/std::string(), /*gemini_icon=*/ui::ImageModel());
   }
 }
 

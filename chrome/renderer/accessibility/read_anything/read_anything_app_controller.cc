@@ -480,6 +480,10 @@ void ReadAnythingAppController::OnNodeWillBeDeleted(ui::AXTree* tree,
   ui::AXNodeID node_id = CHECK_DEREF(node).id();
   if (model_.display_node_ids().contains(node_id)) {
     displayed_nodes_pending_deletion_.insert(node_id);
+    if (IsReadAloudEnabled() && !read_aloud_model_.speech_playing()) {
+      ExecuteJavaScript("chrome.readingMode.onNodeWillBeDeleted(" +
+                        base::ToString(node_id) + ")");
+    }
   }
 }
 
@@ -488,10 +492,9 @@ void ReadAnythingAppController::OnNodeDeleted(ui::AXTree* tree,
   if (displayed_nodes_pending_deletion_.contains(node_id)) {
     displayed_nodes_pending_deletion_.erase(node_id);
 
-    // If speech is playing, we don't want to redraw because this can disrupt
-    // speech.
-    if (features::IsReadAnythingReadAloudEnabled() &&
-        read_aloud_model_.speech_playing()) {
+    // Instead of redrawing everything, we inform the webui that the node is
+    // being deleted and it will adjust on that side. See OnNodeWillBeDeleted.
+    if (IsReadAloudEnabled()) {
       return;
     }
 
@@ -563,7 +566,10 @@ void ReadAnythingAppController::AccessibilityLocationChangesReceived(
     ui::AXLocationAndScrollUpdates& details) {
   // If the AccessibilityLocationChangesReceived callback happens after
   // the current active tree has been destroyed, do nothing.
-  if (model_.active_tree_id() == ui::AXTreeIDUnknown()) {
+  DUMP_WILL_BE_CHECK(model_.active_tree_id() != ui::AXTreeIDUnknown());
+  DUMP_WILL_BE_CHECK(model_.ContainsTree(tree_id));
+  if (model_.active_tree_id() == ui::AXTreeIDUnknown() ||
+      !model_.ContainsTree(tree_id)) {
     return;
   }
   // Listen to location change notifications to update locations of the nodes
@@ -670,9 +676,6 @@ void ReadAnythingAppController::Distill(bool for_training_data) {
   model_.set_requires_distillation(false);
 
   ui::AXSerializableTree* tree = model_.GetTreeFromId(model_.active_tree_id());
-  if (!tree) {
-    return;
-  }
   std::unique_ptr<
       ui::AXTreeSource<const ui::AXNode*, ui::AXTreeData*, ui::AXNodeData>>
       tree_source(tree->CreateTreeSource());
@@ -767,11 +770,8 @@ void ReadAnythingAppController::OnAXTreeDistilled(
 
   // AXNode's language code is BCP 47. Only the base language is needed to
   // record the metric.
-  ui::AXSerializableTree* tree = model_.GetTreeFromId(model_.active_tree_id());
-  if (!tree) {
-    return;
-  }
-  std::string language = tree->root()->GetLanguage();
+  std::string language =
+      model_.GetTreeFromId(model_.active_tree_id())->root()->GetLanguage();
   if (!language.empty()) {
     base::UmaHistogramSparse(
         "Accessibility.ReadAnything.Language",
@@ -804,10 +804,10 @@ bool ReadAnythingAppController::PostProcessSelection() {
   }
   // Skip drawing the selection in the side panel if the selection originally
   // came from there.
-  if (!model_.selection_from_action()) {
+  if (!model_.selection_from_reading_mode()) {
     DrawSelection();
   }
-  model_.set_selection_from_action(false);
+  model_.set_selection_from_reading_mode(false);
   return did_draw;
 }
 
@@ -955,6 +955,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("isLeafNode", &ReadAnythingAppController::IsLeafNode)
       .SetMethod("onConnected", &ReadAnythingAppController::OnConnected)
       .SetMethod("onCopy", &ReadAnythingAppController::OnCopy)
+      .SetMethod("onNoTextContent", &ReadAnythingAppController::OnNoTextContent)
       .SetMethod("onFontSizeChanged",
                  &ReadAnythingAppController::OnFontSizeChanged)
       .SetMethod("onFontSizeReset", &ReadAnythingAppController::OnFontSizeReset)
@@ -1043,9 +1044,6 @@ ui::AXNodeID ReadAnythingAppController::RootId() const {
   ui::AXSerializableTree* tree = model_.GetTreeFromId(model_.active_tree_id());
   DCHECK(tree);
   DCHECK(tree->root());
-  if (!tree || !tree->root()) {
-    return ui::kInvalidAXNodeID;
-  }
   return tree->root()->id();
 }
 
@@ -1228,12 +1226,7 @@ std::vector<ui::AXNodeID> ReadAnythingAppController::GetChildren(
   std::vector<ui::AXNodeID> child_ids;
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
   DCHECK(ax_node);
-  if (!ax_node) {
-    return child_ids;
-  }
-  const std::set<ui::AXNodeID>* node_ids = model_.selection_node_ids().empty()
-                                               ? &model_.display_node_ids()
-                                               : &model_.selection_node_ids();
+  const std::set<ui::AXNodeID>* node_ids = model_.GetCurrentlyVisibleNodes();
   for (auto it = ax_node->UnignoredChildrenBegin();
        it != ax_node->UnignoredChildrenEnd(); ++it) {
     if (base::Contains(*node_ids, it->id())) {
@@ -1247,9 +1240,6 @@ std::string ReadAnythingAppController::GetHtmlTag(
     ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
   DCHECK(ax_node);
-  if (!ax_node) {
-    return std::string();
-  }
 
   return a11y::GetHtmlTag(ax_node, model_.is_pdf(), model_.IsDocs());
 }
@@ -1258,9 +1248,6 @@ std::string ReadAnythingAppController::GetLanguage(
     ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
   DCHECK(ax_node);
-  if (!ax_node) {
-    return std::string();
-  }
   if (model_.NodeIsContentNode(ax_node_id)) {
     return ax_node->GetLanguage();
   }
@@ -1270,12 +1257,9 @@ std::string ReadAnythingAppController::GetLanguage(
 std::u16string ReadAnythingAppController::GetTextContent(
     ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
-  DCHECK(ax_node);
-  if (!ax_node) {
-    return std::u16string();
-  }
+  CHECK(ax_node);
 
-  return a11y::GetTextContent(ax_node, IsGoogleDocs());
+  return a11y::GetTextContent(ax_node, IsGoogleDocs(), model_.is_pdf());
 }
 
 std::string ReadAnythingAppController::GetTextDirection(
@@ -1306,9 +1290,6 @@ std::string ReadAnythingAppController::GetTextDirection(
 std::string ReadAnythingAppController::GetUrl(ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
   DCHECK(ax_node);
-  if (!ax_node) {
-    return std::string();
-  }
   const char* url =
       ax_node->GetStringAttribute(ax::mojom::StringAttribute::kUrl).c_str();
 
@@ -1354,9 +1335,6 @@ std::string ReadAnythingAppController::GetAltText(
     ui::AXNodeID ax_node_id) const {
   ui::AXNode* node = model_.GetAXNode(ax_node_id);
   CHECK(node);
-  if (!node) {
-    return std::string();
-  }
   return a11y::GetAltText(node);
 }
 
@@ -1483,9 +1461,6 @@ v8::Local<v8::Value> ReadAnythingAppController::GetImageBitmap(
     // factor.
     ui::AXNode* node = model_.GetAXNode(node_id);
     CHECK(node);
-    if (!node) {
-      return v8::Undefined(isolate);
-    }
     int width = bitmap.width();
     int height = bitmap.height();
     float scale = (node->data().relative_bounds.bounds.width()) / width;
@@ -1516,9 +1491,6 @@ std::string ReadAnythingAppController::GetImageDataUrl(
     ui::AXNodeID node_id) const {
   ui::AXNode* node = model_.GetAXNode(node_id);
   CHECK(node);
-  if (!node) {
-    return std::string();
-  }
   return a11y::GetImageDataUrl(node);
 }
 
@@ -1589,6 +1561,10 @@ void ReadAnythingAppController::OnConnected() {
 
 void ReadAnythingAppController::OnCopy() const {
   page_handler_->OnCopy();
+}
+
+void ReadAnythingAppController::OnNoTextContent() {
+  Distill(/*for_training_data=*/false);
 }
 
 void ReadAnythingAppController::OnFontSizeChanged(bool increase) {
@@ -1716,7 +1692,7 @@ double ReadAnythingAppController::GetLetterSpacingValue(
 void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
                                                   int anchor_offset,
                                                   ui::AXNodeID focus_node_id,
-                                                  int focus_offset) const {
+                                                  int focus_offset) {
   DCHECK_NE(model_.active_tree_id(), ui::AXTreeIDUnknown());
   // Prevent link clicks while distillation is in progress, as it means that
   // the tree may have changed in an unexpected way.
@@ -1731,6 +1707,7 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
   // clears the selection, so we should tell the main page to clear too.
   if ((anchor_offset == focus_offset) && (anchor_node_id == focus_node_id)) {
     if (model_.has_selection()) {
+      model_.set_selection_from_reading_mode(true);
       OnCollapseSelection();
     }
     return;
@@ -1766,12 +1743,21 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
     return;
   }
 
+  model_.set_selection_from_reading_mode(true);
   page_handler_->OnSelectionChange(model_.active_tree_id(), anchor_node_id,
                                    anchor_offset, focus_node_id, focus_offset);
 }
 
 void ReadAnythingAppController::OnCollapseSelection() const {
-  page_handler_->OnCollapseSelection();
+  if (model_.is_pdf()) {
+    // CollapseSelection does nothing in pdfs, so just set an empty selection
+    // instead.
+    page_handler_->OnSelectionChange(
+        model_.active_tree_id(), model_.start_node_id(), model_.start_offset(),
+        model_.start_node_id(), model_.start_offset());
+  } else {
+    page_handler_->OnCollapseSelection();
+  }
 }
 void ReadAnythingAppController::ResetGranularityIndex() {
   read_aloud_model_.ResetGranularityIndex();
@@ -1779,26 +1765,17 @@ void ReadAnythingAppController::ResetGranularityIndex() {
 void ReadAnythingAppController::InitAXPositionWithNode(
     const ui::AXNodeID& starting_node_id) {
   ui::AXNode* ax_node = model_.GetAXNode(starting_node_id);
-  if (!ax_node) {
-    return;
-  }
-  read_aloud_model_.InitAXPositionWithNode(ax_node);
+  read_aloud_model_.InitAXPositionWithNode(ax_node, model_.active_tree_id());
 }
 
 std::vector<ui::AXNodeID> ReadAnythingAppController::GetCurrentText() {
-  const std::set<ui::AXNodeID>* node_ids = model_.selection_node_ids().empty()
-                                               ? &model_.display_node_ids()
-                                               : &model_.selection_node_ids();
   return read_aloud_model_.GetCurrentText(model_.is_pdf(), model_.IsDocs(),
-                                          node_ids);
+                                          model_.GetCurrentlyVisibleNodes());
 }
 
 void ReadAnythingAppController::PreprocessTextForSpeech() {
-  const std::set<ui::AXNodeID>* node_ids = model_.selection_node_ids().empty()
-                                               ? &model_.display_node_ids()
-                                               : &model_.selection_node_ids();
   read_aloud_model_.PreprocessTextForSpeech(model_.is_pdf(), model_.IsDocs(),
-                                            node_ids);
+                                            model_.GetCurrentlyVisibleNodes());
 }
 
 void ReadAnythingAppController::MovePositionToNextGranularity() {

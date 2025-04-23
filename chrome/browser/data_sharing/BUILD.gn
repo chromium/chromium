@@ -55,6 +55,7 @@ if (is_android) {
       "android/java/res/layout/recent_activity_log_item.xml",
       "android/java/res/layout/shared_image_tiles.xml",
       "android/java/res/layout/shared_image_tiles_icon.xml",
+      "android/java/res/values/colors.xml",
       "android/java/res/values/dimens.xml",
       "android/java/res/values/styles.xml",
     ]
@@ -130,6 +131,7 @@ if (is_android) {
       "//components/browser_ui/widget/android:java_resources",
       "//components/collaboration/public:messaging_java",
       "//components/data_sharing/public:public_java",
+      "//components/saved_tab_groups/public:java",
       "//components/strings:components_strings_grd",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_recyclerview_recyclerview_java",
@@ -208,6 +210,7 @@ if (is_android) {
     resources_package = "org.chromium.chrome.browser.data_sharing"
     sources = [
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingImplFactory.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/FakeDataSharingUIDelegateImpl.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/NoOpDataSharingSDKDelegateImpl.java",
     ]
 
@@ -247,7 +250,9 @@ if (is_android) {
       "//components/browser_ui/styles/android:java",
       "//components/collaboration/public:core_java",
       "//components/data_sharing/public:public_java",
+      "//components/tab_groups:tab_groups_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_core_core_java",
       "//ui/android:ui_no_recycler_view_java",
     ]
   }
@@ -373,9 +378,7 @@ if (is_android) {
   android_library("javatests") {
     testonly = true
 
-    sources = [
-      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingServiceFactoryTest.java",
-    ]
+    sources = [ "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingServiceFactoryTest.java" ]
     deps = [
       ":factory_java",
       "//base:base_java",

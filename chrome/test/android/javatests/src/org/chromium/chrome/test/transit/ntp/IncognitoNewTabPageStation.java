@@ -12,8 +12,9 @@ import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 import android.util.Pair;
 
 import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.ViewSpec;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.omnibox.FakeOmniboxSuggestions;
 import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
@@ -23,8 +24,7 @@ import java.util.List;
 
 /** The Incognito New Tab Page screen, with text about Incognito mode. */
 public class IncognitoNewTabPageStation extends PageStation {
-    public static final ViewSpec ICON = viewSpec(withId(R.id.new_tab_incognito_icon));
-    public static final ViewSpec GONE_INCOGNITO_TEXT = viewSpec(withText("You’ve gone Incognito"));
+    public ViewElement<UrlBar> urlBarElement;
 
     protected <T extends IncognitoNewTabPageStation> IncognitoNewTabPageStation(
             Builder<T> builder) {
@@ -38,15 +38,17 @@ public class IncognitoNewTabPageStation extends PageStation {
     @Override
     public void declareElements(Elements.Builder elements) {
         super.declareElements(elements);
-        elements.declareView(URL_BAR);
-        elements.declareView(ICON);
-        elements.declareView(GONE_INCOGNITO_TEXT);
-        elements.declareEnterCondition(new NtpLoadedCondition(mPageLoadedSupplier));
+
+        urlBarElement = elements.declareView(URL_BAR);
+        elements.declareView(viewSpec(withId(R.id.new_tab_incognito_icon)));
+        elements.declareView(viewSpec(withText("You’ve gone Incognito")));
+        elements.declareEnterCondition(new NtpLoadedCondition(loadedTabElement));
     }
 
     /** Opens the app menu by pressing the toolbar "..." button */
     public IncognitoNewTabPageAppMenuFacility openAppMenu() {
-        return enterFacilitySync(new IncognitoNewTabPageAppMenuFacility(), MENU_BUTTON::click);
+        return enterFacilitySync(
+                new IncognitoNewTabPageAppMenuFacility(), menuButtonElement.clickTrigger());
     }
 
     /** Click the URL bar to enter the Omnibox. */
@@ -55,7 +57,7 @@ public class IncognitoNewTabPageStation extends PageStation {
         OmniboxFacility omniboxFacility =
                 new OmniboxFacility(/* incognito= */ true, fakeSuggestions);
         SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
-        enterFacilitiesSync(List.of(omniboxFacility, softKeyboard), URL_BAR::click);
+        enterFacilitiesSync(List.of(omniboxFacility, softKeyboard), urlBarElement.clickTrigger());
         return Pair.create(omniboxFacility, softKeyboard);
     }
 }

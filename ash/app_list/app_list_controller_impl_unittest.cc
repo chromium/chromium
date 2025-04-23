@@ -60,6 +60,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "components/session_manager/session_manager_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
@@ -1264,6 +1265,12 @@ class AppListControllerWithAssistantTest : public AppListControllerImplTest {
   // AppListControllerImplTest:
   void SetUp() override {
     AppListControllerImplTest::SetUp();
+
+    if (ash::assistant::features::IsNewEntryPointEnabled()) {
+      GTEST_SKIP()
+          << "Assistant is not available if new entry point is enabled. "
+             "crbug.com/388361414";
+    }
 
     assistant_test_api_->SetAssistantEnabled(true);
     assistant_test_api_->GetAssistantState()->NotifyFeatureAllowed(

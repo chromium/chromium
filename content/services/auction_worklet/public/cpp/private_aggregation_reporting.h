@@ -5,7 +5,6 @@
 #ifndef CONTENT_SERVICES_AUCTION_WORKLET_PUBLIC_CPP_PRIVATE_AGGREGATION_REPORTING_H_
 #define CONTENT_SERVICES_AUCTION_WORKLET_PUBLIC_CPP_PRIVATE_AGGREGATION_REPORTING_H_
 
-#include <optional>
 #include <string>
 
 #include "content/common/content_export.h"
@@ -13,14 +12,11 @@
 
 namespace auction_worklet {
 
-std::optional<auction_worklet::mojom::ReservedEventType> ParseReservedEventType(
-    const std::string& type,
-    bool additional_extensions_allowed);
-
 // Returns nullptr on unrecognized reserved name.
-auction_worklet::mojom::EventTypePtr ParsePrivateAggregationEventType(
-    const std::string& event_type_str,
-    bool additional_extensions_allowed);
+CONTENT_EXPORT auction_worklet::mojom::EventTypePtr
+ParsePrivateAggregationEventType(const std::string& event_type_str,
+                                 bool additional_extensions_allowed,
+                                 bool error_reporting_allowed);
 
 // Returns true if `value` requires the feature
 // kPrivateAggregationApiProtectedAudienceAdditionalExtensions to be used.

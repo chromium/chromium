@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/functional/callback_helpers.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/account_extension_tracker.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -37,8 +38,8 @@ void ShowUploadExtensionToAccountDialog(Browser* browser,
 
   ui::DialogModel::Builder builder;
   builder.SetInternalName("UploadExtensionToAccountDialog")
-      .SetTitle(l10n_util::GetStringUTF16(
-          IDS_EXTENSIONS_MOVE_TO_ACCOUNT_DIALOG_TITLE))
+      .SetTitle(
+          l10n_util::GetStringUTF16(IDS_UPLOAD_MOVE_TO_ACCOUNT_DIALOG_TITLE))
       .OverrideShowCloseButton(false)
       .SetSubtitle(l10n_util::GetStringFUTF16(
           IDS_EXTENSIONS_MOVE_TO_ACCOUNT_DIALOG_SUBTITLE,

@@ -29,7 +29,7 @@ build_webui("build") {
     "searchbox_match.ts",
     "searchbox_thumbnail.ts",
   ]
-  non_web_component_files = [
+  ts_files = [
     "searchbox_browser_proxy.ts",
     "utils.ts",
   ]

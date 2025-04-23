@@ -455,7 +455,8 @@ void WorkerScriptFetcher::CreateScriptLoader(
             std::move(url_loader_network_observer),
             std::move(devtools_observer), client_security_state.Clone(),
             /*debug_tag=*/"CreateScriptLoader",
-            require_cross_site_request_for_cookies);
+            require_cross_site_request_for_cookies,
+            /*is_for_service_worker=*/false);
     // We are sure the URLLoaderFactory made with the param is only used within
     // `WorkerScriptFetcher` in the browser process. We can mark this trusted
     // safely.

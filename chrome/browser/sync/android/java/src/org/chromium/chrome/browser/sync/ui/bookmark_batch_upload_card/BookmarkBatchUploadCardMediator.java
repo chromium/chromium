@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.sync.ui.bookmark_batch_upload_card;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 
@@ -11,6 +13,10 @@ import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
@@ -23,6 +29,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.LocalDataDescription;
 import org.chromium.components.sync.SyncService;
@@ -33,6 +40,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.HashMap;
 import java.util.Set;
 
+@NullMarked
 class BookmarkBatchUploadCardMediator
         implements SyncService.SyncStateChangedListener, BatchUploadDialogCoordinator.Listener {
     private final LifecycleObserver mLifeCycleObserver =
@@ -56,8 +64,8 @@ class BookmarkBatchUploadCardMediator
     private final ReauthenticatorBridge mReauthenticatorBridge;
     private final Runnable mBatchUploadCardChangeAction;
 
-    private SyncService mSyncService;
-    private HashMap<Integer, LocalDataDescription> mLocalDataDescriptionsMap;
+    private @Nullable SyncService mSyncService;
+    private @MonotonicNonNull HashMap<Integer, LocalDataDescription> mLocalDataDescriptionsMap;
     private boolean mShouldBeVisible;
 
     /**
@@ -145,16 +153,21 @@ class BookmarkBatchUploadCardMediator
     }
 
     private void uploadLocalDataAndShowSnackbar(Set<Integer> types, int itemsCount) {
-        SyncServiceFactory.getForProfile(mProfile).triggerLocalDataMigration(types);
+        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
+        assumeNonNull(syncService);
+        syncService.triggerLocalDataMigration(types);
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(mProfile);
+        assumeNonNull(identityManager);
+        CoreAccountInfo coreAccountInfo =
+                identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        assumeNonNull(coreAccountInfo);
         String snackbarMessage =
                 mContext.getResources()
                         .getQuantityString(
                                 R.plurals.account_settings_bulk_upload_saved_snackbar_message,
                                 itemsCount,
-                                IdentityServicesProvider.get()
-                                        .getIdentityManager(mProfile)
-                                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN)
-                                        .getEmail());
+                                coreAccountInfo.getEmail());
         mSnackbarManager.showSnackbar(
                 Snackbar.make(
                                 snackbarMessage,
@@ -171,7 +184,8 @@ class BookmarkBatchUploadCardMediator
         // local data. Also updateBatchUploadCard() will be triggered again after the state changes
         // from
         // CONFIGURING to ACTIVE.
-        if (mSyncService.getTransportState() == TransportState.CONFIGURING) {
+        if (mSyncService == null
+                || mSyncService.getTransportState() == TransportState.CONFIGURING) {
             return;
         }
 
@@ -192,6 +206,7 @@ class BookmarkBatchUploadCardMediator
                 });
     }
 
+    @RequiresNonNull("mLocalDataDescriptionsMap")
     private int countItemsNotOfType(@DataType int type) {
         int ret = 0;
         for (var entry : mLocalDataDescriptionsMap.entrySet()) {
@@ -204,10 +219,10 @@ class BookmarkBatchUploadCardMediator
 
     private void setupBatchUploadCardPropertyModel() {
         // TODO(crbug.com/354922852): Handle accounts with non-displayable email address.
-        CoreAccountInfo accountInfo =
-                IdentityServicesProvider.get()
-                        .getIdentityManager(mProfile)
-                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(mProfile);
+        assumeNonNull(identityManager);
+        CoreAccountInfo accountInfo = identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         // setupBatchUploadCardView() is called asynchronously through updateBatchUploadCard(), so
         // it could be
         // called while there is no primary account.
@@ -215,8 +230,9 @@ class BookmarkBatchUploadCardMediator
             return;
         }
 
+        assumeNonNull(mLocalDataDescriptionsMap);
         mModel.set(
-                BookmarkBatchUploadCardProperties.On_CLICK_LISTENER,
+                BookmarkBatchUploadCardProperties.ON_CLICK_LISTENER,
                 v -> {
                     BatchUploadDialogCoordinator.show(
                             mContext, mLocalDataDescriptionsMap, mDialogManager, this);

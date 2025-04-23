@@ -27,7 +27,7 @@ build_webui("build") {
   ]
   html_to_wrapper_template = "native"
 
-  non_web_component_files = [
+  ts_files = [
     "adapter_broker.js",
     "adapter_page.js",
     "bluetooth_internals.js",

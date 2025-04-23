@@ -282,8 +282,8 @@ TEST_F(OmniboxViewPopupTest, GetIcon_IconUrl) {
   result->AppendMatches(matches);
   model()->SetCurrentMatchForTest(match);
 
-  // Sets the popup rich suggestion bitmap for search aggregator match.
-  model()->SetPopupRichSuggestionBitmap(0, bitmap);
+  // Sets the icon bitmap for search aggregator match.
+  model()->SetIconBitmap(GURL("https://example.com/icon.png"), bitmap);
 
   ui::ImageModel image = view()->GetIcon(
       gfx::kFaviconSize, gfx::kPlaceholderColor, gfx::kPlaceholderColor,

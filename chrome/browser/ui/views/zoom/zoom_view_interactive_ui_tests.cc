@@ -22,6 +22,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/state_observer.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -77,6 +78,20 @@ class ZoomViewInteractiveUiTest : public InteractiveBrowserTest {
                        testing::Eq(nullptr));
   }
 
+  MultiStep WaitForZoomBubble(bool visible) {
+    DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                        kZoomBubbleVisible);
+
+    return Steps(PollState(kZoomBubbleVisible,
+                           [&, visible]() {
+                             bool is_visible =
+                                 ZoomBubbleView::GetZoomBubble() != nullptr;
+                             return is_visible == visible;
+                           }),
+                 WaitForState(kZoomBubbleVisible, true),
+                 StopObservingState(kZoomBubbleVisible));
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -115,6 +130,30 @@ IN_PROC_BROWSER_TEST_F(ZoomViewInteractiveUiTest, ZoomStateUpdates) {
                              .value() != zoom_in_image;
                 }),
       EnsureZoomBubblePresent());
+}
+
+IN_PROC_BROWSER_TEST_F(ZoomViewInteractiveUiTest,
+                       ShowAndHideZoomBubbleByClickWithMouse) {
+  RunTestSequence(WaitForZoomBubble(/*visible=*/false), DoZoomIn(),
+                  EnsurePresent(kActionItemZoomElementId),
+                  MoveMouseTo(kActionItemZoomElementId), ClickMouse(),
+                  WaitForZoomBubble(/*visible=*/true),
+                  MoveMouseTo(kActionItemZoomElementId), ClickMouse(),
+                  WaitForZoomBubble(/*visible=*/false),
+                  MoveMouseTo(kActionItemZoomElementId), ClickMouse(),
+                  WaitForZoomBubble(/*visible=*/true));
+}
+
+IN_PROC_BROWSER_TEST_F(ZoomViewInteractiveUiTest,
+                       ShowAndHideZoomBubbleByClickWithKeyboardPress) {
+  RunTestSequence(WaitForZoomBubble(/*visible=*/false), DoZoomIn(),
+                  EnsurePresent(kActionItemZoomElementId),
+                  PressButton(kActionItemZoomElementId),
+                  WaitForZoomBubble(/*visible=*/true),
+                  PressButton(kActionItemZoomElementId),
+                  WaitForZoomBubble(/*visible=*/false),
+                  PressButton(kActionItemZoomElementId),
+                  WaitForZoomBubble(/*visible=*/true));
 }
 
 }  // namespace

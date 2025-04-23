@@ -38,10 +38,35 @@ class ReportingEventRouter : public KeyedService {
       const std::string& trigger,
       const std::vector<std::pair<GURL, std::u16string>>& identities);
 
+  // Notifies listeners that the user reused a protected password.
+  // - `url` is the URL where the password was reused
+  // - `user_name` is the user associated with the reused password
+  // - `is_phising_url` is whether the URL is thought to be a phishing one
+  // - `warning_shown` is whether a warning dialog was shown to the user
+  void OnPasswordReuse(const GURL& url,
+                       const std::string& user_name,
+                       bool is_phishing_url,
+                       bool warning_shown);
+
+  // Notifies listeners that the user changed the password associated with
+  // `user_name`
+  void OnPasswordChanged(const std::string& user_name);
+
   void OnUrlFilteringInterstitial(
       const GURL& url,
       const std::string& threat_type,
       const safe_browsing::RTLookupResponse& response);
+
+  // Notifies listeners that the user clicked-through a security interstitial.
+  void OnSecurityInterstitialProceeded(const GURL& url,
+                                       const std::string& reason,
+                                       int net_error_code);
+
+  // Notifies listeners that the user saw a security interstitial.
+  void OnSecurityInterstitialShown(const GURL& url,
+                                   const std::string& reason,
+                                   int net_error_code,
+                                   bool proceed_anyway_disabled);
 
  private:
   raw_ptr<RealtimeReportingClientBase> reporting_client_;

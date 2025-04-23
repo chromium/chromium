@@ -139,6 +139,14 @@ const char kHistorySyncSuccessiveDeclineCount[] =
 // Android, but has a separate implementation there which doesn't use this pref.
 const char kRestrictAccountsToPatterns[] =
     "signin.restrict_accounts_to_patterns";
+
+// Boolean that represent whether signin is allowed by the user. It is also used
+// to synchronize kSigninAllowed across profiles. This is used to
+// ensure that all profiles respect the setting while `kSigninAllowed` only
+// applies to a single profile. This is the UX we want on iOS since there are
+// multi profiles but not exposed to the user, so we should treat this setting
+// as affecting all profiles.
+const char kSigninAllowedOnDevice[] = "signin.allowed_on_device";
 #endif  // BUILDFLAG(IS_IOS)
 
 // Boolean which indicates if the user is allowed to sign into Chrome on the

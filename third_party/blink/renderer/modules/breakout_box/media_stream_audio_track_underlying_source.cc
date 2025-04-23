@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_audio_track_underlying_source.h"
 
+#include "base/compiler_specific.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/audio_buffer.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
@@ -73,7 +69,8 @@ class AudioBufferPoolImpl
     const std::vector<uint8_t*>& dest_data = buffer->channel_data();
     for (int ch = 0; ch < audio_bus.channels(); ++ch) {
       const float* src_channel = audio_bus.channel(ch);
-      memcpy(dest_data[ch], src_channel, sizeof(float) * audio_bus.frames());
+      UNSAFE_TODO(memcpy(dest_data[ch], src_channel,
+                         sizeof(float) * audio_bus.frames()));
     }
 
     buffers_.push_back(buffer);

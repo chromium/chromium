@@ -44,12 +44,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrivateNetworkAccessChecker {
  public:
   // `resource_request` and `url_load_options` correspond to `URLLoader`
   // constructor arguments.
-  // `factory_client_security_state` should point to the client security
-  // state object coming from the factory that built the owner `URLLoader`. It
+  //
+  // `client_security_state` should point to the client security to use for the
+  // request, and must outlive the PrivateNetworkAccessChecker, if non-null. It
   // can be nullptr when the factory doesn't use a client security state.
+  // `resource_request's` ClientSecurityState, if it has one, is ignored.
   PrivateNetworkAccessChecker(
       const ResourceRequest& resource_request,
-      const mojom::ClientSecurityState* factory_client_security_state,
+      const mojom::ClientSecurityState* client_security_state,
       int32_t url_load_options);
 
   // Instances of this class are neither copyable nor movable.
@@ -136,13 +138,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrivateNetworkAccessChecker {
 
   // Sets the current request URL (it may change after redirects).
   void SetRequestUrl(const GURL& url);
-
-  // The client security state copied from the request's trusted params.
-  // May be nullptr.
-  //
-  // Should not be used directly. Use `client_security_state_` instead, which
-  // points to the same struct iff this client security state should be used.
-  const mojom::ClientSecurityStatePtr request_client_security_state_;
 
   // The security state of the client of the fetch. May be nullptr.
   const raw_ptr<const mojom::ClientSecurityState> client_security_state_;

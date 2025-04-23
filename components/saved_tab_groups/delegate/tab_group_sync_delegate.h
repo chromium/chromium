@@ -23,7 +23,19 @@ namespace tab_groups {
 // mutation helper that will propagate the changes to sync.
 class TabGroupSyncDelegate {
  public:
+  // A RAII class that indicates to the TabGroupSyncDelegate that several
+  // operations will happen before it is necessary to reflect all the updates.
+  class [[maybe_unused, nodiscard]] ScopedBatchOperation {
+   public:
+    virtual ~ScopedBatchOperation() = default;
+  };
+
   virtual ~TabGroupSyncDelegate() = default;
+
+  // Notify the delegate that several operations are about to happen. The
+  // returned token should be kept alive until the operations complete, at which
+  // point it must be deleted.
+  virtual std::unique_ptr<ScopedBatchOperation> StartBatchOperation();
 
   // Called to open a given saved tab group in the local tab model.
   // The `context` can be used to specify the browser window in which the tab

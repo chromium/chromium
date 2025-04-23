@@ -13,9 +13,6 @@ struct TileResource {
   // Identifies the actual texture resource containing rasterized tile contents.
   TransferableResource resource;
 
-  // Whether or not the texture has a premultiplied alpha channel.
-  bool is_premultiplied;
-
   // Whether or not the texture was rasterized with checker-imaged content.
   bool is_checkered;
 };

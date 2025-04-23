@@ -11,9 +11,6 @@ bool OverlayProcessorStub::IsOverlaySupported() const {
 gfx::Rect OverlayProcessorStub::GetAndResetOverlayDamage() {
   return gfx::Rect();
 }
-gfx::Rect OverlayProcessorStub::GetPreviousFrameOverlaysBoundingRect() const {
-  return gfx::Rect();
-}
 
 bool OverlayProcessorStub::NeedsSurfaceDamageRectList() const {
   return false;

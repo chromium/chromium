@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.touch_to_fill.common;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.GradientDrawable;
@@ -12,7 +14,10 @@ import android.view.View;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** This is an item decorator for lists of items displayed in Touch to Fill BottomSheets. */
+@NullMarked
 public abstract class ItemDividerBase extends RecyclerView.ItemDecoration {
     protected final Context mContext;
 
@@ -59,6 +64,7 @@ public abstract class ItemDividerBase extends RecyclerView.ItemDecoration {
      */
     @Override
     public void onDraw(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
+        assumeNonNull(parent.getAdapter());
         int itemCount = parent.getAdapter().getItemCount();
         // Do not count items at the end like footer, fill button, additional info, etc.
         while (itemCount > 1

@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://print/print_preview.js';
+
 import type {PrintPreviewModelElement, PrintPreviewScalingSettingsElement} from 'chrome://print/print_preview.js';
 import {ScalingType} from 'chrome://print/print_preview.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {selectOption} from './print_preview_test_utils.js';
@@ -23,21 +24,19 @@ suite('ScalingSettingsInteractiveTest', function() {
     model.set('settings.scalingTypePdf.available', false);
 
     scalingSection = document.createElement('print-preview-scaling-settings');
-    scalingSection.settings = model.settings;
     scalingSection.disabled = false;
     scalingSection.isPdf = false;
-    fakeDataBind(model, scalingSection, 'settings');
     document.body.appendChild(scalingSection);
   });
 
   test(
       'auto focus input', async () => {
         const scalingInput =
-            scalingSection.shadowRoot!
+            scalingSection.shadowRoot
                 .querySelector('print-preview-number-settings-section')!.$
                 .userValue.inputElement;
         const collapse =
-            scalingSection.shadowRoot!.querySelector('cr-collapse')!;
+            scalingSection.shadowRoot.querySelector('cr-collapse')!;
 
         assertFalse(collapse.opened);
         assertEquals(

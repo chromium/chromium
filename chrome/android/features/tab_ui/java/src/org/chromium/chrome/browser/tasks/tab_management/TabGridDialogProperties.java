@@ -9,9 +9,13 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** List of properties used by TabGridDialog. */
@@ -20,99 +24,94 @@ class TabGridDialogProperties {
     public static final PropertyModel.WritableObjectPropertyKey<Integer> BINDING_TOKEN =
             new PropertyModel.WritableObjectPropertyKey<>();
 
-    public static final PropertyModel.ReadableObjectPropertyKey<BrowserControlsStateProvider>
-            BROWSER_CONTROLS_STATE_PROVIDER = new PropertyModel.ReadableObjectPropertyKey<>();
-    public static final PropertyModel.WritableObjectPropertyKey<OnClickListener>
-            COLLAPSE_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
-    public static final PropertyModel.WritableObjectPropertyKey<OnClickListener>
-            ADD_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
-    public static final PropertyModel.WritableObjectPropertyKey<OnClickListener>
-            SHARE_BUTTON_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
-    public static final PropertyModel.WritableObjectPropertyKey<OnClickListener>
-            SHARE_IMAGE_TILES_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
-    public static final PropertyModel.WritableObjectPropertyKey<String> HEADER_TITLE =
-            new PropertyModel.WritableObjectPropertyKey<>(true);
-    public static final PropertyModel.WritableIntPropertyKey CONTENT_TOP_MARGIN =
-            new PropertyModel.WritableIntPropertyKey();
-    public static final PropertyModel.WritableIntPropertyKey APP_HEADER_HEIGHT =
-            new PropertyModel.WritableIntPropertyKey();
-    public static final PropertyModel.WritableIntPropertyKey PRIMARY_COLOR =
-            new PropertyModel.WritableIntPropertyKey();
-    public static final PropertyModel.WritableIntPropertyKey DIALOG_BACKGROUND_COLOR =
-            new PropertyModel.WritableIntPropertyKey();
-    public static final PropertyModel.WritableObjectPropertyKey<ColorStateList> TINT =
-            new PropertyModel.WritableObjectPropertyKey<>();
-    public static final PropertyModel.WritableBooleanPropertyKey IS_DIALOG_VISIBLE =
-            new PropertyModel.WritableBooleanPropertyKey();
-    public static final PropertyModel.WritableBooleanPropertyKey SHOW_SHARE_BUTTON =
-            new PropertyModel.WritableBooleanPropertyKey();
-    public static final PropertyModel.WritableIntPropertyKey SHARE_BUTTON_STRING_RES =
-            new PropertyModel.WritableIntPropertyKey();
-    public static final PropertyModel.WritableBooleanPropertyKey SHOW_IMAGE_TILES =
-            new PropertyModel.WritableBooleanPropertyKey();
+    public static final ReadableObjectPropertyKey<BrowserControlsStateProvider>
+            BROWSER_CONTROLS_STATE_PROVIDER = new ReadableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<OnClickListener> COLLAPSE_CLICK_LISTENER =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<OnClickListener> ADD_CLICK_LISTENER =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<OnClickListener> SHARE_BUTTON_CLICK_LISTENER =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<OnClickListener>
+            SHARE_IMAGE_TILES_CLICK_LISTENER = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<String> HEADER_TITLE =
+            new WritableObjectPropertyKey<>(true);
+    public static final WritableIntPropertyKey CONTENT_TOP_MARGIN = new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey APP_HEADER_HEIGHT = new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey PRIMARY_COLOR = new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey DIALOG_BACKGROUND_COLOR =
+            new WritableIntPropertyKey();
+    public static final WritableObjectPropertyKey<ColorStateList> TINT =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Boolean> IS_DIALOG_VISIBLE =
+            new WritableObjectPropertyKey<>(true);
+    public static final WritableBooleanPropertyKey SHOW_SHARE_BUTTON =
+            new WritableBooleanPropertyKey();
+    public static final WritableIntPropertyKey SHARE_BUTTON_STRING_RES =
+            new WritableIntPropertyKey();
+    public static final WritableBooleanPropertyKey SHOW_IMAGE_TILES =
+            new WritableBooleanPropertyKey();
     public static final WritableObjectPropertyKey<TabGridDialogView.VisibilityListener>
             VISIBILITY_LISTENER = new WritableObjectPropertyKey<>();
-    public static final PropertyModel.WritableObjectPropertyKey<Runnable> SCRIMVIEW_CLICK_RUNNABLE =
-            new PropertyModel.WritableObjectPropertyKey<>(true);
-    public static final PropertyModel.WritableObjectPropertyKey<View> ANIMATION_SOURCE_VIEW =
-            new PropertyModel.WritableObjectPropertyKey<>(true);
-    public static final PropertyModel.WritableIntPropertyKey UNGROUP_BAR_STATUS =
-            new PropertyModel.WritableIntPropertyKey();
-    public static final PropertyModel.WritableIntPropertyKey DIALOG_UNGROUP_BAR_BACKGROUND_COLOR =
-            new PropertyModel.WritableIntPropertyKey();
-    public static final PropertyModel.WritableIntPropertyKey
-            DIALOG_UNGROUP_BAR_HOVERED_BACKGROUND_COLOR =
-                    new PropertyModel.WritableIntPropertyKey();
-    public static final PropertyModel.WritableIntPropertyKey DIALOG_UNGROUP_BAR_TEXT_COLOR =
-            new PropertyModel.WritableIntPropertyKey();
-    public static final PropertyModel.WritableIntPropertyKey DIALOG_UNGROUP_BAR_HOVERED_TEXT_COLOR =
-            new PropertyModel.WritableIntPropertyKey();
-    public static final PropertyModel.WritableObjectPropertyKey<String> DIALOG_UNGROUP_BAR_TEXT =
-            new PropertyModel.WritableObjectPropertyKey<>();
-    public static final PropertyModel.WritableObjectPropertyKey<Integer>
-            ANIMATION_BACKGROUND_COLOR = new PropertyModel.WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Runnable> SCRIMVIEW_CLICK_RUNNABLE =
+            new WritableObjectPropertyKey<>(true);
+    public static final WritableObjectPropertyKey<View> ANIMATION_SOURCE_VIEW =
+            new WritableObjectPropertyKey<>(true);
+    public static final WritableIntPropertyKey UNGROUP_BAR_STATUS = new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey DIALOG_UNGROUP_BAR_BACKGROUND_COLOR =
+            new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey DIALOG_UNGROUP_BAR_HOVERED_BACKGROUND_COLOR =
+            new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey DIALOG_UNGROUP_BAR_TEXT_COLOR =
+            new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey DIALOG_UNGROUP_BAR_HOVERED_TEXT_COLOR =
+            new WritableIntPropertyKey();
+    public static final WritableObjectPropertyKey<String> DIALOG_UNGROUP_BAR_TEXT =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Integer> ANIMATION_BACKGROUND_COLOR =
+            new WritableObjectPropertyKey<>();
 
     /**
-     * Integer, but not {@link PropertyModel.WritableIntPropertyKey} so that we can force update on
-     * the same value.
+     * Integer, but not {@link WritableIntPropertyKey} so that we can force update on the same
+     * value.
      */
-    public static final PropertyModel.WritableObjectPropertyKey<Integer> INITIAL_SCROLL_INDEX =
-            new PropertyModel.WritableObjectPropertyKey<>(true);
+    public static final WritableObjectPropertyKey<Integer> INITIAL_SCROLL_INDEX =
+            new WritableObjectPropertyKey<>(true);
 
-    public static final PropertyModel.WritableBooleanPropertyKey IS_MAIN_CONTENT_VISIBLE =
-            new PropertyModel.WritableBooleanPropertyKey();
-    public static final PropertyModel.WritableObjectPropertyKey<OnClickListener>
-            MENU_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
-    public static final PropertyModel.WritableObjectPropertyKey<TextWatcher> TITLE_TEXT_WATCHER =
-            new PropertyModel.WritableObjectPropertyKey<>();
-    public static final PropertyModel.WritableObjectPropertyKey<View.OnFocusChangeListener>
-            TITLE_TEXT_ON_FOCUS_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
-    public static final PropertyModel.WritableBooleanPropertyKey TITLE_CURSOR_VISIBILITY =
-            new PropertyModel.WritableBooleanPropertyKey();
-    public static final PropertyModel.WritableBooleanPropertyKey IS_TITLE_TEXT_FOCUSED =
-            new PropertyModel.WritableBooleanPropertyKey();
-    public static final PropertyModel.WritableBooleanPropertyKey IS_KEYBOARD_VISIBLE =
-            new PropertyModel.WritableBooleanPropertyKey();
-    public static final PropertyModel.WritableObjectPropertyKey<String>
-            COLLAPSE_BUTTON_CONTENT_DESCRIPTION = new PropertyModel.WritableObjectPropertyKey<>();
-    public static final PropertyModel.WritableIntPropertyKey TAB_GROUP_COLOR_ID =
-            new PropertyModel.WritableIntPropertyKey();
-    public static final PropertyModel.WritableBooleanPropertyKey IS_INCOGNITO =
-            new PropertyModel.WritableBooleanPropertyKey();
-    public static final PropertyModel.WritableObjectPropertyKey<OnClickListener>
-            COLOR_ICON_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
-    public static final PropertyModel.WritableIntPropertyKey HAIRLINE_COLOR =
-            new PropertyModel.WritableIntPropertyKey();
-    public static final PropertyModel.WritableBooleanPropertyKey HAIRLINE_VISIBILITY =
-            new PropertyModel.WritableBooleanPropertyKey();
-    public static final PropertyModel.WritableBooleanPropertyKey FORCE_ANIMATION_TO_FINISH =
-            new PropertyModel.WritableBooleanPropertyKey();
-    public static final PropertyModel.WritableBooleanPropertyKey IS_CONTENT_SENSITIVE =
-            new PropertyModel.WritableBooleanPropertyKey();
-    public static final PropertyModel.WritableBooleanPropertyKey SHOW_SEND_FEEDBACK =
-            new PropertyModel.WritableBooleanPropertyKey();
-    public static final PropertyModel.WritableObjectPropertyKey<Runnable> SEND_FEEDBACK_RUNNABLE =
-            new PropertyModel.WritableObjectPropertyKey<>();
+    public static final WritableBooleanPropertyKey IS_MAIN_CONTENT_VISIBLE =
+            new WritableBooleanPropertyKey();
+    public static final WritableObjectPropertyKey<OnClickListener> MENU_CLICK_LISTENER =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<TextWatcher> TITLE_TEXT_WATCHER =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<View.OnFocusChangeListener>
+            TITLE_TEXT_ON_FOCUS_LISTENER = new WritableObjectPropertyKey<>();
+    public static final WritableBooleanPropertyKey TITLE_CURSOR_VISIBILITY =
+            new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey IS_TITLE_TEXT_FOCUSED =
+            new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey IS_KEYBOARD_VISIBLE =
+            new WritableBooleanPropertyKey();
+    public static final WritableObjectPropertyKey<String> COLLAPSE_BUTTON_CONTENT_DESCRIPTION =
+            new WritableObjectPropertyKey<>();
+    public static final WritableIntPropertyKey TAB_GROUP_COLOR_ID = new WritableIntPropertyKey();
+    public static final WritableBooleanPropertyKey IS_INCOGNITO = new WritableBooleanPropertyKey();
+    public static final WritableObjectPropertyKey<OnClickListener> COLOR_ICON_CLICK_LISTENER =
+            new WritableObjectPropertyKey<>();
+    public static final WritableIntPropertyKey HAIRLINE_COLOR = new WritableIntPropertyKey();
+    public static final WritableBooleanPropertyKey HAIRLINE_VISIBILITY =
+            new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey FORCE_ANIMATION_TO_FINISH =
+            new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey IS_CONTENT_SENSITIVE =
+            new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey SHOW_SEND_FEEDBACK =
+            new WritableBooleanPropertyKey();
+    public static final WritableObjectPropertyKey<Runnable> SEND_FEEDBACK_RUNNABLE =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Callback<TabKeyEventData>> PAGE_KEY_LISTENER =
+            new WritableObjectPropertyKey<>();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 BINDING_TOKEN,
@@ -159,5 +158,6 @@ class TabGridDialogProperties {
                 IS_CONTENT_SENSITIVE,
                 SHOW_SEND_FEEDBACK,
                 SEND_FEEDBACK_RUNNABLE,
+                PAGE_KEY_LISTENER,
             };
 }

@@ -52,6 +52,8 @@ const char kCountOfClearingBrowsingDataThroughQuickDelete[] =
     "count_of_clearing_browsing_data_through_quick_delete";
 const char kQuickDeletePromoShownCount[] = "quick_delete_shown_count";
 const char kAuxiliarySearchAvailable[] = "auxiliary_search_available";
+const char kIsEligibleToHistoryOptIn[] = "is_eligible_to_history_opt_in";
+const char kHistorySyncPromoShownCount[] = "history_sync_promo_shown_count";
 
 // Placeholder output label for segmentation model executor.
 inline constexpr char kPlaceholderEphemeralModuleLabel[] = "placeholder_module";
@@ -90,6 +92,7 @@ const char kDefaultBrowserPromo[] = "DefaultBrowserPromo";
 const char kTabGroupPromo[] = "TabGroupPromo";
 const char kTabGroupSyncPromo[] = "TabGroupSyncPromo";
 const char kQuickDeletePromo[] = "QuickDeletePromo";
+const char kHistorySyncPromo[] = "HistorySyncPromo";
 
 // Commandline ASCII Switch key to indicate that the test module backend ranker
 // should be used.

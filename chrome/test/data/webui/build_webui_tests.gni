@@ -78,21 +78,17 @@ template("build_webui_tests") {
     out_dir = tsc_dir
 
     # Default tsconfig is set to
-    # //chrome/test/data/webui/tsconfig_base_polymer.json for targets
-    # with a Polymer or Lit dependency, and
-    # //chrome/test/data/webui/tsconfig_base_polymer.json) for other targets.
+    # //chrome/test/data/webui/tsconfig_base_lit.json for targets
+    # with a Lit dependency, and //chrome/test/data/webui/tsconfig_base.json
+    # for other targets.
     tsconfig_base = "//chrome/test/data/webui/tsconfig_base.json"
     if (defined(invoker.ts_tsconfig_base)) {
       tsconfig_base = invoker.ts_tsconfig_base
     } else if (defined(invoker.ts_deps)) {
-      has_polymer_or_lit =
-          filter_include(invoker.ts_deps,
-                         [
-                           "//third_party/polymer/v3_0:library",
-                           "//third_party/lit/v3_0:build_ts",
-                         ]) != []
-      if (has_polymer_or_lit) {
-        tsconfig_base = "//chrome/test/data/webui/tsconfig_base_polymer.json"
+      has_lit = filter_include(invoker.ts_deps,
+                               [ "//third_party/lit/v3_0:build_ts" ]) != []
+      if (has_lit) {
+        tsconfig_base = "//chrome/test/data/webui/tsconfig_base_lit.json"
       }
     }
 

@@ -42,7 +42,6 @@ void ExtensionInstallUI::SetSkipPostInstallUI(bool skip_ui) {
 
 // static
 base::AutoReset<bool> ExtensionInstallUI::disable_ui_for_tests(bool disable) {
-  CHECK_IS_TEST();
   return base::AutoReset<bool>(&g_disable_ui_for_tests, disable);
 }
 

@@ -4309,6 +4309,17 @@ TEST_F(TextfieldTest, SetAccessibleNameNotifiesAccessibilityEvent) {
   EXPECT_EQ(data.GetNameFrom(), ax::mojom::NameFrom::kAttribute);
 }
 
+// Changing the value of the textfield should trigger a kTextChanged event.
+TEST_F(TextfieldTest, SetValueAccessibilityEvents) {
+  InitTextfield();
+  std::u16string value = u"hello world";
+  test::AXEventCounter counter(views::AXUpdateNotifier::Get());
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged));
+  textfield_->GetViewAccessibility().SetValue(value);
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged));
+  EXPECT_EQ(value, textfield_->GetViewAccessibility().GetValue());
+}
+
 #if BUILDFLAG(IS_WIN)
 TEST_F(TextfieldTest, AccessibilityAttributes) {
   base::test::ScopedFeatureList scoped_feature_list;

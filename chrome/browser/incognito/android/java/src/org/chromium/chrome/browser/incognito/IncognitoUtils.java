@@ -4,10 +4,14 @@
 
 package org.chromium.chrome.browser.incognito;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
@@ -15,8 +19,9 @@ import org.chromium.chrome.browser.profiles.ProfileKeyUtil;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 
 /** Utilities for working with incognito tabs spread across multiple activities. */
+@NullMarked
 public class IncognitoUtils {
-    private static Boolean sIsEnabledForTesting;
+    private static @Nullable Boolean sIsEnabledForTesting;
 
     private IncognitoUtils() {}
 
@@ -50,9 +55,11 @@ public class IncognitoUtils {
         // If off-the-record is not requested, the request might be before native initialization.
         if (otrProfileId == null) return ProfileKeyUtil.getLastUsedRegularProfileKey();
 
-        return ProfileManager.getLastUsedRegularProfile()
-                .getOffTheRecordProfile(otrProfileId, /* createIfNeeded= */ true)
-                .getProfileKey();
+        Profile profile =
+                ProfileManager.getLastUsedRegularProfile()
+                        .getOffTheRecordProfile(otrProfileId, /* createIfNeeded= */ true);
+        assumeNonNull(profile);
+        return profile.getProfileKey();
     }
 
     public static void setEnabledForTesting(Boolean enabled) {

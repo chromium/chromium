@@ -37,7 +37,7 @@ void ForceInstalledDeprecatedAppsDialogView::CreateAndShowDialog(
   auto delegate = std::make_unique<views::DialogDelegate>();
   delegate->SetModalType(ui::mojom::ModalType::kChild);
   delegate->SetShowCloseButton(false);
-  delegate->SetOwnedByWidget(true);
+  delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
   auto* browser_context = web_contents->GetBrowserContext();
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(browser_context)

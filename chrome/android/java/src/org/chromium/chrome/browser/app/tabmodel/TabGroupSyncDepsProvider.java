@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.app.tabmodel;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncDelegate;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncDelegate.Deps;
 
@@ -17,8 +18,6 @@ public class TabGroupSyncDepsProvider {
     /** Constructor. */
     @CalledByNative
     private static TabGroupSyncDelegate.Deps createDeps() {
-        TabGroupSyncDelegate.Deps delegateDeps = new Deps();
-        delegateDeps.tabWindowManager = TabWindowManagerSingleton.getInstance();
-        return delegateDeps;
+        return new Deps(TabWindowManagerSingleton.getInstance());
     }
 }

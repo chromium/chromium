@@ -18,7 +18,6 @@ include_rules = [
   "+chrome/browser/ash/policy/skyvault",
   "+chrome/browser/ash/system_web_apps",
   "+chrome/browser/ash/video_conference",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/chromeos/policy/dlp",
   "+chrome/browser/download",
   "+chrome/browser/lens",

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.download.home.empty;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 
@@ -13,6 +14,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** The properties required to build a {@link EmptyView}. */
+@NullMarked
 interface EmptyProperties {
     @IntDef({State.LOADING, State.EMPTY, State.GONE})
     @Retention(RetentionPolicy.SOURCE)

@@ -248,15 +248,13 @@ static inline bool IsExposedInMode(const ExecutionContext* execution_context,
 //
 // Returns false if the string is outside the allowed range of ASCII, so that
 // it could never match any CSS properties or values.
-static inline bool QuasiLowercaseIntoBuffer(const UChar* src,
-                                            unsigned length,
+static inline bool QuasiLowercaseIntoBuffer(base::span<const UChar> chars,
                                             char* dst) {
-  for (unsigned i = 0; i < length; ++i) {
-    UChar c = UNSAFE_TODO(src[i]);
+  for (unsigned i = 0; UChar c : chars) {
     if (c == 0 || c >= 0x7F) {  // illegal character
       return false;
     }
-    UNSAFE_TODO(dst[i]) = ToASCIILower(c);
+    UNSAFE_TODO(dst[i++]) = ToASCIILower(c);
   }
   return true;
 }
@@ -274,9 +272,10 @@ static inline bool QuasiLowercaseIntoBuffer(const UChar* src,
 // This version never returns false, since the [0x80, 0xff] range
 // won't match anything anyway (it is really only needed for UChar,
 // since otherwise we could have e.g. U+0161 be downcasted to 0x61).
-static inline bool QuasiLowercaseIntoBuffer(const LChar* src,
-                                            unsigned length,
+static inline bool QuasiLowercaseIntoBuffer(base::span<const LChar> chars,
                                             char* dst) {
+  const LChar* src = chars.data();
+  unsigned length = static_cast<unsigned>(chars.size());
   unsigned i;
   for (i = 0; i < (length & ~3); i += 4) {
     uint32_t x;
@@ -321,9 +320,9 @@ static CSSPropertyID ExposedProperty(CSSPropertyID property_id,
 template <typename CharacterType>
 static CSSPropertyID UnresolvedCSSPropertyID(
     const ExecutionContext* execution_context,
-    const CharacterType* property_name,
-    unsigned length,
+    base::span<const CharacterType> property_name,
     CSSParserMode mode) {
+  unsigned length = static_cast<unsigned>(property_name.size());
   if (length == 0) {
     return CSSPropertyID::kInvalid;
   }
@@ -336,7 +335,7 @@ static CSSPropertyID UnresolvedCSSPropertyID(
   }
 
   char buffer[kMaxCSSPropertyNameLength];
-  if (!QuasiLowercaseIntoBuffer(property_name, length, buffer)) {
+  if (!QuasiLowercaseIntoBuffer(property_name, buffer)) {
     return CSSPropertyID::kInvalid;
   }
 
@@ -373,19 +372,19 @@ CSSPropertyID UnresolvedCSSPropertyID(const ExecutionContext* execution_context,
                                       StringView string,
                                       CSSParserMode mode) {
   return WTF::VisitCharacters(string, [&](auto chars) {
-    return UnresolvedCSSPropertyID(execution_context, chars.data(),
-                                   chars.size(), mode);
+    return UnresolvedCSSPropertyID(execution_context, chars, mode);
   });
 }
 
 template <typename CharacterType>
-static CSSValueID CssValueKeywordID(const CharacterType* value_keyword,
-                                    unsigned length) {
+static CSSValueID CssValueKeywordID(
+    base::span<const CharacterType> value_keyword) {
   char buffer[kMaxCSSValueKeywordLength];
-  if (!QuasiLowercaseIntoBuffer(value_keyword, length, buffer)) {
+  if (!QuasiLowercaseIntoBuffer(value_keyword, buffer)) {
     return CSSValueID::kInvalid;
   }
 
+  unsigned length = static_cast<unsigned>(value_keyword.size());
   const Value* hash_table_entry = FindValue(buffer, length);
 #if DCHECK_IS_ON()
   // Verify that we get the same answer with standard lowercasing.
@@ -407,8 +406,8 @@ CSSValueID CssValueKeywordID(StringView string) {
     return CSSValueID::kInvalid;
   }
 
-  return string.Is8Bit() ? CssValueKeywordID(string.Characters8(), length)
-                         : CssValueKeywordID(string.Characters16(), length);
+  return string.Is8Bit() ? CssValueKeywordID(string.Span8())
+                         : CssValueKeywordID(string.Span16());
 }
 
 const CSSValue* CSSPropertyParser::ConsumeCSSWideKeyword(

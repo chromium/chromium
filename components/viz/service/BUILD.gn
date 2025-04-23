@@ -221,6 +221,7 @@ viz_component("service") {
     "frame_sinks/video_capture/video_frame_pool.h",
     "frame_sinks/video_detector.cc",
     "frame_sinks/video_detector.h",
+    "gl/exit_code.cc",
     "gl/exit_code.h",
     "gl/gpu_service_impl.cc",
     "gl/gpu_service_impl.h",
@@ -295,6 +296,7 @@ viz_component("service") {
     # Note that dependency on //gpu/ipc/client is for GpuMemoryBufferImpl. This
     # dependency should not be in public_deps.
     "//components/version_info:version_info",
+    "//components/viz/client",
     "//components/viz/common",
     "//gpu/command_buffer/client",
     "//gpu/config",
@@ -629,6 +631,8 @@ viz_source_set("unit_tests") {
     "frame_sinks/video_capture/video_capture_overlay_unittest.cc",
     "frame_sinks/video_detector_unittest.cc",
     "gl/gpu_service_impl_unittest.cc",
+    "gl/mock_gpu_service_impl.cc",
+    "gl/mock_gpu_service_impl.h",
     "hit_test/hit_test_aggregator_unittest.cc",
     "input/mock_input_manager.cc",
     "input/mock_input_manager.h",

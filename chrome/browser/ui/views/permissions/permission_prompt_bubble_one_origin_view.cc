@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/platform_util.h"
@@ -189,6 +190,7 @@ PermissionPromptBubbleOneOriginView::PermissionPromptBubbleOneOriginView(
           visible_requests[i]->GetRequestedAudioCaptureDeviceIds();
     }
   }
+
   MaybeAddMediaPreview(requested_audio_capture_device_ids,
                        requested_video_capture_device_ids,
                        visible_requests.size());
@@ -299,7 +301,7 @@ void PermissionPromptBubbleOneOriginView::MaybeAddMediaPreview(
 
   media_previews_.emplace(browser(), this, index,
                           requested_audio_capture_device_ids,
-                          requested_video_capture_device_ids);
+                          requested_video_capture_device_ids, delegate());
 #endif
 }
 

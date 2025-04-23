@@ -57,7 +57,6 @@ class MockTabGroupSyncService : public TabGroupSyncService {
               (const std::optional<LocalTabGroupID>&,
                const LocalTabID&,
                const std::u16string&));
-  MOCK_METHOD((SelectedTabInfo), GetCurrentlySelectedTabInfo, ());
   MOCK_METHOD(void, SaveGroup, (SavedTabGroup));
   MOCK_METHOD(void, UnsaveGroup, (const LocalTabGroupID&));
   MOCK_METHOD(void,
@@ -118,6 +117,7 @@ class MockTabGroupSyncService : public TabGroupSyncService {
               (const base::Uuid& sync_id),
               (const));
   MOCK_METHOD(void, RecordTabGroupEvent, (const EventDetails&));
+  MOCK_METHOD(void, UpdateArchivalStatus, (const base::Uuid&, bool));
   MOCK_METHOD(TabGroupSyncMetricsLogger*, GetTabGroupSyncMetricsLogger, ());
 
   MOCK_METHOD(syncer::DataTypeSyncBridge*, bridge, ());

@@ -39,12 +39,15 @@
      type="text"
      on-change="saveWord_"></cr-input>
   <div class="category-div" >
-    <div class="cr-form-field-label category-label">$i18n{japaneseDictionaryCategory}</div>
+    <label id="categoryLabel" class="cr-form-field-label category-label">
+      $i18n{japaneseDictionaryCategory}
+    </label>
     <!--
       These Japanese terms are not translated on purpose since they are technical linguistic terms
       The option values needs to corresponds to the int value of the mojo enum JpPosType.
     -->
-    <select id="posDropdownMenu" class="md-select" on-change="onOptionChanged_">
+    <select id="posDropdownMenu" class="md-select" on-change="onOptionChanged_"
+       aria-labelledby="categoryLabel">
        <template is="dom-repeat" items="[[posTypeOptions_]]">
          <option value="[[item.value]]"
             selected="[[isSelectedOption_(item.value)]]">

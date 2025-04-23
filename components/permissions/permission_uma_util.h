@@ -15,11 +15,11 @@
 #include "base/version.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 #include "components/permissions/request_type.h"
 #include "content/public/browser/permission_result.h"
+#include "url/gurl.h"
 
 namespace blink {
 enum class PermissionType;
@@ -31,8 +31,6 @@ class RenderFrameHost;
 class WebContents;
 class RenderFrameHost;
 }  // namespace content
-
-class GURL;
 
 namespace permissions {
 enum class PermissionRequestGestureType;
@@ -900,6 +898,24 @@ class PermissionUmaUtil {
 
   static void RecordPermissionRequestRelevance(
       PermissionRequestRelevance permission_request_relevance);
+
+  // Records if the browser was always active while the prompt was
+  // displaying.
+  static void RecordBrowserAlwaysActiveWhilePrompting(
+      RequestTypeForUma request_type,
+      bool embedded_permission_element_initiated,
+      bool always_active);
+
+  // Records if the browser was always active before user's interaction.
+  static void RecordActionBrowserAlwaysActive(RequestTypeForUma request_type,
+                                              std::string permission_action,
+                                              bool always_active);
+
+  // Records if the browser was active at the time the prompt started displaying
+  static void RecordPromptShownInActiveBrowser(
+      RequestTypeForUma request_type,
+      bool embedded_permission_element_initiated,
+      bool active);
 
   // A scoped class that will check the current resolved content setting on
   // construction and report a revocation metric accordingly if the revocation

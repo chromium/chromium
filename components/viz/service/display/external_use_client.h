@@ -140,7 +140,8 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
   virtual std::unique_ptr<ImageContext> CreateImageContext(
       const TransferableResource& resource,
       bool maybe_concurrent_reads,
-      bool raw_draw_if_possible) = 0;
+      bool raw_draw_if_possible,
+      uint32_t client_id) = 0;
 
   virtual gpu::SyncToken ReleaseImageContexts(
       std::vector<std::unique_ptr<ImageContext>> image_contexts) = 0;

@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
@@ -486,7 +487,8 @@ PaymentsAutofillTable::~PaymentsAutofillTable() = default;
 
 // static
 PaymentsAutofillTable* PaymentsAutofillTable::FromWebDatabase(WebDatabase* db) {
-  return static_cast<PaymentsAutofillTable*>(db->GetTable(GetKey()));
+  return static_cast<PaymentsAutofillTable*>(
+      CHECK_DEREF(db).GetTable(GetKey()));
 }
 
 WebDatabaseTable::TypeKey PaymentsAutofillTable::GetTypeKey() const {

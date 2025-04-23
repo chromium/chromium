@@ -166,7 +166,9 @@ void CloseWatcher::WatcherStack::Signal() {
   DCHECK(AnyEnabledWatchers())
       << "If there aren't watchers enabled, the mojo pipe should be reset";
   auto& group = watcher_groups_.back();
-  for (auto& watcher : base::Reversed(group)) {
+
+  HeapVector<Member<CloseWatcher>> group_copy(group);
+  for (auto& watcher : base::Reversed(group_copy)) {
     if (!watcher->RequestClose(AllowCancel::kWithUserActivation)) {
       break;
     }

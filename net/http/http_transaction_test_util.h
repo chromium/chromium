@@ -223,8 +223,6 @@ class MockNetworkTransaction final : public HttpTransaction {
 
   LoadState GetLoadState() const override;
 
-  void SetQuicServerInfo(QuicServerInfo* quic_server_info) override;
-
   bool GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const override;
 
   void PopulateLoadTimingInternalInfo(
@@ -237,9 +235,6 @@ class MockNetworkTransaction final : public HttpTransaction {
   void SetWebSocketHandshakeStreamCreateHelper(
       CreateHelper* create_helper) override;
 
-  void SetBeforeNetworkStartCallback(
-      BeforeNetworkStartCallback callback) override;
-
   void SetConnectedCallback(const ConnectedCallback& callback) override;
 
   void SetRequestHeadersCallback(RequestHeadersCallback callback) override {}
@@ -251,8 +246,6 @@ class MockNetworkTransaction final : public HttpTransaction {
 
   void SetIsSharedDictionaryReadAllowedCallback(
       base::RepeatingCallback<bool()> callback) override {}
-
-  int ResumeNetworkStart() override;
 
   ConnectionAttempts GetConnectionAttempts() const override;
 
@@ -281,7 +274,6 @@ class MockNetworkTransaction final : public HttpTransaction {
 
  private:
   enum class State {
-    NOTIFY_BEFORE_CREATE_STREAM,
     CREATE_STREAM,
     CREATE_STREAM_COMPLETE,
     CONNECTED_CALLBACK,
@@ -296,7 +288,6 @@ class MockNetworkTransaction final : public HttpTransaction {
   };
 
   int StartInternal(HttpRequestInfo request, CompletionOnceCallback callback);
-  int DoNotifyBeforeCreateStream();
   int DoCreateStream();
   int DoCreateStreamComplete(int result);
   int DoConnectedCallback();
@@ -330,7 +321,6 @@ class MockNetworkTransaction final : public HttpTransaction {
   int test_mode_;
   RequestPriority priority_;
   raw_ptr<CreateHelper> websocket_handshake_stream_create_helper_ = nullptr;
-  BeforeNetworkStartCallback before_network_start_callback_;
   ConnectedCallback connected_callback_;
   base::WeakPtr<MockNetworkLayer> transaction_factory_;
   int64_t received_bytes_ = 0;

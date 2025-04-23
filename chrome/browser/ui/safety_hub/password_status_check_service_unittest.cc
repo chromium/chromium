@@ -9,6 +9,7 @@
 
 #include "base/json/values_util.h"
 #include "base/location.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"

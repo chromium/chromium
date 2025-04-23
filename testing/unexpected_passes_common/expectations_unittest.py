@@ -82,7 +82,7 @@ FAKE_EXPECTATION_FILE_CONTENTS_WITH_COMPLEX_TAGS = """\
 # tags: [ release debug ]
 # results: [ Failure RetryOnFailure ]
 
-crbug.com/1234 [ win ] foo/test [ Failure ]
+crbug.com/1234 [ win ] foo/test [ Failure ] # trailing comment
 crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
 """
 
@@ -2071,7 +2071,7 @@ crbug.com/1234 [ intel win ] foo/bar* [ Failure ]
 # tags: [ release debug ]
 # results: [ Failure RetryOnFailure ]
 
-crbug.com/1234 [ intel win ] foo/test [ Failure ]
+crbug.com/1234 [ intel win ] foo/test [ Failure ] # trailing comment
 crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
 """
     with open(self.filename) as infile:
@@ -2114,7 +2114,7 @@ crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
 # tags: [ release debug ]
 # results: [ Failure RetryOnFailure ]
 
-crbug.com/1234 [ intel win ] foo/test [ Failure ]
+crbug.com/1234 [ intel win ] foo/test [ Failure ] # trailing comment
 crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
 """
     with open(self.filename) as infile:
@@ -2194,7 +2194,7 @@ crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
 # tags: [ release debug ]
 # results: [ Failure RetryOnFailure ]
 
-crbug.com/1234 [ intel win ] foo/test [ Failure ]
+crbug.com/1234 [ intel win ] foo/test [ Failure ] # trailing comment
 crbug.com/2345 [ debug linux ] foo/test [ RetryOnFailure ]
 """
     with open(self.filename) as infile:
@@ -2243,8 +2243,8 @@ crbug.com/2345 [ debug linux ] foo/test [ RetryOnFailure ]
 # tags: [ release debug ]
 # results: [ Failure RetryOnFailure ]
 
-crbug.com/1234 [ intel win ] foo/test [ Failure ]
-crbug.com/1234 [ nvidia win ] foo/test [ Failure ]
+crbug.com/1234 [ intel win ] foo/test [ Failure ] # trailing comment
+crbug.com/1234 [ nvidia win ] foo/test [ Failure ] # trailing comment
 crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
 """
     with open(self.filename) as infile:
@@ -2344,7 +2344,7 @@ crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
 # tags: [ release debug ]
 # results: [ Failure RetryOnFailure ]
 
-crbug.com/1234 [ intel win ] foo/test [ Failure ]
+crbug.com/1234 [ intel win ] foo/test [ Failure ] # trailing comment
 crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
 """
     with open(self.filename) as infile:
@@ -2394,7 +2394,7 @@ crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
 # tags: [ release debug ]
 # results: [ Failure RetryOnFailure ]
 
-crbug.com/1234 [ nvidia win ] foo/test [ Failure ]
+crbug.com/1234 [ nvidia win ] foo/test [ Failure ] # trailing comment
 crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
 """
     with open(self.filename) as infile:
@@ -2434,7 +2434,7 @@ crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
 # tags: [ release debug ]
 # results: [ Failure RetryOnFailure ]
 
-crbug.com/1234 [ intel-0x2222 win ] foo/test [ Failure ]
+crbug.com/1234 [ intel-0x2222 win ] foo/test [ Failure ] # trailing comment
 crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
 """
     with open(self.filename) as infile:
@@ -2482,7 +2482,7 @@ crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
 # tags: [ release debug ]
 # results: [ Failure RetryOnFailure ]
 
-crbug.com/1234 [ amd win ] foo/test [ Failure ]
+crbug.com/1234 [ amd win ] foo/test [ Failure ] # trailing comment
 crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
 """
     with open(self.filename) as infile:
@@ -2528,7 +2528,7 @@ crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
 # tags: [ release debug ]
 # results: [ Failure RetryOnFailure ]
 
-crbug.com/1234 [ debug intel win ] foo/test [ Failure ]
+crbug.com/1234 [ debug intel win ] foo/test [ Failure ] # trailing comment
 crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
 """
     with open(self.filename) as infile:
@@ -2589,8 +2589,8 @@ crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
 # tags: [ release debug ]
 # results: [ Failure RetryOnFailure ]
 
-crbug.com/1234 [ amd debug win ] foo/test [ Failure ]
-crbug.com/1234 [ intel win ] foo/test [ Failure ]
+crbug.com/1234 [ amd debug win ] foo/test [ Failure ] # trailing comment
+crbug.com/1234 [ intel win ] foo/test [ Failure ] # trailing comment
 crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
 """
     expected_contents2 = """\
@@ -2603,8 +2603,8 @@ crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
 # tags: [ release debug ]
 # results: [ Failure RetryOnFailure ]
 
-crbug.com/1234 [ debug win ] foo/test [ Failure ]
-crbug.com/1234 [ intel release win ] foo/test [ Failure ]
+crbug.com/1234 [ debug win ] foo/test [ Failure ] # trailing comment
+crbug.com/1234 [ intel release win ] foo/test [ Failure ] # trailing comment
 crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
 """
     with open(self.filename) as infile:

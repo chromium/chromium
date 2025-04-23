@@ -63,6 +63,9 @@ std::string AXMode::ToString() const {
       case AXMode::kAnnotateMainNode:
         flag_name = "kAnnotateMainNode";
         break;
+      case kFromPlatform:
+        flag_name = "kFromPlatform";
+        break;
     }
 
     DCHECK(!flag_name.empty());

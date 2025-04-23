@@ -16,14 +16,6 @@ MediaResource::MediaResource() = default;
 
 MediaResource::~MediaResource() = default;
 
-const MediaUrlParams& MediaResource::GetMediaUrlParams() const {
-  NOTREACHED();
-}
-
-MediaResource::Type MediaResource::GetType() const {
-  return Type::kStream;
-}
-
 DemuxerStream* MediaResource::GetFirstStream(DemuxerStream::Type type) {
   const auto& streams = GetAllStreams();
   for (media::DemuxerStream* stream : streams) {
@@ -31,18 +23,6 @@ DemuxerStream* MediaResource::GetFirstStream(DemuxerStream::Type type) {
       return stream;
   }
   return nullptr;
-}
-
-void MediaResource::ForwardDurationChangeToDemuxerHost(
-    base::TimeDelta duration) {
-  // Only implemented by MediaUrlDemuxer, for the MediaPlayerRendererClient.
-  NOTREACHED();
-}
-
-void MediaResource::SetHeaders(
-    base::flat_map<std::string, std::string> headers) {
-  // Only implemented by MediaUrlDemuxer, for the MojoRendererService.
-  NOTREACHED();
 }
 
 }  // namespace media

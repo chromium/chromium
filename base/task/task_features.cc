@@ -43,10 +43,6 @@ BASE_FEATURE(kAlignWakeUps, "AlignWakeUps", FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTimerSlackMac, "TimerSlackMac", FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kExplicitHighResolutionTimerWin,
-             "ExplicitHighResolutionTimerWin",
-             FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kUIPumpImprovementsWin,
              "UIPumpImprovementsWin",
              FEATURE_ENABLED_BY_DEFAULT);

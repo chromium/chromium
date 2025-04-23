@@ -6,6 +6,7 @@
 
 #include <array>
 
+#include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
@@ -88,7 +89,8 @@ SyncSection::SyncSection(Profile* profile,
   CHECK(search_tag_registry);
 
   // No search tags are registered if in guest mode.
-  auto* user = BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+  const auto& user = CHECK_DEREF(
+      BrowserContextHelper::Get()->GetUserByBrowserContext(profile));
   if (IsGuestModeActive(user)) {
     return;
   }

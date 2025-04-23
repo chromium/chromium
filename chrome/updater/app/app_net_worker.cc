@@ -58,7 +58,7 @@ class PostRequestObserverWrapper
 
   void OnProgress(int64_t current) { observer_->OnProgress(current); }
 
-  void OnRequestComplete(std::unique_ptr<std::string> response_body,
+  void OnRequestComplete(std::optional<std::string> response_body,
                          int32_t net_error,
                          const std::string& header_etag,
                          const std::string& header_x_cup_server_proof,
@@ -192,7 +192,7 @@ void FetchServiceImpl::PostRequest(
       base::BindOnce(
           [](scoped_refptr<PostRequestObserverWrapper> wrapper,
              base::OnceCallback<void(int)> callback,
-             std::unique_ptr<std::string> response_body, int32_t net_error,
+             std::optional<std::string> response_body, int32_t net_error,
              const std::string& header_etag,
              const std::string& header_x_cup_server_proof,
              int64_t xheader_retry_after_sec) {

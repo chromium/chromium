@@ -72,6 +72,29 @@ std::string_view SodaInstallerErrorCodeToString(
   }
 }
 
+recorder_app::mojom::ModelStateType SodaErrorCodeToModelStateType(
+    speech::SodaInstaller::ErrorCode error) {
+  switch (error) {
+    case speech::SodaInstaller::ErrorCode::kNeedsReboot:
+      return recorder_app::mojom::ModelStateType::kNeedsReboot;
+    case speech::SodaInstaller::ErrorCode::kUnspecifiedError:
+      return recorder_app::mojom::ModelStateType::kError;
+  }
+}
+
+recorder_app::mojom::ModelStateType LoadModelResultToModelStateType(
+    on_device_model::mojom::LoadModelResult result) {
+  switch (result) {
+    case on_device_model::mojom::LoadModelResult::kSuccess:
+      return recorder_app::mojom::ModelStateType::kInstalled;
+    case on_device_model::mojom::LoadModelResult::kGpuBlocked:
+    case on_device_model::mojom::LoadModelResult::kFailedToLoadLibrary:
+      return recorder_app::mojom::ModelStateType::kError;
+    case on_device_model::mojom::LoadModelResult::kCrosNeedReboot:
+      return recorder_app::mojom::ModelStateType::kNeedsReboot;
+  }
+}
+
 void GotSalt(
     const url::Origin& origin,
     const std::string& source_id,
@@ -357,15 +380,8 @@ void RecorderAppUI::LoadModelResultCallback(
     on_device_model::mojom::LoadModelResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO: b/366335321 - Propagate need-reboot error from on-device model
-  // service to UI side.
-  if (result != on_device_model::mojom::LoadModelResult::kSuccess) {
-    UpdateModelState(
-        model_id, {recorder_app::mojom::ModelStateType::kError, std::nullopt});
-  } else {
-    UpdateModelState(model_id, {recorder_app::mojom::ModelStateType::kInstalled,
-                                std::nullopt});
-  }
+  UpdateModelState(model_id,
+                   {LoadModelResultToModelStateType(result), std::nullopt});
   std::move(callback).Run(result);
 }
 
@@ -665,7 +681,7 @@ void RecorderAppUI::OnSodaInstallError(
   LOG(ERROR) << "Failed to install Soda library DLC with error "
              << SodaInstallerErrorCodeToString(error_code);
   UpdateSodaState(language_code,
-                  {recorder_app::mojom::ModelStateType::kError, std::nullopt});
+                  {SodaErrorCodeToModelStateType(error_code), std::nullopt});
 }
 
 void RecorderAppUI::OnSodaProgress(speech::LanguageCode language_code,

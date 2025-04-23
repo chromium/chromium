@@ -17,13 +17,12 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/tracing/common/background_tracing_state_manager.h"
 #include "components/tracing/common/pref_names.h"
+#include "components/tracing/common/tracing_scenarios_config.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/snappy/src/snappy.h"
-
-using tracing::BackgroundTracingSetupMode;
 
 namespace {
 
@@ -78,11 +77,6 @@ std::string GetTracingRulesConfigFromText(const std::string& proto_text) {
   return serialized_message;
 }
 
-struct SetupModeParams {
-  const char* enable_background_tracing = nullptr;
-  BackgroundTracingSetupMode expected_mode;
-};
-
 TEST(BackgroundTracingUtilsTest, SetupFieldTracingFromFieldTrial) {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -99,8 +93,7 @@ TEST(BackgroundTracingUtilsTest, SetupFieldTracingFromFieldTrial) {
   scoped_list.InitAndEnableFeatureWithParameters(tracing::kFieldTracing,
                                                  {{"config", encoded_config}});
 
-  ASSERT_EQ(tracing::GetBackgroundTracingSetupMode(),
-            BackgroundTracingSetupMode::kFromFieldTrial);
+  ASSERT_FALSE(tracing::IsBackgroundTracingEnabledFromCommandLine());
   EXPECT_FALSE(tracing::SetupSystemTracingFromFieldTrial());
   EXPECT_TRUE(tracing::SetupFieldTracingFromFieldTrial());
 }
@@ -121,8 +114,7 @@ TEST(BackgroundTracingUtilsTest, SetupSystemTracingFromFieldTrial) {
   scoped_list.InitAndEnableFeatureWithParameters(tracing::kTracingTriggers,
                                                  {{"config", encoded_config}});
 
-  ASSERT_EQ(tracing::GetBackgroundTracingSetupMode(),
-            BackgroundTracingSetupMode::kFromFieldTrial);
+  ASSERT_FALSE(tracing::IsBackgroundTracingEnabledFromCommandLine());
   EXPECT_TRUE(tracing::SetupSystemTracingFromFieldTrial());
 }
 
@@ -144,8 +136,7 @@ TEST(BackgroundTracingUtilsTest, SetupBackgroundTracingFromProtoConfigFile) {
                                  temp_dir.GetPath());
   command_line->AppendSwitchPath(switches::kEnableBackgroundTracing, file_path);
 
-  ASSERT_EQ(tracing::GetBackgroundTracingSetupMode(),
-            BackgroundTracingSetupMode::kFromProtoConfigFile);
+  ASSERT_TRUE(tracing::IsBackgroundTracingEnabledFromCommandLine());
   EXPECT_FALSE(tracing::SetupSystemTracingFromFieldTrial());
   EXPECT_FALSE(tracing::SetupFieldTracingFromFieldTrial());
   EXPECT_TRUE(tracing::SetupBackgroundTracingFromCommandLine());
@@ -181,37 +172,8 @@ TEST(BackgroundTracingUtilsTest, SetupFieldTracingFromFieldTrialOutputPath) {
                                  temp_dir.GetPath());
 
   ASSERT_TRUE(tracing::HasBackgroundTracingOutputPath());
-  ASSERT_EQ(tracing::GetBackgroundTracingSetupMode(),
-            BackgroundTracingSetupMode::kFromFieldTrial);
+  ASSERT_FALSE(tracing::IsBackgroundTracingEnabledFromCommandLine());
   EXPECT_TRUE(tracing::SetupFieldTracingFromFieldTrial());
-}
-
-TEST(BackgroundTracingUtilsTest, GetBackgroundTracingSetupMode) {
-  base::test::TaskEnvironment task_env;
-  auto background_tracing_manager =
-      content::BackgroundTracingManager::CreateInstance();
-  const std::vector<SetupModeParams> kParams = {
-      // No config file param.
-      {nullptr, BackgroundTracingSetupMode::kFromFieldTrial},
-      // Empty config filename.
-      {"", BackgroundTracingSetupMode::kDisabledInvalidCommandLine},
-      // file is valid for proto traces.
-      {"config.pb", BackgroundTracingSetupMode::kFromProtoConfigFile},
-  };
-
-  for (const SetupModeParams& params : kParams) {
-    SCOPED_TRACE(::testing::Message() << "enable_background_tracing "
-                                      << params.enable_background_tracing);
-    base::test::ScopedCommandLine scoped_command_line;
-    base::CommandLine* command_line =
-        scoped_command_line.GetProcessCommandLine();
-    if (params.enable_background_tracing) {
-      command_line->AppendSwitchASCII(switches::kEnableBackgroundTracing,
-                                      params.enable_background_tracing);
-    }
-
-    EXPECT_EQ(tracing::GetBackgroundTracingSetupMode(), params.expected_mode);
-  }
 }
 
 TEST_F(BackgroundTracingUtilTest,
@@ -223,8 +185,7 @@ TEST_F(BackgroundTracingUtilTest,
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
   command_line->AppendSwitchASCII(switches::kEnableBackgroundTracing, "");
 
-  ASSERT_EQ(tracing::GetBackgroundTracingSetupMode(),
-            BackgroundTracingSetupMode::kDisabledInvalidCommandLine);
+  ASSERT_TRUE(tracing::IsBackgroundTracingEnabledFromCommandLine());
   EXPECT_FALSE(
       tracing::SetupBackgroundTracingFromProtoConfigFile(base::FilePath()));
 }
@@ -257,8 +218,7 @@ TEST_F(BackgroundTracingUtilTest,
   command_line->AppendSwitchPath(switches::kEnableBackgroundTracing,
                                  config_file_path);
 
-  ASSERT_EQ(tracing::GetBackgroundTracingSetupMode(),
-            BackgroundTracingSetupMode::kFromProtoConfigFile);
+  ASSERT_TRUE(tracing::IsBackgroundTracingEnabledFromCommandLine());
 
   EXPECT_FALSE(
       tracing::SetupBackgroundTracingFromProtoConfigFile(config_file_path));
@@ -269,8 +229,7 @@ TEST_F(BackgroundTracingUtilTest,
   auto background_tracing_manager =
       content::BackgroundTracingManager::CreateInstance();
 
-  ASSERT_EQ(tracing::GetBackgroundTracingSetupMode(),
-            BackgroundTracingSetupMode::kFromFieldTrial);
+  ASSERT_FALSE(tracing::IsBackgroundTracingEnabledFromCommandLine());
   EXPECT_FALSE(tracing::SetupBackgroundTracingFromCommandLine());
   EXPECT_FALSE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());

@@ -87,6 +87,7 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
       base::i18n::TextDirection text_direction,
       const std::u16string& typed_username,
       ShowWebAuthnCredentials show_webauthn_credentials,
+      ShowIdentityCredentials show_identity_credentials,
       const gfx::RectF& bounds);
 
   // If there are relevant credentials for the current frame show them and
@@ -205,6 +206,7 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
       base::i18n::TextDirection text_direction,
       const std::u16string& typed_username,
       ShowWebAuthnCredentials show_webauthn_credentials,
+      ShowIdentityCredentials show_identity_credentials,
       const gfx::RectF& bounds);
 
   std::unique_ptr<autofill::PasswordFormFillData> fill_data_;

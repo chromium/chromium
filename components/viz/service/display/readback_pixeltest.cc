@@ -485,7 +485,7 @@ class ReadbackPixelTest : public VizPixelTest {
     auto* quad = pass->CreateAndAppendDrawQuad<TileDrawQuad>();
     quad->SetNew(sqs, output_rect, output_rect, /*needs_blending=*/false,
                  mapped_resource_id, gfx::RectF(output_rect), source_size,
-                 /*is_premultiplied=*/true, /*nearest_neighbor=*/true,
+                 /*nearest_neighbor=*/true,
                  /*force_anti_aliasing_off=*/false);
     return pass;
   }

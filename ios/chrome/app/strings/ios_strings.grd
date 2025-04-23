@@ -1493,13 +1493,13 @@ See your search engine’s instructions for deleting your search history, if app
           This card shows price drops across the web on products that you currently track
       </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_CUSTOMIZE_CARDS" desc="Text for Price Tracking ShopCard in Customize Cards in Magic Stack">
-          Price Tracking
+          Price tracking
       </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_CUSTOMIZE_CARDS_SUBTITLE" desc="Subtitle for Price Tracking ShopCard in Customize Cards in Magic Stack">
           Get price drop alerts for products you track
       </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_HIDE" desc="Button text indicating price tracking ShopCard module can be removed from Magic Stack">
-          Hide "Price Tracking"
+          Hide "Price tracking"
       </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_HIDE_ACCESSIBILITY_LABEL" desc="Accessibility label to hide price tracking ShopCard">
           Hide price tracking card
@@ -2187,6 +2187,15 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_ENHANCED_CALENDAR_BOTTOM_SHEET_TITLE" translateable="false" desc="The title for the Enhanced Calendar bottom sheet.">
         Enhanced Calendar
       </message>
+      <message name="IDS_IOS_ENHANCED_CALENDAR_EVENT_DESCRIPTION_CONFIRMATION_CODE" translateable="false" desc="Optional Confirmation Code added in the description of the calendar event in the add-to-calendar UI.">
+        Confirmation Code:
+      </message>
+      <message name="IDS_IOS_ENHANCED_CALENDAR_EVENT_DESCRIPTION_LOCATION" translateable="false" desc="Prefix added before the calendar event location string in the description of the calendar event in the add-to-calendar UI.">
+        Location:
+      </message>
+      <message name="IDS_IOS_ENHANCED_CALENDAR_EVENT_DESCRIPTION_URL" translateable="false" desc="Prefix added before the URL string in the description of the calendar event in the add-to-calendar UI.">
+        URL:
+      </message>
       <message name="IDS_IOS_ENHANCED_SAFE_BROWSING_PROMO_INSTRUCTIONS_STEP2" desc="Step 2 of instructions telling the user how to enable Enhanced Safe Browsing.">
         Tap "Privacy and Security" and then "Safe Browsing"
       </message>
@@ -2233,14 +2242,11 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_ENTERPRISE_MANAGED_SIGNIN_LEARN_MORE" desc="Text displayed to inform the user that their Sign In/Sync is managed by their administrator. [iOS only]">
           Your browser is managed. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn More<ph name="END_LINK">END_LINK</ph>
       </message>
-      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA" desc="Message displayed on the managed profile creation screen asking the user how they want to treat their existing browsing data when creating a managed profile.">
-       Choose what to do with the existing browsing data on this device, like passwords, history and more.
-      </message>
       <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_DESCRIPTION" desc="Message displayed on the managed profile creation screen in a table view item asking the user if they want to keep their existing browsing data separate from the managed profile they will create.">
-       Choose what to do with the existing browsing data on this device, like passwords, history and more.
+       Choose what to do with the existing browsing data on this device.
       </message>
       <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_DISABLED_DESCRIPTION" desc="Message displayed on the managed profile creation screen in a table view item telling the user that their existing browsing data will not be available in the managed profile, but will be available after they signout from it, or sign in with personal account.">
-       Existing browsing data won't be moved to your work account. You can still access it by signing out or adding a personal account.
+       Existing browsing data won't be moved to your work account. You can still use it by signing out of your managed account.
       </message>
       <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_LABEL" desc="Message displayed on the managed profile creation screen in a table view item asking the user if they want to keep their existing browsing data separate from the managed profile they will create.">
        Keep data separate?
@@ -2292,6 +2298,9 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_LEARN_MORE_TITLE" desc="Title of the screen where the user learns more about their managed account.">
         Managed Account
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_SUBTITLE" desc="Message displayed in the secondary button on a screen where the user is asked to create a work profile.">
+        Signing in with your managed account helps you separate browsing related to your organization, like tabs, passwords, and history.
       </message>
       <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_TITLE" desc="Message displayed in the secondary button on a screen where the user is asked to create a work profile.">
        A separate space for work
@@ -2652,6 +2661,15 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_HOME_CUSTOMIZATION_ACCESSIBILITY_LABEL" desc="Accessibility label for the Home Customization menu in the new tab page.">
         Customize your home screen
+      </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_PICKER_COLOR_TITLE" desc="Title of an option in the background customization action sheet that allows the user to pick a solid background color.">
+        Select Color
+      </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_PICKER_PHOTO_LIBRARY_TITLE" desc="Title of an option in the background customization action sheet that allows the user to pick an image from their camera roll.">
+        Camera Roll
+      </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_PICKER_PRESET_GALLERY_TITLE" desc="Title of an option in the background customization action sheet that opens a preset background gallery.">
+        Browse Gallery
       </message>
       <message name="IDS_IOS_HOME_CUSTOMIZATION_DISCOVER_TITLE" desc="The title of the Shortcuts toggle in the Home Customization menu's main page.">
         Discover feed
@@ -3181,6 +3199,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_LENS_OVERLAY_NEW_TAB_MESSAGE" desc="Message displayed when a context menu selection resuls in a new tab openening in the background [iOS only].">
         Your selection opened in a new tab
       </message>
+      <message name="IDS_IOS_LENS_OVERLAY_OMNIBOX_FOCUS" desc="The accessible name for the search box, tapping the area will focus the search box to start editing [iOS only].">
+        Search bar
+      </message>
       <message name="IDS_IOS_LENS_OVERLAY_ONBOARDING_BUTTON_CANCEL" desc="The label for the cancel action button in the lens overlay onboarding consent dialog that cancels the current search. [iOS only].">
         Cancel
       </message>
@@ -3195,6 +3216,12 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_LENS_OVERLAY_ONBOARDING_TITLE" desc="The title for the lens overlay onboarding consent dialog. [iOS only].">
         Search anything on your screen with Google Lens
+      </message>
+      <message name="IDS_IOS_LENS_OVERLAY_SHEET_GRABBER_ACCESSIBILITY_HINT" desc="Accessibility hint for the bottom sheet grabber in Lens Overlay. Read by Text To Speech [iOS only].">
+        Readjust the height of the sheet
+      </message>
+      <message name="IDS_IOS_LENS_OVERLAY_SHEET_GRABBER_ACCESSIBILITY_LABEL" desc="Accessibility label for the bottom sheet grabber in Lens Overlay. Read by Text To Speech [iOS only]." meaning="Voice Over will read this to the user followed by 'Button' when the grabber is focused.">
+        Sheet grabber
       </message>
       <message name="IDS_IOS_LENS_OVERLAY_SPEEDBUMP_MENU_CAMERA" desc="The label displayed in the speedbump menu that leads to the camera search option.">
         Search with camera
@@ -3690,6 +3717,12 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_OMNIBOX_POSITION_PROMO_VALIDATE" desc="Text in the validation button of the omnibox position choice screen promo.">
        Set position
+      </message>
+      <message name="IDS_IOS_OMNIBOX_REMOVE_THUMBNAIL_HINT" desc="The accessibility hint for the button that will remove the image from the search box. [iOS only].">
+       Remove image from search
+      </message>
+      <message name="IDS_IOS_OMNIBOX_REMOVE_THUMBNAIL_LABEL" desc="The accessibility label for the button that will remove the image from the search box. [iOS only].">
+       Thumbnail
       </message>
       <message name="IDS_IOS_OPEN_ANOTHER_APP_ALLOW" desc="Text on the button, when tapped will allow opening an external application. [iOS only]">
        Allow
@@ -5786,15 +5819,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SET_UP_LIST_COLLAPSE" desc="Accessibility label for the button to expand the Set Up List.">
         Collapse list
       </message>
-      <message name="IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_DESCRIPTION" desc="Description for the Set Up List item that encourages the user to enable Chrome content notifications.">
-        Keep up with news, sports, and more based on your interests.
-      </message>
-      <message name="IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_SHORT_DESCRIPTION" desc="Short description for the Set Up List item that encourages the user to enable Chrome content notifications.">
-        Keep up with news, sports, and more.
-      </message>
-      <message name="IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_TITLE" desc="Title for the Set Up List item that encourages the user to enable Chrome content notifications.">
-        Get content notifications
-      </message>
       <message name="IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_SHORT_DESCRIPTION" desc="Shortened description for the Set Up List item that encourages the user to set Chrome as their default browser.">
         Easily open links in other apps.
       </message>
@@ -5809,9 +5833,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_SET_UP_LIST_MENU" desc="Accessibility label for the Set Up List menu button.">
         Options
-      </message>
-      <message name="IDS_IOS_SET_UP_LIST_NOTIFICATIONS_DESCRIPTION" desc="Description for the Set Up List item that encourages the user to enable Chrome notifications.">
-        Keep up with the latest news, price tracking updates and more.
       </message>
       <message name="IDS_IOS_SET_UP_LIST_NOTIFICATIONS_TITLE" desc="Title for the Set Up List item that encourages the user to enable Chrome notifications.">
         Get notifications
@@ -5839,6 +5860,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_SHARED_GROUP_ERROR_TITLE" desc="Title for a generic alert when an error happened.">
         Something went wrong
+      </message>
+      <message name="IDS_IOS_SHARED_GROUP_MANAGE_GROUP" desc="The Voice Over label for the button allowing the user to manage a group. [Read by Text To Speech]">
+        Manage group
       </message>
       <message name="IDS_IOS_SHARED_GROUP_SHARE_GROUP" desc="The Voice Over label for the button allowing the user to share a group.">
         Share group
@@ -6072,6 +6096,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_SIGNIN_BUTTON_TEXT" desc="Button that the user can press if they want to sign-in.">
         Sign in
+      </message>
+      <message name="IDS_IOS_SIGNIN_GROUP_COLLABORATION_HALF_SHEET_SUBTITLE" desc="Subtitle displayed to the user when they attempt to share a shared group while being signed out.">
+        You’ll get to share, join, and collaborate in tab groups
+      </message>
+      <message name="IDS_IOS_SIGNIN_GROUP_COLLABORATION_TITLE" desc="Title displayed to the user when they attempt to access a shared group while being signed out.">
+        Collaborate in tab groups
       </message>
       <message name="IDS_IOS_SIGNIN_PROMO_BOOKMARKS" desc="This string is on a promo intended to promote signing in to Chrome with the user's Google Account. It appears on the Bookmarks page when the user is not signed in. We want users to read this promo and click 'Continue as name' to sign in to their Google Account. The tone should be informative and lightweight. [Length: 90em]">
         Sign in to get your bookmarks on all your devices.
@@ -6879,6 +6909,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_TOOLS_MENU_QR_SCANNER" desc="The iOS menu item for opening the QR Code Scanner screen, allowing the user to scan QR code.">
         Scan QR Code
+      </message>
+      <message name="IDS_IOS_TOOLS_MENU_READER_MODE" desc="The iOS menu item for opening the current page in Reader Mode. [iOS only]" meaning="[Length: 16em] [iOS only] This is a feature name in title case.">
+        Show Reader Mode
       </message>
       <message name="IDS_IOS_TOOLS_MENU_READING_LIST" desc="The iOS menu item for opening the reading list [iOS only]" meaning="[Length: 16em] [iOS only] This is a feature name in title case.">
         Reading List

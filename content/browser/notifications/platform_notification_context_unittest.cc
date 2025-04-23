@@ -35,6 +35,11 @@
 
 using ::testing::Return;
 
+MATCHER_P(PermissionTypeMatcher, id, "") {
+  return ::testing::Matches(::testing::Eq(id))(
+      blink::PermissionDescriptorToPermissionType(arg));
+}
+
 namespace content {
 
 // Fake Service Worker registration id to use in tests requiring one.
@@ -208,11 +213,30 @@ class PlatformNotificationContextTest : public ::testing::Test {
     return notification_id;
   }
 
+  // Writes metadata with the provided key and value to the database and returns
+  // the success status.
+  bool WriteNotificationMetadataSync(PlatformNotificationContextImpl* context,
+                                     const std::string& notification_id,
+                                     const GURL& origin,
+                                     const std::string& metadata_key,
+                                     const std::string& metadata_value) {
+    bool result = false;
+    base::RunLoop run_loop;
+    context->WriteNotificationMetadata(
+        notification_id, origin, metadata_key, metadata_value,
+        base::BindLambdaForTesting([&](bool success) {
+          result = success;
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return result;
+  }
+
   void SetPermissionStatus(const GURL& origin,
                            blink::mojom::PermissionStatus permission_status) {
     ON_CALL(*permission_manager_,
             GetPermissionResultForOriginWithoutContext(
-                blink::PermissionType::NOTIFICATIONS,
+                PermissionTypeMatcher(blink::PermissionType::NOTIFICATIONS),
                 url::Origin::Create(origin), url::Origin::Create(origin)))
         .WillByDefault(Return(content::PermissionResult(
             permission_status, PermissionStatusSource::UNSPECIFIED)));
@@ -1200,6 +1224,68 @@ TEST_F(PlatformNotificationContextTest,
         run_loop.Quit();
       }));
   run_loop.Run();
+}
+
+TEST_F(PlatformNotificationContextTest, WriteReadNotificationMetadata) {
+  base::HistogramTester histogram_tester;
+  scoped_refptr<PlatformNotificationContextImpl> context =
+      CreatePlatformNotificationContext();
+  GURL origin("https://example.com");
+
+  // Write a notification to the database.
+  NotificationDatabaseData data;
+  std::string notification_id =
+      WriteNotificationDataSync(context.get(), origin, data);
+
+  // Writing metadata should succeed. Get serialized metadata string for
+  // checking database write.
+  std::string metadata_key_1 = "content-detection";
+  std::string old_metadata_value_1 = "{\"bad\":\"value\"}";
+  ASSERT_TRUE(WriteNotificationMetadataSync(context.get(), notification_id,
+                                            origin, metadata_key_1,
+                                            old_metadata_value_1));
+
+  // Update `metadata_key` metadata with new value.
+  std::string new_metadata_value_1 = "{\"good\":\"value\"}";
+  ASSERT_TRUE(WriteNotificationMetadataSync(context.get(), notification_id,
+                                            origin, metadata_key_1,
+                                            new_metadata_value_1));
+
+  // Update notification database entry with another type of metadata.
+  std::string metadata_key_2 = "other-type-of-metadata";
+  std::string metadata_value_2 = "{\"key\":\"other value\"}";
+  ASSERT_TRUE(WriteNotificationMetadataSync(context.get(), notification_id,
+                                            origin, metadata_key_2,
+                                            metadata_value_2));
+
+  // The write operation should have succeeded with a notification id.
+  context->ReadNotificationDataAndRecordInteraction(
+      notification_id, origin, PlatformNotificationContext::Interaction::NONE,
+      base::BindOnce(&PlatformNotificationContextTest::DidReadNotificationData,
+                     base::Unretained(this)));
+
+  base::RunLoop().RunUntilIdle();
+
+  // The read operation should have succeeded, with the right notification.
+  ASSERT_TRUE(success());
+
+  const NotificationDatabaseData& read_database_data = database_data();
+  EXPECT_EQ(origin, read_database_data.origin);
+  ASSERT_TRUE(read_database_data.serialized_metadata.contains(metadata_key_1));
+  EXPECT_EQ(new_metadata_value_1,
+            read_database_data.serialized_metadata.at(metadata_key_1));
+  ASSERT_TRUE(read_database_data.serialized_metadata.contains(metadata_key_2));
+  EXPECT_EQ(metadata_value_2,
+            read_database_data.serialized_metadata.at(metadata_key_2));
+
+  // Check histogram statuses are logged with value `0`, corresponding to
+  // `STATUS_OK`.
+  histogram_tester.ExpectBucketCount(
+      "Notifications.Database.WriteNotificationMetadataReadResult",
+      /*sample=*/0, /*expected_count=*/3);
+  histogram_tester.ExpectBucketCount(
+      "Notifications.Database.WriteNotificationMetadataUpdateResult",
+      /*sample=*/0, /*expected_count=*/3);
 }
 
 }  // namespace content

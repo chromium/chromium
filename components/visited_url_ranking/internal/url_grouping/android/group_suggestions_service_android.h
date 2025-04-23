@@ -31,6 +31,7 @@ class GroupSuggestionsServiceAndroid : public base::SupportsUserData::Data {
 
   void DidSelectTab(JNIEnv* env,
                     int tab_id,
+                    const jni_zero::JavaParamRef<jobject>& url,
                     int tab_selection_type,
                     int last_id);
 
@@ -40,7 +41,7 @@ class GroupSuggestionsServiceAndroid : public base::SupportsUserData::Data {
 
   void TabClosureCommitted(JNIEnv* env, int tab_id);
 
-  void OnPageLoadFinished(JNIEnv* env, int tab_id);
+  void OnDidFinishNavigation(JNIEnv* env, int tab_id, int page_transition);
 
   void DidEnterTabSwitcher(JNIEnv* env);
 

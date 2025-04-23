@@ -27,5 +27,3 @@ void SafariDownloadTabHelper::DownloadAppleWalletOrder(
 }
 
 SafariDownloadTabHelper::SafariDownloadTabHelper(web::WebState* web_state) {}
-
-WEB_STATE_USER_DATA_KEY_IMPL(SafariDownloadTabHelper)

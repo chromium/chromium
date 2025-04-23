@@ -10,7 +10,6 @@ chromium/try/android-14-arm64-rel
 chromium/try/android-14-tablet-landscape-arm64-rel
 chromium/try/android-15-x64-rel
 chromium/try/android-arm-compile-dbg
-chromium/try/android-arm64-all-targets-dbg
 chromium/try/android-arm64-rel
 chromium/try/android-bfcache-rel
 chromium/try/android-cast-arm-dbg
@@ -21,15 +20,8 @@ chromium/try/android-clobber-rel
 chromium/try/android-cronet-arm-dbg
 chromium/try/android-cronet-arm-rel
 chromium/try/android-cronet-arm64-dbg
-chromium/try/android-cronet-arm64-gn2bp-dbg
 chromium/try/android-cronet-arm64-rel
 chromium/try/android-cronet-asan-arm-rel
-chromium/try/android-cronet-mainline-clang-arm64-dbg
-chromium/try/android-cronet-mainline-clang-arm64-rel
-chromium/try/android-cronet-mainline-clang-riscv64-dbg
-chromium/try/android-cronet-mainline-clang-riscv64-rel
-chromium/try/android-cronet-mainline-clang-x86-dbg
-chromium/try/android-cronet-mainline-clang-x86-rel
 chromium/try/android-cronet-riscv64-dbg
 chromium/try/android-cronet-riscv64-rel
 chromium/try/android-cronet-x64-dbg

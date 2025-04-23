@@ -318,6 +318,27 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // being requested.
   void SetNeedsReload(NeedsReloadType type);
 
+  // Navigates directly to an error page in response to an event on the last
+  // committed page, with |error_page_html| as the contents and |url| as the
+  // URL. Permanently replaces the current session history item for that frame
+  // with a new one reflecting the error page navigation. The error navigation
+  // is not "sticky", meaning that if the frame is reloaded, it will attempt to
+  // load |url| normally.
+  //
+  // You should almost always prefer this function to
+  // |LoadPostCommitErrorPage()|, which only temporarily replaces the
+  // NavigationEntry. See |NavigationController::LoadPostCommitErrorPage()| for
+  // more details on this temporary replacement.
+  //
+  // IMPORTANT: This function will CHECK if |render_frame_host_impl| is not a
+  // fenced frame root, but in the future it will be updated to work for any
+  // frame. TODO(crbug.com/406729265): Implement this method for all types of
+  // frames, including main frames and other subframe types.
+  virtual void NavigateFrameToErrorPage(
+      RenderFrameHostImpl* render_frame_host_impl,
+      const GURL& url,
+      const std::string& error_page_html);
+
   // For use by WebContentsImpl ------------------------------------------------
 
   // Visit all FrameNavigationEntries as well as all frame trees and register
@@ -472,6 +493,15 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // root cause for the navigation re-entrancy case in the linked bug.
   bool in_navigate_to_pending_entry() const {
     return in_navigate_to_pending_entry_;
+  }
+
+  // This flag is set from RenderFrameHostImpl::SendBeforeUnload() to
+  // investigate whether kAvoidUnnecessaryBeforeUnloadCheckSync feature is safe
+  // to enable or not (see: https://crbug.com/40361673,
+  // https://crbug.com/396998476).
+  void set_can_be_in_navigate_to_pending_entry(
+      const bool can_be_in_navigate_to_pending_entry) {
+    can_be_in_navigate_to_pending_entry_ = can_be_in_navigate_to_pending_entry;
   }
 
   // Whether to maintain a session history with just one entry.
@@ -898,6 +928,31 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       FrameNavigationEntry* target_entry,
       const std::string& navigation_api_key);
 
+  // When navigation starts, the `can_be_in_navigate_to_pending_entry` flag has
+  // to be false. This is because kAvoidUnnecessaryBeforeUnloadCheckSync feature
+  // will stop using PostTask for the legacy beforeunload code in the near
+  // future. When kAvoidUnnecessaryBeforeUnloadCheckSync is enabled,
+  // `RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame()` and
+  // `Navigator::BeforeUnloadCompleted()` can run in the scope of
+  // `in_navigate_to_pending_entry_` == true, and it might end up crashing on
+  // CHECK(!in_navigate_to_pending_entry_).
+  void CheckPotentialNavigationReentrancy();
+
+  // Creates a NavigationRequest to use for browser-initiated error page
+  // navigations. When the request is started, it will navigate the
+  // FrameTreeNode corresponding to |render_frame_host_impl| to an error page,
+  // with |url| as the URL and |error_page_html| as the content. If
+  // |is_post_commit_error_page| is true, the entire NavigationEntry will be
+  // temporarily replaced when the navigation completes, otherwise it will be
+  // fully replaced. See |NavigationController::LoadPostCommitErrorPage()| and
+  // |NavigationControllerImpl::NavigateFrameToErrorPage()| for more details on
+  // this distinction.
+  std::unique_ptr<NavigationRequest> CreateNavigationRequestForErrorPage(
+      RenderFrameHostImpl* render_frame_host_impl,
+      const GURL& url,
+      const std::string& error_page_html,
+      bool is_post_commit_error_page);
+
   // ---------------------------------------------------------------------------
 
   // The FrameTree this instance belongs to. Each FrameTree gets its own
@@ -964,6 +1019,17 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
 
   // Prevent unsafe re-entrant calls to NavigateToPendingEntry.
   bool in_navigate_to_pending_entry_ = false;
+
+  // A flag to investigate whether kAvoidUnnecessaryBeforeUnloadCheckSync
+  // feature is safe to enable or not (see: https://crbug.com/40361673,
+  // https://crbug.com/396998476).
+  //
+  // This flag is true if the above `in_navigate_to_pending_entry_` flag is true
+  // when RenderFrameHostImpl::SendBeforeUnload() runs, and on top of that, when
+  // we intend to continue navigation synchronously without posting a task when
+  // the kAvoidUnnecessaryBeforeUnloadCheckSync feature is enabled in either
+  // kWithSendBeforeUnload or kWithoutSendBeforeUnload mode.
+  bool can_be_in_navigate_to_pending_entry_ = false;
 
   // Used to find the appropriate SessionStorageNamespace for the storage
   // partition of a NavigationEntry.

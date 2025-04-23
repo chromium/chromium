@@ -4,13 +4,13 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_browsertest.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -53,8 +53,7 @@ class Mv2DeprecationReEnableDialogBrowserTest
     }
 
     ASSERT_TRUE(extension);
-    extensions::ExtensionSystem::Get(browser()->profile())
-        ->extension_service()
+    extensions::ExtensionRegistrar::Get(browser()->profile())
         ->AddExtension(extension.get());
 
     extensions::ShowMv2DeprecationReEnableDialog(

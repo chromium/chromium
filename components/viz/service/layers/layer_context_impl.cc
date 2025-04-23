@@ -31,6 +31,7 @@
 #include "cc/trees/layer_tree_settings.h"
 #include "cc/trees/property_tree.h"
 #include "cc/trees/task_runner_provider.h"
+#include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
@@ -65,7 +66,8 @@ std::unique_ptr<cc::LayerImpl> CreateLayer(LayerContextImpl& context,
       return cc::MirrorLayerImpl::Create(&tree, id);
 
     case cc::mojom::LayerType::kSurface:
-      // TODO(394137303): handle |update_submission_state_callback|.
+      // The callback is triggered in the renderer side during WillDraw(),
+      // and there is no need to do it in viz.
       return cc::SurfaceLayerImpl::Create(&tree, id, base::NullCallback());
 
     case cc::mojom::LayerType::kPicture:
@@ -215,6 +217,7 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   node.backdrop_filter_bounds = wire.backdrop_filter_bounds;
   node.backdrop_filter_quality = wire.backdrop_filter_quality;
   node.backdrop_mask_element_id = wire.backdrop_mask_element_id;
+  node.mask_filter_info = wire.mask_filter_info;
 
   node.cache_render_surface = wire.cache_render_surface;
   node.double_sided = wire.double_sided;
@@ -405,9 +408,11 @@ base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
   layer.SetDrawsContent(wire.is_drawable);
   layer.SetBackgroundColor(wire.background_color);
   layer.SetSafeOpaqueBackgroundColor(wire.safe_opaque_background_color);
+  layer.SetHitTestOpaqueness(wire.hit_test_opaqueness);
   layer.SetElementId(wire.element_id);
   layer.UnionUpdateRect(wire.update_rect);
   layer.SetOffsetToTransformParent(wire.offset_to_transform_parent);
+  layer.SetShouldCheckBackfaceVisibility(wire.should_check_backface_visibility);
 
   if (layer.GetLayerType() == cc::mojom::LayerType::kTileDisplay) {
     auto& tile_display_layer = static_cast<cc::TileDisplayLayerImpl&>(layer);
@@ -552,8 +557,9 @@ DeserializeTileResource(mojom::TileResource& wire) {
   if (wire.resource.id == kInvalidResourceId) {
     return base::unexpected("Invalid tile resource");
   }
-  return cc::TileDisplayLayerImpl::TileResource(
-      wire.resource, wire.is_premultiplied, wire.is_checkered);
+
+  return cc::TileDisplayLayerImpl::TileResource(wire.resource,
+                                                wire.is_checkered);
 }
 
 base::expected<cc::TileDisplayLayerImpl::TileContents, std::string>
@@ -943,6 +949,7 @@ LayerContextImpl::LayerContextImpl(CompositorFrameSinkSupport* compositor_sink,
 
 LayerContextImpl::~LayerContextImpl() {
   host_impl_->ReleaseLayerTreeFrameSink();
+  DoReturnResources(std::move(resources_to_return_));
 }
 
 void LayerContextImpl::BeginFrame(const BeginFrameArgs& args) {
@@ -968,8 +975,14 @@ void LayerContextImpl::BeginFrame(const BeginFrameArgs& args) {
 
 void LayerContextImpl::ReturnResources(
     std::vector<ReturnedResource> resources) {
-  // TODO(crbug.com/40902503): Release resources at some point.
-  NOTIMPLEMENTED();
+  host_impl_->resource_provider()->ReceiveReturnsFromParent(
+      std::move(resources));
+  DoReturnResources(std::move(resources_to_return_));
+}
+
+void LayerContextImpl::DoReturnResources(
+    std::vector<ReturnedResource> resources) {
+  compositor_sink_->DoReturnResources(std::move(resources));
 }
 
 void LayerContextImpl::DidLoseLayerTreeFrameSinkOnImplThread() {
@@ -1110,11 +1123,6 @@ void LayerContextImpl::SubmitCompositorFrame(CompositorFrame frame,
 
   frame.metadata.send_frame_token_to_embedder = true;
 
-  frame.resource_list.insert(frame.resource_list.end(),
-                             next_frame_resources_.begin(),
-                             next_frame_resources_.end());
-  next_frame_resources_.clear();
-
   std::optional<HitTestRegionList> hit_test_region_list =
       host_impl_->BuildHitTestData();
 
@@ -1136,10 +1144,25 @@ void LayerContextImpl::DidNotProduceFrame(const BeginFrameAck& ack,
   compositor_sink_->DidNotProduceFrame(ack);
 }
 
-void LayerContextImpl::DidAppendQuadsWithResources(
-    const std::vector<TransferableResource>& resources) {
-  next_frame_resources_.insert(next_frame_resources_.end(), resources.begin(),
-                               resources.end());
+void LayerContextImpl::ImportResource(TransferableResource resource) {
+  auto release_callback = base::BindOnce(
+      [](LayerContextImpl* impl, ResourceId id,
+         const gpu::SyncToken& sync_token, bool is_lost) {
+        impl->resources_to_return_.emplace_back(
+            id, sync_token,
+            /*release_fence=*/gfx::GpuFenceHandle(),
+            /*count=*/1, is_lost);
+      },
+      base::Unretained(this), resource.id);
+
+  host_impl_->resource_provider()->ImportResource(
+      resource, /*impl_release_callback=*/std::move(release_callback),
+      /*main_thread_release_callback=*/base::NullCallback(),
+      /*evicted_callback=*/base::NullCallback());
+}
+
+void LayerContextImpl::DiscardResource(ResourceId resource) {
+  host_impl_->resource_provider()->RemoveImportedResource(resource);
 }
 
 void LayerContextImpl::SetVisible(bool visible) {
@@ -1244,6 +1267,9 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
     }
   }
 
+  // This needs to happen before SetPageSvaleFactorAndLimitsForDisplayTree().
+  RETURN_IF_ERROR(UpdateViewportPropertyIds(layers, property_trees, *update));
+
   layers.set_background_color(update->background_color);
   layers.set_source_frame_number(update->source_frame_number);
   layers.set_trace_id(
@@ -1275,8 +1301,6 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   if (update->local_surface_id_from_parent) {
     layers.SetLocalSurfaceIdFromParent(*update->local_surface_id_from_parent);
   }
-
-  RETURN_IF_ERROR(UpdateViewportPropertyIds(layers, property_trees, *update));
 
   host_impl_->SetViewportDamage(update->viewport_damage_rect);
 

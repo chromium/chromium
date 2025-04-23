@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_SAFETY_HUB_MOCK_SAFE_BROWSING_DATABASE_MANAGER_H_
 #define CHROME_BROWSER_UI_SAFETY_HUB_MOCK_SAFE_BROWSING_DATABASE_MANAGER_H_
 
+#include "base/auto_reset.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
 

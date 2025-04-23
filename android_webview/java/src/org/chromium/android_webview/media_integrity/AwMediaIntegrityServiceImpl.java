@@ -6,9 +6,6 @@ package org.chromium.android_webview.media_integrity;
 
 import android.net.Uri;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwBrowserContext.MediaIntegrityProviderKey;
 import org.chromium.android_webview.AwContents;
@@ -26,6 +23,8 @@ import org.chromium.blink.mojom.WebViewMediaIntegrityErrorCode;
 import org.chromium.blink.mojom.WebViewMediaIntegrityProvider;
 import org.chromium.blink.mojom.WebViewMediaIntegrityService;
 import org.chromium.blink.mojom.WebViewMediaIntegrityTokenResponse;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsStatics;
@@ -45,6 +44,7 @@ import java.util.Objects;
  * <p>Instances of this class are bound to individual RenderFrameHosts.
  */
 @Lifetime.WebView
+@NullMarked
 public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService {
 
     private static @WebViewMediaIntegrityErrorCode.EnumType int errorCodeToMojomErrorCode(
@@ -70,10 +70,10 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
     private static int sCacheHitCounter;
     private static int sCacheMissCounter;
     private static int sProviderCreatedCounter;
-    @NonNull private final RenderFrameHost mRenderFrameHost;
-    @Nullable private final WebContents mWebContents;
+    private final RenderFrameHost mRenderFrameHost;
+    private final @Nullable WebContents mWebContents;
 
-    public AwMediaIntegrityServiceImpl(@NonNull RenderFrameHost renderFrameHost) {
+    public AwMediaIntegrityServiceImpl(RenderFrameHost renderFrameHost) {
         mRenderFrameHost = renderFrameHost;
         mWebContents = WebContentsStatics.fromRenderFrameHost(renderFrameHost);
     }
@@ -88,9 +88,9 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
 
     @Override
     public void getIntegrityProvider(
-            @NonNull InterfaceRequest<WebViewMediaIntegrityProvider> providerRequest,
+            InterfaceRequest<WebViewMediaIntegrityProvider> providerRequest,
             long cloudProjectNumber,
-            @NonNull GetIntegrityProvider_Response callback) {
+            GetIntegrityProvider_Response callback) {
         ThreadUtils.assertOnUiThread();
         // In practice, < 0 means cloudProjectNumber (which is unsigned in the IPC) was >= 2 ** 63.
         // In theory, we should never be called with a number greater than 2 ** 53 - 1 (JavaScript's
@@ -215,7 +215,7 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
     }
 
     private @MediaIntegrityApiStatus int getMediaIntegrityApiStatus(
-            @NonNull String sourceOriginString, @NonNull AwSettings awSettings) {
+            String sourceOriginString, AwSettings awSettings) {
         // An empty origin will be produced for many (but not all) non-http/non-https schemes.
         // We disallow this in the caller.
         assert !"".equals(sourceOriginString);
@@ -233,15 +233,15 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
     @Lifetime.WebView
     private static class WebViewMediaIntegrityProviderImpl
             implements WebViewMediaIntegrityProvider {
-        @NonNull private final MediaIntegrityProvider mProvider;
-        @NonNull private final MediaIntegrityProviderKey mCacheKey;
-        @NonNull private final WeakReference<AwBrowserContext> mAwBrowserContext;
+        private final MediaIntegrityProvider mProvider;
+        private final MediaIntegrityProviderKey mCacheKey;
+        private final WeakReference<AwBrowserContext> mAwBrowserContext;
         private int mRequestCounter;
 
         public WebViewMediaIntegrityProviderImpl(
-                @NonNull MediaIntegrityProvider provider,
-                @NonNull MediaIntegrityProviderKey cacheKey,
-                @NonNull AwBrowserContext awBrowserContext) {
+                MediaIntegrityProvider provider,
+                MediaIntegrityProviderKey cacheKey,
+                AwBrowserContext awBrowserContext) {
             mProvider = provider;
             mCacheKey = cacheKey;
             mAwBrowserContext = new WeakReference<>(awBrowserContext);
@@ -256,8 +256,7 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
         }
 
         @Override
-        public void requestToken(
-                @Nullable String contentBinding, @NonNull RequestToken_Response callback) {
+        public void requestToken(@Nullable String contentBinding, RequestToken_Response callback) {
             ThreadUtils.assertOnUiThread();
             RecordHistogram.recordCount1000Histogram(
                     "Android.WebView.MediaIntegrity.GetTokenCumulativeV2", ++mRequestCounter);
@@ -268,7 +267,6 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
                         @Override
                         public void onResult(String token) {
                             ThreadUtils.assertOnUiThread();
-                            Objects.requireNonNull(token);
                             final WebViewMediaIntegrityTokenResponse response =
                                     new WebViewMediaIntegrityTokenResponse();
                             response.setToken(token);
@@ -278,7 +276,6 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
                         @Override
                         public void onError(MediaIntegrityErrorWrapper error) {
                             ThreadUtils.assertOnUiThread();
-                            Objects.requireNonNull(error);
                             if (error.value == MediaIntegrityErrorCode.TOKEN_PROVIDER_INVALID) {
                                 // This callback could take an arbitrary amount of time. We use a
                                 // weak reference to avoid making assumptions about AwBrowserContext

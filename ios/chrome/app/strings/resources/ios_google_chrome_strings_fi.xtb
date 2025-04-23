@@ -228,7 +228,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 Siirry <ph name="BEGIN_LINK" />Googlen palveluihin<ph name="END_LINK" />, jos haluat nähdä lisää asetuksia, jotka käyttävät dataa Chromen käyttökokemuksen parantamiseen.</translation>
 <translation id="6922332667202044570">Poista selausdata Chromessa.</translation>
 <translation id="6924922227983877439">Avaa linkit oletuksena Chromessa</translation>
-<translation id="6931601805528922498">Kirjautumalla sisään lisäät tilisi Chromeen työhön liittyvää selausta varten.</translation>
 <translation id="6975725306479268850">Chromen valinta automaattiseen täyttöön</translation>
 <translation id="7056826488869329999">Avaa ja suorittaa turvatarkistuksen Chromessa.</translation>
 <translation id="7061455974939528301">Paina Chrome-kuvaketta pitkään ja klikkaa "Muokkaa aloitusnäyttöä"</translation>
@@ -276,6 +275,7 @@ Siirry <ph name="BEGIN_LINK" />Googlen palveluihin<ph name="END_LINK" />, jos ha
 <translation id="778855399387580014">Aloita haku Chrome-välilehdellä.</translation>
 <translation id="7792140019572081272">Chrome pitää arkaluontoiset tietosi turvassa Face ID:n avulla.</translation>
 <translation id="7855730255114109580">Google Chrome on ajan tasalla</translation>
+<translation id="787226752901403048">Kirjaudu Chromeen, niin voit jakaa välilehtiryhmiä, liittyä niihin ja ideoida yhdessä</translation>
 <translation id="7897703007638178753">Näytä Chromen viimeaikaiset välilehdet</translation>
 <translation id="7948283758957877064">Uutta Chromessa</translation>
 <translation id="8000174216052461231">Chrome-vinkki: Ota Chromen tehokkain suojaus käyttöön</translation>

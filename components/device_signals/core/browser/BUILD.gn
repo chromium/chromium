@@ -43,7 +43,7 @@ static_library("browser") {
   deps = [
     "//components/device_signals/core/common",
     "//components/device_signals/core/common:features",
-    "//components/enterprise/connectors/core",
+    "//components/enterprise/connectors/core:constants",
     "//components/policy/core/common",
     "//components/prefs",
     "//components/safe_browsing/core/common:safe_browsing_prefs",

@@ -78,7 +78,6 @@ class PLATFORM_EXPORT VideoFrameSubmitter
       WTF::Vector<viz::ReturnedResource> resources) override;
   void OnBeginFrame(const viz::BeginFrameArgs&,
                     const WTF::HashMap<uint32_t, viz::FrameTimingDetails>&,
-                    bool frame_ack,
                     WTF::Vector<viz::ReturnedResource> resources) override;
   void OnBeginFramePausedChanged(bool paused) override {}
   void ReclaimResources(WTF::Vector<viz::ReturnedResource> resources) override;

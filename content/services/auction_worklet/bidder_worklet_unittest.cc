@@ -8215,8 +8215,8 @@ TEST_F(BidderWorkletTest, ContributeToHistogramOnEventPermissionNotEnforced) {
                   /*value=*/mojom::ForEventSignalValue::NewIntValue(56),
                   /*filtering_id=*/std::nullopt,
                   /*event_type=*/
-                  mojom::EventType::NewReserved(
-                      mojom::ReservedEventType::kReservedWin))),
+                  mojom::EventType::NewReservedNonError(
+                      mojom::ReservedNonErrorEventType::kReservedWin))),
           blink::mojom::AggregationServiceMode::kDefault,
           blink::mojom::DebugModeDetails::New()));
   RunReportWinExpectingResultAsync(
@@ -12096,6 +12096,7 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
         /*expected_report_url=*/std::nullopt,
         /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
         /*expected_pa_requests=*/{},
+        /*expected_pmt_request_data=*/nullptr,
         /*expected_errors=*/{});
 
     // Make sure the shared storage mojom methods are invoked as they use a
@@ -12238,6 +12239,30 @@ class BidderWorkletPrivateAggregationEnabledTest : public BidderWorkletTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+class BidderWorkletPrivateAggregationErrorReportingEnabledTest
+    : public BidderWorkletPrivateAggregationEnabledTest {
+ public:
+  BidderWorkletPrivateAggregationErrorReportingEnabledTest() {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kPrivateAggregationApiErrorReporting);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class BidderWorkletPrivateAggregationErrorReportingDisabledTest
+    : public BidderWorkletPrivateAggregationEnabledTest {
+ public:
+  BidderWorkletPrivateAggregationErrorReportingDisabledTest() {
+    feature_list_.InitAndDisableFeature(
+        blink::features::kPrivateAggregationApiErrorReporting);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
   mojom::PrivateAggregationRequest kExpectedRequest1(
       mojom::AggregatableReportContribution::NewHistogramContribution(
@@ -12264,8 +12289,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
               /*value=*/mojom::ForEventSignalValue::NewIntValue(56),
               /*filtering_id=*/std::nullopt,
               /*event_type=*/
-              mojom::EventType::NewReserved(
-                  mojom::ReservedEventType::kReservedWin))),
+              mojom::EventType::NewReservedNonError(
+                  mojom::ReservedNonErrorEventType::kReservedWin))),
       blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
   mojom::PrivateAggregationRequest kExpectedForEventRequest2(
@@ -12277,8 +12302,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
               /*value=*/mojom::ForEventSignalValue::NewIntValue(2),
               /*filtering_id=*/std::nullopt,
               /*event_type=*/
-              mojom::EventType::NewReserved(
-                  mojom::ReservedEventType::kReservedWin))),
+              mojom::EventType::NewReservedNonError(
+                  mojom::ReservedNonErrorEventType::kReservedWin))),
       blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
 
@@ -12601,8 +12626,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
                 /*value=*/mojom::ForEventSignalValue::NewIntValue(56),
                 /*filtering_id=*/255,
                 /*event_type=*/
-                mojom::EventType::NewReserved(
-                    mojom::ReservedEventType::kReservedWin))),
+                mojom::EventType::NewReservedNonError(
+                    mojom::ReservedNonErrorEventType::kReservedWin))),
         blink::mojom::AggregationServiceMode::kDefault,
         blink::mojom::DebugModeDetails::New()));
 
@@ -12615,7 +12640,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
             privateAggregation.contributeToHistogramOnEvent(
                 "reserved.win", {bucket: 234n, value: 56, filteringId: 255n});
           )"),
-        /*expected_bid=*/
+        /*expected_bids=*/
         TestBidBuilder().SetAd("\"ad\"").Build(),
         /*expected_data_version=*/std::nullopt,
         /*expected_errors=*/{},
@@ -12648,8 +12673,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
                             /*offset=*/0)),
                     /*filtering_id=*/std::nullopt,
                     /*event_type=*/
-                    mojom::EventType::NewReserved(
-                        mojom::ReservedEventType::kReservedLoss))),
+                    mojom::EventType::NewReservedNonError(
+                        mojom::ReservedNonErrorEventType::kReservedLoss))),
             blink::mojom::AggregationServiceMode::kDefault,
             blink::mojom::DebugModeDetails::New()));
 
@@ -12686,6 +12711,84 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
   }
 }
 
+TEST_F(BidderWorkletPrivateAggregationErrorReportingEnabledTest, GenerateBid) {
+  PrivateAggregationRequests expected_pa_requests;
+  expected_pa_requests.push_back(mojom::PrivateAggregationRequest::New(
+      mojom::AggregatableReportContribution::NewHistogramContribution(
+          blink::mojom::AggregatableReportHistogramContribution::New(
+              /*bucket=*/123,
+              /*value=*/45,
+              /*filtering_id=*/0)),
+      blink::mojom::AggregationServiceMode::kDefault,
+      blink::mojom::DebugModeDetails::New()));
+  expected_pa_requests.push_back(mojom::PrivateAggregationRequest::New(
+      mojom::AggregatableReportContribution::NewForEventContribution(
+          mojom::AggregatableReportForEventContribution::New(
+              /*bucket=*/mojom::ForEventSignalBucket::NewIdBucket(234),
+              /*value=*/mojom::ForEventSignalValue::NewIntValue(56),
+              /*filtering_id=*/255,
+              /*event_type=*/
+              mojom::EventType::NewReservedError(
+                  mojom::ReservedErrorEventType::kReportSuccess))),
+      blink::mojom::AggregationServiceMode::kDefault,
+      blink::mojom::DebugModeDetails::New()));
+
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateGenerateBidScript(
+          R"({ad: "ad", bid:1, render:"https://response.test/" })",
+          /*extra_code=*/R"(
+            privateAggregation.contributeToHistogram(
+                {bucket: 123n, value: 45, filteringId: 0n});
+            privateAggregation.contributeToHistogramOnEvent(
+                "reserved.report-success",
+                {bucket: 234n, value: 56, filteringId: 255n});
+          )"),
+      /*expected_bids=*/
+      TestBidBuilder().SetAd("\"ad\"").Build(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/{},
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
+      /*expected_set_priority=*/std::nullopt,
+      /*expected_update_priority_signals_overrides=*/{},
+      std::move(expected_pa_requests));
+}
+
+TEST_F(BidderWorkletPrivateAggregationErrorReportingDisabledTest, GenerateBid) {
+  PrivateAggregationRequests expected_pa_requests;
+  expected_pa_requests.push_back(mojom::PrivateAggregationRequest::New(
+      mojom::AggregatableReportContribution::NewHistogramContribution(
+          blink::mojom::AggregatableReportHistogramContribution::New(
+              /*bucket=*/123,
+              /*value=*/45,
+              /*filtering_id=*/0)),
+      blink::mojom::AggregationServiceMode::kDefault,
+      blink::mojom::DebugModeDetails::New()));
+
+  // If the error reporting feature is disabled, the call should be silently
+  // ignored.
+
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateGenerateBidScript(
+          R"({ad: "ad", bid:1, render:"https://response.test/" })",
+          /*extra_code=*/R"(
+            privateAggregation.contributeToHistogram(
+                {bucket: 123n, value: 45, filteringId: 0n});
+            privateAggregation.contributeToHistogramOnEvent(
+                "reserved.report-success",
+                {bucket: 234n, value: 56, filteringId: 255n});
+          )"),
+      /*expected_bids=*/
+      TestBidBuilder().SetAd("\"ad\"").Build(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/{},
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
+      /*expected_set_priority=*/std::nullopt,
+      /*expected_update_priority_signals_overrides=*/{},
+      std::move(expected_pa_requests));
+}
+
 TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
   auction_worklet::mojom::PrivateAggregationRequest kExpectedRequest1(
       mojom::AggregatableReportContribution::NewHistogramContribution(
@@ -12710,8 +12813,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
               /*value=*/mojom::ForEventSignalValue::NewIntValue(56),
               /*filtering_id=*/std::nullopt,
               /*event_type=*/
-              mojom::EventType::NewReserved(
-                  mojom::ReservedEventType::kReservedWin))),
+              mojom::EventType::NewReservedNonError(
+                  mojom::ReservedNonErrorEventType::kReservedWin))),
       blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
   mojom::PrivateAggregationRequest kExpectedForEventRequest2(
@@ -12723,8 +12826,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
               /*value=*/mojom::ForEventSignalValue::NewIntValue(2),
               /*filtering_id=*/std::nullopt,
               /*event_type=*/
-              mojom::EventType::NewReserved(
-                  mojom::ReservedEventType::kReservedWin))),
+              mojom::EventType::NewReservedNonError(
+                  mojom::ReservedNonErrorEventType::kReservedWin))),
       blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
 
@@ -12927,8 +13030,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
                 /*value=*/mojom::ForEventSignalValue::NewIntValue(56),
                 /*filtering_id=*/255,
                 /*event_type=*/
-                mojom::EventType::NewReserved(
-                    mojom::ReservedEventType::kReservedWin))),
+                mojom::EventType::NewReservedNonError(
+                    mojom::ReservedNonErrorEventType::kReservedWin))),
         blink::mojom::AggregationServiceMode::kDefault,
         blink::mojom::DebugModeDetails::New()));
 
@@ -12945,6 +13048,72 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
         /*expected_pmt_request_data=*/nullptr,
         /*expected_errors=*/{});
   }
+}
+
+TEST_F(BidderWorkletPrivateAggregationErrorReportingEnabledTest, ReportWin) {
+  PrivateAggregationRequests expected_pa_requests;
+  expected_pa_requests.push_back(mojom::PrivateAggregationRequest::New(
+      mojom::AggregatableReportContribution::NewHistogramContribution(
+          blink::mojom::AggregatableReportHistogramContribution::New(
+              /*bucket=*/123,
+              /*value=*/45,
+              /*filtering_id=*/0)),
+      blink::mojom::AggregationServiceMode::kDefault,
+      blink::mojom::DebugModeDetails::New()));
+  expected_pa_requests.push_back(mojom::PrivateAggregationRequest::New(
+      mojom::AggregatableReportContribution::NewForEventContribution(
+          mojom::AggregatableReportForEventContribution::New(
+              /*bucket=*/mojom::ForEventSignalBucket::NewIdBucket(234),
+              /*value=*/mojom::ForEventSignalValue::NewIntValue(56),
+              /*filtering_id=*/255,
+              /*event_type=*/
+              mojom::EventType::NewReservedError(
+                  mojom::ReservedErrorEventType::kReportSuccess))),
+      blink::mojom::AggregationServiceMode::kDefault,
+      blink::mojom::DebugModeDetails::New()));
+
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(
+          privateAggregation.contributeToHistogram(
+              {bucket: 123n, value: 45, filteringId: 0n});
+          privateAggregation.contributeToHistogramOnEvent(
+              "reserved.report-success",
+              {bucket: 234n, value: 56, filteringId: 255n});
+        )",
+      /*expected_report_url=*/std::nullopt,
+      /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
+      std::move(expected_pa_requests),
+      /*expected_pmt_request_data=*/nullptr,
+      /*expected_errors=*/{});
+}
+
+TEST_F(BidderWorkletPrivateAggregationErrorReportingDisabledTest, ReportWin) {
+  PrivateAggregationRequests expected_pa_requests;
+  expected_pa_requests.push_back(mojom::PrivateAggregationRequest::New(
+      mojom::AggregatableReportContribution::NewHistogramContribution(
+          blink::mojom::AggregatableReportHistogramContribution::New(
+              /*bucket=*/123,
+              /*value=*/45,
+              /*filtering_id=*/0)),
+      blink::mojom::AggregationServiceMode::kDefault,
+      blink::mojom::DebugModeDetails::New()));
+
+  // If the error reporting feature is disabled, the call should be silently
+  // ignored.
+
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(
+          privateAggregation.contributeToHistogram(
+              {bucket: 123n, value: 45, filteringId: 0n});
+          privateAggregation.contributeToHistogramOnEvent(
+              "reserved.report-success",
+              {bucket: 234n, value: 56, filteringId: 255n});
+        )",
+      /*expected_report_url=*/std::nullopt,
+      /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
+      std::move(expected_pa_requests),
+      /*expected_pmt_request_data=*/nullptr,
+      /*expected_errors=*/{});
 }
 
 class BidderWorkletPrivateAggregationDisabledTest : public BidderWorkletTest {
@@ -12973,6 +13142,7 @@ TEST_F(BidderWorkletPrivateAggregationDisabledTest, GenerateBid) {
       /*expected_debug_loss_report_url=*/std::nullopt,
       /*expected_debug_win_report_url=*/std::nullopt,
       /*expected_set_priority=*/std::nullopt,
+      /*expected_update_priority_signals_overrides=*/{},
       /*expected_pa_requests=*/{});
 }
 

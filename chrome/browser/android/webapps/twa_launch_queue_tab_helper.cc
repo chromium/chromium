@@ -15,6 +15,15 @@ void TwaLaunchQueueTabHelper::Create(content::WebContents* contents) {
   contents->SetUserData(UserDataKey(), std::move(helper));
 }
 
+TwaLaunchQueueTabHelper* TwaLaunchQueueTabHelper::GetOrCreateForWebContents(
+    content::WebContents* contents) {
+  if (!webapps::TwaLaunchQueueTabHelper::FromWebContents(contents)) {
+    webapps::TwaLaunchQueueTabHelper::Create(contents);
+  }
+
+  return webapps::TwaLaunchQueueTabHelper::FromWebContents(contents);
+}
+
 TwaLaunchQueueTabHelper::~TwaLaunchQueueTabHelper() = default;
 
 LaunchQueue& TwaLaunchQueueTabHelper::EnsureLaunchQueue() {

@@ -27,6 +27,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.url.GURL;
 
@@ -34,6 +36,7 @@ import java.io.File;
 import java.util.concurrent.RejectedExecutionException;
 
 /** A wrapper for Android DownloadManager to provide utility functions. */
+@NullMarked
 public class DownloadManagerBridge {
     private static final String TAG = "DownloadDelegate";
     private static final String DOWNLOAD_DIRECTORY = "Download";
@@ -44,14 +47,14 @@ public class DownloadManagerBridge {
     public static class DownloadQueryResult {
         public final long downloadId;
         public int downloadStatus;
-        public String fileName;
-        public String mimeType;
-        public Uri contentUri;
+        public @Nullable String fileName;
+        public @Nullable String mimeType;
+        public @Nullable Uri contentUri;
         public long lastModifiedTime;
         public long bytesDownloaded;
         public long bytesTotal;
         public int failureReason;
-        public String filePath;
+        public @Nullable String filePath;
 
         public DownloadQueryResult(long downloadId) {
             this.downloadId = downloadId;
@@ -63,13 +66,13 @@ public class DownloadManagerBridge {
      * DownloadManagerBridge.enqueueNewDownload}.
      */
     public static class DownloadEnqueueRequest {
-        public String url;
-        public String fileName;
-        public String description;
-        public String mimeType;
-        public String cookie;
-        public String referrer;
-        public String userAgent;
+        public @Nullable String url;
+        public @Nullable String fileName;
+        public @Nullable String description;
+        public @Nullable String mimeType;
+        public @Nullable String cookie;
+        public @Nullable String referrer;
+        public @Nullable String userAgent;
         public boolean notifyCompleted;
     }
 

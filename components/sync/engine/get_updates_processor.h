@@ -50,6 +50,10 @@ class GetUpdatesProcessor {
                     const DataTypeSet& data_types_with_failure,
                     StatusController* status_controller);
 
+  // Records a download failure for the updated types.
+  void RecordDownloadFailure(const DataTypeSet& gu_types,
+                             UpdateHandler::NudgedUpdateResult failure_result);
+
   // Returns true if last DownloadUpdates() outcome indicated that there are
   // more updates to download from the server, e.g. when GetUpdatesResponse has
   // non-zero `changes_remaining`.

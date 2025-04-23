@@ -12,7 +12,7 @@ build_webui("build") {
     "family_link_user_internals.html",
   ]
 
-  non_web_component_files = [ "family_link_user_internals.ts" ]
+  ts_files = [ "family_link_user_internals.ts" ]
 
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
 

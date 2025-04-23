@@ -286,12 +286,8 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
   // Sign in with managed account to fetch user policies.
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail())];
-  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
-    [SigninEarlGrey
-        signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
-  } else {
-    [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity];
-  }
+  [SigninEarlGrey
+      signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
 
   VerifyThatPoliciesAreSet();
 }
@@ -301,12 +297,8 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
   // Sign in with managed account to fetch user policies.
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail())];
-  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
-    [SigninEarlGrey
-        signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
-  } else {
-    [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity];
-  }
+  [SigninEarlGrey
+      signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
   VerifyThatPoliciesAreSet();
 
   // Verify that the policies are cleared on sign out.
@@ -320,12 +312,8 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
   // Sign in with managed account to fetch user policies.
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail())];
-  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
-    [SigninEarlGrey
-        signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
-  } else {
-    [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity];
-  }
+  [SigninEarlGrey
+      signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
 
   VerifyThatPoliciesAreSet();
 
@@ -362,7 +350,8 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
   // Sign in with the managed account. This won't trigger the user policy fetch.
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail())];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity];
+  [SigninEarlGrey
+      signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
 
   [ChromeEarlGrey commitPendingUserPrefsWrite];
 
@@ -415,12 +404,8 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
   // Sign in with the managed account. This won't trigger the user policy fetch.
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail())];
-  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
-    [SigninEarlGrey
-        signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
-  } else {
-    [SigninEarlGrey signinWithFakeIdentity:fakeManagedIdentity];
-  }
+  [SigninEarlGrey
+      signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
 
   // Restart the browser while keeping sign-in by preserving the identity of the
   // managed account.
@@ -556,6 +541,24 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
   // Verify that the flow was successful by validating that the account is
   // signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeManagedIdentity];
+}
+
+// Tests the chrome://policy page when there are user level policies.
+- (void)testPolicyPageManagedWithUserPolicy {
+  // Sign in with a managed account.
+  FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
+      identityWithEmail:base::SysUTF8ToNSString(GetTestEmail())];
+  [SigninEarlGrey
+      signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
+  VerifyThatPoliciesAreSet();
+
+  // Open the policy page and check if there is a user management status box.
+  [ChromeEarlGrey loadURL:GURL(kChromeUIPolicyURL)];
+  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
+                                                    IDS_POLICY_STATUS_USER)];
+  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
+                                                    IDS_POLICY_LABEL_USERNAME)];
+  [ChromeEarlGrey waitForWebStateContainingText:GetTestEmail()];
 }
 
 #pragma mark - Private

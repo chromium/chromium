@@ -193,20 +193,20 @@ export class AllSitesElement extends AllSitesElementBase {
     };
   }
 
-  siteGroupMap: Map<string, SiteGroup>;
-  private filteredList_: SiteGroup[];
-  override subpageRoute: Route;
-  filter: string;
-  private selectedItem_: SelectedItem|null;
-  private lastFocused_: HTMLElement|null;
-  private listBlurred_: boolean;
-  private actionMenuModel_: ActionMenuModel|null;
-  private clearAllData_: boolean;
-  private sortMethod_?: SortMethod;
-  private totalUsage_: string;
+  declare siteGroupMap: Map<string, SiteGroup>;
+  declare private filteredList_: SiteGroup[];
+  declare subpageRoute: Route;
+  declare filter: string;
+  declare private selectedItem_: SelectedItem|null;
+  declare private lastFocused_: HTMLElement|null;
+  declare private listBlurred_: boolean;
+  declare private actionMenuModel_: ActionMenuModel|null;
+  declare private clearAllData_: boolean;
+  declare private sortMethod_?: SortMethod;
+  declare private totalUsage_: string;
   private metricsBrowserProxy: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
-  private isRelatedWebsiteSetsV2UiEnabled_: boolean;
+  declare private isRelatedWebsiteSetsV2UiEnabled_: boolean;
 
   override ready() {
     super.ready();

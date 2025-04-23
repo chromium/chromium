@@ -199,6 +199,8 @@ class Tab : public gfx::AnimationDelegate,
 
   void SetShouldShowDiscardIndicator(bool enabled);
 
+  void UpdateInsets();
+
  private:
   class TabCloseButtonObserver;
   friend class AlertIndicatorButtonTest;

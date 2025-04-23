@@ -198,8 +198,10 @@ ProtoEnum::BackForwardCacheNotRestoredReason NotRestoredReasonToTraceEnum(
       return ProtoEnum::UNKNOWN;
     case Reason::kCacheControlNoStoreDeviceBoundSessionTerminated:
       return ProtoEnum::CACHE_CONTROL_NO_STORE_DEVICE_BOUND_SESSION_TERMINATED;
-    case Reason::kCacheLimitPruned:
-      return ProtoEnum::CACHE_LIMIT_PRUNED;
+    case Reason::kCacheLimitPrunedOnModerateMemoryPressure:
+      return ProtoEnum::CACHE_LIMIT_PRUNED_ON_MODERATE_MEMORY_PRESSURE;
+    case Reason::kCacheLimitPrunedOnCriticalMemoryPressure:
+      return ProtoEnum::CACHE_LIMIT_PRUNED_ON_CRITICAL_MEMORY_PRESSURE;
   }
   NOTREACHED();
 }
@@ -359,8 +361,10 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "cache limit";
     case Reason::kForegroundCacheLimit:
       return "foreground cache limit";
-    case Reason::kCacheLimitPruned:
-      return "Cache limit pruned";
+    case Reason::kCacheLimitPrunedOnModerateMemoryPressure:
+      return "Cache limit pruned on moderate memory pressure";
+    case Reason::kCacheLimitPrunedOnCriticalMemoryPressure:
+      return "Cache limit pruned on critical memory pressure";
     case Reason::kJavaScriptExecution:
       return "JavaScript execution";
     case Reason::kRendererProcessKilled:
@@ -556,7 +560,8 @@ BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToReportString(
     case Reason::kCacheFlushed:
     case Reason::kCacheLimit:
     case Reason::kForegroundCacheLimit:
-    case Reason::kCacheLimitPruned:
+    case Reason::kCacheLimitPrunedOnModerateMemoryPressure:
+    case Reason::kCacheLimitPrunedOnCriticalMemoryPressure:
     case Reason::kHaveInnerContents:
     case Reason::kJavaScriptExecution:
     case Reason::kBackForwardCacheDisabledByLowMemory:

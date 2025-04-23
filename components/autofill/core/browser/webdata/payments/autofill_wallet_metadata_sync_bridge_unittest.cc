@@ -1304,7 +1304,7 @@ enum RemoteChangesMode {
                      // UPDATE changes.
 };
 
-// Parametrized fixture for tests that apply in the same way for all
+// Parameterized fixture for tests that apply in the same way for all
 // RemoteChangesModes.
 class AutofillWalletMetadataSyncBridgeRemoteChangesTest
     : public testing::WithParamInterface<RemoteChangesMode>,

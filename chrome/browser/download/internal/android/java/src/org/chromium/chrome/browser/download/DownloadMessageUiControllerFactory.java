@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.download;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.DownloadMessageUiController.Delegate;
 
 /** Factory class to build a DownloadMessageUiController instance. */
+@NullMarked
 public class DownloadMessageUiControllerFactory {
     private DownloadMessageUiControllerFactory() {}
 

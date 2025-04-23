@@ -15,9 +15,10 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
@@ -26,6 +27,7 @@ import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
  * The View that renders the ManagementPage (chrome://management). Consists of an medium size image
  * icon over title and descriptive text.
  */
+@NullMarked
 public class ManagementView extends ScrollView {
     private boolean mIsBrowserManaged;
     private boolean mIsProfileManaged;
@@ -56,7 +58,7 @@ public class ManagementView extends ScrollView {
     @VisibleForTesting TextView mThreatProtectionPageVisited;
     @VisibleForTesting TextView mThreatProtectionPageVisitedDescription;
 
-    @Nullable private UiConfig mUiConfig;
+    private @Nullable UiConfig mUiConfig;
 
     /** Constructor for inflating from XML. */
     public ManagementView(Context context, AttributeSet attrs) {

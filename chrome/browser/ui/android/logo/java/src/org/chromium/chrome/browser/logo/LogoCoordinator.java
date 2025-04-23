@@ -8,13 +8,15 @@ import android.content.Context;
 import android.view.View.MeasureSpec;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/** Coordinator used to fetch and load logo image for Start surface and NTP.*/
+/** Coordinator used to fetch and load logo image for Start surface and NTP. */
+@NullMarked
 public class LogoCoordinator {
     private final LogoMediator mMediator;
     private final PropertyModel mLogoModel;
@@ -86,6 +88,7 @@ public class LogoCoordinator {
     /**
      * @see LogoMediator#destroy
      */
+    @SuppressWarnings("NullAway")
     public void destroy() {
         mMediator.destroy();
         mLogoView.destroy();

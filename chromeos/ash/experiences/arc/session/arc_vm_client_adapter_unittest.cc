@@ -2477,8 +2477,7 @@ TEST_F(ArcVmClientAdapterTest, StartMiniArc_EnableArcAttestation_Enabled) {
                          arc::kArcVersionT),
       base::Time::Now());
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureStates(
-      {{arc::kEnableArcAttestation, true}, {arc::kSwitchToKeyMintOnT, true}});
+  feature_list.InitWithFeatureStates({{arc::kEnableArcAttestation, true}});
   StartMiniArc();
 
   EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
@@ -2493,8 +2492,7 @@ TEST_F(ArcVmClientAdapterTest, StartMiniArc_EnableArcAttestation_DisabledOnR) {
                          arc::kArcVersionR),
       base::Time::Now());
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureStates(
-      {{arc::kEnableArcAttestation, true}, {arc::kSwitchToKeyMintOnT, true}});
+  feature_list.InitWithFeatureStates({{arc::kEnableArcAttestation, true}});
   StartMiniArc();
 
   EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
@@ -2509,24 +2507,7 @@ TEST_F(ArcVmClientAdapterTest, StartMiniArc_EnableArcAttestation_DisabledOnT) {
                          arc::kArcVersionT),
       base::Time::Now());
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureStates(
-      {{arc::kEnableArcAttestation, false}, {arc::kSwitchToKeyMintOnT, true}});
-  StartMiniArc();
-
-  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
-  EXPECT_FALSE(is_system_shutdown().has_value());
-  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_FALSE(request.mini_instance_request().enable_arc_attestation());
-}
-
-TEST_F(ArcVmClientAdapterTest,
-       StartMiniArc_EnableArcAttestation_KeymintDisabled) {
-  base::test::ScopedChromeOSVersionInfo version(
-      base::StringPrintf("CHROMEOS_ARC_ANDROID_SDK_VERSION=%d",
-                         arc::kArcVersionT),
-      base::Time::Now());
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(arc::kSwitchToKeyMintOnT, false);
+  feature_list.InitWithFeatureStates({{arc::kEnableArcAttestation, false}});
   StartMiniArc();
 
   EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
@@ -2819,53 +2800,6 @@ TEST_F(ArcVmClientAdapterTest, StartMiniArc_ArcSignedInDisabled) {
   StartMiniArcWithParams(true, GetPopulatedStartParams());
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();
   EXPECT_FALSE(request.mini_instance_request().arc_signed_in());
-}
-
-TEST_F(ArcVmClientAdapterTest, ArcPriorityAppLmkDelayDisabled) {
-  StartMiniArc();
-  UpgradeParams upgrade_params = GetPopulatedUpgradeParams();
-  upgrade_params.enable_priority_app_lmk_delay = false;
-  UpgradeArcWithParams(true, std::move(upgrade_params));
-  EXPECT_FALSE(base::Contains(boot_notification_server()->received_data(),
-                              "ro.boot.arc.lmk.enable_priority_app_delay"));
-  EXPECT_FALSE(
-      base::Contains(boot_notification_server()->received_data(),
-                     "ro.boot.arc.lmk.priority_app_delay_duration_sec"));
-  EXPECT_FALSE(base::Contains(boot_notification_server()->received_data(),
-                              "ro.boot.arc.lmk.priority_apps"));
-}
-
-TEST_F(ArcVmClientAdapterTest, ArcPriorityAppLmkDelayEnabled_NoApp) {
-  StartMiniArc();
-  UpgradeParams upgrade_params = GetPopulatedUpgradeParams();
-  upgrade_params.enable_priority_app_lmk_delay = true;
-  upgrade_params.priority_app_lmk_delay_list = "";
-  UpgradeArcWithParams(true, std::move(upgrade_params));
-  EXPECT_FALSE(base::Contains(boot_notification_server()->received_data(),
-                              "ro.boot.arc.lmk.enable_priority_app_delay"));
-  EXPECT_FALSE(
-      base::Contains(boot_notification_server()->received_data(),
-                     "ro.boot.arc.lmk.priority_app_delay_duration_sec"));
-  EXPECT_FALSE(base::Contains(boot_notification_server()->received_data(),
-                              "ro.boot.arc.lmk.priority_apps"));
-}
-
-TEST_F(ArcVmClientAdapterTest, ArcPriorityAppLmkDelayEnabled_SomeApp) {
-  StartMiniArc();
-  UpgradeParams upgrade_params = GetPopulatedUpgradeParams();
-  upgrade_params.enable_priority_app_lmk_delay = true;
-  upgrade_params.priority_app_lmk_delay_list =
-      "com.example.app1,com.example.app2";
-  upgrade_params.priority_app_lmk_delay_second = 60;
-  UpgradeArcWithParams(true, std::move(upgrade_params));
-  EXPECT_TRUE(base::Contains(boot_notification_server()->received_data(),
-                             "ro.boot.arc.lmk.enable_priority_app_delay=1"));
-  EXPECT_TRUE(base::Contains(
-      boot_notification_server()->received_data(),
-      "ro.boot.arc.lmk.priority_apps=com.example.app1,com.example.app2"));
-  EXPECT_TRUE(
-      base::Contains(boot_notification_server()->received_data(),
-                     "ro.boot.arc.lmk.priority_app_delay_duration_sec=60"));
 }
 
 TEST_F(ArcVmClientAdapterTest, ArcLmkPerceptibleMinStateUpdateDisabled) {

@@ -151,15 +151,6 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   static bool IsPossibleFullScreenLetterboxing(const DrawQuad* quad_below,
                                                const gfx::Rect& display_rect);
 
-  // Promote a single quad in isolation, like how |Process| would internally.
-  // This ignores per-frame limitations such as max number of YUV quads, etc.
-  // This also adds other properties needed for delegated compositing.
-  std::optional<OverlayCandidate> FromTextureOrYuvQuad(
-      const DisplayResourceProvider* resource_provider,
-      const AggregatedRenderPass* render_pass,
-      const DrawQuad& quad,
-      bool is_possible_full_screen_letterboxing) const;
-
  private:
   // Information about a render pass's overlays from the previous frame. The
   // previous frame's overlays are used for optimizations, which are done

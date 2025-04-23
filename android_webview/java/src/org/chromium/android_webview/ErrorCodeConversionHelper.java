@@ -4,9 +4,13 @@
 
 package org.chromium.android_webview;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.net.NetError;
 
-/** This is a helper class to map native error code about loading a page to Android specific ones. */
+/**
+ * This is a helper class to map native error code about loading a page to Android specific ones.
+ */
+@NullMarked
 public final class ErrorCodeConversionHelper {
     static @WebviewErrorCode int convertErrorCode(@NetError int netError) {
         // Note: many NetError.Error constants don't have an obvious mapping.

@@ -270,6 +270,7 @@ interestTargetShowDelay
 interpolateSize
 isolation
 item
+itemTolerance
 justifyContent
 justifyItems
 justifySelf
@@ -314,7 +315,6 @@ masonryAutoTracks
 masonryDirection
 masonryFill
 masonryFlow
-masonrySlack
 masonryTemplateTracks
 masonryTrack
 masonryTrackEnd

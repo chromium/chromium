@@ -1470,10 +1470,12 @@ TEST_F(InterestGroupStorageTest, RecordsWins) {
             interest_groups[0].bidding_browser_signals->prev_wins[1]->ad_json);
 
   // Try delete
-  storage->DeleteInterestGroupData(base::BindLambdaForTesting(
-      [&test_origin](const blink::StorageKey& candidate) {
+  storage->DeleteInterestGroupData(
+      base::BindLambdaForTesting([&test_origin](
+                                     const blink::StorageKey& candidate) {
         return candidate == blink::StorageKey::CreateFirstParty(test_origin);
-      }));
+      }),
+      /*user_initiated_deletion=*/true);
 
   origins = storage->GetAllInterestGroupOwners();
   EXPECT_EQ(0u, origins.size());
@@ -2096,6 +2098,100 @@ TEST_F(InterestGroupStorageTest, KAnonDataExpires) {
   EXPECT_TRUE(groups[0].hashed_kanon_keys.empty());
 }
 
+TEST_F(InterestGroupStorageTest, ClickinessDelete) {
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  const url::Origin kViewClickEligibleOrigin3 =
+      url::Origin::Create(GURL("https://view-click.eligible3.test"));
+  const url::Origin kViewClickProviderOrigin3 =
+      url::Origin::Create(GURL("https://view-click.provider3.test"));
+
+  {
+    AdAuctionEventRecord record;
+    record.type = AdAuctionEventRecord::Type::kView;
+    record.providing_origin = kViewClickProviderOrigin1;
+    record.eligible_origins = {kViewClickEligibleOrigin1};
+    ASSERT_TRUE(record.IsValid());
+    storage->RecordViewClick(record);
+  }
+  {
+    AdAuctionEventRecord record;
+    record.type = AdAuctionEventRecord::Type::kView;
+    record.providing_origin = kViewClickProviderOrigin2;
+    record.eligible_origins = {kViewClickEligibleOrigin2};
+    ASSERT_TRUE(record.IsValid());
+    storage->RecordViewClick(record);
+  }
+  {
+    AdAuctionEventRecord record;
+    record.type = AdAuctionEventRecord::Type::kView;
+    record.providing_origin = kViewClickProviderOrigin3;
+    record.eligible_origins = {kViewClickEligibleOrigin3};
+    ASSERT_TRUE(record.IsValid());
+    storage->RecordViewClick(record);
+  }
+
+  EXPECT_EQ(true,
+            storage->CheckViewClickCountsForProviderAndEligibleInDbForTesting(
+                kViewClickProviderOrigin1, kViewClickEligibleOrigin1));
+  EXPECT_EQ(true,
+            storage->CheckViewClickCountsForProviderAndEligibleInDbForTesting(
+                kViewClickProviderOrigin2, kViewClickEligibleOrigin2));
+  EXPECT_EQ(true,
+            storage->CheckViewClickCountsForProviderAndEligibleInDbForTesting(
+                kViewClickProviderOrigin3, kViewClickEligibleOrigin3));
+
+  // Try delete for provider origins 1 and 2, eligible origin 3, as
+  // non-user-initiated. Provider origins 1 and 2 should be deleted.
+  auto predicate =
+      base::BindLambdaForTesting([&](const blink::StorageKey& candidate) {
+        return candidate == blink::StorageKey::CreateFirstParty(
+                                kViewClickProviderOrigin1) ||
+               candidate == blink::StorageKey::CreateFirstParty(
+                                kViewClickProviderOrigin2) ||
+               candidate == blink::StorageKey::CreateFirstParty(
+                                kViewClickEligibleOrigin3);
+      });
+  storage->DeleteInterestGroupData(predicate,
+                                   /*user_initiated_deletion=*/false);
+  EXPECT_EQ(false,
+            storage->CheckViewClickCountsForProviderAndEligibleInDbForTesting(
+                kViewClickProviderOrigin1, kViewClickEligibleOrigin1));
+  EXPECT_EQ(false,
+            storage->CheckViewClickCountsForProviderAndEligibleInDbForTesting(
+                kViewClickProviderOrigin2, kViewClickEligibleOrigin2));
+  EXPECT_EQ(true,
+            storage->CheckViewClickCountsForProviderAndEligibleInDbForTesting(
+                kViewClickProviderOrigin3, kViewClickEligibleOrigin3));
+
+  // Try the same predicate with `user_initiated_deletion` set to true; this
+  // should delete everything.
+  storage->DeleteInterestGroupData(predicate, /*user_initiated_deletion=*/true);
+  EXPECT_EQ(false,
+            storage->CheckViewClickCountsForProviderAndEligibleInDbForTesting(
+                kViewClickProviderOrigin3, kViewClickEligibleOrigin3));
+}
+
+// Null callback in non-user-initiated mode doesn't crash.
+TEST_F(InterestGroupStorageTest, ClickinessDelete2) {
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  {
+    AdAuctionEventRecord record;
+    record.type = AdAuctionEventRecord::Type::kView;
+    record.providing_origin = kViewClickProviderOrigin1;
+    record.eligible_origins = {kViewClickEligibleOrigin1};
+    ASSERT_TRUE(record.IsValid());
+    storage->RecordViewClick(record);
+  }
+
+  storage->DeleteInterestGroupData(base::NullCallback(),
+                                   /*user_initiated_deletion=*/false);
+  EXPECT_EQ(false,
+            storage->CheckViewClickCountsForProviderAndEligibleInDbForTesting(
+                kViewClickProviderOrigin1, kViewClickEligibleOrigin1));
+}
+
 enum class GroupLifetime {
   k30Day,
   k90Day,
@@ -2146,6 +2242,156 @@ TEST_P(InterestGroupStorageDualLifetimeTest, ViewClickStoreRetrieve_Basic) {
   blink::mojom::ViewAndClickCountsPtr& view_and_click_counts =
       groups[0].bidding_browser_signals->view_and_click_counts;
 
+  EXPECT_EQ(1, view_and_click_counts->view_counts->past_hour);
+  EXPECT_EQ(1, view_and_click_counts->view_counts->past_day);
+  EXPECT_EQ(1, view_and_click_counts->view_counts->past_week);
+  EXPECT_EQ(1, view_and_click_counts->view_counts->past_30_days);
+  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 1 : 0,
+            view_and_click_counts->view_counts->past_90_days);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_hour);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_day);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_week);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_30_days);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_90_days);
+}
+
+// No counts for negative groups.
+TEST_P(InterestGroupStorageDualLifetimeTest,
+       ViewClickStoreRetrieve_NegativeGroup) {
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  AdAuctionEventRecord record;
+  record.type = AdAuctionEventRecord::Type::kView;
+  record.providing_origin = kViewClickProviderOrigin1;
+  record.eligible_origins = {kViewClickEligibleOrigin1};
+  ASSERT_TRUE(record.IsValid());
+  storage->RecordViewClick(record);
+
+  InterestGroup g = NewInterestGroup(kViewClickEligibleOrigin1, "cars");
+  g.view_and_click_counts_providers = {{kViewClickProviderOrigin1}};
+  g.expiry = base::Time::Now() + base::Days(90);
+  g.update_url = std::nullopt;
+  g.additional_bid_key.emplace();
+  storage->JoinInterestGroup(g, GURL("https://joining-site.test"));
+
+  std::vector<StorageInterestGroup> groups =
+      storage->GetInterestGroupsForOwner(kViewClickEligibleOrigin1);
+  ASSERT_EQ(1u, groups.size());
+
+  blink::mojom::ViewAndClickCountsPtr& view_and_click_counts =
+      groups[0].bidding_browser_signals->view_and_click_counts;
+
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_hour);
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_day);
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_week);
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_30_days);
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_90_days);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_hour);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_day);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_week);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_30_days);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_90_days);
+}
+
+// No providers defaults to IG origin.
+TEST_P(InterestGroupStorageDualLifetimeTest,
+       ViewClickStoreRetrieve_NullProviders) {
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  {
+    AdAuctionEventRecord record;
+    record.type = AdAuctionEventRecord::Type::kClick;
+    record.providing_origin = kViewClickProviderOrigin1;
+    record.eligible_origins = {kViewClickEligibleOrigin1};
+    ASSERT_TRUE(record.IsValid());
+    storage->RecordViewClick(record);
+  }
+  {
+    AdAuctionEventRecord record;
+    record.type = AdAuctionEventRecord::Type::kClick;
+    record.providing_origin = kViewClickProviderOrigin2;
+    record.eligible_origins = {kViewClickEligibleOrigin1};
+    ASSERT_TRUE(record.IsValid());
+    storage->RecordViewClick(record);
+  }
+  {
+    AdAuctionEventRecord record;
+    record.type = AdAuctionEventRecord::Type::kView;
+    record.providing_origin = kViewClickEligibleOrigin1;
+    record.eligible_origins = {kViewClickEligibleOrigin1};
+    ASSERT_TRUE(record.IsValid());
+    storage->RecordViewClick(record);
+  }
+
+  InterestGroup g = NewInterestGroup(kViewClickEligibleOrigin1, "cars");
+  g.view_and_click_counts_providers = std::nullopt;
+  g.expiry = base::Time::Now() + base::Days(90);
+  storage->JoinInterestGroup(g, GURL("https://joining-site.test"));
+
+  std::vector<StorageInterestGroup> groups =
+      storage->GetInterestGroupsForOwner(kViewClickEligibleOrigin1);
+  ASSERT_EQ(1u, groups.size());
+
+  blink::mojom::ViewAndClickCountsPtr& view_and_click_counts =
+      groups[0].bidding_browser_signals->view_and_click_counts;
+
+  // These are view, not clicks.
+  EXPECT_EQ(1, view_and_click_counts->view_counts->past_hour);
+  EXPECT_EQ(1, view_and_click_counts->view_counts->past_day);
+  EXPECT_EQ(1, view_and_click_counts->view_counts->past_week);
+  EXPECT_EQ(1, view_and_click_counts->view_counts->past_30_days);
+  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 1 : 0,
+            view_and_click_counts->view_counts->past_90_days);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_hour);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_day);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_week);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_30_days);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_90_days);
+}
+
+// Empty providers defaults to IG origin.
+TEST_P(InterestGroupStorageDualLifetimeTest,
+       ViewClickStoreRetrieve_EmptyProviders) {
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  {
+    AdAuctionEventRecord record;
+    record.type = AdAuctionEventRecord::Type::kClick;
+    record.providing_origin = kViewClickProviderOrigin1;
+    record.eligible_origins = {kViewClickEligibleOrigin1};
+    ASSERT_TRUE(record.IsValid());
+    storage->RecordViewClick(record);
+  }
+  {
+    AdAuctionEventRecord record;
+    record.type = AdAuctionEventRecord::Type::kClick;
+    record.providing_origin = kViewClickProviderOrigin2;
+    record.eligible_origins = {kViewClickEligibleOrigin1};
+    ASSERT_TRUE(record.IsValid());
+    storage->RecordViewClick(record);
+  }
+  {
+    AdAuctionEventRecord record;
+    record.type = AdAuctionEventRecord::Type::kView;
+    record.providing_origin = kViewClickEligibleOrigin1;
+    record.eligible_origins = {kViewClickEligibleOrigin1};
+    ASSERT_TRUE(record.IsValid());
+    storage->RecordViewClick(record);
+  }
+
+  InterestGroup g = NewInterestGroup(kViewClickEligibleOrigin1, "cars");
+  g.view_and_click_counts_providers = {{}};
+  g.expiry = base::Time::Now() + base::Days(90);
+  storage->JoinInterestGroup(g, GURL("https://joining-site.test"));
+
+  std::vector<StorageInterestGroup> groups =
+      storage->GetInterestGroupsForOwner(kViewClickEligibleOrigin1);
+  ASSERT_EQ(1u, groups.size());
+
+  blink::mojom::ViewAndClickCountsPtr& view_and_click_counts =
+      groups[0].bidding_browser_signals->view_and_click_counts;
+
+  // These are view, not clicks.
   EXPECT_EQ(1, view_and_click_counts->view_counts->past_hour);
   EXPECT_EQ(1, view_and_click_counts->view_counts->past_day);
   EXPECT_EQ(1, view_and_click_counts->view_counts->past_week);
@@ -3191,11 +3437,13 @@ TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
   EXPECT_THAT(joining_origins,
               UnorderedElementsAre(joining_originA, joining_originB));
 
-  storage->DeleteInterestGroupData(base::BindLambdaForTesting(
-      [&owner_originA](const blink::StorageKey& storage_key) {
+  storage->DeleteInterestGroupData(
+      base::BindLambdaForTesting([&owner_originA](
+                                     const blink::StorageKey& storage_key) {
         return storage_key ==
                blink::StorageKey::CreateFirstParty(owner_originA);
-      }));
+      }),
+      /*user_initiated_deletion=*/true);
 
   origins = storage->GetAllInterestGroupOwners();
   EXPECT_THAT(origins, UnorderedElementsAre(owner_originB, owner_originC));
@@ -3205,18 +3453,21 @@ TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
 
   // Delete all interest groups that joined on joining_origin A. We expect that
   // we will be left with the one that joined on joining_origin B.
-  storage->DeleteInterestGroupData(base::BindLambdaForTesting(
-      [&joining_originA](const blink::StorageKey& storage_key) {
+  storage->DeleteInterestGroupData(
+      base::BindLambdaForTesting([&joining_originA](
+                                     const blink::StorageKey& storage_key) {
         return storage_key ==
                blink::StorageKey::CreateFirstParty(joining_originA);
-      }));
+      }),
+      /*user_initiated_deletion=*/true);
 
   origins = storage->GetAllInterestGroupOwners();
   EXPECT_THAT(origins, UnorderedElementsAre(owner_originB));
   joining_origins = storage->GetAllInterestGroupJoiningOrigins();
   EXPECT_THAT(joining_origins, UnorderedElementsAre(joining_originB));
 
-  storage->DeleteInterestGroupData(base::NullCallback());
+  storage->DeleteInterestGroupData(base::NullCallback(),
+                                   /*user_initiated_deletion=*/false);
 
   origins = storage->GetAllInterestGroupOwners();
   EXPECT_EQ(0u, origins.size());
@@ -3888,9 +4139,9 @@ TEST_F(InterestGroupStorageWithNoIdleFastForwardTest, ViewClickExpire) {
   storage->RecordViewClick(record_view);
   storage->RecordViewClick(record_view);
   storage->RecordViewClick(record_click);
-  EXPECT_FALSE(
-      storage->CheckViewClickCountsForProviderAndEligibleNotInDbForTesting(
-          kViewClickProviderOrigin1, kViewClickEligibleOrigin1));
+  EXPECT_EQ(true,
+            storage->CheckViewClickCountsForProviderAndEligibleInDbForTesting(
+                kViewClickProviderOrigin1, kViewClickEligibleOrigin1));
 
   // Quickly fast fordward by 91 days (not 90 to account for rounding),
   // then a bit more to get maintenance to happen with that much time elapsed.
@@ -3901,9 +4152,9 @@ TEST_F(InterestGroupStorageWithNoIdleFastForwardTest, ViewClickExpire) {
   EXPECT_LE(start_time + base::Days(91),
             storage->GetLastMaintenanceTimeForTesting());
 
-  EXPECT_TRUE(
-      storage->CheckViewClickCountsForProviderAndEligibleNotInDbForTesting(
-          kViewClickProviderOrigin1, kViewClickEligibleOrigin1));
+  EXPECT_EQ(false,
+            storage->CheckViewClickCountsForProviderAndEligibleInDbForTesting(
+                kViewClickProviderOrigin1, kViewClickEligibleOrigin1));
 
   // Doing a fancy high-level read via an IG just gives 0 for all counters.
   InterestGroup g = NewInterestGroup(kViewClickEligibleOrigin1, "cars");

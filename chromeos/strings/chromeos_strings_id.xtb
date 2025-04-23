@@ -30,6 +30,7 @@
 <translation id="1107856713690040084">Audio <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">Tentang</translation>
 <translation id="1118572504348554005">Kami mungkin membagikan masukan yang dikirim melalui formulir ini kepada partner kami untuk memecahkan masalah bug dan masalah lain yang Anda laporkan kepada kami. Jangan sertakan informasi sensitif seperti sandi.</translation>
+<translation id="1118596190635569417">Pindahkan menu ini ke kanan</translation>
 <translation id="1119403468619527527">Terlalu sedikit kata untuk disederhanakan</translation>
 <translation id="1119447706177454957">Kesalahan internal</translation>
 <translation id="1124772482545689468">Pengguna</translation>
@@ -91,8 +92,10 @@
 <translation id="1367951781824006909">Pilih file</translation>
 <translation id="1371650399987522809">Masukan untuk wallpaper yang didukung teknologi AI Google</translation>
 <translation id="1374385338586507108">Definisikan</translation>
+<translation id="1376064675713230088">t-rex</translation>
 <translation id="1383876407941801731">Telusuri</translation>
 <translation id="1387854245479784695">Ini merupakan gabungan dari semua core</translation>
+<translation id="1388919980490622894">dengan gradasi warna</translation>
 <translation id="1393206549145430405">kastil</translation>
 <translation id="1394661041439318933">Perangkat memiliki <ph name="BATTERY_PERCENTAGE" />% daya baterai casing.</translation>
 <translation id="1397738625398125236">Gateway Dapat Di-ping</translation>
@@ -125,11 +128,11 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> akan mengelola pengguna ini serta mungkin dapat mengelola setelan dan memantau aktivitas pengguna dari jarak jauh.</translation>
 <translation id="150962533380566081">PUK tidak valid.</translation>
 <translation id="1510238584712386396">Peluncur</translation>
+<translation id="1512872158112631650">bayangan dramatis</translation>
 <translation id="1514446283880973949">Menulis dengan lebih percaya diri, meringkas konten, menemukan definisi, dan lainnya</translation>
 <translation id="1515129336378114413">beranda browser</translation>
 <translation id="1526389707933164996">Animasi screensaver</translation>
 <translation id="152892567002884378">Mengeraskan volume</translation>
-<translation id="1531038290222364269">Tampilkan tab</translation>
 <translation id="1539864135338521185">lapis lazuli</translation>
 <translation id="1548555207631326346">Pilih tema, lalu pilih kata yang digarisbawahi untuk mempersonalisasi gambar AI Anda.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -229,6 +232,7 @@
 <translation id="1854156910036166007">kungkang</translation>
 <translation id="1856388568474281774">Panah bawah</translation>
 <translation id="1858620243986915808">Lampirkan screenshot</translation>
+<translation id="1860654594958086756">render 3D</translation>
 <translation id="1871413952174074704">APN tidak boleh lebih dari <ph name="CHAR_LIMIT" /> karakter</translation>
 <translation id="1871569928317311284">Nonaktifkan tema gelap</translation>
 <translation id="1874612839560830905">MTU</translation>
@@ -242,10 +246,11 @@
 <translation id="1905710495812624430">Melebihi batas percobaan maksimum yang diizinkan.</translation>
 <translation id="1908234395526491708">Kegagalan permintaan UDP</translation>
 <translation id="1908394185991500139">panah kiri</translation>
-<translation id="1911678930322867245">Pindahkan ke kanan atas</translation>
 <translation id="1914144885717544695">pada hari Jumat</translation>
 <translation id="1915960750806557358">Sampaikan masukan atau jelaskan masalah Anda. Pastikan untuk tidak menyertakan informasi apa pun yang bersifat pribadi, sensitif, atau rahasia.</translation>
 <translation id="1923388006036088459">Warna aksen</translation>
+<translation id="1926611810597212636">unicorn</translation>
+<translation id="1944321879609775960">Untuk membuat ringkasan, mulai ulang <ph name="DEVICE_TYPE" /></translation>
 <translation id="1945403655450283000">Perekam Suara</translation>
 <translation id="1947737735496445907">Tercetak</translation>
 <translation id="1951012854035635156">Asisten</translation>
@@ -315,6 +320,7 @@
 <translation id="2230624078793142213">Buat lagi</translation>
 <translation id="2236746079896696523">Tombol lampu latar keyboard</translation>
 <translation id="2240366984605217732">Beralih tata letak</translation>
+<translation id="224421911978987610">eksposur panjang</translation>
 <translation id="2244834438220057800">hijau</translation>
 <translation id="225692081236532131">Status aktivasi</translation>
 <translation id="2267285889943769271">Tambahkan screenshot</translation>
@@ -342,6 +348,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Kirim Laporan Masukan</translation>
 <translation id="2407209115954268704">Status Kunci SIM</translation>
+<translation id="240798792848608143">Untuk mendapatkan transkrip dalam bahasa <ph name="LANGUAGE_NAME" />, mulai ulang <ph name="DEVICE_TYPE" /></translation>
 <translation id="241419523391571119">Buka kembali penutup untuk menguji</translation>
 <translation id="2414660853550118611">Tentang wallpaper</translation>
 <translation id="2414886740292270097">Gelap</translation>
@@ -351,6 +358,7 @@
 <translation id="2438248248625638801">Membuat judul rekaman</translation>
 <translation id="2446553403094072641">Akurasi floating point</translation>
 <translation id="2448312741937722512">Jenis</translation>
+<translation id="2448857983905133469">Alat Kelas</translation>
 <translation id="2468124392950503650">Pilih perintah untuk membuat atau melihat <ph name="BEGIN_LINK_PROMPTING_GUIDE" />panduan menulis perintah<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Menggunakan fitur Bantu tulis untuk membuat draf atau meningkatkan kualitas pekerjaan yang ada, didukung teknologi AI Google</translation>
 <translation id="2475982808118771221">Terjadi error</translation>
@@ -361,6 +369,7 @@
 <translation id="2493126929778606526">Foto terbaik Anda, dipilih otomatis</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">opal</translation>
+<translation id="2501278716633472235">Kembali</translation>
 <translation id="2505327257735685095">Muat ulang gambar wallpaper saat ini</translation>
 <translation id="2507491234071975894">Speaker</translation>
 <translation id="2512979179176933762">tampilkan jendela</translation>
@@ -381,6 +390,7 @@
 <translation id="2584559707064218956">Untuk menyiapkan, buka Setelan</translation>
 <translation id="2586146417912237930">biru dan nila</translation>
 <translation id="2589921777872778654">Menu edit dan hapus</translation>
+<translation id="2590424100019931043">Anda telah dihapus dari kelas ini</translation>
 <translation id="2597774443162333062">File akan dikirim ke Google untuk proses debug</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Pemindaian selesai. 1 halaman dipindai}other{Pemindaian selesai. {NUMBER_OF_PAGES} halaman dipindai}}</translation>
 <translation id="261322795497077164">Identifikasi pembicara</translation>
@@ -449,6 +459,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Endpoint</translation>
 <translation id="3060579846059757016">Kerangka</translation>
+<translation id="3060798442805232711">Alat Kelas menggunakan mikrofon Anda</translation>
 <translation id="3061850252076394168">aktifkan fitur klik untuk diucapkan</translation>
 <translation id="3066772729299747758">pada hari Selasa</translation>
 <translation id="3069085583900247081">Pengujian gagal</translation>
@@ -458,6 +469,7 @@
 <translation id="3084958266922136097">Nonaktifkan screen saver</translation>
 <translation id="3091839911843451378">Gagal - Berhenti</translation>
 <translation id="3102119246920354026">Cache</translation>
+<translation id="3103783611481501187">surealis</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">kolam renang</translation>
 <translation id="3122883569442693641">Detail selengkapnya</translation>
@@ -472,6 +484,7 @@
 <translation id="3156846309055100599">Memindai halaman <ph name="PAGE_NUMBER" /> ...</translation>
 <translation id="315738237743207937">Captive portal terdeteksi</translation>
 <translation id="3160172848211257835">Kirim <ph name="BEGIN_LINK1" />info aplikasi &amp; sistem<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />metrik<ph name="END_LINK2" /></translation>
+<translation id="3161556797767210144">Untuk membuat ringkasan dan judul, mulai ulang <ph name="DEVICE_TYPE" /></translation>
 <translation id="3170673040743561620">Letakkan dokumen Anda pada pemindai</translation>
 <translation id="3174321110679064523">Wallpaper Fajar ke petang</translation>
 <translation id="3178532070248519384">avant-garde</translation>
@@ -486,6 +499,7 @@
 <translation id="3226405216343213872">Mencari pemindai</translation>
 <translation id="3226657629376379887">Menu tindakan tata letak</translation>
 <translation id="3227186760713762082">Bagi nilai <ph name="CATEGORY_TEXT" /> dengan <ph name="CONVERSION_RATE" /></translation>
+<translation id="3242622575335502454">seni digital</translation>
 <translation id="3246869037381808805">Tugas pencetakan yang sudah lebih dari 1 hari akan dihapus</translation>
 <translation id="3248791727258378769">Tidak ada transkrip yang akan dibuat</translation>
 <translation id="324961752321393509">Administrator tidak mengizinkan penutupan aplikasi ini</translation>
@@ -522,6 +536,7 @@
 <translation id="3428551088151258685">luar ruangan</translation>
 <translation id="3428971106895559033">pastel</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="3434988468785284438">refleksi</translation>
 <translation id="3435738964857648380">Keamanan</translation>
 <translation id="3435896845095436175">Aktifkan</translation>
 <translation id="345256797477978759">Kaitkan jendela di bagian <ph name="DIRECTION" /> layar yang lebih besar</translation>
@@ -562,6 +577,7 @@
 <translation id="3604713164406837697">Ubah wallpaper</translation>
 <translation id="360565022852130722">Jaringan Wi-Fi diamankan dengan protokol WEP 802.1x yang lemah</translation>
 <translation id="3606583719724308068">Latensi tinggi untuk situs HTTPS</translation>
+<translation id="3614639364827854748">Pindahkan menu ini ke kiri</translation>
 <translation id="361575905210396100">Terima kasih atas masukan Anda</translation>
 <translation id="3621072146987826699">gajah</translation>
 <translation id="3628462041319107639">Mendownload model transkripsi…</translation>
@@ -622,6 +638,7 @@
 <translation id="3889914174935857450">Reset tanggal</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3902271751020176019">Bahasa transkripsi</translation>
+<translation id="390890062090528082">langit penuh bintang</translation>
 <translation id="391412459402535266">Tidak dapat menguji perangkat. Beralih ke mode laptop untuk menguji.</translation>
 <translation id="3916998944874125962">ambil screenshot</translation>
 <translation id="3923184630988645767">Penggunaan data</translation>
@@ -711,6 +728,7 @@
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           AI generatif dapat membuat kesalahan, termasuk tentang orang. Jadi, harap periksa kembali responsnya. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Pelajari lebih lanjut<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
+<translation id="4253971074682120908">ruang negatif</translation>
 <translation id="4258281355379922695">Latensi HTTP</translation>
 <translation id="4266143281602681663">benang</translation>
 <translation id="4269815121975886860">Preferensi sistem dimulai</translation>
@@ -738,6 +756,7 @@
 <translation id="4378373042927530923">Tidak Berjalan</translation>
 <translation id="4378551569595875038">Menghubungkan...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4383322413532809099">Untuk membuat judul rekaman, mulai ulang <ph name="DEVICE_TYPE" /></translation>
 <translation id="4394049700291259645">Nonaktifkan</translation>
 <translation id="439429847087949098">Memulai ulang <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">sesuaikan keyboard</translation>
@@ -766,6 +785,7 @@
 <translation id="4486524074141928967">Anda akan logout pada <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Pintasan tidak tersedia. Tekan pintasan baru menggunakan tombol pengubah (ctrl, alt, shift, atau <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Warna antarmuka</translation>
+<translation id="4501302804999678844">Untuk membuat transkrip, mulai ulang <ph name="DEVICE_TYPE" /></translation>
 <translation id="4503223151711056411">Panah kiri</translation>
 <translation id="4503441351962730761">seni modern</translation>
 <translation id="4507392511610824664">tingkatkan kecerahan</translation>
@@ -808,7 +828,9 @@
 <translation id="4691278870498629773">Dihentikan - Tidak ada baki</translation>
 <translation id="469379815867856270">Kekuatan Sinyal</translation>
 <translation id="4697260493945012995">Pilih jenis kontrol</translation>
+<translation id="4712940987669302829">efek bokeh</translation>
 <translation id="4731797938093519117">Akses orang tua</translation>
+<translation id="4734982181169850310">warna pastel</translation>
 <translation id="473775607612524610">Update</translation>
 <translation id="4744944742468440486">Info terkait pilihan Anda</translation>
 <translation id="4750394297954878236">Saran</translation>
@@ -816,6 +838,7 @@
 <translation id="4771607256327216405">cerahkan keyboard</translation>
 <translation id="4771923071974529837">besok</translation>
 <translation id="4773299976671772492">Dihentikan</translation>
+<translation id="4777310452073659583">Untuk mendapatkan transkrip, mulai ulang <ph name="DEVICE_TYPE" /></translation>
 <translation id="4778082030331381943">ametis</translation>
 <translation id="4782311465517282004">Dapatkan definisi, terjemahan, atau konversi unit saat Anda mengklik kanan atau menyentuh lama teks</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
@@ -858,14 +881,17 @@
 <translation id="4921665434385737356">Terisi <ph name="RATE" /> dalam <ph name="NUM_SECONDS" /> detik.</translation>
 <translation id="4930320165497208503">Untuk menyiapkan atau memperbarui koneksi, buka <ph name="BEGIN_LINK" />Setelan<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Tanggal</translation>
+<translation id="493637535592633700">bercahaya</translation>
 <translation id="494102685638938793"><ph name="LINK_TEXT" />, terbuka di tab baru</translation>
 <translation id="4946927805998996217">Membuat ringkasan</translation>
 <translation id="4950314376641394653">Firmware <ph name="DEVICE_NAME" /> telah diupdate ke versi <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">terowongan pohon</translation>
+<translation id="4964806321337443935">4k</translation>
 <translation id="4965661459364092269">Reset keamanan telah selesai</translation>
 <translation id="4965703485264574128">Untuk mendapatkan perkiraan hasil, kalikan nilai <ph name="CATEGORY_TEXT" /> dengan <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Pisah</translation>
 <translation id="4972592110715526173">pengubahan mode</translation>
+<translation id="497421865427891073">Maju</translation>
 <translation id="4981003703840817201">biru dan merah muda</translation>
 <translation id="498186245079027698">Periksa pemindai, lalu coba lagi. Pastikan terdapat cukup ruang penyimpanan lokal untuk menyimpan file hasil pemindaian.</translation>
 <translation id="4982627662315910959">Pintasan tidak tersedia. Tekan pintasan baru menggunakan shift dan 1 tombol pengubah lainnya (ctrl, alt, atau <ph name="META_KEY" />).</translation>
@@ -873,6 +899,7 @@
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">Halaman</translation>
 <translation id="4989542687859782284">Tidak Tersedia</translation>
+<translation id="4999267570108760491">gaya seni vektor</translation>
 <translation id="4999333166442584738">Sembunyikan laporan</translation>
 <translation id="500920857929044050">Hentikan pengujian</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -910,6 +937,7 @@
 <translation id="5170568018924773124">Tampilkan dalam folder</translation>
 <translation id="517075088756846356">Cabut dan colokkan kembali kabel daya <ph name="DEVICE_NAME" /> untuk melanjutkan proses update</translation>
 <translation id="5180108905184566358">pohon baobab</translation>
+<translation id="5180431943345994173">Pengajar Anda telah menghapus konten di Alat Kelas</translation>
 <translation id="5180712487038406644">Ekspresif</translation>
 <translation id="5190187232518914472">Hidupkan kembali memori favorit Anda. Untuk menambahkan atau mengedit album, buka <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -940,6 +968,7 @@
 <translation id="5300172019534884676">mengaktifkan atau menonaktifkan akses kamera</translation>
 <translation id="5300814202279832142">Pindahkan jendela ke desktop</translation>
 <translation id="5302048478445481009">Bahasa</translation>
+<translation id="5303459213631364445">bersinar</translation>
 <translation id="5303837385540978511">Wallpaper eksklusif untuk <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="530883153651464140">Update <ph name="DEVICE_NAME" /> ke versi <ph name="VERSION" /></translation>
@@ -1003,6 +1032,7 @@
 <translation id="5628106863521633649">Bahasa yang tersedia</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstrak</translation>
+<translation id="5655084389678168978">Pengajar Anda telah menambahkan konten baru di Alat Kelas</translation>
 <translation id="5655283760733841251">Tingkatkan kecerahan keyboard</translation>
 <translation id="5655296450510165335">Pendaftaran perangkat</translation>
 <translation id="5655776422854483175">Tidak ada tugas pencetakan</translation>
@@ -1026,7 +1056,6 @@
 <translation id="5760715441271661976">Status Portal</translation>
 <translation id="5763838252932650682">Memulai ulang dan mengupdate <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Tingkatkan kecerahan layar</translation>
-<translation id="5775340474232476653">Pengajar telah mengakhiri kelas</translation>
 <translation id="5779818640587041940">Biarkan layar tetap aktif saat merekam</translation>
 <translation id="57838592816432529">Bisukan</translation>
 <translation id="5784136236926853061">Latensi HTTP tinggi</translation>
@@ -1043,6 +1072,7 @@
 <translation id="5859969039821714932">Pintasan tidak tersedia. Tekan pintasan baru tanpa <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Nonaktif</translation>
 <translation id="5860491529813859533">Aktifkan</translation>
+<translation id="586463370326011345">petir</translation>
 <translation id="5875913454160982848">Download model transkripsi</translation>
 <translation id="5876385649737594562">Aktifkan untuk memilih opsi</translation>
 <translation id="5877503382465267833">Jeda <ph name="RECORDING_NAME" /></translation>
@@ -1052,7 +1082,6 @@
 <translation id="5896602941605730551">Putar</translation>
 <translation id="5901630391730855834">Kuning</translation>
 <translation id="5903200662178656908">Perangkat adalah kombinasi keyboard dan mouse.</translation>
-<translation id="5903822368221507416">Sembunyikan tab</translation>
 <translation id="5904994456462260490">Tambahkan APN baru</translation>
 <translation id="590746845088109442">kucing</translation>
 <translation id="5907649332524363701">warna tombol</translation>
@@ -1178,6 +1207,7 @@
 <translation id="6417265370957905582">Asisten Google</translation>
 <translation id="6419454453018688975">Aktifkan akses lokasi sistem</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="642713342828771202">matahari terbenam</translation>
 <translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">Lemah (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Buka setelan akun</translation>
@@ -1287,6 +1317,7 @@
 <translation id="6926069762081461162">Judul rekaman</translation>
 <translation id="6930242544192836755">Durasi</translation>
 <translation id="6930597342185648547">Tentang latar belakang</translation>
+<translation id="6931666215260956151">galaksi</translation>
 <translation id="6939766318048400022">Kafe</translation>
 <translation id="6942253772720771875">Berikan masukan atau jelaskan masalah Anda</translation>
 <translation id="6943893908656559156">Identitas jarak jauh (opsional)</translation>
@@ -1363,6 +1394,7 @@
 <translation id="7212547870105584639">Kelola setelan APN jaringan. APN membuat koneksi antara jaringan seluler dan internet. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Update firmware untuk perangkat eksternal</translation>
 <translation id="7216409898977639127">Operator seluler</translation>
+<translation id="7221869452894271364">Muat ulang halaman ini</translation>
 <translation id="7223952304612664117">Hal ini memungkinkan layanan sistem menggunakan Akurasi Lokasi untuk menentukan lokasi Anda. Akurasi Lokasi menggunakan informasi tentang sinyal dan sensor nirkabel untuk memperkirakan lokasi perangkat.</translation>
 <translation id="7233782086689993269">Pintasan dipulihkan</translation>
 <translation id="723419678599947502">Buat judul menggunakan AI Google</translation>
@@ -1421,6 +1453,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="7481312909269577407">Maju</translation>
 <translation id="7487067081878637334">Teknologi</translation>
 <translation id="7490813197707563893">Alamat MAC</translation>
+<translation id="7494145938791663804">indah</translation>
 <translation id="7497215489070763236">Sertifikat CA server</translation>
 <translation id="7500205272584643581">Izinkan Perekam Suara mendeteksi dan memberi label pembicara?</translation>
 <translation id="7501957181231305652">atau</translation>
@@ -1476,6 +1509,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="7760571082554155847">Setelan halaman beranda</translation>
 <translation id="7762130827864645708">Perubahan sandi Anda berhasil. Gunakan sandi baru mulai sekarang.</translation>
 <translation id="7763470514545477072">Kecocokan suffix domain</translation>
+<translation id="7764171263909999400">cahaya volumetrik</translation>
 <translation id="7769672763586021400">ID Model</translation>
 <translation id="7774759755755950354">Kembali</translation>
 <translation id="7778717409420828014">Masukan Anda membantu kami meningkatkan pengalaman Chromebook dan akan ditinjau oleh tim kami. Karena banyaknya jumlah laporan, kami tidak dapat mengirim balasan.</translation>
@@ -1529,6 +1563,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="7971535376154084247">Kontrol umum</translation>
 <translation id="7977800524392185497">Untuk bergabung ke jaringan <ph name="NETWORK_NAME" />, buka Setelan</translation>
 <translation id="7978412674231730200">Kunci pribadi</translation>
+<translation id="7979468455552394856">Alat Kelas terhubung ke siswa</translation>
 <translation id="7982789257301363584">Jaringan</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" dimulai secara otomatis}other{# aplikasi dimulai secara otomatis}}</translation>
 <translation id="7994702968232966508">Metode EAP</translation>
@@ -1599,7 +1634,6 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="8318753676953949627">Tidak Ada Gambar</translation>
 <translation id="8319809980370328428">Pembuatan judul dan ringkasan rekaman</translation>
 <translation id="8320910311642849813">hutan</translation>
-<translation id="8322464149031882595">Klik untuk melanjutkan</translation>
 <translation id="8329018942023753850">aplikasi kalkulator</translation>
 <translation id="8336739000755212683">Ubah gambar akun perangkat</translation>
 <translation id="8339024191194156249">Pelajari lebih lanjut peluncuran otomatis</translation>
@@ -1647,12 +1681,13 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="8503813439785031346">Nama Pengguna</translation>
 <translation id="8503836310948963452">Tinggal beberapa menit lagi...</translation>
 <translation id="8505011850330200833">Model Gemini memerlukan penyimpanan 2 GB untuk memproses transkrip dan membuat ringkasan</translation>
+<translation id="8506394543220680287">tertutup salju</translation>
 <translation id="8508640263392900755">Detail APN</translation>
 <translation id="8522687886059337719">Sekarang Anda memiliki akses ke <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />wallpaper<ph name="END_LINK_WALLPAPER_SUBPAGE" /> dan <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />screensaver<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> baru</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">kedai teh</translation>
+<translation id="8531692079895415839">berkabut</translation>
 <translation id="8538236298648811558">Didukung teknologi AI Google</translation>
-<translation id="8543574988889671960">Muat ulang tab</translation>
 <translation id="8550364285433943656">Tetapkan kontrol tindakan game untuk bermain dengan tombol keyboard</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">AI generatif dapat membuat kesalahan, termasuk tentang orang. Jadi, harap periksa kembali responsnya.</translation>
@@ -1669,11 +1704,13 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="8655295600908251630">Saluran</translation>
 <translation id="8655828773034788261">Bagikan URL:</translation>
 <translation id="8660881923941176839">pound</translation>
+<translation id="8669187096858652220">Klik untuk menampilkan tab</translation>
 <translation id="8670574982334489519">kanan</translation>
 <translation id="8675354002693747642">Pre-shared key</translation>
 <translation id="8677859815076891398">Tidak ada album. Buat album di <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="8682949824227998083">ramen</translation>
 <translation id="8689520252402395106">Colokkan kembali kabel USB <ph name="DEVICE_NAME" /> untuk melanjutkan proses update</translation>
+<translation id="8699053192961439771">Klik untuk menyembunyikan tab secara otomatis</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Gunakan tombol Panah kiri atau kanan untuk mengelola fitur ini.</translation>
 <translation id="8712637175834984815">Mengerti</translation>
 <translation id="871560550817059752">Gagal - Tinta habis</translation>
@@ -1703,7 +1740,6 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="8820817407110198400">Bookmark</translation>
 <translation id="8833620912470026819">hutan kaktus</translation>
 <translation id="8834539327799336565">Saat ini terhubung</translation>
-<translation id="8842526499753992487">Pindahkan ke kiri atas</translation>
 <translation id="8845001906332463065">Dapatkan bantuan</translation>
 <translation id="8849799913685544685">mercusuar</translation>
 <translation id="8851859208664803097">Dihentikan - Printer tidak dapat dijangkau</translation>
@@ -1743,15 +1779,16 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="8961025972867871808">penguin</translation>
 <translation id="8968751544471797276">Kecepatan pengisian daya</translation>
 <translation id="8970109610781093811">Jalankan lagi</translation>
-<translation id="8972061581514441296">Klik untuk kembali</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Pindai}=1{Pindai halaman {NUMBER_OF_PAGES}}other{Pindai halaman {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">desa</translation>
 <translation id="8997710128084572139">Perangkat memiliki <ph name="BATTERY_PERCENTAGE" />% daya baterai.</translation>
+<translation id="8998002498898621320">foto realistis</translation>
 <translation id="8998289560386111590">Tidak tersedia di perangkat Anda</translation>
 <translation id="9000871120886759611">Reset untuk memastikan Anda dapat mengakses informasi dalam bahasa pilihan Anda. Pastikan hanya bahasa pilihan yang digunakan.</translation>
 <translation id="9003499805101629690">piza</translation>
 <translation id="9003704114456258138">Frekuensi</translation>
+<translation id="9017411601860840405">lampu neon</translation>
 <translation id="901834265349196618">email</translation>
 <translation id="9022897536196898720">bunga</translation>
 <translation id="9024331582947483881">layar penuh</translation>

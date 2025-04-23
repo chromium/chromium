@@ -38,7 +38,12 @@ enum class OpenExtensionOutcome : NSInteger {
 enum ShareExtensionItemType {
   READING_LIST_ITEM = 0,
   BOOKMARK_ITEM,
-  OPEN_IN_CHROME_ITEM
+  OPEN_IN_CHROME_ITEM,
+  OPEN_IN_CHROME_INCOGNITO_ITEM,
+  IMAGE_SEARCH_ITEM,
+  TEXT_SEARCH_ITEM,
+  INCOGNITO_IMAGE_SEARCH_ITEM,
+  INCOGNITO_TEXT_SEARCH_ITEM
 };
 
 // The key of a preference containing a dictionary of capabilities supported by

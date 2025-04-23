@@ -558,7 +558,7 @@ class CORE_EXPORT CSSMathExpressionOperation final
       Operands&& operands,
       CSSMathOperator op);
 
-  static CSSMathExpressionNode* CreateTrigonometricFunctionSimplified(
+  static CSSMathExpressionNode* CreateTrigonometricFunction(
       Operands&& operands,
       CSSValueID function_id);
 
@@ -590,6 +590,9 @@ class CORE_EXPORT CSSMathExpressionOperation final
   static CSSMathExpressionNode* CreateSignRelatedFunction(
       Operands&& operands,
       CSSValueID function_id);
+
+  static CSSMathExpressionNode* CreateInvertFunction(
+      const CSSMathExpressionNode* operand);
 
   static CSSMathExpressionNode* CreateCalcSizeOperation(
       const CSSMathExpressionNode* left_side,
@@ -652,6 +655,7 @@ class CORE_EXPORT CSSMathExpressionOperation final
            operator_ == CSSMathOperator::kMediaProgress ||
            operator_ == CSSMathOperator::kContainerProgress;
   }
+  bool IsInvert() const { return operator_ == CSSMathOperator::kInvert; }
 
   // TODO(crbug.com/1284199): Check other math functions too.
   bool IsMathFunction() const final {

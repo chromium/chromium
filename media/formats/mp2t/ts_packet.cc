@@ -55,7 +55,7 @@ TsPacket* TsPacket::Parse(const uint8_t* buf, size_t size) {
   if (size < kPacketSize) {
     DVLOG(1) << "Buffer does not hold one full TS packet:"
              << " buffer_size=" << size;
-    return NULL;
+    return nullptr;
   }
 
   DCHECK_EQ(buf[0], kTsHeaderSyncword);
@@ -63,14 +63,14 @@ TsPacket* TsPacket::Parse(const uint8_t* buf, size_t size) {
     DVLOG(1) << "Not on a TS syncword:"
              << " buf[0]="
              << std::hex << static_cast<int>(buf[0]) << std::dec;
-    return NULL;
+    return nullptr;
   }
 
   std::unique_ptr<TsPacket> ts_packet(new TsPacket());
   bool status = ts_packet->ParseHeader(buf);
   if (!status) {
     DVLOG(1) << "Parsing header failed";
-    return NULL;
+    return nullptr;
   }
   return ts_packet.release();
 }

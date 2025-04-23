@@ -53,12 +53,15 @@ std::optional<RedirectPosition> GetEnforcementRedirectPosition(
     ActivationList list = GetListForThreatTypeAndMetadata(
         results[i].threat_type, results[i].threat_metadata, &warning);
     if (!warning && list != ActivationList::NONE) {
-      if (num_results == 1)
+      if (num_results == 1) {
         return RedirectPosition::kOnly;
-      if (i == 0)
+      }
+      if (i == 0) {
         return RedirectPosition::kFirst;
-      if (i == num_results - 1)
+      }
+      if (i == num_results - 1) {
         return RedirectPosition::kLast;
+      }
       return RedirectPosition::kMiddle;
     }
   }
@@ -83,8 +86,8 @@ SafeBrowsingPageActivationThrottle::SafeBrowsingPageActivationThrottle(
   CHECK(!check_results_.empty(), base::NotFatalUntil::M129);
 }
 
-SafeBrowsingPageActivationThrottle::
-    ~SafeBrowsingPageActivationThrottle() = default;
+SafeBrowsingPageActivationThrottle::~SafeBrowsingPageActivationThrottle() =
+    default;
 
 content::NavigationThrottle::ThrottleCheckResult
 SafeBrowsingPageActivationThrottle::WillRedirectRequest() {
@@ -105,8 +108,7 @@ SafeBrowsingPageActivationThrottle::WillProcessResponse() {
   return DEFER;
 }
 
-const char*
-SafeBrowsingPageActivationThrottle::GetNameForLogging() {
+const char* SafeBrowsingPageActivationThrottle::GetNameForLogging() {
   return "SafeBrowsingPageActivationThrottle";
 }
 
@@ -140,14 +142,12 @@ SafeBrowsingPageActivationThrottle::ConfigResult::ConfigResult(
       matched_valid_configuration(matched_valid_configuration),
       matched_list(matched_list) {}
 
-SafeBrowsingPageActivationThrottle::ConfigResult::ConfigResult() =
-    default;
+SafeBrowsingPageActivationThrottle::ConfigResult::ConfigResult() = default;
 
 SafeBrowsingPageActivationThrottle::ConfigResult::ConfigResult(
     const ConfigResult&) = default;
 
-SafeBrowsingPageActivationThrottle::ConfigResult::~ConfigResult() =
-    default;
+SafeBrowsingPageActivationThrottle::ConfigResult::~ConfigResult() = default;
 
 void SafeBrowsingPageActivationThrottle::CheckCurrentUrl() {
   CHECK(database_client_, base::NotFatalUntil::M129);
@@ -218,10 +218,10 @@ void SafeBrowsingPageActivationThrottle::NotifyResult() {
           selection.config.GetActivationState(activation_level));
 }
 
-void SafeBrowsingPageActivationThrottle::
-    LogMetricsOnChecksComplete(ActivationList matched_list,
-                               ActivationDecision decision,
-                               mojom::ActivationLevel level) const {
+void SafeBrowsingPageActivationThrottle::LogMetricsOnChecksComplete(
+    ActivationList matched_list,
+    ActivationDecision decision,
+    mojom::ActivationLevel level) const {
   CHECK(HasFinishedAllSafeBrowsingChecks(), base::NotFatalUntil::M129);
 
   base::TimeDelta delay = defer_time_.is_null()
@@ -253,8 +253,8 @@ void SafeBrowsingPageActivationThrottle::
                             static_cast<int>(ActivationList::LAST) + 1);
 }
 
-bool SafeBrowsingPageActivationThrottle::
-    HasFinishedAllSafeBrowsingChecks() const {
+bool SafeBrowsingPageActivationThrottle::HasFinishedAllSafeBrowsingChecks()
+    const {
   for (const auto& check_result : check_results_) {
     if (!check_result.finished) {
       return false;
@@ -264,9 +264,8 @@ bool SafeBrowsingPageActivationThrottle::
 }
 
 SafeBrowsingPageActivationThrottle::ConfigResult
-SafeBrowsingPageActivationThrottle::
-    GetHighestPriorityConfiguration(
-        const SubresourceFilterSafeBrowsingClient::CheckResult& result) {
+SafeBrowsingPageActivationThrottle::GetHighestPriorityConfiguration(
+    const SubresourceFilterSafeBrowsingClient::CheckResult& result) {
   CHECK(result.finished, base::NotFatalUntil::M129);
   Configuration selected_config;
   bool warning = false;
@@ -296,8 +295,7 @@ SafeBrowsingPageActivationThrottle::
   return ConfigResult(selected_config, warning, matched, matched_list);
 }
 
-ActivationDecision
-SafeBrowsingPageActivationThrottle::GetActivationDecision(
+ActivationDecision SafeBrowsingPageActivationThrottle::GetActivationDecision(
     const ConfigResult& config) {
   if (!config.matched_valid_configuration) {
     return ActivationDecision::ACTIVATION_CONDITIONS_NOT_MET;
@@ -327,10 +325,12 @@ bool SafeBrowsingPageActivationThrottle::
     case ActivationScope::ALL_SITES:
       return true;
     case ActivationScope::ACTIVATION_LIST:
-      if (matched_list == ActivationList::NONE)
+      if (matched_list == ActivationList::NONE) {
         return false;
-      if (conditions.activation_list == matched_list)
+      }
+      if (conditions.activation_list == matched_list) {
         return true;
+      }
 
       if (conditions.activation_list == ActivationList::PHISHING_INTERSTITIAL &&
           matched_list == ActivationList::SOCIAL_ENG_ADS_INTERSTITIAL) {

@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.privacy_guide;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -26,13 +29,15 @@ import java.util.Set;
  * A utility class for Privacy Guide that fetches the current state of {@link
  * PrivacyGuideFragment.FragmentType}s.
  */
+@NullMarked
 class PrivacyGuideUtils {
     static boolean isMsbbEnabled(Profile profile) {
         return UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(profile);
     }
 
     static boolean isHistorySyncEnabled(Profile profile) {
-        Set<Integer> syncTypes = SyncServiceFactory.getForProfile(profile).getSelectedTypes();
+        Set<Integer> syncTypes =
+                assumeNonNull(SyncServiceFactory.getForProfile(profile)).getSelectedTypes();
 
         // The toggle represents both History and Tabs.
         // History and Tabs should usually have the same value, but in some
@@ -46,6 +51,7 @@ class PrivacyGuideUtils {
     static boolean isUserSignedIn(Profile profile) {
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
+        assumeNonNull(identityManager);
         return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
     }
 

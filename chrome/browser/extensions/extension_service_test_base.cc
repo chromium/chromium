@@ -22,7 +22,6 @@
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/crx_installer.h"
-#include "chrome/browser/extensions/delayed_install_manager.h"
 #include "chrome/browser/extensions/extension_garbage_collector_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
@@ -51,6 +50,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/delayed_install_manager.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
@@ -492,7 +492,7 @@ void ExtensionServiceTestBase::CreateExtensionService(
       base::CommandLine::ForCurrentProcess(), extensions_install_dir_,
       unpacked_install_dir_, autoupdate_enabled, extensions_enabled);
 
-  service_->component_loader()->set_ignore_allowlist_for_testing(true);
+  ComponentLoader::Get(profile())->set_ignore_allowlist_for_testing(true);
 
   // When we start up, we want to make sure there is no external provider,
   // since the ExtensionService on Windows will use the Registry as a default
@@ -503,7 +503,7 @@ void ExtensionServiceTestBase::CreateExtensionService(
 
   DelayedInstallManager::Get(profile())->RegisterInstallGate(
       ExtensionPrefs::DelayReason::kWaitForImports,
-      service_->shared_module_service());
+      SharedModuleService::Get(profile()));
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (!enable_install_limiter) {

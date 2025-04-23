@@ -36,16 +36,18 @@ class ProtobufRuleInputStreamImpl {
       : rules_(rules) {}
 
   url_pattern_index::proto::RuleType FetchNextRule() {
-    if (not_first_rule_)
+    if (not_first_rule_) {
       ++rule_index_;
+    }
     not_first_rule_ = true;
 
     if (is_reading_url_rules_ && rule_index_ >= rules_.url_rules_size()) {
       is_reading_url_rules_ = false;
       rule_index_ = 0;
     }
-    if (!is_reading_url_rules_ && rule_index_ >= rules_.css_rules_size())
+    if (!is_reading_url_rules_ && rule_index_ >= rules_.css_rules_size()) {
       return url_pattern_index::proto::RULE_TYPE_UNSPECIFIED;
+    }
     return is_reading_url_rules_ ? url_pattern_index::proto::RULE_TYPE_URL
                                  : url_pattern_index::proto::RULE_TYPE_CSS;
   }
@@ -82,8 +84,9 @@ class FilterListRuleInputStream : public RuleInputStream {
     std::string line;
     while (std::getline(*input_, line)) {
       auto rule_type = parser_.Parse(line);
-      if (rule_type != url_pattern_index::proto::RULE_TYPE_UNSPECIFIED)
+      if (rule_type != url_pattern_index::proto::RULE_TYPE_UNSPECIFIED) {
         return rule_type;
+      }
       if (!IsTrivialParseError(parser_.parse_error())) {
         LOG(ERROR) << parser_.parse_error();
       }
@@ -188,8 +191,9 @@ class ProtobufRuleOutputStream : public RuleOutputStream {
 
   bool Finish() override {
     std::string buffer;
-    if (!all_rules_.SerializeToString(&buffer))
+    if (!all_rules_.SerializeToString(&buffer)) {
       return false;
+    }
     output_->write(buffer.data(), buffer.size());
     output_->flush();
     return !output_->bad();
@@ -218,8 +222,9 @@ class UnindexedRulesetRuleInputStream : public RuleInputStream {
   }
 
   url_pattern_index::proto::RuleType FetchNextRule() override {
-    if (!impl_ && !ReadNextChunk())
+    if (!impl_ && !ReadNextChunk()) {
       return url_pattern_index::proto::RULE_TYPE_UNSPECIFIED;
+    }
     url_pattern_index::proto::RuleType rule_type = impl_->FetchNextRule();
     while (rule_type == url_pattern_index::proto::RULE_TYPE_UNSPECIFIED &&
            ReadNextChunk()) {
@@ -275,8 +280,9 @@ class UnindexedRulesetRuleOutputStream : public RuleOutputStream {
   }
 
   bool Finish() override {
-    if (!ruleset_writer_.Finish())
+    if (!ruleset_writer_.Finish()) {
       return false;
+    }
     output_->write(ruleset_.data(), ruleset_.size());
     output_->flush();
     return !output_->bad();
@@ -377,20 +383,24 @@ bool TransferRules(RuleInputStream* input,
                    int chrome_version) {
   while (true) {
     auto rule_type = input->FetchNextRule();
-    if (rule_type == url_pattern_index::proto::RULE_TYPE_UNSPECIFIED)
+    if (rule_type == url_pattern_index::proto::RULE_TYPE_UNSPECIFIED) {
       break;
+    }
     switch (rule_type) {
       case url_pattern_index::proto::RULE_TYPE_URL: {
-        if (!url_rules_output)
+        if (!url_rules_output) {
           break;
+        }
         url_pattern_index::proto::UrlRule url_rule = input->GetUrlRule();
-        if (!DeleteUrlRuleOrAmend(&url_rule, chrome_version))
+        if (!DeleteUrlRuleOrAmend(&url_rule, chrome_version)) {
           url_rules_output->PutUrlRule(url_rule);
+        }
         break;
       }
       case url_pattern_index::proto::RULE_TYPE_CSS:
-        if (css_rules_output)
+        if (css_rules_output) {
           css_rules_output->PutCssRule(input->GetCssRule());
+        }
         break;
       case url_pattern_index::proto::RULE_TYPE_COMMENT:
         // Ignore comments.
@@ -404,15 +414,17 @@ bool TransferRules(RuleInputStream* input,
 
 bool DeleteUrlRuleOrAmend(url_pattern_index::proto::UrlRule* rule,
                           int lowest_chrome_version) {
-  if (!lowest_chrome_version)
+  if (!lowest_chrome_version) {
     return false;
+  }
 
   CHECK(rule->has_element_types() || rule->element_types() == 0);
 
   // REGEXP rules are not supported in Chrome's subresource_filter.
   if (rule->url_pattern_type() ==
-      url_pattern_index::proto::URL_PATTERN_TYPE_REGEXP)
+      url_pattern_index::proto::URL_PATTERN_TYPE_REGEXP) {
     return true;
+  }
 
   // POPUP type is deprecated because popup blocking is activated by default
   // in Chrome.
@@ -424,16 +436,18 @@ bool DeleteUrlRuleOrAmend(url_pattern_index::proto::UrlRule* rule,
       rule->activation_types() &
       (url_pattern_index::proto::ACTIVATION_TYPE_DOCUMENT |
        url_pattern_index::proto::ACTIVATION_TYPE_GENERICBLOCK));
-  if (!rule->activation_types())
+  if (!rule->activation_types()) {
     rule->clear_activation_types();
+  }
 
   // Chrome 54-58 ignores rules with unknown element types (like websocket).
   if (lowest_chrome_version == 54) {
     // Remove unknown types to prevent the |rule| from being ignored.
     rule->set_element_types(rule->element_types() & kChrome54To58ElementTypes);
   }
-  if (!rule->element_types())
+  if (!rule->element_types()) {
     rule->clear_element_types();
+  }
 
   // The rule should have at least 1 type bit, otherwise it targets nothing.
   return !rule->element_types() && !rule->activation_types();

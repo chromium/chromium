@@ -10,10 +10,12 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/style/typography.h"
 
 namespace autofill::payments {
@@ -22,17 +24,26 @@ BnplLinkedIssuerPill::BnplLinkedIssuerPill()
     : views::Label(l10n_util::GetStringUTF16(
                        IDS_AUTOFILL_CARD_BNPL_LINKED_ISSUER_PILL_LABEL),
                    views::style::CONTEXT_DIALOG_BODY_TEXT,
-                   views::style::STYLE_SECONDARY) {
-  // TODO(kylixrd): Find appropriate metrics on ChromeLayoutProvider.
-  // TODO (crbug.com/402646513): Update color token to use a context-specific
-  // token.
-  SetBackground(views::CreateRoundedRectBackground(ui::kColorBadgeBackground,
-                                                   gfx::RoundedCornersF(8)));
-  SetBorder(views::CreateRoundedRectBorder(0, 8, gfx::Insets::TLBR(0, 4, 0, 4),
-                                           ui::kColorBadgeBackground));
+                   views::style::STYLE_PRIMARY) {
+  SetEnabledColor(kColorBnplIssuerLinkedPillForeground);
 }
 
 BnplLinkedIssuerPill::~BnplLinkedIssuerPill() = default;
+
+void BnplLinkedIssuerPill::AddedToWidget() {
+  views::Label::AddedToWidget();
+  // TODO(kylixrd): Find appropriate metrics on ChromeLayoutProvider.
+  gfx::Size size = GetPreferredSize(views::SizeBounds());
+  size.Enlarge(0, 4);
+  SetBackground(
+      views::CreateSolidBackground(kColorBnplIssuerLinkedPillBackground));
+  SetBorder(views::CreateRoundedRectBorder(
+      0, size.height() / 2,
+      gfx::Insets::TLBR(2, size.height() / 2, 2, size.height() / 2),
+      kColorBnplIssuerLinkedPillBackground));
+  SetPaintToLayer();
+  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(size.height() / 2));
+}
 
 BEGIN_METADATA(BnplLinkedIssuerPill)
 END_METADATA

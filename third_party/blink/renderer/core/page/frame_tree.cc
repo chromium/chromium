@@ -18,13 +18,9 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/core/page/frame_tree.h"
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -424,10 +420,11 @@ static void PrintFrames(const blink::Frame* frame,
   PrintIndent(indent);
   printf("  document=%p\n", local_frame ? local_frame->GetDocument() : nullptr);
   PrintIndent(indent);
-  printf("  uri=%s\n\n",
-         local_frame && local_frame->GetDocument()
-             ? local_frame->GetDocument()->Url().GetString().Utf8().c_str()
-             : nullptr);
+  UNSAFE_TODO(
+      printf("  uri=%s\n\n",
+             local_frame && local_frame->GetDocument()
+                 ? local_frame->GetDocument()->Url().GetString().Utf8().c_str()
+                 : nullptr));
 
   for (blink::Frame* child = frame->Tree().FirstChild(); child;
        child = child->Tree().NextSibling())

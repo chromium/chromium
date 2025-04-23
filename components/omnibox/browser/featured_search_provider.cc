@@ -28,6 +28,7 @@
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url.h"
@@ -208,7 +209,8 @@ void FeaturedSearchProvider::AddFeaturedKeywordMatches(
         if ((turl->starter_pack_id() == TemplateURLStarterPackData::kGemini &&
              !OmniboxFieldTrial::IsStarterPackExpansionEnabled()) ||
             (turl->starter_pack_id() == TemplateURLStarterPackData::kPage &&
-             !OmniboxFieldTrial::IsStarterPackPageEnabled())) {
+             !omnibox_feature_configs::ContextualSearch::Get()
+                  .starter_pack_page)) {
           continue;
         }
         AddStarterPackMatch(*turl, input);

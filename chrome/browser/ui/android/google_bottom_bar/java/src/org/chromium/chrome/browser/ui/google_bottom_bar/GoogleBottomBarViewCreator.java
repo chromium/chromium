@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.google_bottom_bar;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.GoogleBottomBarVariantLayoutType.DOUBLE_DECKER;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.GoogleBottomBarVariantLayoutType.NO_VARIANT;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.GoogleBottomBarVariantLayoutType.SINGLE_DECKER;
@@ -21,10 +22,11 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonConfig;
@@ -34,6 +36,7 @@ import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.Go
 import org.chromium.ui.base.ViewUtils;
 
 /** Builds the GoogleBottomBar view. */
+@NullMarked
 public class GoogleBottomBarViewCreator {
     private static final String TAG = "GbbViewCreator";
 
@@ -73,6 +76,7 @@ public class GoogleBottomBarViewCreator {
      *
      * @return The created and initialized bottom bar view.
      */
+    @Initializer
     View createGoogleBottomBarView() {
         mRootView = getLayoutRoot();
 
@@ -217,7 +221,10 @@ public class GoogleBottomBarViewCreator {
             return false;
         }
         ImageButton button = mRootView.findViewById(buttonConfig.getId());
-        return button != null && updateButton(button, buttonConfig, /* isFirstTimeShown= */ false);
+        if (button == null) {
+            return false;
+        }
+        return updateButton(button, buttonConfig, /* isFirstTimeShown= */ false);
     }
 
     void logButtons() {
@@ -262,7 +269,8 @@ public class GoogleBottomBarViewCreator {
         createButtonAndAddToParent(
                 rootView,
                 R.layout.bottom_bar_button_spotlight_layout,
-                findButtonConfig(mConfig.getSpotlightId()),
+                // The call site guarantees the Spotlight Button exists.
+                assumeNonNull(findButtonConfig(assumeNonNull(mConfig.getSpotlightId()))),
                 /* addAsFirst= */ true);
 
         LinearLayout nonSpotlightContainer =
@@ -279,9 +287,7 @@ public class GoogleBottomBarViewCreator {
     }
 
     private boolean updateButton(
-            @Nullable ImageButton button,
-            @Nullable ButtonConfig buttonConfig,
-            boolean isFirstTimeShown) {
+            ImageButton button, ButtonConfig buttonConfig, boolean isFirstTimeShown) {
         button.setId(buttonConfig.getId());
         button.setImageDrawable(buttonConfig.getIcon());
         button.setContentDescription(buttonConfig.getDescription());

@@ -61,7 +61,7 @@ std::vector<MIV*> GetMenuItemsFromChildren(const View::Views& children) {
 SubmenuView::SubmenuView(MenuItemView* parent) : parent_menu_item_(parent) {
   CHECK(parent_menu_item_);
   // We'll delete ourselves, otherwise the ScrollView would delete us on close.
-  set_owned_by_client();
+  set_owned_by_client(OwnedByClientPassKey());
 
   // Menus in Chrome are always traversed in a vertical direction.
   GetViewAccessibility().SetIsVertical(true);
@@ -627,7 +627,7 @@ MenuScrollViewContainer* SubmenuView::GetScrollViewContainer() {
   if (!scroll_view_container_) {
     scroll_view_container_ = std::make_unique<MenuScrollViewContainer>(this);
     // Otherwise MenuHost would delete us.
-    scroll_view_container_->set_owned_by_client();
+    scroll_view_container_->set_owned_by_client(OwnedByClientPassKey());
     scroll_view_container_->SetBorderColorId(border_color_id_);
   }
   return scroll_view_container_.get();

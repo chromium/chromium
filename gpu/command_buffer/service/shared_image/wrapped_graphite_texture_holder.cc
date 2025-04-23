@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/shared_image/wrapped_graphite_texture_holder.h"
 
+#include "gpu/command_buffer/service/graphite_shared_context.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 
@@ -21,7 +22,7 @@ WrappedGraphiteTextureHolder::~WrappedGraphiteTextureHolder() {
   auto destroy_resource = [](scoped_refptr<SharedContextState> context_state,
                              skgpu::graphite::BackendTexture texture) {
     if (texture.isValid()) {
-      context_state->graphite_context()->deleteBackendTexture(texture);
+      context_state->graphite_shared_context()->deleteBackendTexture(texture);
     }
   };
 

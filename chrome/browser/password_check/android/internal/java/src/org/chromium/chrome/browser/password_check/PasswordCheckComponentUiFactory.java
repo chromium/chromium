@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.password_check;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.password_check.PasswordCheckComponentUi.CustomTabIntentHelper;
 import org.chromium.chrome.browser.password_check.PasswordCheckComponentUi.TrustedIntentHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** Use {@link #create()} to instantiate a {@link PasswordCheckComponentUi}. */
+@NullMarked
 public class PasswordCheckComponentUiFactory {
     /** The factory used to create components that connect to this fragment and provide data. */
     interface CreationStrategy {

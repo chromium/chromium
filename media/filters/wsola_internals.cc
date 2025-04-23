@@ -61,8 +61,10 @@ void MultiChannelDotProduct_SSE(const AudioBus* a,
   const int last_index = num_frames - rem;
   const int channels = a->channels();
   for (int ch = 0; ch < channels; ++ch) {
-    const float* a_src = a->channel(ch) + frame_offset_a;
-    const float* b_src = b->channel(ch) + frame_offset_b;
+    const float* a_src =
+        a->channel_span(ch).subspan(static_cast<size_t>(frame_offset_a)).data();
+    const float* b_src =
+        b->channel_span(ch).subspan(static_cast<size_t>(frame_offset_b)).data();
 
     // First sum all components.
     __m128 m_sum = _mm_setzero_ps();
@@ -199,14 +201,17 @@ void MultiChannelDotProduct_C(const AudioBus* a,
   memset(dot_product, 0, sizeof(*dot_product) * a->channels());
 
   for (int k = 0; k < a->channels(); ++k) {
-    const float* ch_a = a->channel(k) + frame_offset_a;
-    const float* ch_b = b->channel(k) + frame_offset_b;
+    const float* ch_a =
+        a->channel_span(k).subspan(static_cast<size_t>(frame_offset_a)).data();
+    const float* ch_b =
+        b->channel_span(k).subspan(static_cast<size_t>(frame_offset_b)).data();
     for (int n = 0; n < num_frames; ++n) {
       dot_product[k] += *ch_a++ * *ch_b++;
     }
   }
 }
 #endif
+
 }  // namespace
 
 void MultiChannelDotProduct(const AudioBus* a,
@@ -246,7 +251,7 @@ void MultiChannelMovingBlockEnergies(const AudioBus* input,
   int channels = input->channels();
 
   for (int k = 0; k < input->channels(); ++k) {
-    const float* input_channel = input->channel(k);
+    const float* input_channel = input->channel_span(k).data();
 
     energy[k] = 0;
 

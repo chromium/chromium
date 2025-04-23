@@ -22,8 +22,6 @@
 // recently added passkey.
 static constexpr base::TimeDelta kRecentlyAddedDelay = base::Seconds(5);
 
-BROWSER_USER_DATA_KEY_IMPL(CredentialProviderBrowserAgent)
-
 CredentialProviderBrowserAgent::CredentialProviderBrowserAgent(Browser* browser)
     : browser_(browser),
       model_(IOSPasskeyModelFactory::GetForProfile(

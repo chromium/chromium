@@ -88,11 +88,6 @@ void WebstoreDataFetcher::SetMockItemSnippetReponseForTesting(
 
 void WebstoreDataFetcher::Start(
     network::mojom::URLLoaderFactory* url_loader_factory) {
-  FetchItemSnippet(url_loader_factory);
-}
-
-void WebstoreDataFetcher::FetchItemSnippet(
-    network::mojom::URLLoaderFactory* url_loader_factory) {
   if (g_mock_item_snippet_response_) {
     g_mock_item_snippet_response_->set_item_id(id_);
     delegate_->OnFetchItemSnippetParseSuccess(id_,

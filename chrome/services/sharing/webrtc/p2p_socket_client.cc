@@ -65,9 +65,10 @@ void P2PSocketClient::Init(network::P2PSocketType type,
       &P2PSocketClient::OnConnectionError, base::Unretained(this)));
 }
 
-uint64_t P2PSocketClient::Send(const net::IPEndPoint& address,
-                               base::span<const uint8_t> data,
-                               const rtc::PacketOptions& options) {
+uint64_t P2PSocketClient::Send(
+    const net::IPEndPoint& address,
+    base::span<const uint8_t> data,
+    const webrtc::AsyncSocketPacketOptions& options) {
   uint64_t unique_id = GetUniqueId(random_socket_id_, ++next_packet_id_);
 
   // Can send data only when the socket is open.
@@ -79,10 +80,11 @@ uint64_t P2PSocketClient::Send(const net::IPEndPoint& address,
   return unique_id;
 }
 
-void P2PSocketClient::SendWithPacketId(const net::IPEndPoint& address,
-                                       base::span<const uint8_t> data,
-                                       const rtc::PacketOptions& options,
-                                       uint64_t packet_id) {
+void P2PSocketClient::SendWithPacketId(
+    const net::IPEndPoint& address,
+    base::span<const uint8_t> data,
+    const webrtc::AsyncSocketPacketOptions& options,
+    uint64_t packet_id) {
   socket_->Send(data, network::P2PPacketInfo(address, options, packet_id));
 }
 

@@ -86,6 +86,12 @@ public interface ControlContainer {
     FrameLayout.LayoutParams mutateToolbarLayoutParams();
 
     /**
+     * Toggle display of only the location bar, hiding all other toolbar affordances. This is only
+     * valid in cases where there is a location bar view.
+     */
+    void toggleLocationBarOnlyMode(boolean showOnlyLocationBar);
+
+    /**
      * Destroys the control container, causing it to release any owned native resources and cancel
      * pending tasks.
      */

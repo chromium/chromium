@@ -13,7 +13,7 @@ build_webui("build") {
     "browser_switch.html",
     "internals/browser_switch_internals.html",
   ]
-  non_web_component_files = [
+  ts_files = [
     "app.html.ts",
     "app.ts",
     "browser_switch_proxy.ts",

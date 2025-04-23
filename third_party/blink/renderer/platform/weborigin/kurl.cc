@@ -72,7 +72,7 @@ const char* AsURLChar8Subtle(const String& spec) {
   // canonicalize URL strings, we know that everything before the fragment
   // identifier will actually be ASCII, which means this cast is safe as long as
   // you don't look at the fragment component.
-  return reinterpret_cast<const char*>(spec.Characters8());
+  return base::as_chars(spec.Span8()).data();
 }
 
 // Returns the characters for the given string, or a pointer to a static empty
@@ -352,7 +352,7 @@ StringView KURL::LastPathComponent() const {
   if (string_.Is8Bit()) {
     url::ExtractFileName(AsURLChar8Subtle(string_), path, &file);
   } else {
-    url::ExtractFileName(string_.Characters16(), path, &file);
+    url::ExtractFileName(UNSAFE_TODO(string_.Characters16()), path, &file);
   }
 
   // Bug: https://bugs.webkit.org/show_bug.cgi?id=21015 this function returns
@@ -376,9 +376,10 @@ uint16_t KURL::Port() const {
   if (!is_valid_ || parsed_.port.is_empty())
     return 0;
   DCHECK(!string_.IsNull());
-  int port = string_.Is8Bit()
-                 ? url::ParsePort(AsURLChar8Subtle(string_), parsed_.port)
-                 : url::ParsePort(string_.Characters16(), parsed_.port);
+  int port =
+      string_.Is8Bit()
+          ? url::ParsePort(AsURLChar8Subtle(string_), parsed_.port)
+          : url::ParsePort(UNSAFE_TODO(string_.Characters16()), parsed_.port);
   DCHECK_NE(port, url::PORT_UNSPECIFIED);  // Checked port.len <= 0 already.
   DCHECK_NE(port, url::PORT_INVALID);      // Checked is_valid_ already.
 
@@ -672,7 +673,7 @@ void KURL::SetPort(uint16_t port) {
   DCHECK(port_string.Is8Bit());
 
   url::Replacements<char> replacements;
-  replacements.SetPort(reinterpret_cast<const char*>(port_string.Characters8()),
+  replacements.SetPort(base::as_chars(port_string.Span8()).data(),
                        url::Component(0, port_string.length()));
   ReplaceComponents(replacements);
 }
@@ -829,7 +830,8 @@ bool KURL::IsStandard() const {
     return false;
   return string_.Is8Bit()
              ? url::IsStandard(AsURLChar8Subtle(string_), parsed_.scheme)
-             : url::IsStandard(string_.Characters16(), parsed_.scheme);
+             : url::IsStandard(UNSAFE_TODO(string_.Characters16()),
+                               parsed_.scheme);
 }
 
 bool EqualIgnoringFragmentIdentifier(const KURL& a, const KURL& b) {
@@ -882,7 +884,8 @@ unsigned KURL::PathAfterLastSlash() const {
   if (string_.Is8Bit()) {
     url::ExtractFileName(AsURLChar8Subtle(string_), parsed_.path, &filename);
   } else {
-    url::ExtractFileName(string_.Characters16(), parsed_.path, &filename);
+    url::ExtractFileName(UNSAFE_TODO(string_.Characters16()), parsed_.path,
+                         &filename);
   }
   return filename.begin;
 }
@@ -897,8 +900,8 @@ bool ProtocolIs(const String& url, const char* protocol) {
     return url::FindAndCompareScheme(AsURLChar8Subtle(url), url.length(),
                                      protocol, nullptr);
   }
-  return url::FindAndCompareScheme(url.Characters16(), url.length(), protocol,
-                                   nullptr);
+  return url::FindAndCompareScheme(UNSAFE_TODO(url.Characters16()),
+                                   url.length(), protocol, nullptr);
 }
 
 void KURL::Init(const KURL& base,
@@ -929,10 +932,10 @@ void KURL::Init(const KURL& base,
                                      ClampTo<int>(relative_utf8.size()),
                                      charset_converter, &output, &parsed_);
   } else {
-    is_valid_ = url::ResolveRelative(base_utf8.data(), base_utf8.size(),
-                                     base.parsed_, relative.Characters16(),
-                                     ClampTo<int>(relative.length()),
-                                     charset_converter, &output, &parsed_);
+    is_valid_ = url::ResolveRelative(
+        base_utf8.data(), base_utf8.size(), base.parsed_,
+        UNSAFE_TODO(relative.Characters16()), ClampTo<int>(relative.length()),
+        charset_converter, &output, &parsed_);
   }
 
   // Constructing an AtomicString will re-hash the raw output and check the
@@ -1054,10 +1057,14 @@ void KURL::ReplaceComponents(const url::Replacements<CHAR>& replacements,
   url::RawCanonOutputT<char> output;
   url::Parsed new_parsed;
 
-  StringUTF8Adaptor utf8(string_);
-  bool replacements_valid =
-      url::ReplaceComponents(utf8.data(), utf8.size(), parsed_, replacements,
-                             nullptr, &output, &new_parsed);
+  bool replacements_valid;
+  {
+    StringUTF8Adaptor utf8(string_);
+    replacements_valid =
+        url::ReplaceComponents(utf8.data(), utf8.size(), parsed_, replacements,
+                               nullptr, &output, &new_parsed);
+    // `utf8` should be destructed before replacing `string_`.
+  }
   if (replacements_valid || !preserve_validity) {
     is_valid_ = replacements_valid;
     parsed_ = new_parsed;

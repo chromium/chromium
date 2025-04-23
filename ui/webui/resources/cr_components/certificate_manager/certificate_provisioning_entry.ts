@@ -45,7 +45,7 @@ export class CertificateProvisioningEntryElement extends
     };
   }
 
-  model: CertificateProvisioningProcess;
+  declare model: CertificateProvisioningProcess;
 
   private closePopupMenu_() {
     this.shadowRoot!.querySelector('cr-action-menu')!.close();

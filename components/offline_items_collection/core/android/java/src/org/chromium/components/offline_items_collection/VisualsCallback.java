@@ -17,5 +17,5 @@ public interface VisualsCallback {
      * @param id      The {@link ContentId} that {@code visuals} is associated with.
      * @param visuals The {@link OfflineItemVisuals}, if any, associated with {@code id}.
      */
-    void onVisualsAvailable(ContentId id, @Nullable OfflineItemVisuals visuals);
+    void onVisualsAvailable(@Nullable ContentId id, @Nullable OfflineItemVisuals visuals);
 }

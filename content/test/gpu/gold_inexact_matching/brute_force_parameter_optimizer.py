@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import logging
 
 import gold_inexact_matching.iterative_parameter_optimizer\
@@ -41,7 +39,7 @@ class BruteForceParameterOptimizer(
                                                   edge_threshold)
           success, _, _ = self._RunComparisonForParameters(parameters)
           if success:
-            print('Found good parameters %s' % parameters)
+            print(f'Found good parameters {parameters}')
             should_continue = False
             break
           logging.info('Found bad parameters %s', parameters)

@@ -9,3 +9,5 @@ NSString* const kEditProfileBottomSheetCancelButton =
 
 NSString* const kEditProfileBottomSheetViewIdentfier =
     @"EditProfileBottomSheetViewIdentfier";
+
+NSString* const kDetailIconCellIdentifier = @"DetailIconCell";

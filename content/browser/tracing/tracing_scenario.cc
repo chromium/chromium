@@ -203,6 +203,9 @@ bool NestedTracingScenario::OnStopTrigger(
 bool NestedTracingScenario::OnUploadTrigger(
     const BackgroundTracingRule* triggered_rule) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TriggersDataSource::EmitTrigger(triggered_rule);
+  base::UmaHistogramSparse("Tracing.Background.Scenario.Trigger.Upload",
+                           TriggerNameHash(triggered_rule));
 
   for (auto& rule : stop_rules_) {
     rule->Uninstall();
@@ -412,10 +415,14 @@ void TracingScenario::OnNestedScenarioUpload(
   CHECK(current_state_ == State::kStarting ||
         current_state_ == State::kRecording)
       << static_cast<int>(current_state_);
-  TriggersDataSource::EmitTrigger(triggered_rule);
-  base::UmaHistogramSparse("Tracing.Background.Scenario.Trigger.Upload",
-                           TriggerNameHash(triggered_rule));
 
+  if (on_nested_stopped_.IsCancelled()) {
+    for (auto& rule : stop_rules_) {
+      rule->Install(base::BindRepeating(&TracingScenario::OnStopTrigger,
+                                        base::Unretained(this)));
+    }
+  }
+  on_nested_stopped_.Cancel();
   active_scenario_ = nullptr;
   SetState(State::kCloning);
   // Skip cloning if the trace isn't allowed to save or is still starting.
@@ -679,10 +686,6 @@ void TracingScenario::OnTracingCloned() {
   // All nested scenarios are re-enabled.
   for (auto& scenario : nested_scenarios_) {
     scenario->Enable();
-  }
-  for (auto& rule : stop_rules_) {
-    rule->Install(base::BindRepeating(&TracingScenario::OnStopTrigger,
-                                      base::Unretained(this)));
   }
 }
 

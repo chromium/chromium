@@ -109,7 +109,7 @@ WebMParserClient* WebMTracksParser::OnListStart(int id) {
   if (id == kWebMIdContentEncodings) {
     if (track_content_encodings_client_) {
       MEDIA_LOG(ERROR, media_log_) << "Multiple ContentEncodings lists";
-      return NULL;
+      return nullptr;
     }
 
     track_content_encodings_client_ =
@@ -249,7 +249,7 @@ bool WebMTracksParser::OnListEnd(int id) {
 }
 
 bool WebMTracksParser::OnUInt(int id, int64_t val) {
-  int64_t* dst = NULL;
+  int64_t* dst = nullptr;
 
   switch (id) {
     case kWebMIdTrackNumber:

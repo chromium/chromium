@@ -23,7 +23,7 @@ function getUndoRedoModifier() {
 chrome.test.runTests([
   // Test that clicking the annotation button toggles annotation mode.
   async function testAnnotationButton() {
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
 
     const annotateButton = getRequiredElement(viewerToolbar, '#annotate');
 
@@ -33,7 +33,7 @@ chrome.test.runTests([
 
     annotateButton.click();
     await microtasksFinished();
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
     chrome.test.succeed();
   },
   // Test that clicking the text annotation button toggles text annotation mode.
@@ -52,7 +52,7 @@ chrome.test.runTests([
 
     // Button should now exist. Clicking the text annotation button enables
     // text annotation mode.
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
     const textButton = getRequiredElement(viewerToolbar, '#text-annotate');
     textButton.click();
     await microtasksFinished();
@@ -74,13 +74,13 @@ chrome.test.runTests([
     // Clicking the text button while in text mode exits annotation mode.
     textButton.click();
     await microtasksFinished();
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
     chrome.test.succeed();
   },
   // <if expr="enable_ink">
   // Test that the original Ink annotation bar is not used.
   async function testInkAnnotationBarNotVisible() {
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
 
     viewerToolbar.setAnnotationMode(AnnotationMode.DRAW);
     await microtasksFinished();
@@ -89,10 +89,10 @@ chrome.test.runTests([
     chrome.test.assertTrue(
         !viewerToolbar.shadowRoot.querySelector('viewer-annotations-bar'));
 
-    viewerToolbar.setAnnotationMode(AnnotationMode.NONE);
+    viewerToolbar.setAnnotationMode(AnnotationMode.OFF);
     await microtasksFinished();
 
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
     chrome.test.assertTrue(
         !viewerToolbar.shadowRoot.querySelector('viewer-annotations-bar'));
     chrome.test.succeed();
@@ -101,7 +101,7 @@ chrome.test.runTests([
   // not have the same limitations. Test that these buttons are still enabled in
   // Ink2 annotation mode.
   async function testInk1DisabledButtonsAreEnabled() {
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
 
     viewerToolbar.setAnnotationMode(AnnotationMode.DRAW);
     await microtasksFinished();
@@ -116,10 +116,10 @@ chrome.test.runTests([
     chrome.test.assertFalse(rotationButton.disabled);
     chrome.test.assertFalse(twoPageViewButton.disabled);
 
-    viewerToolbar.setAnnotationMode(AnnotationMode.NONE);
+    viewerToolbar.setAnnotationMode(AnnotationMode.OFF);
     await microtasksFinished();
 
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
     chrome.test.assertFalse(viewerToolbar.$.sidenavToggle.disabled);
     chrome.test.assertFalse(rotationButton.disabled);
     chrome.test.assertFalse(twoPageViewButton.disabled);
@@ -132,7 +132,7 @@ chrome.test.runTests([
     await openToolbarMenu(viewerToolbar);
 
     // Start the test with annotation mode disabled and annotations displayed.
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
     const showAnnotationsButton =
         getRequiredElement(viewerToolbar, '#show-annotations-button');
     assertCheckboxMenuButton(viewerToolbar, showAnnotationsButton, true);
@@ -143,9 +143,9 @@ chrome.test.runTests([
     await microtasksFinished();
     chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
     assertCheckboxMenuButton(viewerToolbar, showAnnotationsButton, true);
-    viewerToolbar.setAnnotationMode(AnnotationMode.NONE);
+    viewerToolbar.setAnnotationMode(AnnotationMode.OFF);
     await microtasksFinished();
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
     assertCheckboxMenuButton(viewerToolbar, showAnnotationsButton, true);
 
     // Hide annotations.
@@ -163,33 +163,43 @@ chrome.test.runTests([
     await microtasksFinished();
     chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
     assertCheckboxMenuButton(viewerToolbar, showAnnotationsButton, false);
-    viewerToolbar.setAnnotationMode(AnnotationMode.NONE);
+    viewerToolbar.setAnnotationMode(AnnotationMode.OFF);
     await microtasksFinished();
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
     assertCheckboxMenuButton(viewerToolbar, showAnnotationsButton, false);
     chrome.test.succeed();
   },
   // Test that toggling annotation mode sends a message to the PDF content.
   async function testToggleAnnotationModeSendsMessage() {
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
 
     viewerToolbar.setAnnotationMode(AnnotationMode.DRAW);
     await microtasksFinished();
     chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
 
-    const enableMessage = mockPlugin.findMessage('setAnnotationMode');
+    let enableMessage = mockPlugin.findMessage('setAnnotationMode');
     chrome.test.assertTrue(enableMessage !== null);
-    chrome.test.assertEq(enableMessage!.enable, true);
+    chrome.test.assertEq(enableMessage!.mode, AnnotationMode.DRAW);
 
     mockPlugin.clearMessages();
 
-    viewerToolbar.setAnnotationMode(AnnotationMode.NONE);
+    viewerToolbar.setAnnotationMode(AnnotationMode.TEXT);
     await microtasksFinished();
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.TEXT, viewerToolbar.annotationMode);
+
+    enableMessage = mockPlugin.findMessage('setAnnotationMode');
+    chrome.test.assertTrue(enableMessage !== null);
+    chrome.test.assertEq(enableMessage!.mode, AnnotationMode.TEXT);
+
+    mockPlugin.clearMessages();
+
+    viewerToolbar.setAnnotationMode(AnnotationMode.OFF);
+    await microtasksFinished();
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
 
     const disableMessage = mockPlugin.findMessage('setAnnotationMode');
     chrome.test.assertTrue(disableMessage !== null);
-    chrome.test.assertEq(disableMessage!.enable, false);
+    chrome.test.assertEq(disableMessage!.mode, AnnotationMode.OFF);
     chrome.test.succeed();
   },
   // Test that entering presentation mode exits annotation mode, and exiting
@@ -197,14 +207,14 @@ chrome.test.runTests([
   async function testPresentationModeExitsAnnotationMode() {
     // First, check that there's no interaction with toggling presentation mode
     // when annotation mode is disabled.
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
 
     await enterFullscreenWithUserGesture();
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
 
     document.exitFullscreen();
     await eventToPromise('fullscreenchange', viewer.$.scroller);
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
 
     // Now, check the interaction of toggling presentation mode when annotation
     // mode is enabled.
@@ -214,7 +224,7 @@ chrome.test.runTests([
 
     // Entering presentation mode should disable annotation mode.
     await enterFullscreenWithUserGesture();
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
 
     // Exiting presentation mode should re-enable annotation mode.
     document.exitFullscreen();
@@ -302,9 +312,9 @@ chrome.test.runTests([
 
     // Exit annotation mode, since form fields can only be focused outside of
     // annotation mode.
-    viewerToolbar.setAnnotationMode(AnnotationMode.NONE);
+    viewerToolbar.setAnnotationMode(AnnotationMode.OFF);
     await microtasksFinished();
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
 
     const undoButton =
         getRequiredElement<HTMLButtonElement>(viewerToolbar, '#undo');
@@ -360,7 +370,7 @@ chrome.test.runTests([
     mockPlugin.clearMessages();
     mockMetricsPrivate.reset();
 
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
 
     // Enable annotation mode.
     viewerToolbar.setAnnotationMode(AnnotationMode.DRAW);
@@ -410,9 +420,9 @@ chrome.test.runTests([
 
     // Exit annotation mode, since form fields can only be focused outside of
     // annotation mode.
-    viewerToolbar.setAnnotationMode(AnnotationMode.NONE);
+    viewerToolbar.setAnnotationMode(AnnotationMode.OFF);
     await microtasksFinished();
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
 
     mockPlugin.clearMessages();
 

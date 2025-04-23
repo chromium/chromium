@@ -47,7 +47,7 @@ build_webui("build") {
 
   web_component_files = [ "app.ts" ]
 
-  non_web_component_files = [ "browser_proxy.ts" ]
+  ts_files = [ "browser_proxy.ts" ]
 
   mojo_files_deps = [ ":mojom_ts__generator" ]
   mojo_files = [

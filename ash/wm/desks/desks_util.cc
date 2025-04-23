@@ -157,15 +157,6 @@ ASH_EXPORT bool BelongsToDesk(aura::Window* window, const Desk* desk) {
   return desk_container && desk_container->GetId() == desk->container_id();
 }
 
-std::optional<uint64_t> GetActiveDeskLacrosProfileId() {
-  std::optional<uint64_t> id;
-  if (auto* desk_controller = DesksController::Get();
-      desk_controller && chromeos::features::IsDeskProfilesEnabled()) {
-    id = desk_controller->active_desk()->lacros_profile_id();
-  }
-  return id;
-}
-
 aura::Window* GetDeskContainerForContext(aura::Window* context) {
   DCHECK(context);
 

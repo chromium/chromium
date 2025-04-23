@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Google Inc.
+ * Copyright 2019 Google LLC.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,8 +16,12 @@
 #include "third_party/private-join-and-compute/src/crypto/big_num.h"
 
 #include <cmath>
-#include <vector>
+#include <cstdint>
+#include <string>
+#include <utility>
 
+#include "third_party/abseil-cpp/absl/strings/str_cat.h"
+#include "third_party/abseil-cpp/absl/strings/string_view.h"
 #include "third_party/private-join-and-compute/src/chromium_patch.h"
 #include "third_party/private-join-and-compute/src/crypto/context.h"
 #include "third_party/private-join-and-compute/src/crypto/openssl.inc"
@@ -25,12 +29,30 @@
 
 namespace private_join_and_compute {
 
+namespace {
+
+// Utility class for decimal string conversion.
+class BnString {
+ public:
+  explicit BnString(char* bn_char) : bn_char_(bn_char) {}
+
+  ~BnString() { OPENSSL_free(bn_char_); }
+
+  std::string ToString() { return std::string(bn_char_); }
+
+ private:
+  char* const bn_char_;
+};
+
+}  // namespace
+
 BigNum::BigNum(const BigNum& other)
-    : bn_(BignumPtr(CHECK_NOTNULL(BN_dup(other.bn_.get())))),
-      bn_ctx_(other.bn_ctx_) {}
+    : bn_(BignumPtr(BN_dup(other.bn_.get()))), bn_ctx_(other.bn_ctx_) {}
 
 BigNum& BigNum::operator=(const BigNum& other) {
-  bn_ = BignumPtr(CHECK_NOTNULL(BN_dup(other.bn_.get())));
+  BIGNUM* temp = BN_dup(other.bn_.get());
+  CHECK_NE(temp, nullptr);
+  bn_ = BignumPtr(temp);
   bn_ctx_ = other.bn_ctx_;
   return *this;
 }
@@ -48,7 +70,7 @@ BigNum::BigNum(BN_CTX* bn_ctx, uint64_t number) : BigNum::BigNum(bn_ctx) {
   CRYPTO_CHECK(BN_set_u64(bn_.get(), number));
 }
 
-BigNum::BigNum(BN_CTX* bn_ctx, const std::string& bytes)
+BigNum::BigNum(BN_CTX* bn_ctx, absl::string_view bytes)
     : BigNum::BigNum(bn_ctx) {
   CRYPTO_CHECK(nullptr !=
                BN_bin2bn(reinterpret_cast<const unsigned char*>(bytes.data()),
@@ -61,7 +83,9 @@ BigNum::BigNum(BN_CTX* bn_ctx, const unsigned char* bytes, int length)
 }
 
 BigNum::BigNum(BN_CTX* bn_ctx) {
-  bn_ = BignumPtr(CHECK_NOTNULL(BN_new()));
+  BIGNUM* temp = BN_new();
+  CHECK_NE(temp, nullptr);
+  bn_ = BignumPtr(temp);
   bn_ctx_ = bn_ctx;
 }
 
@@ -75,9 +99,10 @@ const BIGNUM* BigNum::GetConstBignumPtr() const { return bn_.get(); }
 std::string BigNum::ToBytes() const {
   CHECK(IsNonNegative()) << "Cannot serialize a negative BigNum.";
   int length = BN_num_bytes(bn_.get());
-  std::vector<unsigned char> bytes(length);
-  BN_bn2bin(bn_.get(), bytes.data());
-  return std::string(reinterpret_cast<char*>(bytes.data()), bytes.size());
+
+  std::string bytes(length, 0);
+  BN_bn2bin(bn_.get(), reinterpret_cast<unsigned char*>(bytes.data()));
+  return bytes;
 }
 
 StatusOr<uint64_t> BigNum::ToIntValue() const {
@@ -86,6 +111,10 @@ StatusOr<uint64_t> BigNum::ToIntValue() const {
     return InvalidArgumentError("BigNum has more than 64 bits.");
   }
   return val;
+}
+
+std::string BigNum::ToDecimalString() const {
+  return BnString(BN_bn2dec(GetConstBignumPtr())).ToString();
 }
 
 int BigNum::BitLength() const { return BN_num_bits(bn_.get()); }
@@ -146,7 +175,9 @@ BigNum BigNum::Sub(const BigNum& val) const {
 
 BigNum BigNum::Div(const BigNum& val) const {
   BigNum r(bn_ctx_);
-  BignumPtr rem(CHECK_NOTNULL(BN_new()));
+  BIGNUM* temp = BN_new();
+  CHECK_NE(temp, nullptr);
+  BignumPtr rem(temp);
   CRYPTO_CHECK(
       1 == BN_div(r.bn_.get(), rem.get(), bn_.get(), val.bn_.get(), bn_ctx_));
   CHECK(BN_is_zero(rem.get())) << "Use DivAndTruncate() instead of Div() if "
@@ -156,7 +187,9 @@ BigNum BigNum::Div(const BigNum& val) const {
 
 BigNum BigNum::DivAndTruncate(const BigNum& val) const {
   BigNum r(bn_ctx_);
-  BignumPtr rem(CHECK_NOTNULL(BN_new()));
+  BIGNUM* temp = BN_new();
+  CHECK_NE(temp, nullptr);
+  BignumPtr rem(temp);
   CRYPTO_CHECK(
       1 == BN_div(r.bn_.get(), rem.get(), bn_.get(), val.bn_.get(), bn_ctx_));
   return r;
@@ -215,10 +248,12 @@ BigNum BigNum::ModSqr(const BigNum& m) const {
   return r;
 }
 
-BigNum BigNum::ModInverse(const BigNum& m) const {
+StatusOr<BigNum> BigNum::ModInverse(const BigNum& m) const {
   BigNum r(bn_ctx_);
-  CRYPTO_CHECK(nullptr !=
-               BN_mod_inverse(r.bn_.get(), bn_.get(), m.bn_.get(), bn_ctx_));
+  if (nullptr == BN_mod_inverse(r.bn_.get(), bn_.get(), m.bn_.get(), bn_ctx_)) {
+    return InvalidArgumentError(
+        absl::StrCat("BigNum::ModInverse failed: ", OpenSSLErrorString()));
+  }
   return r;
 }
 

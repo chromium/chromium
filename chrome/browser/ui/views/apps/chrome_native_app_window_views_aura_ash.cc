@@ -87,20 +87,17 @@ class NativeAppWindowFrameView : public apps::AppWindowFrameView,
   void UpdateWindowRoundedCorners() override {
     DCHECK(GetWidget());
 
-    if (!chromeos::features::IsRoundedWindowsEnabled()) {
-      return;
-    }
-
     aura::Window* window = GetWidget()->GetNativeWindow();
 
-    const int corner_radius = chromeos::GetWindowCornerRadius(window);
-    window->SetProperty(aura::client::kWindowCornerRadiusKey, corner_radius);
+    const gfx::RoundedCornersF window_radii = chromeos::GetWindowRadii(window);
+    window->SetProperty(aura::client::kWindowCornerRadiusKey,
+                        window_radii.upper_left());
 
     if (draw_frame()) {
-      SetFrameCornerRadius(corner_radius);
+      SetFrameCornerRadius(window_radii.upper_left());
     }
 
-    GetWidget()->client_view()->UpdateWindowRoundedCorners(corner_radius);
+    GetWidget()->client_view()->UpdateWindowRoundedCorners(window_radii);
   }
 
   // aura::WindowObserver:
@@ -141,17 +138,19 @@ class ChromeNativeAppNonClientView : public views::ClientView {
   ~ChromeNativeAppNonClientView() override = default;
 
   // views::ClientView:
-  void UpdateWindowRoundedCorners(int corner_radius) override {
+  void UpdateWindowRoundedCorners(
+      const gfx::RoundedCornersF& window_radii) override {
     DCHECK(GetWidget());
 
-    gfx::RoundedCornersF radii(0, 0, corner_radius, corner_radius);
+    gfx::RoundedCornersF radii(0, 0, window_radii.lower_right(),
+                               window_radii.lower_left());
 
     // If the chrome app's non-standard frame is not drawn, then round all four
     // corners of the web contents to achieve a rounded window.
     // For an app with a standard frame, we always draw the frame.
     if (has_non_standard_frame_ && !draw_non_standard_frame_) {
-      radii.set_upper_right(corner_radius);
-      radii.set_upper_left(corner_radius);
+      radii.set_upper_right(window_radii.upper_right());
+      radii.set_upper_left(window_radii.upper_left());
     }
 
     static_cast<ChromeNativeAppWindowViewsAuraAsh*>(contents_view())

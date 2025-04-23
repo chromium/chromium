@@ -602,7 +602,7 @@ typedef NS_ENUM(NSInteger, AccountsItemType) {
                             view:itemView
         forceSnackbarOverToolbar:NO
                       withSource:metricSignOut
-                      completion:^(BOOL success) {
+                      completion:^(BOOL success, SceneState* scene_state) {
                         [weakSelf handleSignOutCompleted:success];
                       }];
   self.signoutCoordinator.delegate = self;

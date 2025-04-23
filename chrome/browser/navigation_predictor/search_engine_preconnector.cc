@@ -4,9 +4,12 @@
 
 #include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
 
+#include <limits>
+
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -22,7 +25,10 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/browser_context.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/features.h"
+#include "net/base/reconnect_notifier.h"
+#include "services/network/public/mojom/reconnect_event_observer.mojom-forward.h"
 
 namespace {
 
@@ -33,6 +39,9 @@ const bool kDefaultSkipInBackground = false;
 const int kDefaultStartupDelayMs = 5000;
 const bool kDefaultSkipInBackground = true;
 #endif
+
+constexpr int kPreconnectIntervalSec = 60;
+constexpr int kPreconnectRetryDelayMs = 50;
 
 }  // namespace
 
@@ -45,9 +54,6 @@ BASE_FEATURE(kPreconnectFromKeyedService,
 BASE_FEATURE(kPreconnectToSearch,
              "PreconnectToSearch",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kPreconnectToSearchWithPrivacyModeEnabled,
-             "PreconnectToSearchWithPrivacyModeEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
 
 WebContentVisibilityManager::WebContentVisibilityManager()
@@ -103,6 +109,12 @@ bool SearchEnginePreconnector::ShouldBeEnabledForOffTheRecord() {
   return enabled_for_otr;
 }
 
+bool SearchEnginePreconnector::SearchEnginePreconnect2Enabled() {
+  static bool preconnect2_enabled =
+      base::FeatureList::IsEnabled(net::features::kSearchEnginePreconnect2);
+  return preconnect2_enabled;
+}
+
 SearchEnginePreconnector::SearchEnginePreconnector(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context) {
@@ -113,18 +125,18 @@ SearchEnginePreconnector::SearchEnginePreconnector(
 SearchEnginePreconnector::~SearchEnginePreconnector() = default;
 
 void SearchEnginePreconnector::StopPreconnecting() {
+  preconnector_started_ = false;
   timer_.Stop();
 }
 
 void SearchEnginePreconnector::StartPreconnecting(bool with_startup_delay) {
+  preconnector_started_ = true;
   timer_.Stop();
   if (with_startup_delay) {
-    timer_.Start(FROM_HERE,
-                 base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
-                     features::kPreconnectToSearch, "startup_delay_ms",
-                     kDefaultStartupDelayMs)),
-                 base::BindOnce(&SearchEnginePreconnector::PreconnectDSE,
-                                base::Unretained(this)));
+    StartPreconnectWithDelay(
+        base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
+            features::kPreconnectToSearch, "startup_delay_ms",
+            kDefaultStartupDelayMs)));
     return;
   }
 
@@ -166,6 +178,24 @@ void SearchEnginePreconnector::PreconnectDSE() {
       "IsBrowserAppLikelyInForeground",
       is_browser_app_likely_in_foreground);
 
+  std::optional<net::ConnectionKeepAliveConfig> keepalive_config;
+  mojo::PendingRemote<network::mojom::ReconnectEventObserver> observer;
+  if (SearchEnginePreconnect2Enabled()) {
+    keepalive_config = net::ConnectionKeepAliveConfig();
+    keepalive_config->idle_timeout_in_seconds =
+        net::features::kIdleTimeoutInSeconds.Get();
+    keepalive_config->ping_interval_in_seconds =
+        net::features::kPingIntervalInSeconds.Get();
+    keepalive_config->enable_connection_keep_alive = true;
+
+    if (!receiver_.is_bound()) {
+      observer = receiver_.BindNewPipeAndPassRemote();
+      receiver_.set_disconnect_handler(base::BindOnce(
+          &SearchEnginePreconnector::OnReconnectObserverPipeDisconnected,
+          base::Unretained(this)));
+    }
+  }
+
   if (!base::GetFieldTrialParamByFeatureAsBool(features::kPreconnectToSearch,
                                                "skip_in_background",
                                                kDefaultSkipInBackground) ||
@@ -176,28 +206,17 @@ void SearchEnginePreconnector::PreconnectDSE() {
     GetPreconnectManager().StartPreconnectUrl(
         preconnect_url, /*allow_credentials=*/true, network_anonymziation_key,
         predictors::kSearchEnginePreconnectTrafficAnnotation,
-        /*storage_partition_config=*/nullptr);
-
-    if (base::FeatureList::IsEnabled(
-            features::kPreconnectToSearchWithPrivacyModeEnabled)) {
-      GetPreconnectManager().StartPreconnectUrl(
-          preconnect_url,
-          /*allow_credentials=*/false, network_anonymziation_key,
-          predictors::kSearchEnginePreconnectTrafficAnnotation,
-          /*storage_partition_config=*/nullptr);
-    }
+        /*storage_partition_config=*/nullptr, std::move(keepalive_config),
+        std::move(observer));
   }
 
-  // The delay beyond the idle socket timeout that net uses when
-  // re-preconnecting. If negative, no retries occur.
-  const base::TimeDelta retry_delay = base::Milliseconds(50);
+  // Periodically preconnect to the DSE. If the browser app is likely in
+  // background, we will reattempt preconnect later.
+  if (!SearchEnginePreconnect2Enabled()) {
+    StartPreconnectWithDelay(GetPreconnectInterval());
+  }
 
-  // Set/Reset the timer to fire after the preconnect times out. Add an extra
-  // delay to make sure the preconnect has expired if it wasn't used.
-  timer_.Start(FROM_HERE,
-               base::Seconds(GetPreconnectIntervalSec()) + retry_delay,
-               base::BindOnce(&SearchEnginePreconnector::PreconnectDSE,
-                              base::Unretained(this)));
+  last_preconnect_attempt_time_ = base::TimeTicks::Now();
 }
 
 GURL SearchEnginePreconnector::GetDefaultSearchEngineOriginURL() const {
@@ -211,12 +230,53 @@ GURL SearchEnginePreconnector::GetDefaultSearchEngineOriginURL() const {
   return search_provider->GenerateSearchURL({}).DeprecatedGetOriginAsURL();
 }
 
-int SearchEnginePreconnector::GetPreconnectIntervalSec() const {
-  constexpr int kPreconnectIntervalSec = 60;
-  int preconnect_interval = base::GetFieldTrialParamByFeatureAsInt(
-      net::features::kSearchEnginePreconnectInterval, "preconnect_interval",
-      kPreconnectIntervalSec);
-  return preconnect_interval;
+base::TimeDelta SearchEnginePreconnector::GetPreconnectInterval() const {
+  if (!SearchEnginePreconnect2Enabled()) {
+    int preconnect_interval = base::GetFieldTrialParamByFeatureAsInt(
+        net::features::kSearchEnginePreconnectInterval, "preconnect_interval",
+        kPreconnectIntervalSec);
+
+    // Add an extra delay to make sure the preconnect has expired if it wasn't
+    // used.
+    return base::Seconds(preconnect_interval) +
+           base::Milliseconds(kPreconnectRetryDelayMs);
+  }
+
+  // If this is the first time failing, we should instantly retry, but we wait
+  // a very small amount of time since a closed connection would likely mean
+  // that there were something wrong in the connection.
+  // Otherwise, we backoff `kPreconnectRetryDelayMs` (currently 50 ms) * 2^n for
+  // the next preconnect attempt.
+  return std::min(
+      base::Milliseconds(kPreconnectRetryDelayMs) *
+          CalculateBackoffMultiplier(),
+      base::Seconds(net::features::kMaxPreconnectRetryInterval.Get()));
+}
+
+int32_t SearchEnginePreconnector::CalculateBackoffMultiplier() const {
+  return 1 << std::min(static_cast<int>(consecutive_connection_failure_),
+                       std::numeric_limits<int32_t>::digits - 1);
+}
+
+bool SearchEnginePreconnector::IsShortSession() const {
+  CHECK(last_preconnect_attempt_time_.has_value());
+  if (is_short_session_for_testing_.has_value()) {
+    return is_short_session_for_testing_.value();
+  }
+
+  base::TimeDelta session_time =
+      base::TimeTicks::Now() - last_preconnect_attempt_time_.value();
+
+  // If the current session duration is shorter than the idle timeout, we
+  // consider the session to be short.
+  return session_time < net::features::kShortSessionThreshold.Get();
+}
+
+void SearchEnginePreconnector::StartPreconnectWithDelay(base::TimeDelta delay) {
+  //  Set/Reset the timer to fire after the specified `delay`.
+  timer_.Start(FROM_HERE, delay,
+               base::BindOnce(&SearchEnginePreconnector::PreconnectDSE,
+                              base::Unretained(this)));
 }
 
 predictors::PreconnectManager&
@@ -227,4 +287,67 @@ SearchEnginePreconnector::GetPreconnectManager() {
   }
 
   return *preconnect_manager_.get();
+}
+
+void SearchEnginePreconnector::OnWebContentsVisibilityChanged(
+    content::WebContents* web_contents,
+    bool is_in_foreground) {
+  WebContentVisibilityManager::OnWebContentsVisibilityChanged(web_contents,
+                                                              is_in_foreground);
+
+  if (!SearchEnginePreconnect2Enabled()) {
+    return;
+  }
+
+  // Early stop when we know that the visibility change did not trigger
+  // foregrounding of the app and also when the preconnector is not started.
+  if (!IsBrowserAppLikelyInForeground() || !preconnector_started_) {
+    return;
+  }
+
+  // Stop the timer explicitly here so that we do not have any duplicate
+  // attempts.
+  timer_.Stop();
+
+  // Attempt reconnect again in case the visibility has changed after the last
+  // preconnect attempt so that we will preconnect sooner.
+  PreconnectDSE();
+}
+
+void SearchEnginePreconnector::OnSessionClosed() {
+  if (IsShortSession()) {
+    // If we have a short session, we consider that the session was closed due
+    // to an error, and will consider as a failed connection as well.
+    consecutive_connection_failure_++;
+  } else {
+    // If the last session was not short, then it must mean that the connection
+    // was successful. Reset the failure count.
+    //
+    // TODO(crbug.com/406022435): Collect histograms here to determine how many
+    // consecutive_connection_failure_ we usually see.
+    consecutive_connection_failure_ = 0;
+  }
+  StartPreconnectWithDelay(GetPreconnectInterval());
+}
+
+void SearchEnginePreconnector::OnNetworkEvent(net::NetworkChangeEvent event) {
+  // If the network event is `Connected`, we attempt preconnect. Otherwise,
+  // we will ignore the events for now.
+  if (event == net::NetworkChangeEvent::kConnected) {
+    StartPreconnectWithDelay(base::Milliseconds(kPreconnectRetryDelayMs));
+  }
+}
+
+void SearchEnginePreconnector::OnConnectionFailed() {
+  consecutive_connection_failure_++;
+  StartPreconnectWithDelay(GetPreconnectInterval());
+}
+
+void SearchEnginePreconnector::OnReconnectObserverPipeDisconnected() {
+  receiver_.reset();
+  // Only call `OnConnectionFailed` when the `timer_` is not running since we
+  // might already be waiting for reconnect attempt from other reasons.
+  if (!timer_.IsRunning()) {
+    OnConnectionFailed();
+  }
 }

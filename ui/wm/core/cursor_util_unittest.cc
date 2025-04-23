@@ -9,6 +9,7 @@
 
 #include "ui/wm/core/cursor_util.h"
 
+#include <array>
 #include <optional>
 
 #include "base/numerics/safe_conversions.h"
@@ -89,7 +90,7 @@ TEST(CursorUtil, GetCursorData) {
   // Data from `kNormalCursorResourceData` and `kLargeCursorResourceData`.
   constexpr struct {
     CursorType cursor;
-    gfx::Size size[2];         // indexed by cursor size.
+    std::array<gfx::Size, 2> size;  // indexed by cursor size.
     gfx::Point hotspot[2][2];  // indexed by cursor size and scale.
   } kCursorTestCases[] = {
       {CursorType::kPointer,
@@ -136,7 +137,7 @@ TEST(CursorUtil, GetCursorDataWithTargetCursorSize) {
   constexpr struct {
     CursorType cursor;
     gfx::Size size;         // large cursor size in dip
-    gfx::Point hotspot[2];  // hotspot in px, indexed by scale.
+    std::array<gfx::Point, 2> hotspot;  // hotspot in px, indexed by scale.
   } kCursorTestCases[] = {{CursorType::kPointer,
                            gfx::Size(64, 64),
                            {gfx::Point(10, 10), gfx::Point(20, 20)}},

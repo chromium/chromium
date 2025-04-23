@@ -474,10 +474,10 @@ class PLATFORM_EXPORT Color {
 
   // Whether or not color parameters were specified as none (this only affects
   // interpolation behavior, the parameter values area always valid).
-  unsigned param0_is_none_ : 1;
-  unsigned param1_is_none_ : 1;
-  unsigned param2_is_none_ : 1;
-  unsigned alpha_is_none_ : 1;
+  uint8_t param0_is_none_ : 1;
+  uint8_t param1_is_none_ : 1;
+  uint8_t param2_is_none_ : 1;
+  uint8_t alpha_is_none_ : 1;
 
   // The color parameters.
   float param0_ = 0.f;

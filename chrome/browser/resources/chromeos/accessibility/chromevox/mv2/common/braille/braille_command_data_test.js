@@ -8,10 +8,10 @@ GEN_INCLUDE(['../../testing/chromevox_e2e_test_base.js']);
 /**
  * Test fixture for braille_command_data.js.
  */
-ChromeVoxBrailleCommandDataTest = class extends ChromeVoxE2ETest {};
+ChromeVoxMV2BrailleCommandDataTest = class extends ChromeVoxE2ETest {};
 
 
-AX_TEST_F('ChromeVoxBrailleCommandDataTest', 'Duplicates', function() {
+AX_TEST_F('ChromeVoxMV2BrailleCommandDataTest', 'Duplicates', function() {
   try {
     BrailleCommandData.DOT_PATTERN_TO_COMMAND = [];
     BrailleCommandData.init();

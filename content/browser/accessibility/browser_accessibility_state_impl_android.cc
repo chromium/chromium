@@ -441,7 +441,7 @@ void BrowserAccessibilityStateImplAndroid::SetScreenReaderAppActive(
     base::debug::ClearCrashKeyString(ax_talkback_crash_key);
   }
 
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.Android.Talkback", is_active);
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.Android.TalkBack", is_active);
 
   OnAssistiveTechFound(is_active ? ui::AssistiveTech::kTalkback
                                  : ui::AssistiveTech::kNone);

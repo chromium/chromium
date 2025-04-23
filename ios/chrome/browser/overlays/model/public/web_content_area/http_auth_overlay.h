@@ -30,7 +30,7 @@ class HTTPAuthOverlayRequestConfig
   const std::string& default_username() const { return default_username_; }
 
  private:
-  OVERLAY_USER_DATA_SETUP(HTTPAuthOverlayRequestConfig);
+  friend class OverlayUserData<HTTPAuthOverlayRequestConfig>;
   HTTPAuthOverlayRequestConfig(const GURL& url,
                                const std::string& message,
                                const std::string& default_username);
@@ -55,7 +55,7 @@ class HTTPAuthOverlayResponseInfo
   const std::string& password() const { return password_; }
 
  private:
-  OVERLAY_USER_DATA_SETUP(HTTPAuthOverlayResponseInfo);
+  friend class OverlayUserData<HTTPAuthOverlayResponseInfo>;
   HTTPAuthOverlayResponseInfo(const std::string& username,
                               const std::string& password);
 

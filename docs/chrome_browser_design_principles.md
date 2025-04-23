@@ -1,27 +1,30 @@
+# `//chrome/browser` design principles
+
 These design principles make it easier to write, debug, and maintain desktop
-code in //chrome/browser. Most, but not all code in //chrome/browser is desktop
-code. Some code is used on Android.
+code in  `//chrome/browser`. Most, but not all code in `//chrome/browser` is
+desktop code. Some code is used on Android.
 
 ## Caveats:
 * These are recommendations, not requirements.
 * These are not intended to be static. If you think a
-  principle doesn't make sense, reach out to //chrome/OWNERS.
+  principle doesn't make sense, reach out to `//chrome/OWNERS`.
 * These are intended to apply to new code and major refactors. We do not expect
   existing features to be refactored, except as need arises.
 
 ## Structure, modularity:
 * Features should be modular.
     * For most features, all code should live in some combination of
-      //component/\<feature> and //chrome/browser/\<feature> (or
-      //chrome/browser/ui/\<feature>), and not in //chrome/browser/ui/views.
-        * The historical rule restricting access to views in //chrome/browser
-          and //chrome/browser/ui has been removed.
-        * The historical rule disallowing ui code in //chrome/browser has been
+      `//component/<feature>` and `//chrome/browser/<feature>` (or
+      `//chrome/browser/ui/<feature>`), and not in `//chrome/browser/ui/views`.
+        * The historical rule restricting access to views in `//chrome/browser`
+          and `//chrome/browser/ui` has been removed.
+        * The historical rule disallowing ui code in `//chrome/browser` has been
           removed.
     * WebUI resources are the only exception. They will continue to live in
-      //chrome/browser/resources/\<feature> alongside standalone BUILD.gn files.
-    * This directory should have a standalone BUILD.gn and OWNERs file.
-    * All files in the directory should belong to targets in the BUILD.gn.
+      `//chrome/browser/resources/<feature>` alongside standalone `BUILD.gn`
+      files.
+    * This directory should have a standalone `BUILD.gn` and `OWNERS` file.
+    * All files in the directory should belong to targets in the `BUILD.gn`.
         * Do NOT add to `//chrome/browser/BUILD.gn:browser`,
           `//chrome/test/BUILD.gn` or `//chrome/browser/ui/BUILD.gn:ui`.
     * gn circular dependencies are disallowed. Logical

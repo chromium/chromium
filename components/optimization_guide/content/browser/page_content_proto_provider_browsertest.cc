@@ -117,7 +117,9 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
   }
 
   const proto::AnnotatedPageContent& page_content() { return *page_content_; }
-  const AIPageContentMetadata& metadata() { return *metadata_; }
+  const optimization_guide::mojom::PageMetadata& metadata() {
+    return *metadata_;
+  }
   const base::flat_map<std::string, content::WeakDocumentPtr>&
   document_identifiers() {
     return document_identifiers_;
@@ -162,7 +164,7 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   std::optional<proto::AnnotatedPageContent> page_content_;
-  std::optional<AIPageContentMetadata> metadata_;
+  optimization_guide::mojom::PageMetadataPtr metadata_;
   base::flat_map<std::string, content::WeakDocumentPtr> document_identifiers_;
 };
 
@@ -253,6 +255,25 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestActionableElements,
       page_content().root_node().content_attributes().has_interaction_info());
 }
 
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestActionableElements,
+                       ForLabel) {
+  LoadPage(https_server()->GetURL("/for_label.html"));
+  EXPECT_EQ(page_content().version(),
+            optimization_guide::proto::
+                ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
+  EXPECT_EQ(page_content().root_node().children_nodes().size(), 2);
+
+  const auto& input = page_content().root_node().children_nodes()[0];
+  ASSERT_TRUE(input.content_attributes().has_interaction_info());
+  EXPECT_TRUE(input.content_attributes().interaction_info().is_clickable());
+
+  const auto& label = page_content().root_node().children_nodes()[1];
+  ASSERT_TRUE(label.content_attributes().has_interaction_info());
+  EXPECT_TRUE(label.content_attributes().interaction_info().is_clickable());
+  EXPECT_EQ(label.content_attributes().interaction_info().for_dom_node_id(),
+            input.content_attributes().common_ancestor_dom_node_id());
+}
+
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
                        AIPageContentNoGeometry) {
   LoadPage(https_server()->GetURL("/simple.html"),
@@ -317,6 +338,17 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   // TODO(crbug.com/382558422): Propagate image source URLs, this should be
   // a.com.
   EXPECT_TRUE(image_data.security_origin().value().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, SVG) {
+  LoadPage(https_server()->GetURL("/svg.html"));
+
+  EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);
+
+  const auto& svg = page_content().root_node().children_nodes().at(0);
+  ASSERT_TRUE(svg.content_attributes().has_svg_data());
+  EXPECT_EQ(svg.content_attributes().svg_data().inner_text(),
+            "Hello SVG Text!");
 }
 
 namespace {
@@ -443,6 +475,7 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestSiteIsolation,
                        LatencyMetricsNotOnCriticalPath) {
   base::HistogramTester tester;
 
+
   LoadPage(https_server()->GetURL(
                "a.com", base::StringPrintf(
                             "/paragraph_iframe_partially_offscreen.html%s",
@@ -453,6 +486,7 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestSiteIsolation,
   request->on_critical_path = false;
   LoadData(std::move(request));
   content::FetchHistogramsFromChildProcesses();
+
 
   ASSERT_EQ(page_content().root_node().children_nodes().size(), 1);
 
@@ -702,22 +736,22 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
   EXPECT_EQ(metadata().frame_metadata.size(), 3u);
 
   const auto& main_frame_metadata = metadata().frame_metadata[0];
-  EXPECT_EQ(main_frame_metadata.url.host(), "a.com");
-  EXPECT_EQ(main_frame_metadata.meta_tags.size(), 1u);
-  EXPECT_EQ(main_frame_metadata.meta_tags[0].name, "author");
-  EXPECT_EQ(main_frame_metadata.meta_tags[0].content, "George");
+  EXPECT_EQ(main_frame_metadata->url.host(), "a.com");
+  EXPECT_EQ(main_frame_metadata->meta_tags.size(), 1u);
+  EXPECT_EQ(main_frame_metadata->meta_tags[0]->name, "author");
+  EXPECT_EQ(main_frame_metadata->meta_tags[0]->content, "George");
 
   const auto& child_frame_metadata1 = metadata().frame_metadata[1];
-  EXPECT_EQ(child_frame_metadata1.url.host(), "a.com");
-  EXPECT_EQ(child_frame_metadata1.meta_tags.size(), 1u);
-  EXPECT_EQ(child_frame_metadata1.meta_tags[0].name, "author");
-  EXPECT_EQ(child_frame_metadata1.meta_tags[0].content, "Gary");
+  EXPECT_EQ(child_frame_metadata1->url.host(), "a.com");
+  EXPECT_EQ(child_frame_metadata1->meta_tags.size(), 1u);
+  EXPECT_EQ(child_frame_metadata1->meta_tags[0]->name, "author");
+  EXPECT_EQ(child_frame_metadata1->meta_tags[0]->content, "Gary");
 
   const auto& child_frame_metadata2 = metadata().frame_metadata[2];
-  EXPECT_EQ(child_frame_metadata2.url.host(), "a.com");
-  EXPECT_EQ(child_frame_metadata2.meta_tags.size(), 1u);
-  EXPECT_EQ(child_frame_metadata2.meta_tags[0].name, "author");
-  EXPECT_EQ(child_frame_metadata2.meta_tags[0].content, "Gary");
+  EXPECT_EQ(child_frame_metadata2->url.host(), "a.com");
+  EXPECT_EQ(child_frame_metadata2->meta_tags.size(), 1u);
+  EXPECT_EQ(child_frame_metadata2->meta_tags[0]->name, "author");
+  EXPECT_EQ(child_frame_metadata2->meta_tags[0]->content, "Gary");
 }
 
 IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,

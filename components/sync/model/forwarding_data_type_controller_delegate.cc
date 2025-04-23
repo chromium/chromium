@@ -31,10 +31,10 @@ void ForwardingDataTypeControllerDelegate::OnSyncStopping(
   other_->OnSyncStopping(metadata_fate);
 }
 
-void ForwardingDataTypeControllerDelegate::HasUnsyncedData(
-    base::OnceCallback<void(bool)> callback) {
+void ForwardingDataTypeControllerDelegate::GetUnsyncedDataCount(
+    base::OnceCallback<void(size_t)> callback) {
   DCHECK(other_);
-  other_->HasUnsyncedData(std::move(callback));
+  other_->GetUnsyncedDataCount(std::move(callback));
 }
 
 void ForwardingDataTypeControllerDelegate::GetAllNodesForDebugging(

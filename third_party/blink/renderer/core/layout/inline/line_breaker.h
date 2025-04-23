@@ -87,7 +87,7 @@ class CORE_EXPORT LineBreaker {
     DCHECK(RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled());
     line_clamp_ellipsis_width_ = width;
     UpdateAvailableWidth();
-    if (current_style_ && !auto_wrap_ && !disallow_auto_wrap_) {
+    if (current_style_ && !disallow_auto_wrap_ && auto_wrap_ != !!width) {
       SetCurrentStyleForce(*current_style_);
     }
   }

@@ -13,6 +13,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <string>
 
 #include "base/strings/string_number_conversions.h"
@@ -172,14 +173,14 @@ void TestHelper::SetupTextureInitializationExpectations(
         .RetiresOnSaturation();
     if (needs_initialization) {
       if (needs_faces) {
-        static GLenum faces[] = {
-          GL_TEXTURE_CUBE_MAP_POSITIVE_X,
-          GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
-          GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
-          GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
-          GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
-          GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
-        };
+        static auto faces = std::to_array<GLenum>({
+            GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+            GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+            GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+            GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+            GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+            GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
+        });
         for (size_t face = 0; face < std::size(faces); ++face) {
           EXPECT_CALL(*gl, TexImage2D(faces[face], 0, GL_RGBA, 1, 1, 0, GL_RGBA,
                                       GL_UNSIGNED_BYTE, _))

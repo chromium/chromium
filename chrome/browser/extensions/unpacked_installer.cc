@@ -17,7 +17,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/lifetime/termination_notification.h"
@@ -26,11 +25,13 @@
 #include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
 #include "components/crx_file/id_util.h"
 #include "components/sync/model/string_ordinal.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/declarative_net_request/install_index_helper.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
@@ -72,23 +73,14 @@ const char kImportNotSharedModule[] = "'import' is not a shared module.";
 }  // namespace
 
 // static
-scoped_refptr<UnpackedInstaller> UnpackedInstaller::Create(Profile* profile) {
-  CHECK(profile);
-  return scoped_refptr<UnpackedInstaller>(new UnpackedInstaller(
-      ExtensionSystem::Get(profile)->extension_service()));
-}
-
-// static
 scoped_refptr<UnpackedInstaller> UnpackedInstaller::Create(
-    ExtensionService* extension_service) {
-  DCHECK(extension_service);
-  return scoped_refptr<UnpackedInstaller>(
-      new UnpackedInstaller(extension_service));
+    content::BrowserContext* context) {
+  CHECK(context);
+  return scoped_refptr<UnpackedInstaller>(new UnpackedInstaller(context));
 }
 
-UnpackedInstaller::UnpackedInstaller(ExtensionService* extension_service)
-    : service_(extension_service),
-      profile_(extension_service->profile()),
+UnpackedInstaller::UnpackedInstaller(content::BrowserContext* context)
+    : profile_(Profile::FromBrowserContext(context)),
       require_modern_manifest_version_(true),
       be_noisy_on_failure_(true) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -393,9 +385,9 @@ void UnpackedInstaller::InstallExtension() {
   perms_updater.InitializePermissions(extension());
   perms_updater.GrantActivePermissions(extension());
 
-  service_->OnExtensionInstalled(extension(), syncer::StringOrdinal(),
-                                 kInstallFlagInstallImmediately,
-                                 std::move(ruleset_install_prefs_));
+  ExtensionRegistrar::Get(profile_)->OnExtensionInstalled(
+      extension(), syncer::StringOrdinal(), kInstallFlagInstallImmediately,
+      std::move(ruleset_install_prefs_));
 
   // Record metrics here since the registry would contain the extension by now.
   RecordCommandLineMetrics();
@@ -471,12 +463,10 @@ void UnpackedInstaller::RecordCommandLineMetrics() {
 void UnpackedInstaller::OnProfileWillBeDestroyed(Profile* profile) {
   profile_observation_.Reset();
   profile_ = nullptr;
-  service_ = nullptr;
 }
 
 void UnpackedInstaller::OnBrowserTerminating() {
   browser_terminating_ = true;
-  service_ = nullptr;
 }
 
 }  // namespace extensions

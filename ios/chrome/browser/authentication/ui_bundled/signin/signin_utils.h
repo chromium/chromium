@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/functional/callback_forward.h"
+#import "base/functional/callback.h"
 #import "base/ios/block_types.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/base/data_type.h"
@@ -19,6 +19,7 @@ class Browser;
 class ChromeAccountManagerService;
 @class MDCSnackbarMessage;
 class ProfileIOS;
+@class SceneState;
 
 namespace signin_metrics {
 enum class ProfileSignout;
@@ -39,6 +40,55 @@ class IdentityManager;
 
 using UnsyncedDataForSignoutOrProfileSwitchingCallback =
     base::OnceCallback<void(syncer::DataTypeSet data_type_set)>;
+
+// Represents a request to sign-out.
+class ProfileSignoutRequest {
+ public:
+  // Callback invoked before starting the sign-out request with a boolean
+  // indicating whether the operation will require changing the profile.
+  using PrepareCallback = base::OnceCallback<void(bool will_change_profile)>;
+
+  // Callback invoked when the profile switching operation has completed.
+  using CompletionCallback = base::OnceCallback<void(SceneState*)>;
+
+  explicit ProfileSignoutRequest(signin_metrics::ProfileSignout source);
+
+  ProfileSignoutRequest(const ProfileSignoutRequest&) = delete;
+  ProfileSignoutRequest& operator=(const ProfileSignoutRequest&) = delete;
+
+  ~ProfileSignoutRequest();
+
+  // Configures the snackbar message to display and whether it should be
+  // forced over the toolbar or not.
+  ProfileSignoutRequest&& SetSnackbarMessage(
+      MDCSnackbarMessage* snackbar_message,
+      bool force_snackbar_over_toolbar) &&;
+
+  // Configures the callback invoked before starting the request.
+  ProfileSignoutRequest&& SetPrepareCallback(
+      PrepareCallback prepare_callback) &&;
+
+  // Configures the completion callback.
+  ProfileSignoutRequest&& SetCompletionCallback(
+      CompletionCallback completion_callback) &&;
+
+  // Configures whether the metrics should be recorded.
+  ProfileSignoutRequest&& SetShouldRecordMetrics(bool value) &&;
+
+  // Starts the signout request, invoking `prepare_callback` synchronously
+  // before doing any change with a boolean indicating whether the operation
+  // will require changing the profile.
+  void Run(Browser* browser) &&;
+
+ private:
+  const signin_metrics::ProfileSignout source_;
+  PrepareCallback prepare_callback_;
+  CompletionCallback completion_callback_;
+  MDCSnackbarMessage* snackbar_message_;
+  bool force_snackbar_over_toolbar_ = false;
+  bool should_record_metrics_ = true;
+  bool run_has_been_called_ = false;
+};
 
 // Returns the maximum allowed waiting time for the Account Capabilities API.
 base::TimeDelta GetWaitThresholdForCapabilities();
@@ -83,17 +133,10 @@ id<SystemIdentity> GetDefaultIdentityOnDevice(
 // Convenience version that grabs the required services from the `profile`.
 id<SystemIdentity> GetDefaultIdentityOnDevice(ProfileIOS* profile);
 
-// Switch profile if needed then sign out from the current profile.
-void MultiProfileSignOut(Browser* browser,
-                         signin_metrics::ProfileSignout signout_source,
-                         bool force_snackbar_over_toolbar,
-                         MDCSnackbarMessage* snackbar_message,
-                         ProceduralBlock signout_completion,
-                         bool should_record_metrics = true);
-
-// Similar to `MultiProfileSignOut`, but switches to personal profile in all
-// windows and not just one. This also skips recording metrics for single
-// profile signout as policies have their own metrics for signout.
+// Switch profile if needed in all windows then sign out from the current
+// profile, but switches to personal profile in all. This also skips
+// recording metrics for single profile signout as policies have their
+// own metrics for signout.
 void MultiProfileSignOutForProfile(
     ProfileIOS* profile,
     signin_metrics::ProfileSignout signout_source,

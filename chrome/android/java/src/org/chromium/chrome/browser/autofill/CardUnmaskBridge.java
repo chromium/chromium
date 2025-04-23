@@ -26,7 +26,7 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
 
     private CardUnmaskBridge(
             long nativeCardUnmaskPromptViewAndroid,
-            PersonalDataManager personalDataManager,
+            AutofillImageFetcher imageFetcher,
             String title,
             String instructions,
             int cardIconId,
@@ -55,7 +55,7 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
                     new CardUnmaskPrompt(
                             activity,
                             this,
-                            personalDataManager,
+                            imageFetcher,
                             title,
                             instructions,
                             cardIconId,
@@ -99,7 +99,7 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
             WindowAndroid windowAndroid) {
         return new CardUnmaskBridge(
                 nativeUnmaskPrompt,
-                PersonalDataManagerFactory.getForProfile(profile),
+                AutofillImageFetcherFactory.getForProfile(profile),
                 title,
                 instructions,
                 cardIconId,

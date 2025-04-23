@@ -87,8 +87,11 @@ TabSharingInfoBarDelegate* GetDelegate(Browser* browser, int tab) {
 
 std::u16string GetInfoText(const TabSharingStatusMessageView& info_view) {
   std::u16string text;
-  for (views::View* button_or_label : info_view.children()) {
-    text += GetButtonOrLabelText(*button_or_label);
+  for (views::View* view : info_view.children()) {
+    if (std::optional<std::u16string_view> button_or_label_text =
+            GetButtonOrLabelText(*view)) {
+      text += *button_or_label_text;
+    }
   }
   return text;
 }

@@ -88,13 +88,13 @@ export class SettingsSyncEncryptionOptionsElement extends PolymerElement {
     };
   }
 
-  syncPrefs: SyncPrefs|null;
-  syncStatus: SyncStatus|null;
-  existingPassphraseLabel: string;
-  private creatingNewPassphrase_: boolean;
-  private passphrase_: string;
-  private confirmation_: string;
-  private disableEncryptionOptions_: boolean;
+  declare syncPrefs: SyncPrefs|null;
+  declare syncStatus: SyncStatus|null;
+  declare existingPassphraseLabel: string;
+  declare private creatingNewPassphrase_: boolean;
+  declare private passphrase_: string;
+  declare private confirmation_: string;
+  declare private disableEncryptionOptions_: boolean;
   private isSettingEncryptionPassphrase_: boolean;
 
   constructor() {

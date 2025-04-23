@@ -636,8 +636,8 @@ message SystemProfileProto {
   // Next tag: 32
   message Stability {
     // Deprecated Jan 2025.
-    reserved 1, 23;
-    reserved "incremental_uptime_sec", "uptime_sec";
+    reserved 23;
+    reserved "uptime_sec";
 
     // Logged on Android only as of late Q2 2022. Used by only Android WebView.
     // Other platforms should use Stability.Counts2.

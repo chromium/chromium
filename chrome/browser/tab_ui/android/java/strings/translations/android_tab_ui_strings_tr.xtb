@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="tr">
+<translation id="1293272072740285747">Daha sonra sekme eklemek için bu grubu tutun ya da artık ihtiyacınız yoksa silin.
+
+Grubu silerseniz herkes "<ph name="TITLE_OF_GROUP" />" sekme grubuna erişimini anında kaybeder ve grup tüm cihazlardan silinir.</translation>
+<translation id="1340839264183302272">Gruptan çık</translation>
+<translation id="1419023007528516122">Bu işlem, grubu cihazınızdan kalıcı olarak siler</translation>
+<translation id="1501480321619201731">Grubu sil</translation>
+<translation id="2677748264148917807">Çık</translation>
+<translation id="3547352561153509682">Bu işlem, grubun <ph name="USER_EMAIL" /> hesabında oturum açılmış tüm cihazlardan silinmesini sağlar</translation>
+<translation id="381219490185664296">Sekme grubu iptal edilsin mi?</translation>
+<translation id="4139634748112164403">Sekmeler bu cihazda açık kalır ancak grup kalıcı olarak silinir</translation>
+<translation id="4431937619879060901">"<ph name="GROUP_NAME" />" sekme grubuna erişiminizi anında kaybedersiniz ve grup tüm cihazlarınızdan silinir</translation>
+<translation id="4460014764210899310">Grubu Çöz</translation>
+<translation id="4777866634702576038">Sekme grubu silinsin mi?</translation>
+<translation id="5094423602314093681">Sekmeler kaldırılıp grup silinsin mi?</translation>
+<translation id="5647702255748985085">Gruptan ayrılmak istiyor musunuz?</translation>
+<translation id="742664698522525515">Grup silinsin mi?</translation>
+<translation id="750886945254958667">Daha sonra sekme eklemek için bu grubu tutun veya artık erişmek istemiyorsanız gruptan ayrılın</translation>
+<translation id="8261506727792406068">Sil</translation>
+<translation id="870736955561925754">Sekme kapatılıp grup silinsin mi?</translation>
+<translation id="8804742093141782941">Grubu silme</translation>
+<translation id="9169141410816678175">Herkes "<ph name="GROUP_NAME" />" sekme grubuna erişimi anında kaybeder ve grup tüm cihazlardan silinir</translation>
+<translation id="9216898458513705996">Sekmeler bu cihazda açık kalır ancak grup, <ph name="USER_EMAIL" /> hesabında oturum açılmış tüm cihazlardan silinir</translation>
+<translation id="94870150074703282">Grup silinsin mi?</translation>
+</translationbundle>

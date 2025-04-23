@@ -27,7 +27,7 @@ class MockOnTaskPodController : public OnTaskPodController {
   MOCK_METHOD(void, MaybeNavigateToPreviousPage, (), (override));
   MOCK_METHOD(void, MaybeNavigateToNextPage, (), (override));
   MOCK_METHOD(void, ReloadCurrentPage, (), (override));
-  MOCK_METHOD(void, ToggleTabStripVisibility, (bool), (override));
+  MOCK_METHOD(void, ToggleTabStripVisibility, (bool, bool), (override));
   MOCK_METHOD(void,
               SetSnapLocation,
               (OnTaskPodSnapLocation snap_location),
@@ -124,10 +124,10 @@ TEST_F(OnTaskPodViewTest, PinTabStripButtonClickTriggersShowOrHideTabStrip) {
   Sequence s;
   EXPECT_CALL(mock_on_task_pod_controller_, CanToggleTabStripVisibility())
       .WillOnce(testing::Return(true));
-  EXPECT_CALL(mock_on_task_pod_controller_, ToggleTabStripVisibility(false))
+  EXPECT_CALL(mock_on_task_pod_controller_,
+              ToggleTabStripVisibility(false, false))
       .Times(1)
       .InSequence(s);
-  ;
   on_task_pod_view_->OnLockedModeUpdate();
 
   // Resize the widget to fit the contents view, and apply the new layout within
@@ -138,14 +138,18 @@ TEST_F(OnTaskPodViewTest, PinTabStripButtonClickTriggersShowOrHideTabStrip) {
       on_task_pod_view_->pin_tab_strip_button_for_testing();
   ASSERT_TRUE(pin_tab_strip_button->GetVisible());
 
-  EXPECT_CALL(mock_on_task_pod_controller_, ToggleTabStripVisibility(true))
+  EXPECT_CALL(mock_on_task_pod_controller_,
+              ToggleTabStripVisibility(true, true))
       .Times(1)
       .InSequence(s);
-  EXPECT_CALL(mock_on_task_pod_controller_, ToggleTabStripVisibility(false))
+  EXPECT_CALL(mock_on_task_pod_controller_,
+              ToggleTabStripVisibility(false, true))
       .Times(1)
       .InSequence(s);
   LeftClickOn(pin_tab_strip_button);
+  EXPECT_TRUE(pin_tab_strip_button->toggled());
   LeftClickOn(pin_tab_strip_button);
+  EXPECT_FALSE(pin_tab_strip_button->toggled());
 }
 
 TEST_F(OnTaskPodViewTest, PodPositionSliderButtonClickChangesPodLocation) {

@@ -142,6 +142,9 @@ declare_args() {
   # calls to PartitionAlloc, rather than some other platform allocator.
   use_partition_alloc_as_malloc = use_partition_alloc && use_allocator_shim &&
                                   use_partition_alloc_as_malloc_default
+
+  shim_supports_sized_dealloc =
+      use_allocator_shim && shim_supports_sized_dealloc_default
 }
 
 declare_args() {
@@ -535,4 +538,14 @@ declare_args() {
   # Assert that PartitionAlloc and MiraclePtr run on C++20 when set to true.
   # Embedders may opt-out of using C++ 20 build.
   assert_cpp20 = assert_cpp20_default
+}
+
+declare_args() {
+  # Set to true to enable futex priority inheritance.
+  #
+  # Enabled only on 64-bit Android. On 32 bit Android, PI futexes require an
+  # extra level of indirection, so we don't bother enabling it. See:
+  # https://cs.android.com/android/platform/superproject/+/android14-qpr3-release:bionic/libc/bionic/pthread_mutex.cpp;drc=9108f258adad329a537e10461fbd526d5b9ad8bf;l=242
+  enable_partition_lock_priority_inheritance =
+      is_android && (current_cpu == "x64" || current_cpu == "arm64")
 }

@@ -35,13 +35,15 @@ TEST_F(SyncableServiceBasedDataTypeControllerTest, HandlesNullService) {
       SyncableServiceBasedDataTypeController::DelegateMode::
           kTransportModeWithSingleModel);
 
+  ConfigureContext configure_context;
+  configure_context.cache_guid = "cache_guid";
+  configure_context.sync_mode = SyncMode::kTransportOnly;
+
   // Call various methods on the controller. These should essentially all do
   // nothing, but not crash.
   controller.GetPreconditionState();
-  controller.LoadModels(ConfigureContext{.cache_guid = "cache_guid",
-                                         .sync_mode = SyncMode::kTransportOnly},
-                        base::DoNothing());
-  controller.HasUnsyncedData(base::DoNothing());
+  controller.LoadModels(configure_context, base::DoNothing());
+  controller.GetUnsyncedDataCount(base::DoNothing());
   controller.GetTypeEntitiesCount(base::DoNothing());
   controller.Stop(SyncStopMetadataFate::CLEAR_METADATA, base::DoNothing());
 }

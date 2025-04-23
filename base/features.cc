@@ -4,6 +4,7 @@
 
 #include "base/features.h"
 
+#include "base/files/file_path.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/threading/platform_thread.h"
 #include "build/blink_buildflags.h"
@@ -40,6 +41,13 @@ namespace base::features {
 // so that ScopedFeatureList can disable it to turn off caching.
 BASE_FEATURE(kFeatureParamWithCache,
              "FeatureParamWithCache",
+             FEATURE_ENABLED_BY_DEFAULT);
+
+// Whether a fast implementation of FilePath::IsParent is used. This feature
+// exists to ensure that the fast implementation can be disabled quickly if
+// issues are found with it.
+BASE_FEATURE(kFastFilePathIsParent,
+             "FastFilePathIsParent",
              FEATURE_ENABLED_BY_DEFAULT);
 
 // Use the Rust JSON parser. Enabled everywhere.
@@ -130,6 +138,8 @@ void Init(EmitThreadControllerProfilerMetadata
   sequence_manager::internal::SequenceManagerImpl::InitializeFeatures();
   sequence_manager::internal::ThreadController::InitializeFeatures(
       emit_thread_controller_profiler_metadata);
+
+  FilePath::InitializeFeatures();
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   MessagePumpEpoll::InitializeFeatures();

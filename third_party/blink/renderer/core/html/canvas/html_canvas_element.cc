@@ -716,13 +716,13 @@ void HTMLCanvasElement::PreFinalizeFrame() {
   // all flows via which CanvasResourceProviders are or are nont created coming
   // into this flow.
   if (LowLatencyEnabled() && !dirty_rect_.IsEmpty()) {
-    GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+    GetOrCreateCanvasResourceProvider();
   }
 }
 
 void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
   if (LowLatencyEnabled() && frame_dispatcher_ && !dirty_rect_.IsEmpty() &&
-      GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)) {
+      GetOrCreateCanvasResourceProvider()) {
     const base::TimeTicks start_time = base::TimeTicks::Now();
     if (scoped_refptr<CanvasResource> canvas_resource =
             ResourceProvider()->ProduceCanvasResource(reason)) {
@@ -1197,25 +1197,23 @@ scoped_refptr<StaticBitmapImage> HTMLCanvasElement::Snapshot(
         image_bitmap = ResourceProvider()->Snapshot(reason);
     } else {
       sk_sp<SkData> pixel_data =
-          context_->PaintRenderingResultsToDataArray(source_buffer);
+          context_->PaintRenderingResultsToRGBADataArray(source_buffer);
       if (pixel_data) {
         // If the accelerated canvas is too big, there is a logic in WebGL code
         // path that scales down the drawing buffer to the maximum supported
         // size. Hence, we need to query the adjusted size of DrawingBuffer.
         gfx::Size adjusted_size = context_->DrawingBufferSize();
         if (!adjusted_size.IsEmpty()) {
-          SkColorType color_type = GetRenderingContextSkColorType();
-          if (color_type == kN32_SkColorType) {
-            color_type = kRGBA_8888_SkColorType;
-          } else {
-            color_type = kRGBA_F16_SkColorType;
-          }
           image_bitmap = StaticBitmapImage::Create(
               std::move(pixel_data),
               SkImageInfo::Make(
                   SkISize::Make(adjusted_size.width(), adjusted_size.height()),
-                  color_type, kUnpremul_SkAlphaType,
-                  GetRenderingContextSkColorSpace()));
+                  (GetRenderingContextFormat() ==
+                   viz::SinglePlaneFormat::kRGBA_F16)
+                      ? kRGBA_F16_SkColorType
+                      : kRGBA_8888_SkColorType,
+                  kUnpremul_SkAlphaType,
+                  GetRenderingContextColorSpace().ToSkColorSpace()));
         }
       }
     }
@@ -1250,7 +1248,7 @@ String HTMLCanvasElement::ToDataURLInternal(const String& mime_type,
     bool noised = false;
     if (readback_type == ReadbackType::kWebExposed) {
       noised = CanvasInterventionsHelper::MaybeNoiseSnapshot(
-          context_, GetExecutionContext(), image_bitmap, GetRasterMode());
+          context_, GetExecutionContext(), image_bitmap);
     }
     std::unique_ptr<ImageDataBuffer> data_buffer =
         ImageDataBuffer::Create(image_bitmap);
@@ -1374,7 +1372,7 @@ void HTMLCanvasElement::toBlob(V8BlobCallback* callback,
     auto intervention_type =
         CanvasInterventionsHelper::CanvasInterventionType::kNone;
     if (CanvasInterventionsHelper::MaybeNoiseSnapshot(
-            context_, GetExecutionContext(), image_bitmap, GetRasterMode())) {
+            context_, GetExecutionContext(), image_bitmap)) {
       intervention_type =
           CanvasInterventionsHelper::CanvasInterventionType::kNoise;
     }
@@ -1510,18 +1508,19 @@ bool HTMLCanvasElement::ShouldAccelerate() const {
   if (settings && !settings->GetAcceleratedCompositingEnabled())
     return false;
 
-  // Avoid creating |contextProvider| until we're sure we want to try use it,
-  // since it costs us GPU memory.
-  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper =
-      SharedGpuContext::ContextProviderWrapper();
-  if (!context_provider_wrapper)
-    return false;
-
   if (context_ &&
       context_->CreationAttributes().will_read_frequently ==
           CanvasContextCreationAttributesCore::WillReadFrequently::kUndefined &&
       DisabledAccelerationCounterSupplement::From(GetDocument())
           .ShouldDisableAcceleration()) {
+    return false;
+  }
+
+  // Avoid creating |contextProvider| until we're sure we want to try use it,
+  // since it costs us GPU memory.
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper =
+      SharedGpuContext::ContextProviderWrapper();
+  if (!context_provider_wrapper) {
     return false;
   }
 
@@ -1568,16 +1567,14 @@ void HTMLCanvasElement::UpdatePreferred2DRasterMode() {
   // use accelerated-GPU rendering.
   // If any of the two conditions fails, or if the creation of accelerated
   // resource provider fails, the canvas will fallback to CPU rendering.
-  UMA_HISTOGRAM_BOOLEAN(
-      "Blink.Canvas.2DLayerBridge.WillReadFrequently",
-      context_ &&
-          context_->CreationAttributes().will_read_frequently ==
-              CanvasContextCreationAttributesCore::WillReadFrequently::kTrue);
-
   bool will_read_frequently =
+      context_ &&
       context_->CreationAttributes().will_read_frequently ==
-      CanvasContextCreationAttributesCore::WillReadFrequently::kTrue;
-  RasterModeHint hint = ShouldAccelerate() && context_ && !will_read_frequently
+          CanvasContextCreationAttributesCore::WillReadFrequently::kTrue;
+  UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.2DLayerBridge.WillReadFrequently",
+                        will_read_frequently);
+
+  RasterModeHint hint = ShouldAccelerate() && !will_read_frequently
                             ? RasterModeHint::kPreferGPU
                             : RasterModeHint::kPreferCPU;
   SetPreferred2DRasterMode(hint);
@@ -1989,9 +1986,9 @@ void HTMLCanvasElement::UpdateMemoryUsage() {
 
   if (!IsRenderingContext2D() && !IsWebGL())
     return;
-  if (ResourceProvider()) {
+  if (const CanvasResourceProvider* provider = ResourceProvider()) {
     non_gpu_buffer_count++;
-    if (IsAccelerated()) {
+    if (provider->IsAccelerated()) {
       // The number of internal GPU buffers vary between one (stable
       // non-displayed state) and three (triple-buffered animations).
       // Adding 2 is a pessimistic but relevant estimate.
@@ -2003,8 +2000,8 @@ void HTMLCanvasElement::UpdateMemoryUsage() {
   if (IsWebGL())
     non_gpu_buffer_count += context_->ExternallyAllocatedBufferCountPerPixel();
 
-  const int bytes_per_pixel =
-      SkColorTypeBytesPerPixel(GetRenderingContextSkColorType());
+  // NOTE: All formats used by canvas are either 8-bit or 16-bit.
+  const int bytes_per_pixel = GetRenderingContextFormat().BitsPerPixel() / 8;
 
   intptr_t gpu_memory_usage = 0;
   uint32_t canvas_width = std::min(kMaximumCanvasSize, width());
@@ -2089,31 +2086,13 @@ void HTMLCanvasElement::ReplaceExistingResourceProviderFor2DContext() {
     return;
   }
 
-  if (image) {
-    auto paint_image = image->PaintImageForCurrentFrame();
-    if ((GetRasterMode() == RasterMode::kCPU) &&
-        paint_image.IsTextureBacked()) {
-      // If the new provider is unaccelerated we must read back |paint_image|
-      // here. DrawFullImage will record the image and potentially raster on a
-      // worker thread, but texture backed PaintImages can't be used on a
-      // different thread.
-      auto sk_image = paint_image.GetSwSkImage();
-      auto content_id = paint_image.GetContentIdForFrame(0);
-      auto builder =
-          cc::PaintImageBuilder::WithProperties(std::move(paint_image))
-              .set_image(sk_image, content_id);
-      paint_image = builder.TakePaintImage();
-    }
-    new_provider->RestoreBackBuffer(paint_image);
-  }
-
+  new_provider->RestoreBackBuffer(image->PaintImageForCurrentFrame());
   new_provider->SetRecorder(std::move(recorder));
 
   UpdateMemoryUsage();
 }
 
-CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider(
-    RasterModeHint hint) {
+CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider() {
   if (IsRenderingContext2D()) {
     if (!CanvasRenderingContext::
             CheckProviderInCanvas2DRenderingContextIsPaintable()) {
@@ -2129,7 +2108,21 @@ CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider(
       return nullptr;
     }
 
-    if (resource_provider && resource_provider->IsValid()) {
+    if (resource_provider) {
+      if (!resource_provider->IsValid()) {
+        // The canvas context is not lost but the provider is invalid. This
+        // happens if the GPU process dies in the middle of a render task. The
+        // canvas is notified of GPU context losses via the
+        // `NotifyGpuContextLost` callback and restoration happens in
+        // `TryRestoreContextEvent`. Both callbacks are executed in their own
+        // separate task. If the GPU context goes invalid in the middle of a
+        // render task, the canvas won't immediately know about it and canvas
+        // APIs will continue using the provider that is now invalid. We can
+        // early return here, trying to re-create the provider right away would
+        // just fail. We need to let `TryRestoreContextEvent` wait for the GPU
+        // process to up again.
+        return nullptr;
+      }
       return resource_provider;
     }
 
@@ -2169,30 +2162,16 @@ CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider(
     return resource_provider;
   }
 
-  return CanvasRenderingContextHost::GetOrCreateCanvasResourceProvider(hint);
+  return CanvasRenderingContextHost::GetOrCreateCanvasResourceProvider();
 }
 
 CanvasResourceProvider*
 HTMLCanvasElement::RecreateCanvasResourceProviderFor2DContext(
     CanvasHibernationHandler& hibernation_handler) {
-  bool want_acceleration = ShouldTryToUseGpuRaster();
-  RasterModeHint adjusted_hint = want_acceleration ? RasterModeHint::kPreferGPU
-                                                   : RasterModeHint::kPreferCPU;
-
-  if (CcLayer() && adjusted_hint == RasterModeHint::kPreferGPU &&
-      !hibernation_handler.IsHibernating()) {
-    // In this case re-creation will happen through
-    // CanvasRenderingContext2D::Restore(). Restore() attempts to recreate the
-    // ResourceProvider at most four times in two seconds before it clears all
-    // state (including the CC layer) by calling DiscardResourceProvider() on
-    // this object.
-    return nullptr;
-  }
-
   // We call GetOrCreateCanvasResourceProviderImpl directly here to prevent a
   // circular callstack.
   CanvasResourceProvider* resource_provider =
-      GetOrCreateCanvasResourceProviderImpl(adjusted_hint);
+      GetOrCreateCanvasResourceProviderImpl();
   if (!resource_provider || !resource_provider->IsValid()) {
     return nullptr;
   }

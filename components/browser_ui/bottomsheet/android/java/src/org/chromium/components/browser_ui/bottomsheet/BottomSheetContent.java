@@ -70,7 +70,7 @@ public interface BottomSheetContent {
      * if the sheet content is showing tab content / a page preview.
      */
     @ColorInt
-    default Integer getBackgroundColor() {
+    default @Nullable Integer getBackgroundColor() {
         return SemanticColorUtils.getDefaultBgColor(getContentView().getContext());
     }
 

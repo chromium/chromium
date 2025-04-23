@@ -2,17 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "cc/paint/raw_memory_transfer_cache_entry.h"
 
-#include <string.h>
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 
 namespace cc {
 
@@ -41,7 +36,7 @@ bool ClientRawMemoryTransferCacheEntry::Serialize(
   if (data.size() < data_.size())
     return false;
 
-  memcpy(data.data(), data_.data(), data_.size());
+  data.copy_prefix_from(data_);
   return true;
 }
 

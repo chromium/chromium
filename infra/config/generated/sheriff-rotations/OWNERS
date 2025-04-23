@@ -11,3 +11,8 @@ per-file chromiumos.txt=file://infra/config/groups/sheriff-rotations/CHROMIUMOS_
 per-file dawn.txt=file://infra/config/groups/sheriff-rotations/DAWN_OWNERS
 per-file fuchsia.txt=file://infra/config/groups/sheriff-rotations/FUCHSIA_OWNERS
 per-file cronet.txt=file://infra/config/groups/sheriff-rotations/CRONET_OWNERS
+
+# CBRI Branch Day Automation go/automate-branch-day
+# The chrome-branch-day service account needs to modify files in this directory
+# as part of branch day automation despite the file having set noparent.
+chrome-branch-day@chops-service-accounts.iam.gserviceaccount.com

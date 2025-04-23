@@ -69,7 +69,7 @@ class ASH_PUBLIC_EXPORT SavedDeskDelegate {
   // Returns whether `window` is persistable.  If true the window should be
   // tracked and saved as part of the desk.  If false, this window should
   // be ignored.
-  // TODO(sammiequon|minch) : Move and rename this or add a new function
+  // TODO(minch) : Move and rename this or add a new function
   // `IsNonRegularProfileWindow` inside shell delegate to check whether the
   // `window` is an incognito ash browser window or a lacros window with the
   // non-regular profile.
@@ -93,8 +93,7 @@ class ASH_PUBLIC_EXPORT SavedDeskDelegate {
 
   // Fetches the icon for the app with `app_id` and returns it via the provided
   // `callback`. `callback` may be called synchronously.
-  // TODO(sammiequon): This is used for other features, migrate to shell
-  // delegate.
+  // TODO: This is used for other features, migrate to shell delegate.
   virtual void GetIconForAppId(
       const std::string& app_id,
       int desired_icon_size,

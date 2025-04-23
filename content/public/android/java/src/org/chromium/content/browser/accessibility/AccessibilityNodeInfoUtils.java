@@ -99,6 +99,11 @@ public class AccessibilityNodeInfoUtils {
             builder.append(" hint:\"").append(node.getHintText()).append("\"");
         }
 
+        // Print tooltip text unless it is null or empty.
+        if (node.getTooltipText() != null && !node.getTooltipText().toString().isEmpty()) {
+            builder.append(" tooltipText:\"").append(node.getTooltipText()).append("\"");
+        }
+
         // Text properties - Only print when non-null.
         if (node.getContentDescription() != null) {
             builder.append(" contentDescription:\"")
@@ -135,9 +140,6 @@ public class AccessibilityNodeInfoUtils {
         }
         if (node.isCheckable()) {
             builder.append(" checkable");
-        }
-        if (node.isChecked()) {
-            builder.append(" checked");
         }
         if (node.isClickable()) {
             builder.append(" clickable");
@@ -200,6 +202,11 @@ public class AccessibilityNodeInfoUtils {
         }
         if (node.getExpandedState() != AccessibilityNodeInfo.EXPANDED_STATE_UNDEFINED) {
             builder.append(" expandedState:").append(node.getExpandedState());
+        }
+        if (node.getChecked() == AccessibilityNodeInfo.CHECKED_STATE_TRUE) {
+            builder.append(" checked");
+        } else if (node.getChecked() == AccessibilityNodeInfo.CHECKED_STATE_PARTIAL) {
+            builder.append(" partiallyChecked");
         }
 
         // Child objects - print for non-null cases.

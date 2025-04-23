@@ -224,6 +224,9 @@ Verbs fall into a number of different categories:
      information and best practices.
    - `Screenshot()` and `ScreenshotSurface()` take Skia Gold screenshots of a
      particular element or window.
+- **Platform Compatibility**
+   - `MayInvolveNativeContextMenu()` wraps a block that may need special
+     handling due to a native context menu (typically on Mac)
 
 Example with mouse input:
 ```cpp

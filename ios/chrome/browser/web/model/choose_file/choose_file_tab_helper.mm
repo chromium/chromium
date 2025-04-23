@@ -118,5 +118,3 @@ void ChooseFileTabHelper::WebStateDestroyed(web::WebState* web_state) {
   DeleteTempChooseFileDirectoryForTab(web_state->GetUniqueIdentifier());
   observation_.Reset();
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(ChooseFileTabHelper)

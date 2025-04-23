@@ -142,7 +142,7 @@ void PersistedTabDataAndroid::From(base::WeakPtr<TabAndroid> tab_android,
                 persisted_tab_data_android->RunCallbackOnUIThread(
                     tab_android.get(), user_data_key);
               },
-              tab_android->GetWeakPtr(), std::move(supplier_callback),
+              tab_android->GetTabAndroidWeakPtr(), std::move(supplier_callback),
               user_data_key));
 }
 

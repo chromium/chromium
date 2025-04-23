@@ -5,9 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_HISTORY_SYNC_HISTORY_SYNC_POPUP_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_HISTORY_SYNC_HISTORY_SYNC_POPUP_COORDINATOR_H_
 
-#import "ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/stop_animated_chrome_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+enum class SigninContextStyle;
 namespace signin_metrics {
 enum class AccessPoint : int;
 }  // namespace signin_metrics
@@ -18,8 +19,9 @@ typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
 // Delegate for the history sync coordinator.
 @protocol HistorySyncPopupCoordinatorDelegate <NSObject>
 
-// Called once the coordinator is done.
+// Called once `coordinator` wants to be stopped.
 // `result` returns reason why the history sync opt-in dialog was closed.
+// Not called if the coordinator is stopped by its owner choice.
 - (void)historySyncPopupCoordinator:(HistorySyncPopupCoordinator*)coordinator
                 didFinishWithResult:(SigninCoordinatorResult)result;
 
@@ -27,7 +29,7 @@ typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
 
 // Coordinator to present the History Sync Opt-In screen.
 @interface HistorySyncPopupCoordinator
-    : ChromeCoordinator <InterruptibleChromeCoordinator>
+    : ChromeCoordinator <StopAnimatedChromeCoordinator>
 
 // delegate for HistorySyncCoordinator.
 @property(nonatomic, weak) id<HistorySyncPopupCoordinatorDelegate> delegate;
@@ -43,6 +45,7 @@ typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
                              showUserEmail:(BOOL)showUserEmail
                          signOutIfDeclined:(BOOL)signOutIfDeclined
                                 isOptional:(BOOL)isOptional
+                              contextStyle:(SigninContextStyle)contextStyle
                                accessPoint:
                                    (signin_metrics::AccessPoint)accessPoint
     NS_DESIGNATED_INITIALIZER;

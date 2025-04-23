@@ -187,7 +187,7 @@ def __rules(ctx):
                 "platform_ref": "large",
                 "input_root_absolute_path": input_root_absolute_path,
                 "canonicalize_dir": canonicalize_dir,
-                "timeout": "2m",
+                "timeout": "4m",
             },
         ])
 

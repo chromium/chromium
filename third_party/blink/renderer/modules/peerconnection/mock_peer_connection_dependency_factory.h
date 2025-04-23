@@ -67,7 +67,7 @@ class MockWebRtcAudioTrack : public webrtc::AudioTrackInterface {
 };
 
 class MockWebRtcVideoTrackSource
-    : public rtc::RefCountedObject<webrtc::VideoTrackSourceInterface> {
+    : public webrtc::RefCountedObject<webrtc::VideoTrackSourceInterface> {
  public:
   static scoped_refptr<MockWebRtcVideoTrackSource> Create(
       bool supports_encoded_output);
@@ -76,34 +76,38 @@ class MockWebRtcVideoTrackSource
   void UnregisterObserver(webrtc::ObserverInterface* observer) override;
   SourceState state() const override;
   bool remote() const override;
-  void AddOrUpdateSink(rtc::VideoSinkInterface<webrtc::VideoFrame>* sink,
-                       const rtc::VideoSinkWants& wants) override;
-  void RemoveSink(rtc::VideoSinkInterface<webrtc::VideoFrame>* sink) override;
+  void AddOrUpdateSink(webrtc::VideoSinkInterface<webrtc::VideoFrame>* sink,
+                       const webrtc::VideoSinkWants& wants) override;
+  void RemoveSink(
+      webrtc::VideoSinkInterface<webrtc::VideoFrame>* sink) override;
   bool is_screencast() const override;
   std::optional<bool> needs_denoising() const override;
   bool GetStats(Stats* stats) override;
   bool SupportsEncodedOutput() const override;
   void GenerateKeyFrame() override;
   void AddEncodedSink(
-      rtc::VideoSinkInterface<webrtc::RecordableEncodedFrame>* sink) override;
+      webrtc::VideoSinkInterface<webrtc::RecordableEncodedFrame>* sink)
+      override;
   void RemoveEncodedSink(
-      rtc::VideoSinkInterface<webrtc::RecordableEncodedFrame>* sink) override;
+      webrtc::VideoSinkInterface<webrtc::RecordableEncodedFrame>* sink)
+      override;
 
  private:
   bool supports_encoded_output_;
 };
 
 class MockWebRtcVideoTrack
-    : public rtc::RefCountedObject<webrtc::VideoTrackInterface> {
+    : public webrtc::RefCountedObject<webrtc::VideoTrackInterface> {
  public:
   static scoped_refptr<MockWebRtcVideoTrack> Create(
       const std::string& id,
       scoped_refptr<webrtc::VideoTrackSourceInterface> source = nullptr);
   MockWebRtcVideoTrack(const std::string& id,
                        webrtc::VideoTrackSourceInterface* source);
-  void AddOrUpdateSink(rtc::VideoSinkInterface<webrtc::VideoFrame>* sink,
-                       const rtc::VideoSinkWants& wants) override;
-  void RemoveSink(rtc::VideoSinkInterface<webrtc::VideoFrame>* sink) override;
+  void AddOrUpdateSink(webrtc::VideoSinkInterface<webrtc::VideoFrame>* sink,
+                       const webrtc::VideoSinkWants& wants) override;
+  void RemoveSink(
+      webrtc::VideoSinkInterface<webrtc::VideoFrame>* sink) override;
   webrtc::VideoTrackSourceInterface* GetSource() const override;
 
   std::string kind() const override;
@@ -126,25 +130,27 @@ class MockWebRtcVideoTrack
   bool enabled_;
   TrackState state_;
   ObserverSet observers_;
-  raw_ptr<rtc::VideoSinkInterface<webrtc::VideoFrame>> sink_;
+  raw_ptr<webrtc::VideoSinkInterface<webrtc::VideoFrame>> sink_;
 };
 
 class MockMediaStream : public webrtc::MediaStreamInterface {
  public:
   explicit MockMediaStream(const std::string& id);
 
-  bool AddTrack(rtc::scoped_refptr<webrtc::AudioTrackInterface> track) override;
-  bool AddTrack(rtc::scoped_refptr<webrtc::VideoTrackInterface> track) override;
+  bool AddTrack(
+      webrtc::scoped_refptr<webrtc::AudioTrackInterface> track) override;
+  bool AddTrack(
+      webrtc::scoped_refptr<webrtc::VideoTrackInterface> track) override;
   bool RemoveTrack(
-      rtc::scoped_refptr<webrtc::AudioTrackInterface> track) override;
+      webrtc::scoped_refptr<webrtc::AudioTrackInterface> track) override;
   bool RemoveTrack(
-      rtc::scoped_refptr<webrtc::VideoTrackInterface> track) override;
+      webrtc::scoped_refptr<webrtc::VideoTrackInterface> track) override;
   std::string id() const override;
   webrtc::AudioTrackVector GetAudioTracks() override;
   webrtc::VideoTrackVector GetVideoTracks() override;
-  rtc::scoped_refptr<webrtc::AudioTrackInterface> FindAudioTrack(
+  webrtc::scoped_refptr<webrtc::AudioTrackInterface> FindAudioTrack(
       const std::string& track_id) override;
-  rtc::scoped_refptr<webrtc::VideoTrackInterface> FindVideoTrack(
+  webrtc::scoped_refptr<webrtc::VideoTrackInterface> FindVideoTrack(
       const std::string& track_id) override;
   void RegisterObserver(webrtc::ObserverInterface* observer) override;
   void UnregisterObserver(webrtc::ObserverInterface* observer) override;
@@ -176,7 +182,7 @@ class MockPeerConnectionDependencyFactory
 
   ~MockPeerConnectionDependencyFactory() override;
 
-  rtc::scoped_refptr<webrtc::PeerConnectionInterface> CreatePeerConnection(
+  webrtc::scoped_refptr<webrtc::PeerConnectionInterface> CreatePeerConnection(
       const webrtc::PeerConnectionInterface::RTCConfiguration& config,
       blink::WebLocalFrame* frame,
       webrtc::PeerConnectionObserver* observer,

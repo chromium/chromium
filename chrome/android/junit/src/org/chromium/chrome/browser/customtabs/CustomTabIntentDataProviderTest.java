@@ -45,6 +45,7 @@ import android.view.ContextThemeWrapper;
 import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSession;
+import androidx.browser.trusted.FileHandlingData;
 import androidx.browser.trusted.LaunchHandlerClientMode;
 import androidx.browser.trusted.ScreenOrientation;
 import androidx.browser.trusted.TrustedWebActivityIntentBuilder;
@@ -1584,6 +1585,18 @@ public class CustomTabIntentDataProviderTest {
         return bundle;
     }
 
+    private ArrayList<Uri> getSampleUriList() {
+        return new ArrayList<>(
+                Arrays.asList(
+                        Uri.parse("content://com.a.b.c/a"), Uri.parse("content://com.a.b.c/b")));
+    }
+
+    private Bundle createFileHandlingDataBundle() {
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(FileHandlingData.KEY_URIS, getSampleUriList());
+        return bundle;
+    }
+
     protected Uri getLaunchingUrl() {
         return Uri.parse("https://www.example.com/");
     }
@@ -1609,7 +1622,7 @@ public class CustomTabIntentDataProviderTest {
 
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         intent.putExtra(
-                CustomTabIntentDataProvider.EXTRA_NETWORK,
+                CustomTabsIntent.EXTRA_NETWORK,
                 network);
         intent.putExtra(
                 CustomTabIntentDataProvider.EXTRA_UI_TYPE,
@@ -1636,7 +1649,7 @@ public class CustomTabIntentDataProviderTest {
     @Test
     public void setCloseButtonDisabled() {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_CLOSE_BUTTON_ENABLED, false);
+        intent.putExtra(CustomTabsIntent.EXTRA_CLOSE_BUTTON_ENABLED, false);
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertFalse(dataProvider.isCloseButtonEnabled());
     }
@@ -1644,7 +1657,7 @@ public class CustomTabIntentDataProviderTest {
     @Test
     public void setCloseButtonEnabled() {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_CLOSE_BUTTON_ENABLED, true);
+        intent.putExtra(CustomTabsIntent.EXTRA_CLOSE_BUTTON_ENABLED, true);
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertTrue(dataProvider.isCloseButtonEnabled());
     }
@@ -1654,7 +1667,7 @@ public class CustomTabIntentDataProviderTest {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         Bitmap icon =
                 Bitmap.createBitmap(/* width= */ 16, /* height= */ 16, Bitmap.Config.ARGB_8888);
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_CLOSE_BUTTON_ENABLED, false);
+        intent.putExtra(CustomTabsIntent.EXTRA_CLOSE_BUTTON_ENABLED, false);
         intent.putExtra(CustomTabsIntent.EXTRA_CLOSE_BUTTON_ICON, icon);
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertFalse(dataProvider.isCloseButtonEnabled());
@@ -1710,5 +1723,18 @@ public class CustomTabIntentDataProviderTest {
         BrowserServicesIntentDataProvider dataProvider =
                 new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertEquals(LaunchHandlerClientMode.AUTO, dataProvider.getLaunchHandlerClientMode());
+    }
+
+    @Test
+    public void launchHandlerFileHandlingData() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(
+                TrustedWebActivityIntentBuilder.EXTRA_FILE_HANDLING_DATA,
+                createFileHandlingDataBundle());
+
+        BrowserServicesIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        FileHandlingData data = dataProvider.getFileHandlingData();
+        assertEquals(getSampleUriList(), data.uris);
     }
 }

@@ -9,6 +9,7 @@
 
 #include "ui/gfx/geometry/transform.h"
 
+#include <array>
 #include <ostream>
 
 #include "base/check_op.h"
@@ -733,8 +734,8 @@ void Transform::TransformVector4(float vector[4]) const {
     for (int i = 0; i < 4; i++)
       vector[i] = ClampFloatGeometry(vector[i]);
   } else {
-    double v[4] = {vector[0], vector[1], vector[2], vector[3]};
-    matrix_.MapVector4(v);
+    std::array<double, 4> v = {vector[0], vector[1], vector[2], vector[3]};
+    matrix_.MapVector4(v.data());
     for (int i = 0; i < 4; i++)
       vector[i] = ClampFloatGeometry(v[i]);
   }

@@ -44,7 +44,7 @@ TEST_F(UiElementContainerViewTest, DarkAndLightTheme) {
   views::View* indicator =
       ui_element_container_view->GetViewByID(kOverflowIndicator);
   auto get_background_color([](const views::View* view) {
-    return view->GetBackground()->color().ConvertToSkColor(
+    return view->GetBackground()->color().ResolveToSkColor(
         view->GetColorProvider());
   });
 

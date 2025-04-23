@@ -30,7 +30,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/braille_display_private/mock_braille_controller.h"
 #include "chrome/browser/extensions/component_loader.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -920,10 +919,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, AccessibilityMenuVisibility) {
 
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest,
                        EnhancedNetworkVoicesExtensionLoadedWhenNeeded) {
-  extensions::ComponentLoader* component_loader =
-      extensions::ExtensionSystem::Get(browser()->profile())
-          ->extension_service()
-          ->component_loader();
+  auto* component_loader =
+      extensions::ComponentLoader::Get(browser()->profile());
 
   // Not loaded yet.
   EXPECT_FALSE(

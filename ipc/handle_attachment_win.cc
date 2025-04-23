@@ -6,11 +6,17 @@
 
 #include <windows.h>
 
+#include "base/win/windows_handle_util.h"
+
 namespace IPC {
 namespace internal {
 
 HandleAttachmentWin::HandleAttachmentWin(const HANDLE& handle) {
-  HANDLE duplicated_handle;
+  // Do not duplicate pseudo handle values, leave handle_ empty.
+  if (!handle || base::win::IsPseudoHandle(handle)) {
+    return;
+  }
+  HANDLE duplicated_handle = nullptr;
   BOOL result =
       ::DuplicateHandle(GetCurrentProcess(), handle, GetCurrentProcess(),
                         &duplicated_handle, 0, FALSE, DUPLICATE_SAME_ACCESS);

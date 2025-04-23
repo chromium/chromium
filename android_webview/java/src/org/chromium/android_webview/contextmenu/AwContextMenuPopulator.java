@@ -10,12 +10,13 @@ import static org.chromium.android_webview.contextmenu.AwContextMenuItemProperti
 import android.content.Context;
 import android.util.Pair;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.R;
 import org.chromium.android_webview.contextmenu.AwContextMenuCoordinator.ListItemType;
 import org.chromium.android_webview.contextmenu.AwContextMenuItem.Item;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.contextmenu.ChipDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuItemDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** A {@link ContextMenuPopulator} used for showing the WebView context menu. */
+@NullMarked
 public class AwContextMenuPopulator implements ContextMenuPopulator {
     private final Context mContext;
     private final ContextMenuItemDelegate mItemDelegate;

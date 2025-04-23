@@ -110,6 +110,10 @@ extern const base::FeatureParam<std::string>
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOptimizationGuideIconView);
 
+// Whether model sessions may be brokered to untrusted processes.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+BASE_DECLARE_FEATURE(kBrokerModelSessionsForUntrustedProcesses);
+
 typedef base::EnumSet<proto::RequestContext,
                       proto::RequestContext_MIN,
                       proto::RequestContext_MAX>

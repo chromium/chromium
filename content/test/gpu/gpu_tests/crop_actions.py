@@ -98,6 +98,8 @@ class NonWhiteContentCropAction(BaseCropAction):
       'SM-A137F',
       # Samsung A23.
       'SM-A236B',
+      # Chromebooks using the Brya board.
+      'Brya',
   }
 
   def __init__(self, initial_crop: BaseCropAction | None = None):

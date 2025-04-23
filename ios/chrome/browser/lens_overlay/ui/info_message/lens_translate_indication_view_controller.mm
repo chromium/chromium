@@ -7,6 +7,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/font/font_api.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -19,6 +20,9 @@ const CGFloat kViewTopPadding = 36.0;
 
 // The height of the translate error message.
 const CGFloat kPreferredContentHeight = 80.0;
+
+// The font size of the title.
+const CGFloat kTitleFontSize = 18;
 
 }  // namespace
 
@@ -40,7 +44,7 @@ const CGFloat kPreferredContentHeight = 80.0;
   label.adjustsFontForContentSizeCategory = YES;
   label.lineBreakMode = NSLineBreakByWordWrapping;
   label.numberOfLines = 0;
-  label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleTitle3];
+  label.font = ios::provider::GetBrandedProductRegularFont(kTitleFontSize);
   label.text =
       l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_TRANSLATE_INDICATION_TITLE);
   label.textColor = [UIColor colorNamed:kTextPrimaryColor];

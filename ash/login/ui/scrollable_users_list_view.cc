@@ -322,8 +322,13 @@ void ScrollableUsersListView::OnPaintBackground(gfx::Canvas* canvas) {
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);
 
-    ui::ColorId background_color_id = cros_tokens::kCrosSysScrim2;
-    flags.setColor(GetColorProvider()->GetColor(background_color_id));
+    // Use a special color when showing a full list on the right side.
+    if (display_style_ == LoginDisplayStyle::kExtraSmall) {
+      ui::ColorId background_color_id = cros_tokens::kCrosSysScrim2;
+      flags.setColor(GetColorProvider()->GetColor(background_color_id));
+    } else {
+      flags.setColor(gradient_params_.color_to);
+    }
     canvas->DrawRoundRect(render_bounds,
                           login::kNonBlurredWallpaperBackgroundRadiusDp, flags);
   }

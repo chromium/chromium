@@ -19,6 +19,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Size;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -66,6 +67,9 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
     private final Paint mSelectedEmptyThumbnailPaint;
     private final Paint mSelectedTextPaint;
     private final int mFaviconBackgroundPaintColor;
+
+    private @ColorInt int mMiniThumbnailPlaceholderColor;
+    private @Nullable @ColorInt Integer mGroupTintedMiniThumbnailPlaceholderColor;
 
     private final Context mContext;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
@@ -408,8 +412,11 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
 
     private void onTabGroupModelFilterChanged(TabGroupModelFilter filter) {
         boolean isIncognito = filter.getTabModel().isIncognitoBranded();
-        mEmptyThumbnailPaint.setColor(
-                TabUiThemeUtils.getMiniThumbnailPlaceholderColor(mContext, isIncognito, false));
+        mMiniThumbnailPlaceholderColor =
+                TabUiThemeUtils.getMiniThumbnailPlaceholderColor(mContext, isIncognito, false);
+        if (mGroupTintedMiniThumbnailPlaceholderColor == null) {
+            mEmptyThumbnailPaint.setColor(mMiniThumbnailPlaceholderColor);
+        }
         mTextPaint.setColor(
                 TabUiThemeProvider.getTabGroupNumberTextColor(mContext, isIncognito, false));
         mThumbnailFramePaint.setColor(
@@ -421,6 +428,21 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                 TabUiThemeUtils.getMiniThumbnailPlaceholderColor(mContext, isIncognito, true));
         mSelectedTextPaint.setColor(
                 TabUiThemeProvider.getTabGroupNumberTextColor(mContext, isIncognito, true));
+    }
+
+    /**
+     * Sets the new mini thumbnail placeholder color. If {@code null} is provided, the placeholder
+     * color will be reset to the default.
+     *
+     * @param color The new mini thumbnail placeholder color, or {@code null} if resetting.
+     */
+    public void setMiniThumbnailPlaceholderColor(@Nullable @ColorInt Integer color) {
+        mGroupTintedMiniThumbnailPlaceholderColor = color;
+        if (mGroupTintedMiniThumbnailPlaceholderColor == null) {
+            mEmptyThumbnailPaint.setColor(mMiniThumbnailPlaceholderColor);
+        } else {
+            mEmptyThumbnailPaint.setColor(mGroupTintedMiniThumbnailPlaceholderColor);
+        }
     }
 
     /**

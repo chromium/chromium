@@ -9,7 +9,7 @@
 #include "ash/shell.h"
 #include "ash/wm/window_mirror_view.h"
 #include "ash/wm/window_properties.h"
-#include "ash/wm/window_util.h"
+#include "ash/wm/wm_constants.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/screen_position_client.h"
@@ -74,7 +74,7 @@ float GetDragWindowCornerRadius(const aura::Window* original_window) {
   // However the mini-window view has rounded corners and the shadow
   // associated with the mini-window should be rounded as well.
   if (original_window->GetProperty(kIsOverviewItemKey)) {
-    return window_util::GetMiniWindowRoundedCornerRadius();
+    return kWindowMiniViewCornerRadius;
   }
 
   return original_window->GetProperty(aura::client::kWindowCornerRadiusKey);

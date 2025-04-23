@@ -162,12 +162,16 @@ const char16_t* kInnerTextJavaScript = u"document.body.innerText;";
 - (void)processSnapshotWithBarrier:(base::RepeatingClosure)barrier {
   __weak PageContextWrapper* weakSelf = self;
   auto callback = ^(UIImage* image) {
-    if ([weakSelf shouldUpdateSnapshotWithImage:image]) {
-      [weakSelf updateSnapshotWithBarrier:barrier];
+    __strong __typeof(weakSelf) strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+    if ([strongSelf shouldUpdateSnapshotWithImage:image]) {
+      [strongSelf updateSnapshotWithBarrier:barrier];
       return;
     }
 
-    [weakSelf encodeImageAndSetTabScreenshot:image];
+    [strongSelf encodeImageAndSetTabScreenshot:image];
     barrier.Run();
   };
 
@@ -263,9 +267,14 @@ const char16_t* kInnerTextJavaScript = u"document.body.innerText;";
 // Updates the snapshot for the given WebState, and executes the `barrier`
 // callback when finished.
 - (void)updateSnapshotWithBarrier:(base::RepeatingClosure)barrier {
+  __weak PageContextWrapper* weakSelf = self;
   SnapshotTabHelper::FromWebState(_webState.get())
       ->UpdateSnapshotWithCallback(^(UIImage* image) {
-        [self encodeImageAndSetTabScreenshot:image];
+        __strong __typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+        [strongSelf encodeImageAndSetTabScreenshot:image];
         barrier.Run();
       });
 }

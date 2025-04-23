@@ -24,6 +24,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/heavy_ad_intervention/heavy_ad_features.h"
 #include "components/page_load_metrics/browser/ads_page_load_metrics_test_waiter.h"
+#include "components/page_load_metrics/browser/features.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/ad_intervention_browser_test_utils.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/frame_tree_data.h"
 #include "components/page_load_metrics/browser/observers/use_counter_page_load_metrics_observer.h"
@@ -127,7 +128,8 @@ class AdsPageLoadMetricsObserverBrowserTest
 
   void SetUp() override {
     std::vector<base::test::FeatureRef> enabled = {
-        subresource_filter::kAdTagging, features::kV8PerFrameMemoryMonitoring};
+        subresource_filter::kAdTagging,
+        page_load_metrics::features::kV8PerFrameMemoryMonitoring};
     std::vector<base::test::FeatureRef> disabled = {};
 
     scoped_feature_list_.InitWithFeatures(enabled, disabled);
@@ -656,14 +658,17 @@ class CreativeOriginAdsPageLoadMetricsObserverBrowserTest
     bool HasChild() const { return child_ != nullptr; }
 
     bool HasDescendantRenderingText(bool is_top_frame = true) const {
-      if (!is_top_frame && has_text_ && !is_outside_view_)
+      if (!is_top_frame && has_text_ && !is_outside_view_) {
         return true;
+      }
 
-      if (!is_top_frame && is_outside_view_)
+      if (!is_top_frame && is_outside_view_) {
         return false;
+      }
 
-      if (!child_)
+      if (!child_) {
         return false;
+      }
 
       return child_->HasDescendantRenderingText(false);
     }
@@ -672,19 +677,22 @@ class CreativeOriginAdsPageLoadMetricsObserverBrowserTest
 
     std::string Print(bool should_escape = false) const {
       std::vector<std::string> query_pieces = {origin_};
-      if (!has_text_ && is_outside_view_)
+      if (!has_text_ && is_outside_view_) {
         query_pieces.push_back("{no-text-render,out-of-view}");
-      else if (!has_text_)
+      } else if (!has_text_) {
         query_pieces.push_back("{no-text-render}");
-      else if (is_outside_view_)
+      } else if (is_outside_view_) {
         query_pieces.push_back("{out-of-view}");
+      }
       query_pieces.push_back("(");
-      if (child_)
+      if (child_) {
         query_pieces.push_back(child_->Print());
+      }
       query_pieces.push_back(")");
       std::string out = base::StrCat(query_pieces);
-      if (should_escape)
+      if (should_escape) {
         out = base::EscapeQueryParamValue(out, false /* use_plus */);
+      }
       return out;
     }
 
@@ -715,8 +723,9 @@ class CreativeOriginAdsPageLoadMetricsObserverBrowserTest
     // The frame thus intended as the creative will be the only one in which
     // text renders.
     std::string ad_suffix = frame->PrintChild(true /* should_escape */);
-    if (!ad_suffix.empty())
+    if (!ad_suffix.empty()) {
       SetRulesetToDisallowURLsWithPathSuffix(ad_suffix);
+    }
     std::string query = frame->Print();
     std::string relative_url = "/cross_site_iframe_factory.html?" + query;
     const GURL main_url(
@@ -1957,8 +1966,9 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
       got_report = true;
       break;
     }
-    if (message == "\"END\"")
+    if (message == "\"END\"") {
       break;
+    }
   }
   EXPECT_TRUE(got_report);
 }
@@ -2357,8 +2367,9 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
 void WaitForRAF(content::DOMMessageQueue* message_queue) {
   std::string message;
   while (message_queue->WaitForMessage(&message)) {
-    if (message == "\"RAF DONE\"")
+    if (message == "\"RAF DONE\"") {
       break;
+    }
   }
   EXPECT_EQ("\"RAF DONE\"", message);
 }
@@ -2588,7 +2599,8 @@ class AdsMemoryMeasurementBrowserTest
     performance_manager::v8_memory::internal::
         SetEagerMemoryMeasurementEnabledForTesting(true);
     std::vector<base::test::FeatureRef> enabled = {
-        subresource_filter::kAdTagging, features::kV8PerFrameMemoryMonitoring};
+        subresource_filter::kAdTagging,
+        page_load_metrics::features::kV8PerFrameMemoryMonitoring};
     std::vector<base::test::FeatureRef> disabled = {};
     scoped_feature_list_.InitWithFeatures(enabled, disabled);
 
@@ -2660,8 +2672,9 @@ IN_PROC_BROWSER_TEST_F(AdsMemoryMeasurementBrowserTest,
 
   // Add any additional frame routing IDs and wait until we get positive
   // memory measurements for each frame.
-  for (content::GlobalRenderFrameHostId id : GetFrameRoutingIds())
+  for (content::GlobalRenderFrameHostId id : GetFrameRoutingIds()) {
     waiter->AddMemoryUpdateExpectation(id);
+  }
   waiter->Wait();
 
   // Navigate away to force the histogram recording.

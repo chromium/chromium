@@ -281,9 +281,6 @@ void AndroidTelemetryService::IsVerifyAppsEnabled(
     base::OnceCallback<void(std::unique_ptr<ClientSafeBrowsingReportRequest>)>
         callback,
     VerifyAppsEnabledResult result) {
-  base::UmaHistogramEnumeration(
-      "SBClientDownload.AndroidTelemetry.AppVerificationResult", result);
-
   if (result == VerifyAppsEnabledResult::SUCCESS_ENABLED) {
     report->mutable_client_properties()->set_app_verification_enabled(true);
   } else if (result == VerifyAppsEnabledResult::SUCCESS_NOT_ENABLED) {

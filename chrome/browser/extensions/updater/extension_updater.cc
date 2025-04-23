@@ -28,10 +28,9 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/crx_installer.h"
-#include "chrome/browser/extensions/delayed_install_manager.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/external_install_manager.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
-#include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/extensions/updater/extension_updater_factory.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -39,15 +38,18 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/update_query_params.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
+#include "extensions/browser/delayed_install_manager.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/install/crx_install_error.h"
+#include "extensions/browser/pending_extension_manager.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/updater/extension_cache.h"
 #include "extensions/browser/updater/extension_update_data.h"
@@ -60,10 +62,6 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_url_handlers.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/extension_management.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -165,8 +163,9 @@ ExtensionUpdater::InProgressCheck::InProgressCheck() = default;
 ExtensionUpdater::InProgressCheck::~InProgressCheck() = default;
 
 // static
-ExtensionUpdater* ExtensionUpdater::Get(Profile* profile) {
-  return ExtensionUpdaterFactory::GetForBrowserContext(profile);
+ExtensionUpdater* ExtensionUpdater::Get(
+    content::BrowserContext* browser_context) {
+  return ExtensionUpdaterFactory::GetForBrowserContext(browser_context);
 }
 
 ExtensionUpdater::ExtensionUpdater(Profile* profile)
@@ -294,6 +293,26 @@ void ExtensionUpdater::CheckSoon() {
 
 bool ExtensionUpdater::WillCheckSoon() const {
   return will_check_soon_;
+}
+
+void ExtensionUpdater::AddObserver(UpdateObserver* observer) {
+  update_observers_.AddObserver(observer);
+}
+
+void ExtensionUpdater::RemoveObserver(UpdateObserver* observer) {
+  update_observers_.RemoveObserver(observer);
+}
+
+void ExtensionUpdater::NotifyChromeUpdateAvailable() {
+  for (auto& observer : update_observers_) {
+    observer.OnChromeUpdateAvailable();
+  }
+}
+
+void ExtensionUpdater::NotifyAppUpdateAvailable(const Extension& extension) {
+  for (auto& observer : update_observers_) {
+    observer.OnAppUpdateAvailable(extension);
+  }
 }
 
 void ExtensionUpdater::SetExtensionCacheForTesting(
@@ -1050,17 +1069,9 @@ std::set<ExtensionId> ExtensionUpdater::GetCorruptedExtensionIds() const {
 }
 
 GURL ExtensionUpdater::GetEffectiveUpdateURL(const Extension& extension) const {
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/394876083): Use ExtensionManagement when it
-  // is ported to desktop Android.
-  // Only log once because this is called inside a loop.
-  NOTIMPLEMENTED_LOG_ONCE() << "GetEffectiveUpdateURL";
-  return ManifestURL::GetUpdateURL(&extension);
-#else
   ExtensionManagement* extension_management =
       ExtensionManagementFactory::GetForBrowserContext(profile_);
   return extension_management->GetEffectiveUpdateURL(extension);
-#endif
 }
 
 ExtensionUpdater::ScopedSkipScheduledCheckForTest::

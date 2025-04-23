@@ -16,6 +16,7 @@
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
@@ -30,9 +31,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::testing::_;
-
 namespace ash {
+
+using base::test::EqualsProto;
+using ::testing::_;
 
 class FakeParentAccessUiHandlerDelegate : public ParentAccessUiHandlerDelegate {
  public:
@@ -235,14 +237,6 @@ TEST_P(ParentAccessUiHandlerImplTestParameterized,
         one_fetch_run_loop.Quit();
       }));
   one_fetch_run_loop.Run();
-}
-
-MATCHER_P(EqualsProto,
-          message,
-          "Match a proto Message equal to the matcher's argument.") {
-  std::string expected_serialized = message.SerializeAsString();
-  std::string actual_serialized = arg.SerializeAsString();
-  return expected_serialized == actual_serialized;
 }
 
 // Verifies that the parent approvals sequence is handled correctly.

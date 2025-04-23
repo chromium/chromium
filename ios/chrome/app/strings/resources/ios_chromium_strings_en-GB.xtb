@@ -156,7 +156,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chromium data in your
 <translation id="4790638144988730920">Keep using the Chromium data in your Google Account.</translation>
 <translation id="4828317641996116749">Chromium couldn't check all passwords. Try again later.</translation>
 <translation id="4856138222358683580">Chromium actions</translation>
-<translation id="4863800915967098115">Signing in adds your account to Chromium for work-related browsing.</translation>
 <translation id="4904452304169763785">Alerts on any privacy or security issues that Chromium detects for you.</translation>
 <translation id="4962295957157529683">Finish what you were doing in your other open Chromium window.</translation>
 <translation id="4985291216379576555">Offline, Chromium can't check for updates</translation>
@@ -211,6 +210,7 @@ Things to consider:
 <translation id="593808800391107017">Receive alerts on any privacy or security issues that Chromium automatically detects for you.</translation>
 <translation id="5951593919357934226">Get the most out of Chromium.</translation>
 <translation id="5985254578475526217">To receive notifications from Chromium, turn on notifications in your iOS settings.</translation>
+<translation id="6041226255405329731">Sign in to Chromium to share and join tab groups, and work together on ideas</translation>
 <translation id="6104024151682120539">Open in Chromium</translation>
 <translation id="61109258320235597">To use and save Chromium data in your Google Account, enter your passphrase.</translation>
 <translation id="6132149203299792222">Sign in with your Google Account to sync your passwords, bookmarks and more.</translation>

@@ -31,7 +31,8 @@
 using manual_fill::ManualFillDataType;
 
 @interface ExpandedManualFillCoordinator () <
-    ExpandedManualFillViewControllerDelegate>
+    ExpandedManualFillViewControllerDelegate,
+    ManualFillPasswordCoordinatorConsumer>
 
 // Main view controller for this coordinator.
 @property(nonatomic, strong)
@@ -51,6 +52,9 @@ using manual_fill::ManualFillDataType;
 
   // Used to fetch the plus addresses.
   ManualFillPlusAddressMediator* _manualFillPlusAddressMediator;
+
+  // Used to show the manual fill passwords menu.
+  ManualFillPasswordCoordinator* _manualFillPasswordCoordinator;
 }
 
 - (instancetype)
@@ -165,6 +169,23 @@ using manual_fill::ManualFillDataType;
   }
 }
 
+#pragma mark - ManualFillPasswordCoordinatorConsumer
+
+- (void)passwordsFetched {
+  // If a user has already switched to another menu while the passwords were
+  // being fetched, resulting in a different child coordinator being added here,
+  // no need to add the manual fill password coordinator as a child here
+  // anymore.
+  if ([self.childCoordinators count] != 0) {
+    return;
+  }
+
+  self.expandedManualFillViewController.childViewController =
+      _manualFillPasswordCoordinator.viewController;
+
+  [self.childCoordinators addObject:_manualFillPasswordCoordinator];
+}
+
 #pragma mark - UIPopoverPresentationControllerDelegate
 
 - (void)popoverPresentationControllerDidDismissPopover:
@@ -208,23 +229,25 @@ using manual_fill::ManualFillDataType;
   CHECK(webStateList->GetActiveWebState());
   const GURL& URL = webStateList->GetActiveWebState()->GetLastCommittedURL();
 
-  ManualFillPasswordCoordinator* passwordCoordinator =
-      [[ManualFillPasswordCoordinator alloc]
-             initWithBaseViewController:self.baseViewController
-                                browser:self.browser
-          manualFillPlusAddressMediator:
-              [self manualFillPlusAddressMediatorForFallback:NO]
-                                    URL:URL
-                       injectionHandler:self.injectionHandler
-               invokedOnObfuscatedField:self.invokedOnObfuscatedField
-                 showAutofillFormButton:(_focusedFieldDataType ==
-                                         ManualFillDataType::kPassword)];
-  passwordCoordinator.delegate = self.delegate;
+  _manualFillPasswordCoordinator = [[ManualFillPasswordCoordinator alloc]
+         initWithBaseViewController:self.baseViewController
+                            browser:self.browser
+      manualFillPlusAddressMediator:
+          [self manualFillPlusAddressMediatorForFallback:NO]
+                                URL:URL
+                   injectionHandler:self.injectionHandler
+           invokedOnObfuscatedField:self.invokedOnObfuscatedField
+             showAutofillFormButton:(_focusedFieldDataType ==
+                                     ManualFillDataType::kPassword)];
+  _manualFillPasswordCoordinator.delegate = self.delegate;
+  _manualFillPasswordCoordinator.consumer = self;
 
-  self.expandedManualFillViewController.childViewController =
-      passwordCoordinator.viewController;
-
-  [self.childCoordinators addObject:passwordCoordinator];
+  // Note: The ManualFillPasswordCoordinator object will be added as a child
+  // coordinator to this coordinator in the `passwordsFetched` function,
+  // which will be called only once passwords are fetched, to avoid showing a
+  // visible flicker where an empty passwords list appears briefly between the
+  // previous menu and the final passwords menu, where all available passwords
+  // are shown.
 }
 
 // Shows the payment method manual filling options.
@@ -293,7 +316,7 @@ using manual_fill::ManualFillDataType;
         initWithFaviconLoader:faviconLoader
            plusAddressService:plusAddressService
                           URL:URL
-               isOffTheRecord:self.profile->IsOffTheRecord()
+               isOffTheRecord:self.isOffTheRecord
       isAddressManualFallback:isAddressManualFallback];
 
   return _manualFillPlusAddressMediator;

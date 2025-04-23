@@ -15,6 +15,7 @@ limitations under the License.
 
 #include "tensorflow_lite_support/cc/task/vision/utils/frame_buffer_common_utils.h"
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -36,7 +37,7 @@ constexpr int kGrayChannel = 1;
 // Creates a FrameBuffer from one plane raw NV21/NV12 buffer and passing
 // arguments.
 StatusOr<std::unique_ptr<FrameBuffer>> CreateFromOnePlaneNVRawBuffer(
-    const uint8* input, FrameBuffer::Dimension dimension,
+    const uint8_t* input, FrameBuffer::Dimension dimension,
     FrameBuffer::Format format, FrameBuffer::Orientation orientation,
     const absl::Time timestamp) {
   FrameBuffer::Plane input_plane = {/*buffer=*/input,
@@ -114,7 +115,7 @@ StatusOr<int> GetPixelStrides(FrameBuffer::Format format) {
   }
 }
 
-StatusOr<const uint8*> GetUvRawBuffer(const FrameBuffer& buffer) {
+StatusOr<const uint8_t*> GetUvRawBuffer(const FrameBuffer& buffer) {
   if (buffer.format() != FrameBuffer::Format::kNV12 &&
       buffer.format() != FrameBuffer::Format::kNV21) {
     return absl::InvalidArgumentError(
@@ -122,9 +123,9 @@ StatusOr<const uint8*> GetUvRawBuffer(const FrameBuffer& buffer) {
   }
   TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData yuv_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
-  const uint8* uv_buffer = buffer.format() == FrameBuffer::Format::kNV12
-                               ? yuv_data.u_buffer
-                               : yuv_data.v_buffer;
+  const uint8_t* uv_buffer = buffer.format() == FrameBuffer::Format::kNV12
+                                 ? yuv_data.u_buffer
+                                 : yuv_data.v_buffer;
   return uv_buffer;
 }
 
@@ -309,7 +310,7 @@ absl::Status ValidateConvertFormats(FrameBuffer::Format from_format,
 
 // Creates a FrameBuffer from raw RGBA buffer and passing arguments.
 std::unique_ptr<FrameBuffer> CreateFromRgbaRawBuffer(
-    const uint8* input, FrameBuffer::Dimension dimension,
+    const uint8_t* input, FrameBuffer::Dimension dimension,
     FrameBuffer::Orientation orientation, const absl::Time timestamp,
     FrameBuffer::Stride stride) {
   if (stride == kDefaultStride) {
@@ -325,7 +326,7 @@ std::unique_ptr<FrameBuffer> CreateFromRgbaRawBuffer(
 
 // Creates a FrameBuffer from raw RGB buffer and passing arguments.
 std::unique_ptr<FrameBuffer> CreateFromRgbRawBuffer(
-    const uint8* input, FrameBuffer::Dimension dimension,
+    const uint8_t* input, FrameBuffer::Dimension dimension,
     FrameBuffer::Orientation orientation, const absl::Time timestamp,
     FrameBuffer::Stride stride) {
   if (stride == kDefaultStride) {
@@ -340,7 +341,7 @@ std::unique_ptr<FrameBuffer> CreateFromRgbRawBuffer(
 
 // Creates a FrameBuffer from raw grayscale buffer and passing arguments.
 std::unique_ptr<FrameBuffer> CreateFromGrayRawBuffer(
-    const uint8* input, FrameBuffer::Dimension dimension,
+    const uint8_t* input, FrameBuffer::Dimension dimension,
     FrameBuffer::Orientation orientation, const absl::Time timestamp,
     FrameBuffer::Stride stride) {
   if (stride == kDefaultStride) {
@@ -356,7 +357,7 @@ std::unique_ptr<FrameBuffer> CreateFromGrayRawBuffer(
 
 // Creates a FrameBuffer from raw YUV buffer and passing arguments.
 StatusOr<std::unique_ptr<FrameBuffer>> CreateFromYuvRawBuffer(
-    const uint8* y_plane, const uint8* u_plane, const uint8* v_plane,
+    const uint8_t* y_plane, const uint8_t* u_plane, const uint8_t* v_plane,
     FrameBuffer::Format format, FrameBuffer::Dimension dimension,
     int row_stride_y, int row_stride_uv, int pixel_stride_uv,
     FrameBuffer::Orientation orientation, const absl::Time timestamp) {
@@ -380,7 +381,7 @@ StatusOr<std::unique_ptr<FrameBuffer>> CreateFromYuvRawBuffer(
 }
 
 StatusOr<std::unique_ptr<FrameBuffer>> CreateFromRawBuffer(
-    const uint8* buffer, FrameBuffer::Dimension dimension,
+    const uint8_t* buffer, FrameBuffer::Dimension dimension,
     const FrameBuffer::Format target_format,
     FrameBuffer::Orientation orientation, absl::Time timestamp) {
   switch (target_format) {

@@ -744,22 +744,3 @@ TEST(SessionCommandsTest, ForwardBidiCommand_noConnectionId) {
   EXPECT_THAT(status.message(),
               ContainsRegex("connectionId is missing in params"));
 }
-
-TEST(SessionCommandsTest, ForwardBidiCommand_legacyChannel) {
-  BrowserInfo binfo;
-  MockChrome* chrome = new MockChrome(binfo);
-  Session session("id", std::unique_ptr<Chrome>(chrome));
-
-  base::Value::Dict command = base::test::ParseJsonDict(
-      R"({
-        "connectionId": 1,
-        "bidiCommand": {
-          "channel": "SOME_LEGACY_CHANNEL",
-        }
-      })");
-
-  Status status = ForwardBidiCommand(&session, command, nullptr);
-  ASSERT_EQ(kInvalidArgument, status.code()) << status.message();
-  EXPECT_THAT(status.message(),
-              ContainsRegex("`channel` parameter is deprecated"));
-}

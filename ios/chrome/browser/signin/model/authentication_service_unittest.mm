@@ -758,7 +758,8 @@ TEST_P(AuthenticationServiceTest, ShowMDMErrorDialog) {
 
 TEST_P(AuthenticationServiceTest, SigninDisallowedCrash) {
   // Disable sign-in.
-  profile_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  local_state()->SetBoolean(prefs::kSigninAllowedOnDevice, false);
+  EXPECT_EQ(profile_->GetPrefs()->GetBoolean(prefs::kSigninAllowed), false);
 
   // Attempt to sign in, and verify there is a crash.
   EXPECT_CHECK_DEATH(authentication_service()->SignIn(
@@ -796,7 +797,8 @@ TEST_P(AuthenticationServiceTest, TestGetServiceStatus) {
   EXPECT_EQ(AuthenticationService::ServiceStatus::SigninAllowed,
             authentication_service()->GetServiceStatus());
 
-  profile_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  local_state()->SetBoolean(prefs::kSigninAllowedOnDevice, false);
+  EXPECT_EQ(profile_->GetPrefs()->GetBoolean(prefs::kSigninAllowed), false);
   // Expect sign-in disabled by user.
   EXPECT_EQ(AuthenticationService::ServiceStatus::SigninDisabledByUser,
             authentication_service()->GetServiceStatus());
@@ -821,7 +823,8 @@ TEST_P(AuthenticationServiceTest, TestGetServiceStatus) {
   // Expect onServiceStatus notification called.
   EXPECT_EQ(3, observer_test.GetOnServiceStatusChangedCounter());
 
-  profile_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, true);
+  local_state()->SetBoolean(prefs::kSigninAllowedOnDevice, true);
+  EXPECT_EQ(profile_->GetPrefs()->GetBoolean(prefs::kSigninAllowed), true);
   // Expect sign-in to be still forced by policy.
   EXPECT_EQ(AuthenticationService::ServiceStatus::SigninForcedByPolicy,
             authentication_service()->GetServiceStatus());

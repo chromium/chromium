@@ -32,6 +32,8 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEditCoordinator.CredentialActionDelegate;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEntryFragmentViewBase.UiActionHandler;
 import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
@@ -51,6 +53,7 @@ import java.util.Set;
  * Contains the logic for the edit component. It  updates the model when needed and reacts to UI
  * events (e.g. button clicks).
  */
+@NullMarked
 public class CredentialEditMediator implements UiActionHandler {
     static final String SAVED_PASSWORD_ACTION_HISTOGRAM =
             "PasswordManager.CredentialEntryActions.SavedPassword";
@@ -151,10 +154,12 @@ public class CredentialEditMediator implements UiActionHandler {
         mIsBlockedCredential = isBlockedCredential;
     }
 
+    @Initializer
     void initialize(PropertyModel model) {
         mModel = model;
     }
 
+    @Initializer
     void setCredential(String username, String password, boolean isInsecureCredential) {
         mOriginalUsername = username;
         mOriginalPassword = password;
@@ -165,6 +170,7 @@ public class CredentialEditMediator implements UiActionHandler {
         mModel.set(PASSWORD, password);
     }
 
+    @Initializer
     void setExistingUsernames(String[] existingUsernames) {
         mExistingUsernames = new HashSet<>(Arrays.asList(existingUsernames));
     }

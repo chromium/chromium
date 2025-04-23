@@ -5,7 +5,21 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_interfaces") {
-  sources = [ "page_text_service.mojom" ]
+  sources = [
+    "page_text_service.mojom",
+    "ai_page_content_metadata.mojom"
+  ]
 
-  public_deps = [ "//mojo/public/mojom/base" ]
+  webui_module_path = "/"
+  generate_legacy_js_bindings = true
+
+  public_deps = [
+    "//components/content_settings/core/common:content_settings_types",
+    "//mojo/public/mojom/base",
+    "//mojo/public/mojom/base:protobuf_support",
+    "//skia/public/mojom",
+    "//ui/gfx/geometry/mojom",
+    "//url/mojom:url_mojom_gurl",
+    "//url/mojom:url_mojom_origin",
+  ]
 }

@@ -20,12 +20,15 @@ inline constexpr size_t kSha512Size = 64;
 // kind-specific functions:
 CRYPTO_EXPORT std::array<uint8_t, kSha1Size> Sha1(
     base::span<const uint8_t> data);
+CRYPTO_EXPORT std::array<uint8_t, kSha1Size> Sha1(std::string_view data);
 
 CRYPTO_EXPORT std::array<uint8_t, kSha256Size> Sha256(
     base::span<const uint8_t> data);
+CRYPTO_EXPORT std::array<uint8_t, kSha256Size> Sha256(std::string_view data);
 
 CRYPTO_EXPORT std::array<uint8_t, kSha512Size> Sha512(
     base::span<const uint8_t> data);
+CRYPTO_EXPORT std::array<uint8_t, kSha512Size> Sha512(std::string_view data);
 
 // If you do need to be generic, you can use the Hash() function and pass a
 // HashKind instead.
@@ -52,6 +55,9 @@ inline constexpr size_t DigestSizeForHashKind(HashKind k) {
 CRYPTO_EXPORT void Hash(HashKind kind,
                         base::span<const uint8_t> data,
                         base::span<uint8_t> digest);
+CRYPTO_EXPORT void Hash(HashKind kind,
+                        std::string_view data,
+                        base::span<uint8_t> digest);
 
 // A streaming hasher interface. Calling Finish() resets the hash context to the
 // initial state after computing the digest.
@@ -65,6 +71,7 @@ class CRYPTO_EXPORT Hasher {
   ~Hasher();
 
   void Update(base::span<const uint8_t> data);
+  void Update(std::string_view data);
 
   // The digest span must be the right size.
   void Finish(base::span<uint8_t> digest);

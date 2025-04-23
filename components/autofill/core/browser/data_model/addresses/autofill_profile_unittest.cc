@@ -39,8 +39,6 @@ namespace autofill {
 using base::UTF8ToUTF16;
 using ObservationType = ProfileTokenQuality::ObservationType;
 
-constexpr VerificationStatus kObserved = VerificationStatus::kObserved;
-
 namespace {
 
 std::u16string GetSuggestionLabel(AutofillProfile* profile) {
@@ -1410,8 +1408,7 @@ TEST_F(AutofillProfileTest, Compare_StructuredTypes) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({features::kAutofillUseFRAddressModel,
                                  features::kAutofillUseINAddressModel,
-                                 features::kAutofillUseNLAddressModel,
-                                 features::kAutofillUseITAddressModel},
+                                 features::kAutofillUseNLAddressModel},
                                 {});
   // Those types do store a verification status.
   FieldTypeSet structured_types{
@@ -1630,20 +1627,6 @@ TEST_F(AutofillProfileTest, RecordUseAndLog_Delay) {
   task_environment().FastForwardBy(base::Seconds(55));
   profile.RecordAndLogUse();
   EXPECT_EQ(profile.usage_history().use_count(), 2u);
-}
-
-// Tests that the |HasStructuredData| returns whether the profile has structured
-// data or not.
-TEST_F(AutofillProfileTest, HasStructuredData) {
-  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
-  profile.SetRawInfoWithVerificationStatus(
-      NAME_FULL, u"marion mitchell morrison", kObserved);
-  EXPECT_FALSE(profile.HasStructuredData());
-
-  profile.SetRawInfoWithVerificationStatus(NAME_FIRST, u"marion", kObserved);
-  profile.SetRawInfoWithVerificationStatus(NAME_MIDDLE, u"mitchell", kObserved);
-  profile.SetRawInfoWithVerificationStatus(NAME_LAST, u"morrison", kObserved);
-  EXPECT_TRUE(profile.HasStructuredData());
 }
 
 TEST_F(AutofillProfileTest, ConvertToAccountProfile) {

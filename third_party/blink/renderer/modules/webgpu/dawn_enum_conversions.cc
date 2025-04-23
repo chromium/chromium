@@ -689,6 +689,8 @@ wgpu::FeatureName AsDawnEnum(const V8GPUFeatureName& webgpu_enum) {
   switch (webgpu_enum.AsEnum()) {
     case V8GPUFeatureName::Enum::kTextureCompressionBc:
       return wgpu::FeatureName::TextureCompressionBC;
+    case V8GPUFeatureName::Enum::kTextureCompressionBcSliced3d:
+      return wgpu::FeatureName::TextureCompressionBCSliced3D;
     case V8GPUFeatureName::Enum::kTextureCompressionEtc2:
       return wgpu::FeatureName::TextureCompressionETC2;
     case V8GPUFeatureName::Enum::kTextureCompressionAstc:
@@ -1028,6 +1030,20 @@ const char* FromDawnEnum(wgpu::AdapterType dawn_enum) {
       return "CPU";
     case wgpu::AdapterType::Unknown:
       return "unknown";
+    default:
+      break;
+  }
+  NOTREACHED();
+}
+
+const char* FromDawnEnum(wgpu::PowerPreference dawn_enum) {
+  switch (dawn_enum) {
+    case wgpu::PowerPreference::Undefined:
+      return "";
+    case wgpu::PowerPreference::LowPower:
+      return "low-power";
+    case wgpu::PowerPreference::HighPerformance:
+      return "high-performance";
     default:
       break;
   }

@@ -5,11 +5,12 @@
 #include "chrome/browser/ui/ash/wm/coral_delegate_impl.h"
 
 #include "ash/constants/generative_ai_country_restrictions.h"
+#include "base/check_deref.h"
+#include "base/memory/raw_ref.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/desks/desks_templates_app_launch_handler.h"
@@ -22,6 +23,7 @@
 #include "chromeos/ui/wm/desks/desks_helper.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/restore_data.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/user_manager/user_manager.h"
 #include "components/variations/service/variations_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -97,8 +99,8 @@ std::unique_ptr<app_restore::RestoreData> CoralGroupToRestoreData(
     app_restore::AppRestoreData* full_restore_app_restore_data =
         GetFirstAppRestoreData(full_restore_restore_data, app_id, window_id);
     if (!full_restore_app_restore_data) {
-      // TODO(sammiequon): PWA's need a window id to be identified. For now we
-      // will launch apps without full restore data at default positions.
+      // TODO(zxdan): PWA's need a window id to be identified. For now we will
+      // launch apps without full restore data at default positions.
       auto& new_launch_list =
           restore_data->mutable_app_id_to_launch_list()[app_id];
       auto& new_app_restore_data = new_launch_list[/*window_id=*/0];
@@ -176,18 +178,13 @@ Browser* FindTabOnDeskAtIndex(const GURL& url,
   return nullptr;
 }
 
-// Returns empty string on failure case, which would not pass
-// IsGenerativeAiAllowedForCountry check.
-std::string GetCountryCode() {
-  return (g_browser_process != nullptr &&
-          g_browser_process->variations_service() != nullptr)
-             ? g_browser_process->variations_service()->GetLatestCountry()
-             : "";
-}
-
 }  // namespace
 
-CoralDelegateImpl::CoralDelegateImpl() = default;
+CoralDelegateImpl::CoralDelegateImpl(
+    const ApplicationLocaleStorage* application_locale_storage,
+    const variations::VariationsService* variations_service)
+    : application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      variations_service_(CHECK_DEREF(variations_service)) {}
 
 CoralDelegateImpl::~CoralDelegateImpl() = default;
 
@@ -320,11 +317,12 @@ void CoralDelegateImpl::CheckGenAIAgeAvailability(
 }
 
 bool CoralDelegateImpl::GetGenAILocationAvailability() {
-  return ash::IsGenerativeAiAllowedForCountry(GetCountryCode());
+  return ash::IsGenerativeAiAllowedForCountry(
+      variations_service_->GetLatestCountry());
 }
 
 std::string CoralDelegateImpl::GetSystemLanguage() {
-  return l10n_util::GetLanguage(g_browser_process->GetApplicationLocale());
+  return l10n_util::GetLanguage(application_locale_storage_->Get());
 }
 
 void CoralDelegateImpl::OnIdentityManagerShutdown(

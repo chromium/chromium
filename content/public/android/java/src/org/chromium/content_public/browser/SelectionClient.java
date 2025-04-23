@@ -4,8 +4,6 @@
 
 package org.chromium.content_public.browser;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
@@ -171,7 +169,6 @@ public interface SelectionClient {
     public static @Nullable SelectionClient createSmartSelectionClient(WebContents webContents) {
         SelectionPopupController selectionPopupController =
                 SelectionPopupController.fromWebContents(webContents);
-        assumeNonNull(selectionPopupController);
         SelectionClient.ResultCallback callback = selectionPopupController.getResultCallback();
         return SmartSelectionClient.fromWebContents(callback, webContents);
     }

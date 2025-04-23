@@ -17,12 +17,14 @@
 #include "base/types/optional_ref.h"
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
+#include "content/services/auction_worklet/public/mojom/in_progress_auction_download.mojom-forward.h"
 #include "net/base/network_interfaces.h"
 #include "net/http/http_response_headers.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_completion_status.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -123,6 +125,20 @@ class CONTENT_EXPORT AuctionDownloader {
       AuctionDownloaderCallback auction_downloader_callback,
       std::unique_ptr<NetworkEventsDelegate> network_events_delegate);
 
+  // Alternative constructor that allows adopting an in-progress request via an
+  // InProgressAuctionDownloadPtr, which should have been produced via
+  // AuctionDownloader::StartDownload. The URLLoaderFactory will only be used if
+  // async revalidation is required.
+  AuctionDownloader(
+      network::mojom::URLLoaderFactory* url_loader_factory,
+      mojom::InProgressAuctionDownloadPtr in_progress_load,
+      DownloadMode download_mode,
+      MimeType mime_type,
+      std::optional<size_t> num_igs_for_trusted_bidding_signals_kvv1,
+      ResponseStartedCallback response_started_callback,
+      AuctionDownloaderCallback auction_downloader_callback,
+      std::unique_ptr<NetworkEventsDelegate> network_events_delegate);
+
   // Alternative constructor, for use when used in the browser process directly,
   // rather than in conjunction with a AuctionURLLoaderFactoryProxy. Takes an
   // initiator and ResourceRequest::TrustedParams. Creation of TrustedParams
@@ -148,6 +164,19 @@ class CONTENT_EXPORT AuctionDownloader {
 
   const std::string& request_id() const { return request_id_; }
 
+  // Start a download to be used later with the constructor that takes an
+  // InProgressAuctionDownloadPtr. The request will be canceled if the
+  // InProgressAuctionDownloadPtr is destroyed before it's used to create an
+  // AuctionDownloader. `network_events_delegate` is used to call
+  // OnNetworkSendRequest only.
+  static mojom::InProgressAuctionDownloadPtr StartDownload(
+      network::mojom::URLLoaderFactory& url_loader_factory,
+      const GURL& source_url,
+      MimeType mime_type,
+      NetworkEventsDelegate& network_events_delegate,
+      std::optional<std::string> post_body = std::nullopt,
+      std::optional<std::string> content_type = std::nullopt);
+
   // Checks if the response is allowed for Protected Audience-related requests,
   // based on the headers. Returns an error string and sets `status_out` on
   // error.
@@ -160,12 +189,14 @@ class CONTENT_EXPORT AuctionDownloader {
       AuctionDownloader::MimeType mime_type);
 
  private:
-  // Delegated constructor used by both public constructor calls.
+  // Delegated constructor used by public constructor calls.
   AuctionDownloader(
       network::mojom::URLLoaderFactory* url_loader_factory,
       const GURL& source_url,
       DownloadMode download_mode,
       MimeType mime_type,
+      network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
+      std::optional<std::string> request_id,
       std::optional<std::string> post_body,
       std::optional<std::string> content_type,
       std::optional<size_t> num_igs_for_trusted_bidding_signals_kvv1,

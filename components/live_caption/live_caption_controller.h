@@ -16,7 +16,6 @@
 #include "components/live_caption/views/caption_bubble.h"
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
-#include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "ui/native_theme/caption_style.h"
 #include "ui/native_theme/native_theme_observer.h"
 
@@ -59,25 +58,12 @@ class LiveCaptionController : public KeyedService,
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  // Routes a transcription to the CaptionBubbleController. Returns whether the
-  // transcription result was routed successfully. Transcriptions will halt if
-  // this returns false.
-  bool DispatchTranscription(CaptionBubbleContext* caption_bubble_context,
-                             const media::SpeechRecognitionResult& result);
-
-  void OnLanguageIdentificationEvent(
-      CaptionBubbleContext* caption_bubble_context,
-      const media::mojom::LanguageIdentificationEventPtr& event);
-
   // Alerts the CaptionBubbleController that there is an error in the speech
   // recognition service.
   void OnError(CaptionBubbleContext* caption_bubble_context,
                CaptionBubbleErrorType error_type,
                OnErrorClickedCallback error_clicked_callback,
                OnDoNotShowAgainClickedCallback error_silenced_callback);
-
-  // Alerts the CaptionBubbleController that the audio stream has ended.
-  void OnAudioStreamEnd(CaptionBubbleContext* caption_bubble_context);
 
   // Mac and ChromeOS move the fullscreened window into a new workspace. When
   // the WebContents associated with the CaptionBubbleContext goes

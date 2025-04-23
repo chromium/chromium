@@ -9,6 +9,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.BinderCallsListener;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.task.PostTask;
@@ -38,6 +39,8 @@ import org.chromium.url.GURL;
 public class StartupMetricsTracker {
 
     private static final long TIME_TO_DRAW_METRIC_RECORDING_DELAY_MS = 2500;
+    private static final String NTP_COLD_START_HISTOGRAM =
+            "Startup.Android.Cold.NewTabPage.TimeToFirstDraw";
     private boolean mFirstNavigationCommitted;
 
     private class TabObserver extends TabModelSelectorTabObserver {
@@ -198,7 +201,7 @@ public class StartupMetricsTracker {
      */
     public void registerNtpViewObserver(@NonNull View ntpRootView) {
         if (!mShouldTrackTimeToFirstDraw) return;
-        trackTimeToFirstDraw(ntpRootView, "Startup.Android.Cold.NewTabPage.TimeToFirstDraw");
+        trackTimeToFirstDraw(ntpRootView, NTP_COLD_START_HISTOGRAM);
     }
 
     /**
@@ -222,6 +225,9 @@ public class StartupMetricsTracker {
                 view,
                 () -> {
                     long timeToFirstDrawMs = SystemClock.uptimeMillis() - mActivityStartTimeMs;
+                    if (NTP_COLD_START_HISTOGRAM.equals(histogram)) {
+                        recordTimeSpentInBinderCold("NewTabPage");
+                    }
                     // During a cold start, first draw can be triggered while Chrome is in
                     // the background, leading to ablated draw times. This early in the startup
                     // process, events that indicate Chrome has been backgrounded do not run until
@@ -258,6 +264,14 @@ public class StartupMetricsTracker {
     private void recordExperimentalHistogram(String name, long ms) {
         RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "Startup.Android.Experimental." + name + ".Tabbed.ColdStartTracker", ms);
+    }
+
+    private void recordTimeSpentInBinderCold(String variant) {
+        Long binderTimeMs = BinderCallsListener.getInstance().getTimeSpentInBinderCalls();
+        if (binderTimeMs != null) {
+            RecordHistogram.recordMediumTimesHistogram(
+                    "Startup.Android.Cold." + variant + ".TimeSpentInBinder", binderTimeMs);
+        }
     }
 
     private void recordNavigationCommitMetrics(long firstCommitMs) {

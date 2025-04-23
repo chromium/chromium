@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator.LOCAL_SYNC_DB_SYNCHRONIZATION_DELAY;
 import static org.chromium.chrome.browser.tab.Tab.INVALID_TIMESTAMP;
 import static org.chromium.chrome.browser.tabmodel.TabList.INVALID_TAB_INDEX;
 
@@ -18,6 +19,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.TabArchiver.Observer;
 import org.chromium.chrome.browser.tab.state.ArchivePersistedTabData;
@@ -27,12 +29,17 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /** Responsible for moving tabs to/from the archived {@link TabModel}. */
@@ -49,6 +56,7 @@ public class TabArchiverImpl implements TabArchiver {
     private final TabGroupModelFilter mArchivedTabGroupModelFilter;
     private final TabCreator mArchivedTabCreator;
     private final TabArchiveSettings mTabArchiveSettings;
+    private final TabGroupSyncService mTabGroupSyncService;
 
     private Clock mClock;
 
@@ -56,17 +64,20 @@ public class TabArchiverImpl implements TabArchiver {
      * @param archivedTabGroupModelFilter The archived {@link TabGroupModelFilter}.
      * @param archivedTabCreator The {@link TabCreator} for the archived TabModel.
      * @param tabArchiveSettings The settings for tab archiving/deletion.
-     * @param clock A clock object to get the current time..
+     * @param clock A clock object to get the current time.
+     * @param tabGroupSyncService The {@link TabGroupSyncService}.
      */
     public TabArchiverImpl(
             TabGroupModelFilter archivedTabGroupModelFilter,
             TabCreator archivedTabCreator,
             TabArchiveSettings tabArchiveSettings,
-            Clock clock) {
+            Clock clock,
+            TabGroupSyncService tabGroupSyncService) {
         mArchivedTabGroupModelFilter = archivedTabGroupModelFilter;
         mArchivedTabCreator = archivedTabCreator;
         mTabArchiveSettings = tabArchiveSettings;
         mClock = clock;
+        mTabGroupSyncService = tabGroupSyncService;
     }
 
     @Override
@@ -103,6 +114,11 @@ public class TabArchiverImpl implements TabArchiver {
         TabGroupModelFilter regularTabGroupModelFilter =
                 selectorToArchive.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter();
         TabModel model = regularTabGroupModelFilter.getTabModel();
+
+        if (!isUserActive(model)) {
+            broadcastDeclutterComplete();
+            return;
+        }
 
         // Get the tabs to archive, which moves them to the archived TabModel.
         List<Tab> tabsToArchive = getTabsToArchive(regularTabGroupModelFilter);
@@ -208,12 +224,33 @@ public class TabArchiverImpl implements TabArchiver {
         ThreadUtils.assertOnUiThread();
 
         List<Tab> archivedTabs = new ArrayList<>();
+        Set<Token> archivedTabGroupIds = new HashSet<>();
         // Add tabs to the archived tab model first to prevent tab loss if the operation is aborted.
         for (Tab tab : tabs) {
+            // Do not add tabs that are part of tab groups to the archived tab model.
+            @Nullable Token tabGroupId = tab.getTabGroupId();
+            if (ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()
+                    && tabGroupId != null) {
+                archivedTabGroupIds.add(tabGroupId);
+                continue;
+            }
+
             TabState tabState = prepareTabState(tab);
             Tab archivedTab =
                     mArchivedTabCreator.createFrozenTab(tabState, tab.getId(), INVALID_TAB_INDEX);
             archivedTabs.add(archivedTab);
+        }
+
+        if (ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()
+                && mTabGroupSyncService != null) {
+            for (Token tabGroupId : archivedTabGroupIds) {
+                LocalTabGroupId localTabGroupId = new LocalTabGroupId(tabGroupId);
+                SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(localTabGroupId);
+                if (savedTabGroup != null) {
+                    mTabGroupSyncService.updateArchivalStatus(
+                            savedTabGroup.syncId, /* archivalStatus= */ true);
+                }
+            }
         }
 
         int tabCount = tabs.size();
@@ -531,6 +568,37 @@ public class TabArchiverImpl implements TabArchiver {
         for (Observer obs : mObservers) {
             PostTask.postTask(TaskTraits.UI_DEFAULT, obs::onAutodeletePassCompleted);
         }
+    }
+
+    // Determine if the user was active during the declutter inactivity period by checking all tabs
+    // in the tab model to see if the youngest tab is outside of that threshold.
+    private boolean isUserActive(TabModel model) {
+        if (!ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()) return true;
+
+        long lastActiveTabTimestamp = 0L;
+        for (int i = 0; i < model.getCount(); i++) {
+            Tab tab = model.getTabAt(i);
+            // Skip the active tab or any tab navigated to during the sync db synchronization delay
+            // when making last active determinations for user inactivity.
+            // TODO(crbug.com/410035913): Update this logic when the delay dependency is removed.
+            long preSyncDelayBaseline =
+                    mClock.currentTimeMillis() - LOCAL_SYNC_DB_SYNCHRONIZATION_DELAY;
+            long tabLastNavigationTimestamp = tab.getLastNavigationCommittedTimestampMillis();
+            if (TabModelUtils.getCurrentTabId(model) == tab.getId()
+                    || tabLastNavigationTimestamp > preSyncDelayBaseline) {
+                continue;
+            }
+            lastActiveTabTimestamp = Math.max(lastActiveTabTimestamp, tabLastNavigationTimestamp);
+        }
+
+        // If the last active tab's navigation timestamp is within the target hours (they exceed
+        // the inactivity grace period provided by delta hours), do not perform a declutter pass
+        // as the user is considered inactive.
+        if (isTimestampWithinTargetHours(
+                lastActiveTabTimestamp, mTabArchiveSettings.getArchiveTimeDeltaHours())) {
+            return false;
+        }
+        return true;
     }
 
     // Testing-specific methods.

@@ -4,12 +4,14 @@
 
 package org.chromium.components.webxr;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 
 /**
- * Interface used to create instances of VrCompositorDelegates, needed to talk
- * to the compositor to ensure that the Surface renders correctly.
+ * Interface used to create instances of VrCompositorDelegates, needed to talk to the compositor to
+ * ensure that the Surface renders correctly.
  */
+@NullMarked
 public interface VrCompositorDelegateProvider {
     VrCompositorDelegate create(WebContents webContents);
 }

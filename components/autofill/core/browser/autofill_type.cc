@@ -18,7 +18,6 @@ namespace autofill {
 AutofillType::ServerPrediction::ServerPrediction() = default;
 
 AutofillType::ServerPrediction::ServerPrediction(const AutofillField& field) {
-  may_use_prefilled_placeholder = field.may_use_prefilled_placeholder();
   password_requirements = field.password_requirements();
   server_predictions = field.server_predictions();
 }

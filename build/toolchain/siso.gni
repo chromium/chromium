@@ -13,11 +13,17 @@ if (path_exists("/usr/bin/gcert") ||  # linux
   _is_google_corp_machine = true
 }
 
+_is_bot = false
+if (getenv("SWARMING_HEADLESS") != "" || getenv("SWARMING_BOT_ID") != "" ||
+    getenv("SWARMING_TASK_ID") != "") {
+  _is_bot = true
+}
+
 _is_ninja_used = path_exists(rebase_path(".ninja_deps", root_build_dir))
 
 if (path_exists("//build/config/siso/.sisoenv") &&
     defined(build_with_chromium) && build_with_chromium &&
-    _is_google_corp_machine && !_is_ninja_used) {
+    (_is_google_corp_machine || _is_bot) && !_is_ninja_used) {
   use_siso_default = true
 }
 
@@ -27,4 +33,10 @@ declare_args() {
   # This is used only for autoninja (to dispatch siso or ninja),
   # and for use_reclient's default.
   use_siso = use_siso_default
+}
+
+if (use_siso) {
+  siso_logs = [ "use_siso=true" ]
+} else {
+  siso_logs = [ "use_siso=false" ]
 }

@@ -27,6 +27,7 @@
 #include "net/nqe/network_quality_estimator.h"
 #include "net/nqe/network_quality_observation_source.h"
 #include "net/nqe/rtt_throughput_estimates_observer.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_tag.h"
 
 class PrefService;
 
@@ -308,6 +309,10 @@ class CronetContext {
     // network thread.
     std::unique_ptr<net::URLRequestContext> BuildDefaultURLRequestContext(
         std::unique_ptr<net::ProxyConfigService> proxy_config_service);
+
+    raw_ptr<net::URLRequestContext> getDefaultContext() const {
+      return default_context_;
+    }
 
     std::unique_ptr<net::FileNetLogObserver> net_log_file_observer_;
 

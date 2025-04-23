@@ -11,6 +11,7 @@ if (is_android) {
 group("public") {
   public_deps = [
     ":core_public",
+    ":empty_messaging_backend_service",
     ":messaging_public",
   ]
 }
@@ -19,6 +20,7 @@ static_library("core_public") {
   visibility = [ ":*" ]
   sources = [
     "collaboration_controller_delegate.h",
+    "collaboration_flow_entry_point.cc",
     "collaboration_flow_entry_point.h",
     "collaboration_flow_type.h",
     "collaboration_service.h",
@@ -38,6 +40,31 @@ static_library("core_public") {
     "//components/saved_tab_groups/public",
     "//components/strings:components_strings_grit",
     "//url",
+  ]
+}
+
+source_set("data_type_controller") {
+  visibility = [ "//components/browser_sync" ]
+
+  sources = [
+    "data_type_controller/collaboration_group_data_type_controller.cc",
+    "data_type_controller/collaboration_group_data_type_controller.h",
+    "data_type_controller/collaboration_service_precondition_checker.cc",
+    "data_type_controller/collaboration_service_precondition_checker.h",
+    "data_type_controller/shared_tab_group_account_data_type_controller.cc",
+    "data_type_controller/shared_tab_group_account_data_type_controller.h",
+    "data_type_controller/shared_tab_group_data_type_controller.cc",
+    "data_type_controller/shared_tab_group_data_type_controller.h",
+  ]
+
+  deps = [
+    ":core_public",
+    "//base",
+    "//components/data_sharing/public:features",
+    "//components/signin/public/identity_manager",
+    "//components/sync/base",
+    "//components/sync/service",
+    "//ui/base:base",
   ]
 }
 
@@ -216,4 +243,13 @@ if (is_android) {
       "//base",
     ]
   }
+}
+
+static_library("empty_messaging_backend_service") {
+  visibility = [ "*" ]
+  sources = [
+    "messaging/empty_messaging_backend_service.cc",
+    "messaging/empty_messaging_backend_service.h",
+  ]
+  deps = [ ":messaging_public" ]
 }

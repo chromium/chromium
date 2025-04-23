@@ -6,6 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SERVICE_UTILS_H_
 
 #include "base/command_line.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gl/gl_context.h"
@@ -49,6 +50,10 @@ bool MSAAIsSlow(const GpuDriverBugWorkarounds& workarounds);
 // the current GL implementation.
 GPU_GLES2_EXPORT uint32_t GetTextureTargetForIOSurfaces();
 #endif  // BUILDFLAG(IS_MAC)
+
+GPU_GLES2_EXPORT size_t UpdateShaderCacheSizeOnMemoryPressure(
+    size_t max_cache_size,
+    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 
 }  // namespace gpu
 

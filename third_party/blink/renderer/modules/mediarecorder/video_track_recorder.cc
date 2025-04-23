@@ -684,8 +684,8 @@ VideoTrackRecorderImpl::Encoder::MaybeProvideEncodableFrame(
       video_renderer_ = std::make_unique<media::PaintCanvasVideoRenderer>();
     }
 
-    encoder_thread_context_->CopyVideoFrame(video_renderer_.get(),
-                                            video_frame.get(), canvas_.get());
+    video_renderer_->Copy(video_frame.get(), canvas_.get(),
+                          encoder_thread_context_->RasterContextProvider());
 
     SkPixmap pixmap;
     if (!bitmap_.peekPixels(&pixmap)) {
@@ -1178,21 +1178,15 @@ void VideoTrackRecorderPassthrough::HandleEncodedVideoFrame(
     RequestKeyFrame();
   }
 
-  std::optional<gfx::ColorSpace> color_space;
-  if (encoded_frame->ColorSpace()) {
-    color_space = encoded_frame->ColorSpace();
-  }
-
   auto buffer = media::DecoderBuffer::CopyFrom(encoded_frame->Data());
   buffer->set_is_key_frame(encoded_frame->IsKeyFrame());
 
-  // TODO(crbug.com/391786486): create method in EncodedVideoFrame to get
-  // Transformation info. Use method instead of passing
-  // media::kNoTransformation.
-  media::Muxer::VideoParameters params(encoded_frame->Resolution(),
-                                       /*frame_rate=*/0.0f,
-                                       /*codec=*/encoded_frame->Codec(),
-                                       color_space, media::kNoTransformation);
+  media::Muxer::VideoParameters params(
+      encoded_frame->Resolution(),
+      /*frame_rate=*/0.0f,
+      /*codec=*/encoded_frame->Codec(),
+      /*color_space=*/encoded_frame->ColorSpace(),
+      /*transformation=*/encoded_frame->Transformation());
   if (auto* callback = callback_interface()->Get()) {
     callback->OnPassthroughVideo(params, std::move(buffer),
                                  estimated_capture_time);

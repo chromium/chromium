@@ -2059,9 +2059,9 @@ void QuotaManagerImpl::RetrieveBucketUsageForBucketTable(
 
     BucketId bucket_id = BucketId(entry->bucket_id);
 
-    BucketLocator bucket_locator = BucketLocator(
-        bucket_id, std::move(storage_key).value(), StorageType::kTemporary,
-        entry->name == kDefaultBucketName);
+    BucketLocator bucket_locator =
+        BucketLocator(bucket_id, std::move(storage_key).value(),
+                      entry->name == kDefaultBucketName);
 
     GetBucketUsageWithBreakdown(
         bucket_locator,
@@ -2816,9 +2816,9 @@ void QuotaManagerImpl::OnBucketDeleted(
     const mojom::BucketTableEntryPtr& entry = result.value();
     auto storage_key = blink::StorageKey::Deserialize(entry->storage_key);
     if (storage_key) {
-      storage::BucketLocator bucket_locator(
-          BucketId(entry->bucket_id), storage_key.value(),
-          StorageType::kTemporary, entry->name == kDefaultBucketName);
+      storage::BucketLocator bucket_locator(BucketId(entry->bucket_id),
+                                            storage_key.value(),
+                                            entry->name == kDefaultBucketName);
       for (auto& observer : observers_) {
         observer->OnDeleteBucket(bucket_locator);
       }

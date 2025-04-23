@@ -265,6 +265,7 @@
 <translation id="4328355335528187361">Програмерска верзија Google Chrome-а (mDNS-In)</translation>
 <translation id="4329315893554541805">Да бисте добили персонализацију и друге функције, уврстите Chromium у активности на вебу и у апликацијама и повезане Google услуге</translation>
 <translation id="4334294535648607276">Преузимање је довршено.</translation>
+<translation id="4337324600316876133">Да бисте добијали будућа Google Chrome ажурирања, треба вам macOS 12 или новија верзија. Овај рачунар користи macOS 11.</translation>
 <translation id="4343195214584226067">Додатак <ph name="EXTENSION_NAME" /> је додат у Chrome</translation>
 <translation id="4348548358339558429">Да бисте добили персонализацију, уврстите Chrome у активности на вебу и у апликацијама</translation>
 <translation id="436060642166082913">Chrome је блокирао ово преузимање јер овај фајл може да нашкоди личним налозима и налозима на друштвеним мрежама</translation>
@@ -300,7 +301,6 @@
 <translation id="4842397268809523050">Chrome OS Flex не може да синхронизује податке јер синхронизација није доступна за домен.</translation>
 <translation id="4851866215237571846">Корисник <ph name="EXISTING_USER" /> је већ пријављен.  Да би вам прегледање било раздвојено, пријавите се у Chrome преко свог профила као <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Да бисте делили екран, дозволите снимање екрана за Chrome у подешавањима система</translation>
-<translation id="4873692836499071887">Да бисте добијали будућа Google Chrome ажурирања, треба вам macOS 11 или новија верзија. Овај рачунар користи macOS 10.15.</translation>
 <translation id="4873783916118289636">Прегледајте кључне контроле приватности и безбедности у Chrome-у</translation>
 <translation id="4885446229353981848">Увек приказуј пречицу за Google објектив</translation>
 <translation id="4891791193823137474">Нека Google Chrome ради у позадини</translation>

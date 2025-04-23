@@ -37,10 +37,10 @@ namespace gpu {
 class MemoryTracker;
 class MemoryTypeTracker;
 class SharedContextState;
+class GraphiteSharedContext;
 }  // namespace gpu
 
 namespace skgpu::graphite {
-class Context;
 class Recording;
 }  // namespace skgpu::graphite
 
@@ -76,7 +76,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
     bool Draw(sk_sp<const GrDeferredDisplayList> ddl);
 
     // Graphite
-    bool Draw(skgpu::graphite::Context* graphite_context,
+    bool Draw(gpu::GraphiteSharedContext* graphite_shared_context,
               std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
               base::OnceClosure on_finished);
 
@@ -104,7 +104,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
 
   SkiaOutputDevice(
       GrDirectContext* gr_context,
-      skgpu::graphite::Context* graphite_context,
+      gpu::GraphiteSharedContext* graphite_shared_context,
       gpu::MemoryTracker* memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback,
       ReleaseOverlaysCallback release_overlays_callback = base::DoNothing());
@@ -232,7 +232,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
   virtual bool Draw(SkSurface* sk_surface,
                     sk_sp<const GrDeferredDisplayList> ddl);
   virtual bool Draw(
-      skgpu::graphite::Context* graphite_context,
+      gpu::GraphiteSharedContext* graphite_shared_context,
       SkSurface* sk_surface,
       std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
       base::OnceClosure on_finished);

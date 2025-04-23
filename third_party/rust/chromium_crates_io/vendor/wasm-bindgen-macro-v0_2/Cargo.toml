@@ -12,15 +12,16 @@
 name = "wasm-bindgen-macro"
 version = "0.2.100"
 
+[package.metadata.gnrt]
+is_placeholder = true
+
 [features]
 "strict-macro" = []
 "xxx_debug_only_print_generated_code" = []
 
 [dependencies.quote]
 version = "^1.0"
-default_features = true
-features = []
+default_features = false
 [dependencies.wasm-bindgen-macro-support]
 version = "=0.2.100"
-default_features = true
-features = []
+default_features = false

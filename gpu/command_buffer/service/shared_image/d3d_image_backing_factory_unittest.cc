@@ -1225,10 +1225,8 @@ void D3DImageBackingFactoryTest::RunCreateSharedImageFromHandleTest(
       &shared_handle);
   ASSERT_EQ(hr, S_OK);
 
-  gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle;
-  gpu_memory_buffer_handle.type = gfx::DXGI_SHARED_HANDLE;
-  gpu_memory_buffer_handle.set_dxgi_handle(
-      gfx::DXGIHandle(base::win::ScopedHandle(shared_handle)));
+  gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle{
+      gfx::DXGIHandle(base::win::ScopedHandle(shared_handle))};
 
   // Clone before moving the handle in CreateSharedImage.
   auto dup_handle = gpu_memory_buffer_handle.Clone();
@@ -1549,9 +1547,8 @@ D3DImageBackingFactoryTest::CreateVideoImage(const gfx::Size& size,
   const gpu::Mailbox mailbox = gpu::Mailbox::Generate();
   std::unique_ptr<SharedImageBacking> shared_image_backing;
   if (use_factory) {
-    gfx::GpuMemoryBufferHandle gmb_handle;
-    gmb_handle.type = gfx::DXGI_SHARED_HANDLE;
-    gmb_handle.set_dxgi_handle(gfx::DXGIHandle(std::move(shared_handle)));
+    gfx::GpuMemoryBufferHandle gmb_handle(
+        gfx::DXGIHandle(std::move(shared_handle)));
     DCHECK(gmb_handle.dxgi_handle().IsValid());
 
     shared_image_backing = shared_image_factory_->CreateSharedImage(
@@ -1859,9 +1856,7 @@ void D3DImageBackingFactoryTest::RunCreateFromSharedMemoryMultiplanarTest(
     FillNV12(shm_mapping.GetMemoryAs<uint8_t>(), size, 255, 255, 255);
   }
 
-  gfx::GpuMemoryBufferHandle shm_gmb_handle;
-  shm_gmb_handle.type = gfx::SHARED_MEMORY_BUFFER;
-  shm_gmb_handle.set_region(shm_region.Duplicate());
+  gfx::GpuMemoryBufferHandle shm_gmb_handle(shm_region.Duplicate());
   DCHECK(shm_gmb_handle.region().IsValid());
   shm_gmb_handle.stride = size.width();
 

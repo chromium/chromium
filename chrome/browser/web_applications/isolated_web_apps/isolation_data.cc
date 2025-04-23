@@ -40,7 +40,10 @@ IsolationData::IsolationData(
       pending_update_info_(std::move(pending_update_info)),
       integrity_block_data_(std::move(integrity_block_data)),
       update_manifest_url_(std::move(update_manifest_url)),
-      update_channel_(std::move(update_channel)) {}
+      update_channel_(std::move(update_channel)) {
+  CHECK(!update_manifest_url_.has_value() || update_manifest_url_->is_valid(),
+        base::NotFatalUntil::M138);
+}
 
 IsolationData::~IsolationData() = default;
 IsolationData::IsolationData(const IsolationData&) = default;
@@ -173,6 +176,7 @@ IsolationData::Builder& IsolationData::Builder::SetUpdateManifestUrl(
   CHECK(location_.dev_mode())
       << "This field is supposed to be used only with dev mode installs via "
          "chrome://web-app-internals.";
+  CHECK(update_manifest_url.is_valid(), base::NotFatalUntil::M138);
   update_manifest_url_ = std::move(update_manifest_url);
   return *this;
 }
@@ -182,6 +186,7 @@ IsolationData::Builder&& IsolationData::Builder::SetUpdateManifestUrl(
   CHECK(location_.dev_mode())
       << "This field is supposed to be used only with dev mode installs via "
          "chrome://web-app-internals.";
+  CHECK(update_manifest_url.is_valid(), base::NotFatalUntil::M138);
   update_manifest_url_ = std::move(update_manifest_url);
   return std::move(*this);
 }

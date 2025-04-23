@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/wm/layer_tree_synchronizer.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_types.h"
-#include "ash/wm/scoped_layer_tree_synchronizer.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -152,6 +152,9 @@ class ASH_EXPORT ScopedOverviewTransformWindow
                              ui::PropertyChangeReason reason) override;
   void OnWindowDestroying(aura::Window* window) override;
 
+  void OnDragStarted();
+  void OnDragEnded();
+
   // If true, makes `CloseWidget()` execute synchronously when used in tests.
   static void SetImmediateCloseForTests(bool immediate);
 
@@ -226,7 +229,8 @@ class ASH_EXPORT ScopedOverviewTransformWindow
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};
 
-  std::unique_ptr<ScopedWindowTreeSynchronizer> window_tree_synchronizer_;
+  std::unique_ptr<WindowTreeSynchronizer> window_tree_synchronizer_;
+  std::unique_ptr<WindowTreeSynchronizer> window_tree_synchronizer_during_drag_;
 
   base::WeakPtrFactory<ScopedOverviewTransformWindow> weak_ptr_factory_{this};
 };

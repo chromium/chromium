@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/mediastream/media_stream_device_observer.h"
 
 #include <stddef.h>
@@ -102,17 +97,11 @@ void MediaStreamDeviceObserver::OnDeviceStopped(
     return;
   }
 
-  Vector<Stream>& streams = it->value;
-  auto stream_it = streams.begin();
-  while (stream_it != it->value.end()) {
-    Stream& stream = *stream_it;
-    if (stream.audio_devices.empty() && stream.video_devices.empty()) {
-      stream_it = it->value.erase(stream_it);
-    } else {
-      ++stream_it;
-    }
-  }
+  auto to_remove = std::ranges::remove_if(it->value, [](const auto& t) {
+    return t.audio_devices.empty() && t.video_devices.empty();
+  });
 
+  it->value.erase(to_remove.begin(), to_remove.end());
   if (it->value.empty())
     label_stream_map_.erase(it);
 }
@@ -333,21 +322,17 @@ void MediaStreamDeviceObserver::RemoveStreamDevice(
   bool device_found = false;
   Vector<String> streams_to_remove;
   for (auto& entry : label_stream_map_) {
-    for (auto stream_it = entry.value.begin();
-         stream_it != entry.value.end();) {
-      Stream& stream = *stream_it;
-      MediaStreamDevices& audio_devices = stream.audio_devices;
-      MediaStreamDevices& video_devices = stream.video_devices;
-      if (RemoveStreamDeviceFromArray(device, &audio_devices) ||
-          RemoveStreamDeviceFromArray(device, &video_devices)) {
+    for (auto& stream : entry.value) {
+      if (RemoveStreamDeviceFromArray(device, &stream.audio_devices) ||
+          RemoveStreamDeviceFromArray(device, &stream.video_devices)) {
         device_found = true;
       }
-      if (audio_devices.empty() && video_devices.empty()) {
-        stream_it = entry.value.erase(stream_it);
-      } else {
-        ++stream_it;
-      }
     }
+
+    auto to_remove = std::ranges::remove_if(entry.value, [](const auto& t) {
+      return t.audio_devices.empty() && t.video_devices.empty();
+    });
+    entry.value.erase(to_remove.begin(), to_remove.end());
 
     if (device_found && entry.value.size() == 0) {
       streams_to_remove.push_back(entry.key);

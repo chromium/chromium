@@ -29,7 +29,7 @@ class AggregationDetails:
   def GetSortedMapElements(self) -> list[tuple[str, str]]:
     """Returns sorted mapping of all elements, including aliases."""
     keys = sorted(self.elements.keys())
-    return [[key, self.elements[key]] for key in keys]
+    return [(key, self.elements[key]) for key in keys]
 
 
 def GetAggregationDetails(description) -> AggregationDetails:
@@ -100,3 +100,124 @@ def GetAggregationDetails(description) -> AggregationDetails:
     elements.update(confirmed_aliases)
 
   return AggregationDetails(kind, name, export_items, elements, map_key_type)
+
+
+def GenerateCCAggregation(type_name: str,
+                          aggregation: AggregationDetails) -> Optional[str]:
+  """
+    Generates C++ aggregation code based on the aggregation kind.
+
+    Parameters:
+        type_name (str): The type name to be used in the aggregation.
+        aggregation (AggregationDetails): The aggregation details.
+
+    Returns:
+        Optional[str]: The generated C++ aggregation code if applicable, otherwise None.
+    """
+  if aggregation.kind == AggregationKind.ARRAY:
+    return _GenerateCCArray(type_name, aggregation)
+
+  if aggregation.kind == AggregationKind.MAP:
+    return _GenerateCCMap(type_name, aggregation)
+
+  return None
+
+
+def _GenerateCCArray(type_name: str, aggregation: AggregationDetails) -> str:
+  """
+    Generates C++ code for an array aggregation.
+
+    Parameters:
+        type_name (str): The type name to be used in the aggregation.
+        aggregation (AggregationDetails): The aggregation details.
+
+    Returns:
+        str: The generated C++ array aggregation code.
+    """
+  res = f'\nconst auto {aggregation.name} =\n'
+  res += f'    std::array<const {type_name}*, {len(aggregation.elements)}>'
+
+  res += '({{\n'
+  for element_name in aggregation.elements.values():
+    res += f'  &{element_name},\n'
+  res += '}});\n'
+  return res
+
+
+def _GenerateCCMap(type_name: str, aggregation: AggregationDetails) -> str:
+  """
+    Generates C++ code for a map aggregation.
+
+    Parameters:
+        type_name (str): The type name to be used in the aggregation.
+        aggregation (AggregationDetails): The aggregation details.
+
+    Returns:
+        str: The generated C++ map aggregation code.
+    """
+  key_type = aggregation.map_key_type
+
+  res = f'\nconst auto {aggregation.name} =\n'
+  res += f'    base::MakeFixedFlatMap<{key_type}, const {type_name}*>'
+
+  res += '({\n'
+  for (alias_name, element_name) in aggregation.GetSortedMapElements():
+    res += f'  {{{key_type}("{alias_name}"), &{element_name}}},\n'
+  res += '});\n'
+  return res
+
+
+def GenerateHHAggregation(type_name: str,
+                          aggregation: AggregationDetails) -> Optional[str]:
+  """
+    Generates header file aggregation code based on the aggregation kind.
+
+    Parameters:
+        type_name (str): The type name to be used in the aggregation.
+        aggregation (AggregationDetails): The aggregation details.
+
+    Returns:
+        Optional[str]: The generated header file aggregation code if applicable, otherwise None.
+    """
+  if aggregation.kind == AggregationKind.ARRAY:
+    return _GenerateHHArray(type_name, aggregation)
+
+  if aggregation.kind == AggregationKind.MAP:
+    return _GenerateHHMap(type_name, aggregation)
+
+  return None
+
+
+def _GenerateHHArray(type_name: str, aggregation: AggregationDetails) -> str:
+  """
+    Generates header file code for an array aggregation.
+
+    Parameters:
+        type_name (str): The type name to be used in the aggregation.
+        aggregation (AggregationDetails): The aggregation details.
+
+    Returns:
+        str: The generated header file array aggregation declaration.
+    """
+  res = '\nextern const '
+  res += f'std::array<const {type_name}*, {len(aggregation.elements)}> '
+  res += f'{aggregation.name};\n'
+  return res
+
+
+def _GenerateHHMap(type_name: str, aggregation: AggregationDetails) -> str:
+  """
+    Generates header file code for a map aggregation.
+
+    Parameters:
+        type_name (str): The type name to be used in the aggregation.
+        aggregation (AggregationDetails): The aggregation details.
+
+    Returns:
+        str: The generated header file map aggregation declaration.
+    """
+  res = '\nextern const '
+  res += f'base::fixed_flat_map<{aggregation.map_key_type}, '
+  res += f'const {type_name}*, {len(aggregation.GetSortedMapElements())}> '
+  res += f'{aggregation.name};\n'
+  return res

@@ -8,20 +8,22 @@ import android.content.Context;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
-import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.core.content.res.ResourcesCompat;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.util.ColorUtils;
 
 /**
- * Common tab UI theme utils for public use.
- * Internal themes are provided via @{@link TabUiThemeProvider}
+ * Common tab UI theme utils for public use. Internal themes are provided via @{@link
+ * TabUiThemeProvider}
  */
+@NullMarked
 public class TabUiThemeUtil {
+    public static final float FOLIO_FOOT_LENGTH_DP = 16.f;
     private static final float MAX_TAB_STRIP_TAB_WIDTH_DP = 265.f;
     private static final float DIVIDER_FOLIO_LIGHT_OPACITY = 0.3f;
 
@@ -100,14 +102,46 @@ public class TabUiThemeUtil {
             boolean isPlaceholder,
             boolean isHovered) {
         if (foreground) {
-            return ChromeColors.getDefaultThemeColor(context, isIncognito);
+            return getTabStripSelectedTabColor(context, isIncognito);
         } else if (isHovered) {
             return getHoveredTabContainerColor(context, isIncognito);
         } else if (isPlaceholder) {
             return getTabStripStartupContainerColor(context);
         } else {
-            return getSurfaceColorElev0(context, isIncognito);
+            return ChromeColors.getDefaultBgColor(context, isIncognito);
         }
+    }
+
+    /** Returns the tab strip selected tab color. */
+    public static @ColorInt int getTabStripSelectedTabColor(Context context, boolean isIncognito) {
+        return ChromeColors.getDefaultThemeColor(context, isIncognito);
+    }
+
+    /** Returns the tab strip title text color. */
+    public static @ColorInt int getTabTextColor(Context context, boolean isIncognito) {
+        return context.getColor(
+                isIncognito
+                        ? R.color.compositor_tab_title_bar_text_incognito
+                        : R.color.compositor_tab_title_bar_text);
+    }
+
+    /**
+     * Returns the mini thumbnail placeholder color for the given group color.
+     *
+     * @param context {@link Context} used to retrieve color.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @param groupColor The group color that will be composited with the mini thumbnail placeholder
+     *     overlay color.
+     */
+    public static @ColorInt int getMiniThumbnailPlaceholderColorForGroup(
+            Context context, boolean isIncognito, @ColorInt int groupColor) {
+        @ColorRes
+        int foregroundRes =
+                isIncognito
+                        ? R.color.mini_thumbnail_placeholder_overlay_color_baseline
+                        : R.color.mini_thumbnail_placeholder_overlay_color;
+        @ColorInt int foregroundColor = context.getColor(foregroundRes);
+        return androidx.core.graphics.ColorUtils.compositeColors(foregroundColor, groupColor);
     }
 
     /**
@@ -117,18 +151,14 @@ public class TabUiThemeUtil {
      * @return The color for the notification bubble.
      */
     public static @ColorInt int getGroupTitleBubbleColor(Context context) {
-        return getSurfaceColorElev0(context, /* isIncognito= */ false);
+        return ChromeColors.getDefaultBgColor(context, /* isIncognito= */ false);
     }
 
     public static @ColorInt int getReorderBackgroundColor(Context context, boolean isIncognito) {
-        if (isIncognito) return context.getColor(R.color.default_bg_color_dark_elev_4_baseline);
-
-        @DimenRes
-        int elevationRes =
-                ColorUtils.inNightMode(context)
-                        ? R.dimen.default_elevation_4
-                        : R.dimen.default_elevation_1;
-        return ChromeColors.getSurfaceColor(context, elevationRes);
+        if (isIncognito) return context.getColor(R.color.gm3_baseline_surface_container_high_dark);
+        return ColorUtils.inNightMode(context)
+                ? SemanticColorUtils.getColorSurfaceContainerHigh(context)
+                : SemanticColorUtils.getColorSurfaceContainerLow(context);
     }
 
     /** Returns the color for the hovered tab container. */
@@ -146,21 +176,6 @@ public class TabUiThemeUtil {
     /** Returns the color for the tab strip startup "ghost" containers. */
     private static @ColorInt int getTabStripStartupContainerColor(Context context) {
         return context.getColor(R.color.bg_tabstrip_tab_folio_startup_tint);
-    }
-
-    /**
-     * Returns the value that corresponds to Surface-0 based on incognito status.
-     *
-     * @param context {@link Context} used to retrieve color.
-     * @param isIncognito Whether the color is used for incognito mode.
-     * @return The value that corresponds to Surface-0.
-     */
-    private static @ColorInt int getSurfaceColorElev0(Context context, boolean isIncognito) {
-        if (isIncognito) {
-            return context.getColor(R.color.default_bg_color_dark);
-        }
-
-        return ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_0);
     }
 
     public static @DrawableRes int getTabResource() {
@@ -195,5 +210,35 @@ public class TabUiThemeUtil {
         }
 
         return SemanticColorUtils.getDividerLineBgColor(context);
+    }
+
+    /** {@return The {@link DrawableRes} for the keyboard focus ring for tabs} */
+    public static @DrawableRes int getTabKeyboardFocusDrawableRes() {
+        return R.drawable.tabstrip_keyfocus_8dp;
+    }
+
+    /** {@return The {@link DrawableRes} for the keyboard focus ring for selected tab w/ outline} */
+    public static @DrawableRes int getSelectedTabInTabGroupKeyboardFocusDrawableRes() {
+        return R.drawable.tabstrip_keyfocus_10dp;
+    }
+
+    /** {@return The {@link DrawableRes} for the tab group indicator keyboard focus ring} */
+    public static @DrawableRes int getTabGroupIndicatorKeyboardFocusDrawableRes() {
+        return R.drawable.tabstrip_keyfocus_11dp;
+    }
+
+    /** {@return The {@link DrawableRes} for the close button keyboard focus ring} */
+    public static @DrawableRes int getCloseButtonKeyboardFocusDrawableRes() {
+        return R.drawable.close_button_keyfocus;
+    }
+
+    /** {@return The keyboard focus ring's offset in px} */
+    public static int getFocusRingOffset(Context context) {
+        return context.getResources().getDimensionPixelSize(R.dimen.tabstrip_keyfocus_offset);
+    }
+
+    /** {@return The width of the keyboard focus ring stroke and tab group color line in px} */
+    public static int getLineWidth(Context context) {
+        return context.getResources().getDimensionPixelSize(R.dimen.tabstrip_strokewidth);
     }
 }

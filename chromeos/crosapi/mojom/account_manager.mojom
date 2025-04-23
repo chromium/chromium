@@ -7,7 +7,7 @@
 // versioning. Bump this value before making a change to any of the following
 // interfaces / enums.
 //
-// Next MinVersion: 17
+// Next MinVersion: 18
 
 module crosapi.mojom;
 
@@ -91,13 +91,14 @@ struct GoogleServiceAuthError {
     kCredentialsMissing = 3,
   };
 
-  // Next value: 5
+  // Next value: 6
   enum ScopeLimitedUnrecoverableErrorReason {
     kInvalidGrantRaptError = 0,
     kInvalidScope = 1,
     kRestrictedClient = 2,
     kAdminPolicyEnforced = 3,
     kRemoteConsentResolutionRequired = 4,
+    kAccessDenied = 5,
   };
 
   State state@0;

@@ -12,6 +12,9 @@
 name = "unicode-bidi"
 version = "0.3.18"
 
+[package.metadata.gnrt]
+is_placeholder = true
+
 [features]
 "bench_it" = []
 "default" = []

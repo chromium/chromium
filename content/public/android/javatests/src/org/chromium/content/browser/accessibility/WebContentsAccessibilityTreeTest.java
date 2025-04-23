@@ -2293,6 +2293,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_multi_selectable() {
+        performHtmlTest("multi-selectable.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_navigation() {
         performHtmlTest("navigation.html");
     }
@@ -2615,6 +2621,12 @@ public class WebContentsAccessibilityTreeTest {
     @SmallTest
     public void test_tabindexExposeChildren() {
         performHtmlTest("tabindex-expose-children.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_tabindexWithLinkChildren() {
+        performHtmlTest("tabindex-with-link-children.html");
     }
 
     @Test

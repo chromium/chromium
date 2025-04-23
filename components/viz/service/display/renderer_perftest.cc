@@ -212,7 +212,6 @@ void CreateTestTextureDrawQuad(ResourceId resource_id,
 void CreateTestTileDrawQuad(ResourceId resource_id,
                             const gfx::Rect& rect,
                             const gfx::Size& texture_size,
-                            bool premultiplied_alpha,
                             const SharedQuadState* shared_state,
                             CompositorRenderPass* render_pass) {
   // TileDrawQuads are non-normalized texture coords, so assume it's 1-1 with
@@ -223,8 +222,8 @@ void CreateTestTileDrawQuad(ResourceId resource_id,
   const bool force_anti_aliasing_off = false;
   auto* quad = render_pass->CreateAndAppendDrawQuad<TileDrawQuad>();
   quad->SetNew(shared_state, rect, rect, needs_blending, resource_id,
-               tex_coord_rect, texture_size, premultiplied_alpha,
-               nearest_neighbor, force_anti_aliasing_off);
+               tex_coord_rect, texture_size, nearest_neighbor,
+               force_anti_aliasing_off);
 }
 
 }  // namespace
@@ -545,8 +544,7 @@ class RendererPerfTest : public VizPerfTest {
         ResourceId resource_id =
             share_resources ? resource_list_[0].id : resource_list_[i].id;
         CreateTestTileDrawQuad(resource_id, gfx::Rect(kTileSize), kTextureSize,
-                               /*premultiplied_alpha=*/false, shared_state,
-                               pass.get());
+                               shared_state, pass.get());
 
         current_transform.PostConcat(transform_step);
       }

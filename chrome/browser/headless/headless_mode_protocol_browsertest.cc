@@ -316,13 +316,17 @@ HEADLESS_MODE_PROTOCOL_TEST(FullscreenRestoreWindow,
                             "sanity/fullscreen-restore-window.js")
 #endif  // !BUILDFLAG(IS_MAC)
 
-HEADLESS_MODE_PROTOCOL_TEST(MaximizedWindowSize,
-                            "sanity/maximized-window-size.js")
+HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    MaximizedWindowSize,
+    "sanity/maximized-window-size.js",
+    "--screen-info={1600x1200}")
 
 // This currently fails on Mac, see https://crbug.com/1500046
 #if !BUILDFLAG(IS_MAC)
-HEADLESS_MODE_PROTOCOL_TEST(FullscreenWindowSize,
-                            "sanity/fullscreen-window-size.js")
+HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    FullscreenWindowSize,
+    "sanity/fullscreen-window-size.js",
+    "--screen-info={1600x1200}")
 #endif  // !BUILDFLAG(IS_MAC)
 
 HEADLESS_MODE_PROTOCOL_TEST(PrintToPdfTinyPage,

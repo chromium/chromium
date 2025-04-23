@@ -42,7 +42,8 @@ enum PermissionName {
   VR,
   AR,
   HAND_TRACKING,
-  WEB_PRINTING
+  WEB_PRINTING,
+  SMART_CARD
 };
 
 struct MidiPermissionDescriptor {

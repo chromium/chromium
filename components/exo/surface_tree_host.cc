@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -57,11 +58,6 @@
 #include "ui/gfx/presentation_feedback.h"
 
 namespace exo {
-
-BASE_FEATURE(kExoDisableBeginFrameAcks,
-             "ExoDisableBeginFrameAcks",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
 
 class CustomWindowTargeter : public aura::WindowTargeter {
@@ -557,12 +553,6 @@ SurfaceTreeHost::CreateLayerTreeFrameSink() {
   cc::mojo_embedder::AsyncLayerTreeFrameSink::InitParams params;
   params.pipes.compositor_frame_sink_remote = std::move(sink_remote);
   params.pipes.client_receiver = std::move(client_receiver);
-
-  // Disable merge of frame acks with begin frame so that clients of exo can
-  // get frame callbacks and resources reclaimed as soon as possible.
-  if (base::FeatureList::IsEnabled(kExoDisableBeginFrameAcks)) {
-    params.wants_begin_frame_acks = false;
-  }
 
   params.auto_needs_begin_frame =
       base::FeatureList::IsEnabled(kExoReactiveFrameSubmission);

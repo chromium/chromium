@@ -9,15 +9,13 @@ use crate::gn;
 use crate::paths;
 use crate::util::{
     check_exit_ok, check_spawn, check_wait_with_output, create_dirs_if_needed,
-    get_guppy_package_graph, init_handlebars,
+    get_guppy_package_graph, init_handlebars_with_template_paths, render_handlebars,
 };
 use crate::GenCommandArgs;
 
 use std::collections::{HashMap, HashSet};
-use std::fs;
-use std::io::{self, Write};
 use std::path::{Path, PathBuf};
-use std::process;
+use std::process::{Command, Stdio};
 
 use anyhow::{ensure, format_err, Context, Result};
 
@@ -33,10 +31,10 @@ fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Resul
     // Load config file, which applies rustenv and cfg flags to some std crates.
     let config = config::BuildConfig::from_path(paths.std_config_file)?;
 
-    let template_path =
+    let build_file_template_path =
         paths.std_config_file.parent().unwrap().join(&config.gn_config.build_file_template);
 
-    let handlebars = init_handlebars(&template_path)?;
+    let handlebars = init_handlebars_with_template_paths(&[&build_file_template_path])?;
 
     // The Rust source tree, containing the standard library and vendored
     // dependencies.
@@ -200,8 +198,9 @@ fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Resul
         .context("dumping gn information");
     }
 
-    let gn_str = handlebars.render("template", &build_file)?;
-    write_build_file(&paths.std_build.join("BUILD.gn"), gn_str).unwrap();
+    let build_gn_path = paths.std_build.join("BUILD.gn");
+    render_handlebars(&handlebars, &build_file_template_path, &build_file, &build_gn_path)?;
+    format_build_file(&build_gn_path)?;
 
     Ok(())
 }
@@ -209,9 +208,9 @@ fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Resul
 fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
     let config = config::BuildConfig::from_path(paths.third_party_config_file)?;
 
-    let template_path =
+    let build_file_template_path =
         paths.third_party_config_file.parent().unwrap().join(&config.gn_config.build_file_template);
-    let handlebars = init_handlebars(&template_path)?;
+    let handlebars = init_handlebars_with_template_paths(&[&build_file_template_path])?;
 
     println!("Generating third-party GN rules from {}", paths.third_party_cargo_root.display());
 
@@ -308,29 +307,23 @@ fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) 
     }
 
     for (dir, build_file) in &all_build_files {
-        let gn_str = handlebars.render("template", &build_file)?;
-        write_build_file(&dir.join("BUILD.gn"), gn_str).unwrap();
+        let build_file_path = dir.join("BUILD.gn");
+        render_handlebars(&handlebars, &build_file_template_path, &build_file, &build_file_path)?;
+        format_build_file(&build_file_path)?;
     }
     Ok(())
 }
 
-fn write_build_file(path: &Path, content: String) -> Result<()> {
+/// Runs `gn format` command to format a `BUILD.gn` file at the given path.
+fn format_build_file(path_to_build_gn_file: &Path) -> Result<()> {
     let cmd_name = "gn format";
-    let output_handle = fs::File::create(path)
-        .with_context(|| format!("Could not create GN output file {}", path.to_string_lossy()))?;
-
-    // Spawn a child process to format GN rules. The formatted GN is written to
-    // the file `output_handle`.
-    let mut child = check_spawn(
-        process::Command::new(if cfg!(windows) { "gn.bat" } else { "gn" })
+    let child = check_spawn(
+        Command::new(if cfg!(windows) { "gn.bat" } else { "gn" })
             .arg("format")
-            .arg("--stdin")
-            .stdin(process::Stdio::piped())
-            .stdout(output_handle),
+            .arg(path_to_build_gn_file)
+            // Discard `Wrote formatted to '//.../BUILD>gn'` messages.
+            .stdout(Stdio::null()),
         cmd_name,
     )?;
-
-    write!(io::BufWriter::new(child.stdin.take().unwrap()), "{}", content)
-        .context("Failed to write to GN format process")?;
     check_exit_ok(&check_wait_with_output(child, cmd_name)?, cmd_name)
 }

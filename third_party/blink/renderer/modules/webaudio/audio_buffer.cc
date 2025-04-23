@@ -26,15 +26,11 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_buffer_options.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
@@ -198,7 +194,7 @@ AudioBuffer::AudioBuffer(AudioBus* bus)
 
     const float* src = bus->Channel(i)->Data();
     float* dst = channel_data_array->Data();
-    memmove(dst, src, length_ * sizeof(*dst));
+    UNSAFE_TODO(memmove(dst, src, length_ * sizeof(*dst)));
     channels_.push_back(channel_data_array);
   }
 }
@@ -311,7 +307,7 @@ void AudioBuffer::Zero() {
   for (unsigned i = 0; i < channels_.size(); ++i) {
     if (NotShared<DOMFloat32Array> array = getChannelData(i)) {
       float* data = array->Data();
-      memset(data, 0, length() * sizeof(*data));
+      UNSAFE_TODO(memset(data, 0, length() * sizeof(*data)));
     }
   }
 }
@@ -332,7 +328,7 @@ SharedAudioBuffer::SharedAudioBuffer(AudioBuffer* buffer)
 void SharedAudioBuffer::Zero() {
   for (auto& channel : channels_) {
     float* data = static_cast<float*>(channel.Data());
-    memset(data, 0, length() * sizeof(*data));
+    UNSAFE_TODO(memset(data, 0, length() * sizeof(*data)));
   }
 }
 

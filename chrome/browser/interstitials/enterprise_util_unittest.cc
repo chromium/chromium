@@ -9,10 +9,7 @@
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/browser/safe_browsing/test_extension_event_observer.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -23,6 +20,17 @@
 #include "content/public/test/test_web_contents_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
+#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
+#include "chrome/browser/safe_browsing/test_extension_event_observer.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/test/scoped_feature_list.h"
+#include "components/enterprise/connectors/core/features.h"
+#endif
 
 class InterstitialEnterpriseUtilTest : public testing::Test {
  public:
@@ -37,14 +45,18 @@ class InterstitialEnterpriseUtilTest : public testing::Test {
   }
 
   void EnableReportingPolicy(Profile* profile) {
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
     extensions::SafeBrowsingPrivateEventRouterFactory::GetInstance()
         ->SetTestingFactory(
             profile, base::BindRepeating(
                          &safe_browsing::BuildSafeBrowsingPrivateEventRouter));
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
     enterprise_connectors::RealtimeReportingClientFactory::GetInstance()
         ->SetTestingFactory(
-            profile,
-            base::BindRepeating(&safe_browsing::BuildRealtimeReportingClient));
+            profile, base::BindRepeating([](content::BrowserContext* context) {
+              return std::unique_ptr<KeyedService>(
+                  new enterprise_connectors::RealtimeReportingClient(context));
+            }));
     enterprise_connectors::test::SetOnSecurityEventReporting(
         profile->GetPrefs(), /*enabled=*/true, /*enabled_event_names=*/{},
         /*enabled_opt_in_events=*/{});
@@ -62,9 +74,16 @@ class InterstitialEnterpriseUtilTest : public testing::Test {
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
   TestingProfileManager profile_manager_;
   content::TestWebContentsFactory web_contents_factory_;
+#if BUILDFLAG(IS_ANDROID)
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif
 };
 
 TEST_F(InterstitialEnterpriseUtilTest, RouterEventDisabledInIncognitoMode) {
+#if BUILDFLAG(IS_ANDROID)
+  scoped_feature_list_.InitAndEnableFeature(
+      enterprise_connectors::kEnterpriseSecurityEventReportingOnAndroid);
+#endif
   Profile* incognito_profile =
       profile_manager_.CreateTestingProfile("testing_profile")
           ->GetPrimaryOTRProfile(
@@ -78,6 +97,10 @@ TEST_F(InterstitialEnterpriseUtilTest, RouterEventDisabledInIncognitoMode) {
 }
 
 TEST_F(InterstitialEnterpriseUtilTest, RouterEventEnabledInGuestMode) {
+#if BUILDFLAG(IS_ANDROID)
+  scoped_feature_list_.InitAndEnableFeature(
+      enterprise_connectors::kEnterpriseSecurityEventReportingOnAndroid);
+#endif
   Profile* guest_profile =
       profile_manager_.CreateGuestProfile()->GetPrimaryOTRProfile(
           /*create_if_needed=*/true);
@@ -88,3 +111,20 @@ TEST_F(InterstitialEnterpriseUtilTest, RouterEventEnabledInGuestMode) {
       GURL("https://phishing.com/"), "reason",
       /*net_error_code=*/0);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(InterstitialEnterpriseUtilTest,
+       RouterEventEnabledInGuestMode_NoEventReportedWhenExperimentOff) {
+  scoped_feature_list_.InitAndDisableFeature(
+      enterprise_connectors::kEnterpriseSecurityEventReportingOnAndroid);
+  Profile* guest_profile =
+      profile_manager_.CreateGuestProfile()->GetPrimaryOTRProfile(
+          /*create_if_needed=*/true);
+  EnableReportingPolicy(guest_profile);
+  EXPECT_CALL(*client_, UploadSecurityEventReport).Times(0);
+  MaybeTriggerSecurityInterstitialShownEvent(
+      web_contents_factory_.CreateWebContents(guest_profile),
+      GURL("https://phishing.com/"), "reason",
+      /*net_error_code=*/0);
+}
+#endif

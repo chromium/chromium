@@ -16,6 +16,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/engine/connection_status.h"
 #include "components/sync/service/sync_token_status.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/backoff_entry.h"
 
@@ -52,6 +53,11 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
     // Called when the credential state changes, i.e. an access token was
     // added/changed/removed. Call GetCredentials to get the new state.
     virtual void SyncAuthCredentialsChanged() = 0;
+
+    // The delegate is expected to return the value of the preference
+    // `prefs::kGoogleServicesLastSyncingGaiaId`, representing the last gaia ID
+    // with sync on. If sync is currently on, it returns the current gaia ID.
+    virtual GaiaId SyncAuthGetLastSyncingGaiaId() = 0;
   };
 
   // `identity_manager` may be null (this is the case if local Sync is enabled),
@@ -91,6 +97,21 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
   // primary account, but the user signed out in the content area, and so we
   // don't have credentials for it anymore.
   bool IsSyncPaused() const;
+
+  // Returns the Gaia ID of the account that had sync on previously. This is
+  // similar to IdentityManager's internal notion with preferece
+  // `prefs::kGoogleServicesLastSyncingGaiaId` but this function returns the
+  // same (previous) account when sync is newly turned on, whereas the pref
+  // immediately changes to reflect the current gaia ID.
+  //
+  // Note that this function doesn't handle all cases and may return an
+  // nullopt if the previous account isn't known. A notable example is the case
+  // where sync was already on upon profile startup (as existing prefs do not
+  // include enough information to determine the previous account).
+  //
+  // A return value of an empty GaiaId indicates the result is known, namely
+  // known to NOT have existed a previous account.
+  const std::optional<GaiaId>& GetPreviouslySyncingGaiaIdIfKnown() const;
 
   // Returns the credentials to be passed to the SyncEngine.
   SyncCredentials GetCredentials() const;
@@ -181,6 +202,13 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
   // Chrome's identity/token management system.
   GoogleServiceAuthError last_auth_error_;
   base::Time last_auth_error_time_;
+
+  // Similar to `prefs::kGoogleServicesLastSyncingGaiaId` but returns the
+  // same (previous) account when sync is newly turned on (whereas the pref
+  // immediately changes to reflect the current gaia ID). Note that this
+  // in-memory cache doesn't handle all cases, in particular it remains nullopt
+  // if sync was already on upon profile startup.
+  std::optional<GaiaId> previously_syncing_gaia_id_;
 
   // Whether Sync is currently connected to the server, i.e. ConnectionOpened()
   // has been called, but ConnectionClosed() hasn't. While this is false, we

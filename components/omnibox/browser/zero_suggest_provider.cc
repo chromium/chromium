@@ -33,6 +33,7 @@
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/omnibox/browser/zero_suggest_cache_service.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -236,28 +237,27 @@ bool ReadStoredResponse(const AutocompleteProviderClient* client,
 // are done in GetResultTypeAndEligibility().
 ResultType ResultTypeForInput(const AutocompleteInput& input) {
   const auto page_class = input.current_page_classification();
-  const auto focus_type_input_type =
-      std::make_pair(input.focus_type(), input.type());
+
+  // Disallow non-zero-prefix inputs.
+  if (!input.IsZeroSuggest()) {
+    return ResultType::kNone;
+  }
 
   // Android Search Widget.
   if (page_class == OEP::ANDROID_SHORTCUTS_WIDGET) {
-    if (focus_type_input_type.first != OFT::INTERACTION_DEFAULT) {
-      return ResultType::kRemoteNoURL;
-    }
+    return ResultType::kRemoteNoURL;
   }
 
   // New Tab Page.
   if (omnibox::IsNTPPage(page_class)) {
-    if (focus_type_input_type ==
-        std::make_pair(OFT::INTERACTION_FOCUS, OIT::EMPTY)) {
+    if (input.type() == OIT::EMPTY) {
       return ResultType::kRemoteNoURL;
     }
   }
 
   // Lens unimodal, multimodal, and contextual searchboxes.
   if (omnibox::IsLensSearchbox(page_class)) {
-    if (focus_type_input_type ==
-        std::make_pair(OFT::INTERACTION_FOCUS, OIT::EMPTY)) {
+    if (input.type() == OIT::EMPTY) {
       return ResultType::kRemoteNoURL;
     }
   }
@@ -272,17 +272,31 @@ ResultType ResultTypeForInput(const AutocompleteInput& input) {
   // Open Web and Search Results Page.
   if (omnibox::IsOtherWebPage(page_class) ||
       omnibox::IsSearchResultsPage(page_class)) {
-    if (focus_type_input_type.second == OIT::URL &&
+    if (input.type() == OIT::URL &&
         (is_ios || base::FeatureList::IsEnabled(
                        omnibox::kFocusTriggersWebAndSRPZeroSuggest))) {
       return ResultType::kRemoteSendURL;
     }
-    if (focus_type_input_type.second == OIT::EMPTY && !is_ios) {
+    if (input.type() == OIT::EMPTY && !is_ios) {
       return ResultType::kRemoteSendURL;
     }
   }
 
   return ResultType::kNone;
+}
+
+void MaybeAddContextualUrlSuggestParam(
+    TemplateURLRef::SearchTermsArgs& search_terms_args) {
+  if (!search_terms_args.current_page_url.empty() &&
+      omnibox::IsOtherWebPage(search_terms_args.page_classification)) {
+    std::string_view contextual_url_suggest_param =
+        omnibox_feature_configs::ContextualSearch::Get()
+            .contextual_url_suggest_param;
+    if (!contextual_url_suggest_param.empty()) {
+      search_terms_args.additional_query_params =
+          base::StrCat({"ctxus=", contextual_url_suggest_param});
+    }
+  }
 }
 
 }  // namespace
@@ -410,6 +424,7 @@ void ZeroSuggestProvider::RunZeroSuggestPrefetch(const AutocompleteInput& input,
                                            : std::string();
   search_terms_args.lens_overlay_suggest_inputs =
       input.lens_overlay_suggest_inputs();
+  MaybeAddContextualUrlSuggestParam(search_terms_args);
 
   std::unique_ptr<network::SimpleURLLoader>* prefetch_loader = nullptr;
   if (result_type == ResultType::kRemoteNoURL) {
@@ -493,6 +508,7 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
           : std::string();
   search_terms_args.lens_overlay_suggest_inputs =
       input.lens_overlay_suggest_inputs();
+  MaybeAddContextualUrlSuggestParam(search_terms_args);
 
   const auto* template_url_service = client()->GetTemplateURLService();
   // Create a loader for the request and take ownership of it.

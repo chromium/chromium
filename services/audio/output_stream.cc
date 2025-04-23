@@ -4,6 +4,8 @@
 
 #include "services/audio/output_stream.h"
 
+#include <inttypes.h>
+
 #include <utility>
 
 #include "base/functional/bind.h"

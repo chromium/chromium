@@ -34,6 +34,8 @@ FocusCycler::FocusCycler() : widget_activating_(nullptr) {}
 FocusCycler::~FocusCycler() = default;
 
 void FocusCycler::AddWidget(views::Widget* widget) {
+  auto iter = std::ranges::find(widgets_, widget);
+  CHECK(iter == widgets_.end());
   widgets_.push_back(widget);
 }
 
@@ -137,6 +139,10 @@ views::Widget* FocusCycler::FindWidget(
     }
   }
   return nullptr;
+}
+
+void FocusCycler::ResetForTesting() {
+  widgets_.clear();
 }
 
 }  // namespace ash

@@ -6,11 +6,10 @@ package org.chromium.chrome.browser.privacy_guide;
 
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
@@ -20,6 +19,7 @@ import org.chromium.components.content_settings.CookieControlsMode;
  * A delegate class to record metrics associated with each card inside
  * Privacy Guide {@link PrivacyGuideFragment}.
  */
+@NullMarked
 class PrivacyGuideMetricsDelegate {
     private static final String INITIAL_MSBB_STATE = "INITIAL_MSBB_STATE";
     private static final String INITIAL_HISTORY_SYNC_STATE = "INITIAL_HISTORY_SYNC_STATE";
@@ -49,7 +49,7 @@ class PrivacyGuideMetricsDelegate {
     }
 
     /** A method to persist the initial state of all Fragments on Activity destruction. */
-    void saveState(@NonNull Bundle bundle) {
+    void saveState(Bundle bundle) {
         if (mInitialMsbbState != null) {
             bundle.putBoolean(INITIAL_MSBB_STATE, mInitialMsbbState);
         }
@@ -68,7 +68,7 @@ class PrivacyGuideMetricsDelegate {
     }
 
     /** A method to restore the initial state of all Fragments on Activity recreation. */
-    void restoreState(@NonNull Bundle bundle) {
+    void restoreState(Bundle bundle) {
         if (bundle.containsKey(INITIAL_MSBB_STATE)) {
             mInitialMsbbState = bundle.getBoolean(INITIAL_MSBB_STATE);
         }

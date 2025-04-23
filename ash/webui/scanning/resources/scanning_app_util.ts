@@ -4,7 +4,6 @@
 
 import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
 import type {Scanner} from './scanning.mojom-webui.js';
 import {ColorMode, FileType, PageSize, SourceType} from './scanning.mojom-webui.js';
@@ -141,14 +140,6 @@ export function pageSizeFromString(pageSizeString: string): PageSize {
  */
 export function getScannerDisplayName(scanner: Scanner): string {
   return scanner.displayName.data.map(ch => String.fromCodePoint(ch)).join('');
-}
-
-/**
- * Converts an unguessable token to a string by combining the high and low
- * values as strings with a hashtag as the separator.
- */
-export function tokenToString(token: UnguessableToken): string {
-  return `${token.high.toString()}#${token.low.toString()}`;
 }
 
 /**

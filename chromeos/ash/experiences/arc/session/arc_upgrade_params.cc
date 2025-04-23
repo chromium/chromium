@@ -42,10 +42,6 @@ UpgradeParams::UpgradeParams()
           ash::switches::kArcDisableTtsCache)),
       skip_dexopt_cache(base::CommandLine::ForCurrentProcess()->HasSwitch(
           ash::switches::kArcDisableDexOptCache)),
-      enable_priority_app_lmk_delay(
-          base::FeatureList::IsEnabled(kPriorityAppLmkDelay)),
-      priority_app_lmk_delay_second(kPriorityAppLmkDelaySecond.Get()),
-      priority_app_lmk_delay_list(kPriorityAppLmkDelayList.Get()),
       enable_lmk_perceptible_min_state_update(
           base::FeatureList::IsEnabled(kLmkPerceptibleMinStateUpdate)) {}
 

@@ -29,4 +29,21 @@ GroupSuggestions::~GroupSuggestions() = default;
 GroupSuggestions::GroupSuggestions(GroupSuggestions&&) = default;
 GroupSuggestions& GroupSuggestions::operator=(GroupSuggestions&&) = default;
 
+const char* GetSuggestionReasonString(
+    GroupSuggestion::SuggestionReason reason) {
+  switch (reason) {
+    case GroupSuggestion::SuggestionReason::kUnknown:
+      return "Unknown";
+    case GroupSuggestion::SuggestionReason::kRecentlyOpened:
+      return "RecentlyOpened";
+    case GroupSuggestion::SuggestionReason::kSwitchedBetween:
+      return "SwitchedBetween";
+    case GroupSuggestion::SuggestionReason::kSimilarSource:
+      return "SimilarSource";
+    case GroupSuggestion::SuggestionReason::kSameOrigin:
+      return "SameOrigin";
+  }
+  NOTREACHED();
+}
+
 }  // namespace visited_url_ranking

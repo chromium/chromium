@@ -441,7 +441,8 @@ ui::test::ActionResult InteractionTestUtilSimulatorViews::DoDefaultAction(
 ui::test::ActionResult InteractionTestUtilSimulatorViews::SelectTab(
     ui::TrackedElement* tab_collection,
     size_t index,
-    InputType input_type) {
+    InputType input_type,
+    std::optional<size_t> expected_index_after_selection) {
   // Currently, only TabbedPane is supported, but other types of tab
   // collections (e.g. browsers and tabstrips) may be supported by a different
   // kind of simulator specific to browser code, so if this is not a supported
@@ -476,6 +477,9 @@ ui::test::ActionResult InteractionTestUtilSimulatorViews::SelectTab(
       SendTapGesture(tab, GetCenter(tab));
       break;
     case ui::test::InteractionTestUtil::InputType::kKeyboard: {
+      CHECK_EQ(index, expected_index_after_selection.value_or(index))
+          << "Since keyboard input requires advancing through tabs one-by-one, "
+             "a different expected index cannot be used.";
       // Keyboard navigation is done by sending arrow keys to the currently-
       // selected tab. Scan through the tabs by using the right arrow until the
       // correct tab is selected; limit the number of times this is tried to
@@ -501,6 +505,13 @@ ui::test::ActionResult InteractionTestUtilSimulatorViews::SelectTab(
       }
       break;
     }
+  }
+  const size_t expected = expected_index_after_selection.value_or(index);
+  const size_t actual = pane->GetSelectedTabIndex();
+  if (actual != expected) {
+    LOG(ERROR) << "Expected to finish with index " << expected
+               << " but selected index was " << actual;
+    return ui::test::ActionResult::kFailed;
   }
   return ui::test::ActionResult::kSucceeded;
 }

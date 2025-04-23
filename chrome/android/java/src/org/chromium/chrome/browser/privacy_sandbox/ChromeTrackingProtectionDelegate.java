@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.content.Context;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.site_settings.ChromeSiteSettingsDelegate;
@@ -42,6 +43,11 @@ public class ChromeTrackingProtectionDelegate implements TrackingProtectionDeleg
     }
 
     @Override
+    public boolean isIpProtectionUxEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_UX);
+    }
+
+    @Override
     public boolean isIpProtectionEnabled() {
         return UserPrefs.get(mProfile).getBoolean(Pref.IP_PROTECTION_ENABLED);
     }
@@ -49,6 +55,11 @@ public class ChromeTrackingProtectionDelegate implements TrackingProtectionDeleg
     @Override
     public void setIpProtection(boolean enabled) {
         UserPrefs.get(mProfile).setBoolean(Pref.IP_PROTECTION_ENABLED, enabled);
+    }
+
+    @Override
+    public boolean isFingerprintingProtectionUxEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_UX);
     }
 
     @Override

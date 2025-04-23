@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.layouts.eventfilter;
 
+import static org.mockito.ArgumentMatchers.anyFloat;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
@@ -147,17 +149,13 @@ public class AreaMotionEventFilterUnitTest {
     }
 
     @Test
-    public void testGenericMotionEvent() {
+    public void testGenericMotionEvent_interceptActionGeneratingEvents() {
         verifyGenericMotionEvent(
                 MotionEvent.ACTION_BUTTON_RELEASE,
                 MotionEvent.TOOL_TYPE_MOUSE,
                 InputDevice.SOURCE_CLASS_POINTER);
         verifyGenericMotionEvent(
                 MotionEvent.ACTION_BUTTON_PRESS,
-                MotionEvent.TOOL_TYPE_MOUSE,
-                InputDevice.SOURCE_CLASS_POINTER);
-        verifyGenericMotionEvent(
-                MotionEvent.ACTION_SCROLL,
                 MotionEvent.TOOL_TYPE_MOUSE,
                 InputDevice.SOURCE_CLASS_POINTER);
 
@@ -169,8 +167,24 @@ public class AreaMotionEventFilterUnitTest {
                 MotionEvent.ACTION_BUTTON_PRESS,
                 MotionEvent.TOOL_TYPE_FINGER,
                 InputDevice.SOURCE_MOUSE);
+
+        verify(mHandler, never()).onScroll(anyFloat(), anyFloat());
+    }
+
+    @Test
+    public void testGenericMotionEvent_handleMouseScroll() {
+        verifyGenericMotionEvent(
+                MotionEvent.ACTION_SCROLL,
+                MotionEvent.TOOL_TYPE_MOUSE,
+                InputDevice.SOURCE_CLASS_POINTER);
+        verify(mHandler).onScroll(anyFloat(), anyFloat());
+    }
+
+    @Test
+    public void testGenericMotionEvent_handleTrackpadScroll() {
         verifyGenericMotionEvent(
                 MotionEvent.ACTION_SCROLL, MotionEvent.TOOL_TYPE_FINGER, InputDevice.SOURCE_MOUSE);
+        verify(mHandler).onScroll(anyFloat(), anyFloat());
     }
 
     private void verifyGenericMotionEvent(int action, int toolType, int source) {

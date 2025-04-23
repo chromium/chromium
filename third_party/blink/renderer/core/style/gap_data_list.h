@@ -61,6 +61,10 @@ class CORE_EXPORT GapDataList {
     });
   }
 
+  bool HasSingleValue() const {
+    return gap_data_list_.size() == 1 && !gap_data_list_[0].IsRepeaterData();
+  }
+
   const T GetLegacyValue() const {
     return gap_data_list_[0].GetValue();
   }

@@ -61,6 +61,7 @@
 #include "components/gcm_driver/instance_id/scoped_use_fake_instance_id_android.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -436,7 +437,7 @@ TEST_F(PushMessagingServiceTest, MAYBE_RemoveExpiredSubscriptions) {
   scoped_feature_list_.InitWithFeatures(
       /* enabled features */
       {features::kPushSubscriptionWithExpirationTime,
-       features::kPushSubscriptionChangeEvent},
+       features::kPushSubscriptionChangeEventOnInvalidation},
       /* disabled features */
       {});
 
@@ -647,15 +648,18 @@ TEST_F(FCMRevocationTest, ResetPrefs) {
   content::PermissionController* permission_controller =
       profile()->GetPermissionController();
 
+  const auto notification_permission_descriptor = content::
+      PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
+          blink::PermissionType::NOTIFICATIONS);
   content::PermissionResult result =
       permission_controller->GetPermissionResultForOriginWithoutContext(
-          blink::PermissionType::NOTIFICATIONS, GetOrigin());
+          notification_permission_descriptor, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::ASK);
 
   SetPermission(GetUrl(), ContentSetting::CONTENT_SETTING_ALLOW, profile());
 
   result = permission_controller->GetPermissionResultForOriginWithoutContext(
-      blink::PermissionType::NOTIFICATIONS, GetOrigin());
+      notification_permission_descriptor, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::GRANTED);
 
   const char kNotificationsPermissionRevocationGracePeriodDate[] =
@@ -677,7 +681,7 @@ TEST_F(FCMRevocationTest, ResetPrefs) {
 
   // Permission is not reset.
   result = permission_controller->GetPermissionResultForOriginWithoutContext(
-      blink::PermissionType::NOTIFICATIONS, GetOrigin());
+      notification_permission_descriptor, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::GRANTED);
 }
 
@@ -688,15 +692,18 @@ TEST_F(FCMRevocationTest, NoAppLevelPermissionInitGracePeriodPrefsTest) {
   content::PermissionController* permission_controller =
       profile()->GetPermissionController();
 
+  const auto notification_permission_descriptor = content::
+      PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
+          blink::PermissionType::NOTIFICATIONS);
   content::PermissionResult result =
       permission_controller->GetPermissionResultForOriginWithoutContext(
-          blink::PermissionType::NOTIFICATIONS, GetOrigin());
+          notification_permission_descriptor, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::ASK);
 
   SetPermission(GetUrl(), ContentSetting::CONTENT_SETTING_ALLOW, profile());
 
   result = permission_controller->GetPermissionResultForOriginWithoutContext(
-      blink::PermissionType::NOTIFICATIONS, GetOrigin());
+      notification_permission_descriptor, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::GRANTED);
 
   const char kNotificationsPermissionRevocationGracePeriodDate[] =
@@ -715,7 +722,7 @@ TEST_F(FCMRevocationTest, NoAppLevelPermissionInitGracePeriodPrefsTest) {
 
   // Permission is still granted.
   result = permission_controller->GetPermissionResultForOriginWithoutContext(
-      blink::PermissionType::NOTIFICATIONS, GetOrigin());
+      notification_permission_descriptor, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::GRANTED);
 }
 
@@ -725,16 +732,18 @@ TEST_F(FCMRevocationTest, NoAppLevelPermissionInitGracePeriodPrefsTest) {
 TEST_F(FCMRevocationTest, NoAppLevelPermissionRevocationTest) {
   content::PermissionController* permission_controller =
       profile()->GetPermissionController();
-
+  const auto notification_permission_descriptor = content::
+      PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
+          blink::PermissionType::NOTIFICATIONS);
   content::PermissionResult result =
       permission_controller->GetPermissionResultForOriginWithoutContext(
-          blink::PermissionType::NOTIFICATIONS, GetOrigin());
+          notification_permission_descriptor, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::ASK);
 
   SetPermission(GetUrl(), ContentSetting::CONTENT_SETTING_ALLOW, profile());
 
   result = permission_controller->GetPermissionResultForOriginWithoutContext(
-      blink::PermissionType::NOTIFICATIONS, GetOrigin());
+      notification_permission_descriptor, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::GRANTED);
 
   const char kNotificationsPermissionRevocationGracePeriodDate[] =
@@ -761,7 +770,7 @@ TEST_F(FCMRevocationTest, NoAppLevelPermissionRevocationTest) {
 
   // Permission is revoked.
   result = permission_controller->GetPermissionResultForOriginWithoutContext(
-      blink::PermissionType::NOTIFICATIONS, GetOrigin());
+      notification_permission_descriptor, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::ASK);
 }
 
@@ -771,16 +780,18 @@ TEST_F(FCMRevocationTest, NoAppLevelPermissionRevocationTest) {
 TEST_F(FCMRevocationTest, NoAppLevelPermissionIgnoreTest) {
   content::PermissionController* permission_controller =
       profile()->GetPermissionController();
-
+  const auto notification_permission_descriptor = content::
+      PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
+          blink::PermissionType::NOTIFICATIONS);
   content::PermissionResult result =
       permission_controller->GetPermissionResultForOriginWithoutContext(
-          blink::PermissionType::NOTIFICATIONS, GetOrigin());
+          notification_permission_descriptor, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::ASK);
 
   SetPermission(GetUrl(), ContentSetting::CONTENT_SETTING_ALLOW, profile());
 
   result = permission_controller->GetPermissionResultForOriginWithoutContext(
-      blink::PermissionType::NOTIFICATIONS, GetOrigin());
+      notification_permission_descriptor, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::GRANTED);
 
   const char kNotificationsPermissionRevocationGracePeriodDate[] =
@@ -806,7 +817,7 @@ TEST_F(FCMRevocationTest, NoAppLevelPermissionIgnoreTest) {
 
   // Permission is revoked.
   result = permission_controller->GetPermissionResultForOriginWithoutContext(
-      blink::PermissionType::NOTIFICATIONS, GetOrigin());
+      notification_permission_descriptor, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::GRANTED);
 }
 
@@ -815,16 +826,18 @@ TEST_F(FCMRevocationTest, NoAppLevelPermissionIgnoreTest) {
 TEST_F(FCMRevocationTest, ResetAndRecordGracePeriodTest) {
   content::PermissionController* permission_controller =
       profile()->GetPermissionController();
-
+  const auto notification_permission_descriptor = content::
+      PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
+          blink::PermissionType::NOTIFICATIONS);
   content::PermissionResult result =
       permission_controller->GetPermissionResultForOriginWithoutContext(
-          blink::PermissionType::NOTIFICATIONS, GetOrigin());
+          notification_permission_descriptor, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::ASK);
 
   SetPermission(GetUrl(), ContentSetting::CONTENT_SETTING_ALLOW, profile());
 
   result = permission_controller->GetPermissionResultForOriginWithoutContext(
-      blink::PermissionType::NOTIFICATIONS, GetOrigin());
+      notification_permission_descriptor, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::GRANTED);
 
   const char kNotificationsPermissionRevocationGracePeriodDate[] =
@@ -850,7 +863,7 @@ TEST_F(FCMRevocationTest, ResetAndRecordGracePeriodTest) {
 
   // Permission is revoked.
   result = permission_controller->GetPermissionResultForOriginWithoutContext(
-      blink::PermissionType::NOTIFICATIONS, GetOrigin());
+      notification_permission_descriptor, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::GRANTED);
 }
 

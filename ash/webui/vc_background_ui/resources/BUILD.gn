@@ -20,7 +20,7 @@ build_webui("build") {
     "js/vc_background_breadcrumb_element.ts",
   ]
 
-  non_web_component_files = [ "vc_background_ui.ts" ]
+  ts_files = [ "vc_background_ui.ts" ]
 
   ts_composite = true
 

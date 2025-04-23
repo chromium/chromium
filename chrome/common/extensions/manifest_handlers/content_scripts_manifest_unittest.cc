@@ -121,44 +121,21 @@ TEST_F(ContentScriptsManifestTest, FailLoadingNonUTF8Scripts) {
 }
 
 TEST_F(ContentScriptsManifestTest, FailLoadingNonJsScripts) {
-  base::FilePath install_dir;
-  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &install_dir));
-  install_dir = install_dir.AppendASCII("extensions")
-                    .AppendASCII("bad")
-                    .AppendASCII("bad_mime_type");
-
-  std::string error;
-  scoped_refptr<Extension> extension(
-      file_util::LoadExtension(install_dir, mojom::ManifestLocation::kUnpacked,
-                               Extension::NO_FLAGS, &error));
-  ASSERT_NE(extension.get(), nullptr);
-
-  ASSERT_EQ(1u, extension->install_warnings().size());
-  EXPECT_STREQ(
-      "Invalid script mime type: 'Could not load file 'bad_mime_type.json' for "
-      "content script, content scripts can only be loaded from supported "
-      "JavaScript files such as .js files.'",
-      extension->install_warnings()[0].message.c_str());
+  static constexpr char kWarning[] =
+      "Invalid script mime type: 'Could not load file 'files/bad_script.json' "
+      "for content script, content scripts can only be loaded from supported "
+      "JavaScript files such as .js files.'";
+  scoped_refptr<Extension> extension =
+      LoadAndExpectWarning("mime_type/bad_content_script.json", kWarning);
 
   const UserScriptList& user_scripts =
       ContentScriptsInfo::GetContentScripts(extension.get());
-  EXPECT_EQ(0u, user_scripts.size());
+  EXPECT_TRUE(user_scripts.empty());
 }
 
 TEST_F(ContentScriptsManifestTest, AllowLoadingScssStyleSheets) {
-  base::FilePath install_dir;
-  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &install_dir));
-  install_dir = install_dir.AppendASCII("extensions")
-                    .AppendASCII("good")
-                    .AppendASCII("good_scss_style_sheet");
-
-  std::string error;
-  scoped_refptr<Extension> extension(
-      file_util::LoadExtension(install_dir, mojom::ManifestLocation::kUnpacked,
-                               Extension::NO_FLAGS, &error));
-  ASSERT_NE(extension.get(), nullptr);
-
-  ASSERT_EQ(0u, extension->install_warnings().size());
+  scoped_refptr<Extension> extension =
+      LoadAndExpectWarnings("mime_type/good_scss_style_sheet.json", {});
 
   const UserScriptList& user_scripts =
       ContentScriptsInfo::GetContentScripts(extension.get());
@@ -166,19 +143,8 @@ TEST_F(ContentScriptsManifestTest, AllowLoadingScssStyleSheets) {
 }
 
 TEST_F(ContentScriptsManifestTest, AllowLoadingUserJsContentScripts) {
-  base::FilePath install_dir;
-  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &install_dir));
-  install_dir = install_dir.AppendASCII("extensions")
-                    .AppendASCII("good")
-                    .AppendASCII("good_user_js_script");
-
-  std::string error;
-  scoped_refptr<Extension> extension(
-      file_util::LoadExtension(install_dir, mojom::ManifestLocation::kUnpacked,
-                               Extension::NO_FLAGS, &error));
-  ASSERT_NE(extension.get(), nullptr);
-
-  ASSERT_EQ(0u, extension->install_warnings().size());
+  scoped_refptr<Extension> extension =
+      LoadAndExpectWarnings("mime_type/good_user_js_script.json", {});
 
   const UserScriptList& user_scripts =
       ContentScriptsInfo::GetContentScripts(extension.get());

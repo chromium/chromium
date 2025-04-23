@@ -124,23 +124,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   bool ShouldMoveCaretToHorizontalBoundaryWhenPastTopOrBottom() const;
 
-  // If this is an inline formatting context root, this flag is set if the
-  // inline formatting context *may* (false positives are okay) be
-  // non-contiguous. Sometimes an inline formatting context may start in some
-  // fragmentainer, then skip one or more fragmentainers, and then resume
-  // again. This may happen for instance if a culled inline is preceded by a
-  // tall float that's pushed after (due to size/breaking restrictions) the
-  // contents of the culled inline.
-  void SetMayBeNonContiguousIfc(bool b) {
-    NOT_DESTROYED();
-    may_be_non_contiguous_ifc_ = b;
-  }
-  bool MayBeNonContiguousIfc() const {
-    NOT_DESTROYED();
-    DCHECK(HasFragmentItems());
-    return may_be_non_contiguous_ifc_;
-  }
-
   // Returns the associated `InlineNodeData`, or `nullptr` if `this` doesn't
   // have one (i.e., not an NG inline formatting context.)
   InlineNodeData* GetInlineNodeData() const {

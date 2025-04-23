@@ -52,8 +52,15 @@ std::u16string TableModel::GetTooltip(size_t row) {
 }
 
 std::u16string TableModel::GetAXNameForHeader(
-    const std::vector<std::u16string>& visible_column_titles) {
+    const std::vector<std::u16string>& visible_column_titles,
+    const std::vector<std::u16string>& visible_column_sortable) {
   return std::u16string();
+}
+
+std::u16string TableModel::GetAXNameForHeaderCell(
+    const std::u16string& visible_column_title,
+    const std::u16string& visible_column_sortable) {
+  return visible_column_title;
 }
 
 std::u16string TableModel::GetAXNameForRow(

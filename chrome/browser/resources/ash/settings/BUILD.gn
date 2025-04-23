@@ -361,7 +361,7 @@ build_webui("build") {
     "system_preferences_page/system_preferences_page.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "assert_extras.ts",
     "common/app_management/actions.ts",
     "common/app_management/api_listener.ts",

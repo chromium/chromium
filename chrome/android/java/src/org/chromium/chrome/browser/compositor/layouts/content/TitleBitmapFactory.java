@@ -29,8 +29,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.util.StyleUtils;
 
 /** A factory that creates text and favicon bitmaps. */
@@ -184,7 +184,8 @@ public class TitleBitmapFactory {
         int colorId = filter.getTabGroupColor(filter.getRootIdFromTabGroupId(groupId));
         @ColorInt
         int color =
-                ColorPickerUtils.getTabGroupColorPickerItemTextColor(context, colorId, mIncognito);
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemTextColor(
+                        context, colorId, mIncognito);
         mGroupTextPaint.setColor(color);
         return getTitleBitmap(mGroupTextPaint, mGroupTextHeight, mGroupTextYOffset, title);
     }

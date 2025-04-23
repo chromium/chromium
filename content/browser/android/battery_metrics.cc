@@ -48,30 +48,6 @@ perfetto::protos::pbzero::DeviceThermalState ToTraceEnum(
   }
 }
 
-int GetLoadingScenarioPriority(LoadingScenario scenario) {
-  switch (scenario) {
-    case LoadingScenario::kNoPageLoading:
-      return 0;
-    case LoadingScenario::kBackgroundPageLoading:
-      return 1;
-    case LoadingScenario::kVisiblePageLoading:
-      return 2;
-    case LoadingScenario::kFocusedPageLoading:
-      return 3;
-  }
-  NOTREACHED();
-}
-
-int GetInputScenarioPriority(InputScenario scenario) {
-  switch (scenario) {
-    case InputScenario::kNoInput:
-      return 0;
-    case InputScenario::kTyping:
-      return 1;
-  }
-  NOTREACHED();
-}
-
 std::string GetLoadingScenarioSuffix(std::optional<LoadingScenario> scenario) {
   // LINT.IfChange(LoadingScenarioSuffix)
   if (!scenario.has_value()) {
@@ -97,6 +73,10 @@ std::string GetInputScenarioSuffix(std::optional<InputScenario> scenario) {
     return "UnknownInputScenario";
   }
   switch (*scenario) {
+    case InputScenario::kScroll:
+      return "Scroll";
+    case InputScenario::kTap:
+      return "Tap";
     case InputScenario::kTyping:
       return "Typing";
     case InputScenario::kNoInput:
@@ -427,9 +407,8 @@ bool AndroidBatteryMetrics::IsMeasuringDrainExclusively() const {
 void AndroidBatteryMetrics::PerformanceScenarioTracker::UpdateLoadingScenario(
     performance_scenarios::LoadingScenario new_scenario) {
   latest_loading_scenario_ = new_scenario;
-  if (!loading_scenario_to_report_.has_value() ||
-      GetLoadingScenarioPriority(*loading_scenario_to_report_) <
-          GetLoadingScenarioPriority(new_scenario)) {
+  if (loading_scenario_to_report_.value_or(LoadingScenario::kNoPageLoading) <=
+      new_scenario) {
     loading_scenario_to_report_ = new_scenario;
   }
 }
@@ -437,9 +416,8 @@ void AndroidBatteryMetrics::PerformanceScenarioTracker::UpdateLoadingScenario(
 void AndroidBatteryMetrics::PerformanceScenarioTracker::UpdateInputScenario(
     performance_scenarios::InputScenario new_scenario) {
   latest_input_scenario_ = new_scenario;
-  if (!input_scenario_to_report_.has_value() ||
-      GetInputScenarioPriority(*input_scenario_to_report_) <
-          GetInputScenarioPriority(new_scenario)) {
+  if (input_scenario_to_report_.value_or(InputScenario::kNoInput) <=
+      new_scenario) {
     input_scenario_to_report_ = new_scenario;
   }
 }

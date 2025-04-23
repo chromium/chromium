@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/integrators/fast_checkout/fast_checkout_client.h"
 #include "components/autofill/core/browser/integrators/identity_credential_delegate.h"
@@ -95,7 +96,6 @@ class LogManager;
 class PersonalDataManager;
 class SingleFieldFillRouter;
 class StrikeDatabase;
-class ValuableManager;
 class VotesUploader;
 struct Suggestion;
 enum class WebauthnDialogState;
@@ -259,6 +259,10 @@ class AutofillClient {
   virtual PersonalDataManager& GetPersonalDataManager() = 0;
   const PersonalDataManager& GetPersonalDataManager() const;
 
+  // Gets the ValuablesDataManager instance associated with the profile.
+  virtual ValuablesDataManager* GetValuablesDataManager() = 0;
+  const ValuablesDataManager* GetValuablesDataManager() const;
+
   // Gets the EntityDataManager instance associated with the client, if there is
   // one.
   virtual EntityDataManager* GetEntityDataManager() = 0;
@@ -376,9 +380,6 @@ class AutofillClient {
   // functions will return nullptr.
   virtual payments::PaymentsAutofillClient* GetPaymentsAutofillClient();
   const payments::PaymentsAutofillClient* GetPaymentsAutofillClient() const;
-
-  // Gets the ValuableManager instance associated with the client.
-  virtual ValuableManager* GetValuableManager();
 
   // Gets the StrikeDatabase associated with the client. Note: Nullptr may be
   // returned so check before use.

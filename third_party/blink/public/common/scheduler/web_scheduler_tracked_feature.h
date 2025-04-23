@@ -116,7 +116,7 @@ enum class WebSchedulerTrackedFeature : uint32_t {
   // kAppBanner = 42. Removed after support added for back/forward cache.
   // See https://crbug.com/1276864.
   kPrinting = 43,
-  kWebDatabase = 44,
+  // kWebDatabase = 44, Removed after WebSQL removal.
   kPictureInPicture = 45,
   // kPortal = 46. Removed
   kSpeechRecognizer = 47,

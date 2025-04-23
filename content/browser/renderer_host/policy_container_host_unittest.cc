@@ -47,7 +47,9 @@ struct SameSizeAsPolicyContainerPolicies {
 // - tested correctly in PolicyContainerHostTest.PolicyContainerPolicies below.
 static_assert(sizeof(PolicyContainerPolicies) ==
                   sizeof(SameSizeAsPolicyContainerPolicies),
-              "PolicyContainerPolicies have been modified");
+              "PolicyContainerPolicies have been modified. Please carefully "
+              "read the comment in this file and make sure you updated all "
+              "relevant methods of `PolicyContainerPolicies`.");
 
 TEST(PolicyContainerPoliciesTest, CloneIsEqual) {
   std::vector<network::mojom::ContentSecurityPolicyPtr> csps;

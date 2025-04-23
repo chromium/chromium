@@ -35,6 +35,13 @@ SpeechRecognitionClientBrowserInterface::
       base::BindRepeating(&SpeechRecognitionClientBrowserInterface::
                               OnLiveCaptionAvailabilityChanged,
                           base::Unretained(this)));
+  // Reuse the same callback, since it does the same thing regardless of which
+  // pref changed.
+  pref_change_registrar_->Add(
+      prefs::kHeadlessCaptionEnabled,
+      base::BindRepeating(&SpeechRecognitionClientBrowserInterface::
+                              OnLiveCaptionAvailabilityChanged,
+                          base::Unretained(this)));
   pref_change_registrar_->Add(
       prefs::kLiveCaptionLanguageCode,
       base::BindRepeating(&SpeechRecognitionClientBrowserInterface::
@@ -81,29 +88,12 @@ void SpeechRecognitionClientBrowserInterface::REMOVED_2(
 
 void SpeechRecognitionClientBrowserInterface::OnSodaInstalled(
     speech::LanguageCode language_code) {
-  if (prefs::IsLanguageCodeForLiveCaption(language_code, profile_prefs_)) {
-    NotifyLiveCaptionObservers(
-        profile_prefs_->GetBoolean(prefs::kLiveCaptionEnabled));
-  }
+  NotifyLiveCaptionObserversIfNeeded();
 }
 
 void SpeechRecognitionClientBrowserInterface::
     OnLiveCaptionAvailabilityChanged() {
-  if (live_caption_availibility_observers_.empty()) {
-    return;
-  }
-
-  bool enabled = profile_prefs_->GetBoolean(prefs::kLiveCaptionEnabled);
-  bool is_language_installed =
-      speech::SodaInstaller::GetInstance()->IsSodaInstalled(
-          speech::GetLanguageCode(
-              prefs::GetLiveCaptionLanguageCode(profile_prefs_)));
-
-  if (enabled && !is_language_installed) {
-    return;
-  }
-
-  NotifyLiveCaptionObservers(enabled);
+  NotifyLiveCaptionObserversIfNeeded();
 }
 
 void SpeechRecognitionClientBrowserInterface::OnLiveCaptionLanguageChanged() {
@@ -123,8 +113,27 @@ void SpeechRecognitionClientBrowserInterface::
   }
 }
 
-void SpeechRecognitionClientBrowserInterface::NotifyLiveCaptionObservers(
-    bool enabled) {
+void SpeechRecognitionClientBrowserInterface::
+    NotifyLiveCaptionObserversIfNeeded() {
+  if (live_caption_availibility_observers_.empty()) {
+    return;
+  }
+
+  bool is_language_installed =
+      speech::SodaInstaller::GetInstance()->IsSodaInstalled(
+          speech::GetLanguageCode(
+              prefs::GetLiveCaptionLanguageCode(profile_prefs_)));
+  if (!is_language_installed) {
+    // Don't notify until the language pack is installed, regardless of whether
+    // recognition is enabled or not.
+    return;
+  }
+
+  // Captioning is enabled if either Live Caption or Headless Caption.
+  const bool enabled =
+      profile_prefs_->GetBoolean(prefs::kLiveCaptionEnabled) ||
+      profile_prefs_->GetBoolean(prefs::kHeadlessCaptionEnabled);
+
   for (auto& observer : live_caption_availibility_observers_) {
     observer->SpeechRecognitionAvailabilityChanged(enabled);
   }

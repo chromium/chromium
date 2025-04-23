@@ -46,8 +46,12 @@ import("//testing/test.gni")
 # dir (next to test).
 template("fuzzer_test") {
   _high_end_job_required = false
-  if (defined(invoker.high_end_job_required)) {
-    _high_end_job_required = invoker.high_end_job_required
+  if (defined(invoker.high_end_job_required) && invoker.high_end_job_required) {
+    _high_end_job_required = !is_debug
+  }
+  if (defined(invoker.high_end_debug_job_required) &&
+      invoker.high_end_debug_job_required) {
+    _high_end_job_required = _high_end_job_required || is_debug
   }
 
   # If the job is a high_end job and that we are currently building a high_end

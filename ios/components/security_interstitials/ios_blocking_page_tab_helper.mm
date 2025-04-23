@@ -14,8 +14,6 @@
 
 namespace security_interstitials {
 
-WEB_STATE_USER_DATA_KEY_IMPL(IOSBlockingPageTabHelper)
-
 #pragma mark - IOSBlockingPageTabHelper
 
 IOSBlockingPageTabHelper::IOSBlockingPageTabHelper(web::WebState* web_state)

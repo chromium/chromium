@@ -4,16 +4,17 @@
 
 package org.chromium.chrome.browser.password_check;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Use {@link #getOrCreate()} to instantiate a {@link PasswordCheckImpl} and {@link #destroy()} when
  * the instance is no longer needed.
  */
+@NullMarked
 public class PasswordCheckFactory {
-    private static PasswordCheck sPasswordCheck;
+    private static @Nullable PasswordCheck sPasswordCheck;
 
     private PasswordCheckFactory() {}
 
@@ -50,11 +51,12 @@ public class PasswordCheckFactory {
     }
 
     /**
-     * Returns the underlying instance.
-     * Should only be used when there's a need to avoid creating a new instance.
+     * Returns the underlying instance. Should only be used when there's a need to avoid creating a
+     * new instance.
+     *
      * @return A {@link PasswordCheeck} instance as stored here.
      */
-    public static PasswordCheck getPasswordCheckInstance() {
+    public static @Nullable PasswordCheck getPasswordCheckInstance() {
         return sPasswordCheck;
     }
 }

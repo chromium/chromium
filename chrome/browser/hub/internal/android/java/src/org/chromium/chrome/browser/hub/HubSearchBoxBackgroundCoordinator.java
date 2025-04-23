@@ -7,21 +7,21 @@ package org.chromium.chrome.browser.hub;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator of the Hub's Search Box Background. */
+@NullMarked
 public class HubSearchBoxBackgroundCoordinator {
-    private final @NonNull PropertyModel mModel;
+    private final PropertyModel mModel;
 
     /**
      * Creates the {@link HubSearchBoxBackgroundCoordinator}.
      *
      * @param containerView The view that the hub is attached to.
      */
-    public HubSearchBoxBackgroundCoordinator(@NonNull FrameLayout containerView) {
+    public HubSearchBoxBackgroundCoordinator(FrameLayout containerView) {
         View backgroundView = containerView.findViewById(R.id.search_box_background);
         mModel = HubSearchBoxBackgroundProperties.create();
         PropertyModelChangeProcessor.create(

@@ -67,7 +67,6 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
-#include "content/browser/media/android/media_player_renderer.h"
 #include "content/browser/media/flinging_renderer.h"
 #include "media/mojo/services/mojo_renderer_service.h"  // nogncheck
 #endif
@@ -356,24 +355,6 @@ void MediaInterfaceProxy::CreateFlingingRenderer(
                                      std::move(receiver));
 }
 
-void MediaInterfaceProxy::CreateMediaPlayerRenderer(
-    mojo::PendingRemote<media::mojom::MediaPlayerRendererClientExtension>
-        client_extension_remote,
-    mojo::PendingReceiver<media::mojom::Renderer> receiver,
-    mojo::PendingReceiver<media::mojom::MediaPlayerRendererExtension>
-        renderer_extension_receiver) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-
-  media::MojoRendererService::Create(
-      nullptr,
-      std::make_unique<MediaPlayerRenderer>(
-          render_frame_host().GetProcess()->GetDeprecatedID(),
-          render_frame_host().GetRoutingID(),
-          WebContents::FromRenderFrameHost(&render_frame_host()),
-          std::move(renderer_extension_receiver),
-          std::move(client_extension_remote)),
-      std::move(receiver));
-}
 #endif
 
 #if BUILDFLAG(IS_WIN)

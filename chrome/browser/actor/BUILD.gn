@@ -31,15 +31,19 @@ source_set("actor") {
     "tools/tool_controller.h",
     "tools/tool_invocation.cc",
     "tools/tool_invocation.h",
+    "tools/wait_tool.cc",
+    "tools/wait_tool.h",
   ]
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//components/optimization_guide/proto:optimization_guide_proto",
   ]
   deps = [
     "//chrome/browser/optimization_guide:optimization_guide",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",
+    "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/common",
     "//components/safe_browsing:buildflags",
@@ -56,8 +60,13 @@ source_set("test_support") {
     "actor_test_util.h",
   ]
 
-  public_deps =
-      [ "//components/optimization_guide/proto:optimization_guide_proto" ]
+  deps = [ ":actor" ]
+
+  public_deps = [
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//content/test:test_support",
+  ]
 }
 
 source_set("unit_tests") {
@@ -95,7 +104,6 @@ source_set("browser_tests") {
     "//components/optimization_guide/core:bloomfilter",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/common:features",
-    "//content/test:test_support",
     "//testing/gtest",
   ]
 }

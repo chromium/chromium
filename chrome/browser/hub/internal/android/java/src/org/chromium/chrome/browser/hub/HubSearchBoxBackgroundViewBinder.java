@@ -9,10 +9,12 @@ import static org.chromium.chrome.browser.hub.HubSearchBoxBackgroundProperties.S
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Forwards changed property values to the view. */
+@NullMarked
 public class HubSearchBoxBackgroundViewBinder {
     /** Stateless propagation of properties. */
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {

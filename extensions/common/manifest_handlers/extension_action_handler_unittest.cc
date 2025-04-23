@@ -461,15 +461,40 @@ TEST_F(ExtensionActionIconVariantsTest, All) {
   {
     ManifestData manifest_data = ManifestData::FromJSON(
         R"({
-        "name": "Test",
-        "version": "1",
-        "manifest_version": 3,
-        "action": {"icon_variants": {}}
-      })");
+          "name": "Test",
+          "version": "1",
+          "manifest_version": 3,
+          "action": {"icon_variants": {}}
+        })");
     scoped_refptr<extensions::Extension> extension(
         LoadAndExpectSuccess(manifest_data));
     warnings_test_util::HasInstallWarning(extension,
                                           "'icon_variants' must be a list.");
+  }
+
+  // Warn, don't error, if manifest.json has an icon with an invalid mime type.
+  {
+    ManifestData manifest_data = ManifestData::FromJSON(
+        R"({
+          "name": "Test",
+          "version": "1",
+          "manifest_version": 3,
+          "action": {"icon_variants": [{
+            "16": "icon_variants.16.txt"
+          }]}
+        })");
+    scoped_refptr<extensions::Extension> extension(
+        LoadAndExpectSuccess(manifest_data));
+    warnings_test_util::HasInstallWarning(
+        extension, "'icon_variants' file path unsupported mime type.");
+
+    const ActionInfo* action_info =
+        GetActionInfoOfType(*extension, ActionInfo::Type::kAction);
+    ASSERT_TRUE(action_info);
+    // TODO(crbug.com/344639840): Get() using filters to avoid manual retrieval.
+    const std::vector<ExtensionIconVariant>& icon_variants =
+        action_info->icon_variants->GetList();
+    EXPECT_TRUE(icon_variants.empty());
   }
 
   // Valid "action.icon_variants" value.

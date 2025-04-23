@@ -17,19 +17,12 @@ source_set("tabs_public") {
   ]
   sources = [ "tab_network_state.cc" ]
   public_deps = [
-    ":split_tabs",
     "//base",
     "//chrome/common:buildflags",
     "//components/tab_groups:tab_groups",
     "//components/tabs:public",
   ]
   deps = [ "//content/public/browser" ]
-}
-
-source_set("split_tabs") {
-  sources = [ "split_tab_id.h" ]
-
-  deps = [ "//components/tab_groups" ]
 }
 
 # These enums should not need to depend on chrome/browser/ui. They have been
@@ -138,7 +131,6 @@ if (!is_android) {
     ]
 
     public_deps = [
-      ":split_tabs",
       ":tab_strip_model_observer",
       ":tabs",
       ":tabs_public",
@@ -267,6 +259,7 @@ if (!is_android) {
       "pinned_tab_service_factory.h",
       "split_tab_collection.h",
       "split_tab_data.h",
+      "split_tab_visual_data.h",
       "tab_collection.h",
       "tab_collection_storage.h",
       "tab_renderer_data.h",
@@ -276,8 +269,11 @@ if (!is_android) {
       "unpinned_tab_collection.h",
     ]
 
+    if (is_win || is_mac || is_linux || is_chromeos) {
+      sources += [ "inactive_window_mouse_event_controller.h" ]
+    }
+
     public_deps = [
-      ":split_tabs",
       ":tab_enums",
       ":tab_group",
       ":tab_strip_model_observer",
@@ -315,6 +311,7 @@ if (!is_android) {
       "recent_tabs_sub_menu_model.cc",
       "split_tab_collection.cc",
       "split_tab_data.cc",
+      "split_tab_visual_data.cc",
       "tab_collection.cc",
       "tab_collection_storage.cc",
       "tab_dialog_manager.cc",
@@ -324,6 +321,10 @@ if (!is_android) {
       "tab_utils.cc",
       "unpinned_tab_collection.cc",
     ]
+
+    if (is_win || is_mac || is_linux || is_chromeos) {
+      sources += [ "inactive_window_mouse_event_controller.cc" ]
+    }
 
     deps = [
       ":tab_group",
@@ -354,6 +355,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/intent_picker:intent_picker_page_action",
       "//chrome/browser/ui/views/page_action",
       "//chrome/browser/ui/views/side_panel",
+      "//chrome/browser/ui/web_applications:pwa_install_page_action",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/web_applications",
       "//components/browsing_topics",
@@ -454,6 +456,8 @@ if (!is_android) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
+      "existing_base_sub_menu_model_browsertest.cc",
+      "existing_tab_group_sub_menu_model_browsertest.cc",
       "existing_window_sub_menu_model_browsertest.cc",
       "pinned_tab_codec_browsertest.cc",
       "pinned_tab_service_browsertest.cc",
@@ -511,12 +515,12 @@ if (!is_android) {
   source_set("unit_tests") {
     testonly = true
     sources = [
-      "existing_base_sub_menu_model_unittest.cc",
       "existing_comparison_table_sub_menu_model_unittest.cc",
-      "existing_tab_group_sub_menu_model_unittest.cc",
+      "inactive_window_mouse_event_controller_unittest.cc",
       "tab_collection_storage_unittest.cc",
       "tab_collection_unittest.cc",
       "tab_group_deletion_dialog_controller_unittest.cc",
+      "tab_iterator_unittest.cc",
       "tab_model_unittest.cc",
       "tab_strip_model_stats_recorder_unittest.cc",
       "tab_strip_model_unittest.cc",

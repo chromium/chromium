@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -120,12 +121,12 @@ class MEDIA_EXPORT VideoResourceUpdater
       scoped_refptr<VideoFrame> video_frame);
 
   viz::SharedImageFormat YuvSharedImageFormat(int bits_per_channel);
-  scoped_refptr<gpu::SharedImageInterface> shared_image_interface() const;
+  gpu::SharedImageInterface* shared_image_interface() const;
+
+  viz::ResourceId GetFrameResourceIdForTesting() const;
 
  private:
   class FrameResource;
-  class HardwareFrameResource;
-  class SoftwareFrameResource;
 
   bool software_compositor() const { return context_provider_ == nullptr; }
 
@@ -176,8 +177,7 @@ class MEDIA_EXPORT VideoResourceUpdater
   // Write/copy RGB pixels from video frame to hardware resource through
   // WritePixels or TexSubImage2D.
   bool WriteRGBPixelsToTexture(scoped_refptr<VideoFrame> video_frame,
-                               FrameResource* frame_resource,
-                               viz::SharedImageFormat output_si_format);
+                               FrameResource* frame_resource);
 
   // Write/copy YUV pixels for all planes from video frame to hardware resource
   // through WritePixelsYUV. Also perform bit downshifting for
@@ -185,7 +185,7 @@ class MEDIA_EXPORT VideoResourceUpdater
   // format.
   bool WriteYUVPixelsForAllPlanesToTexture(
       scoped_refptr<VideoFrame> video_frame,
-      HardwareFrameResource* resource,
+      FrameResource* resource,
       size_t bits_per_channel);
 
   // Get resource ready to be appended into DrawQuad. This is always used for
@@ -219,9 +219,10 @@ class MEDIA_EXPORT VideoResourceUpdater
   uint32_t next_plane_resource_id_ = 1;
 
   // Temporary pixel buffers when converting between formats.
-  std::unique_ptr<uint8_t[], base::UncheckedFreeDeleter>
-      upload_pixels_[SkYUVAInfo::kMaxPlanes] = {};
-  size_t upload_pixels_size_[SkYUVAInfo::kMaxPlanes] = {};
+  std::array<std::unique_ptr<uint8_t[], base::UncheckedFreeDeleter>,
+             SkYUVAInfo::kMaxPlanes>
+      upload_pixels_ = {};
+  std::array<size_t, SkYUVAInfo::kMaxPlanes> upload_pixels_size_ = {};
 
   VideoFrameResourceType frame_resource_type_;
 

@@ -9,7 +9,7 @@ assert(is_chromeos, "Demo Mode App is ChromeOS only")
 build_webui("build") {
   static_files = [ "app_icon_192.png" ]
 
-  non_web_component_files = [
+  ts_files = [
     "demo_mode_metrics_service.ts",
     "page_handler.ts",
   ]

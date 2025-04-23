@@ -580,12 +580,7 @@ def RaiseErrorIfGitIsDirty():
 
 
 def RaiseErrorIfCantUploadToGerrit():
-    creds_check = Git("cl", "creds_check")
-    if "SSO" in creds_check:
-        if not shutil.which('gcertstatus'):
-            raise RuntimeError("No `gcertstatus` in `PATH` despite "\
-                               "`git cl creds-check` saying that SSO "\
-                               "authentication will be used.")
+    if shutil.which('gcertstatus'):
         RunCommandAndCheckForErrors(["gcertstatus", "--check_remaining=45m"],
                                     check_stdout=False,
                                     check_exitcode=True)
@@ -785,6 +780,11 @@ def ManualUpdate(args):
     # This covers most update steps: git mv, gnrt vendor, gnrt gen
     FinishUpdatingCrate(args, title, diff)
 
+    if args.upload:
+        print(f"  Running `git cl upload --commit-description=...` ...")
+        description = CreateCommitDescription(title, diff)
+        GitClUpload(f"--commit-description={description}", "-t",
+                    "Edit CL description to include vet policy")
 
 
 def main():

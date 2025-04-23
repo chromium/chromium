@@ -391,7 +391,7 @@ BASE_FEATURE(kGlicClientResponsivenessCheck,
 // in milliseconds.
 const base::FeatureParam<int> kGlicClientResponsivenessCheckIntervalMs{
     &kGlicClientResponsivenessCheck,
-    "glic-client-responsiveness-check-interval-ms", 1000};
+    "glic-client-responsiveness-check-interval-ms", 5000};
 // Maximum time to wait for glicWebClientCheckResponsive response during a
 // responsiveness check before flagging the web client as unresponsive.
 const base::FeatureParam<int> kGlicClientResponsivenessCheckTimeoutMs{
@@ -405,6 +405,10 @@ const base::FeatureParam<int> kGlicClientUnresponsiveUiMaxTimeMs{
 
 BASE_FEATURE(kGlicKeyboardShortcutNewBadge,
              "GlicKeyboardShortcutNewBadge",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGlicAppMenuNewBadge,
+             "GlicAppMenuNewBadge",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicDebugWebview,
@@ -432,6 +436,14 @@ BASE_FEATURE(kGlicFreWarming,
 BASE_FEATURE(kGlicWarmMultiple,
              "GlicWarmMultiple",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGlicTieredRollout,
+             "GlicTieredRollout",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<std::string> kGlicTieredRolloutAllowedGroup{
+    &kGlicTieredRollout, "glic-tiered-rollout-allowed-group", ""};
+
+BASE_FEATURE(kGlicRollout, "GlicRollout", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 BASE_FEATURE(kTabstripComboButton,
@@ -920,14 +932,6 @@ BASE_FEATURE(kListWebAppsSwitch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_MAC)
-// If enabled, emails links directly instead of going through the macOS share
-// extension system. Speculative fix for https://crbug.com/356643975.
-BASE_FEATURE(kMacDirectEmailShare,
-             "DirectEmailShare",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
 // Whether to show the Hidden toggle in Settings, allowing users to toggle
 // whether to treat a WiFi network as having a hidden ssid.
@@ -1131,6 +1135,11 @@ BASE_FEATURE(kSafetyHubWeakAndReusedPasswords,
 // Enables the local passwords module in Safety Hub.
 BASE_FEATURE(kSafetyHubLocalPasswordsModule,
              "SafetyHubLocalPasswordsModule",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the unified passwords module in Safety Hub.
+BASE_FEATURE(kSafetyHubUnifiedPasswordsModule,
+             "SafetyHubUnifiedPasswordsModule",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 

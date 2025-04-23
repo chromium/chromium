@@ -418,7 +418,8 @@ public class SurveyThrottlerUnitTest {
                 userPrompted,
                 new String[0],
                 new String[0],
-                cooldownOverride);
+                cooldownOverride,
+                SurveyConfig.RequestedBrowserType.REGULAR);
     }
 
     /** Test class used to test the rate limiting logic for {@link SurveyThrottler}. */

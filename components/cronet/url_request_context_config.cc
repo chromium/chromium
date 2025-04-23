@@ -4,15 +4,19 @@
 
 #include "components/cronet/url_request_context_config.h"
 
+#include <algorithm>
 #include <memory>
 #include <type_traits>
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/debug/stack_trace.h"
+#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
@@ -34,8 +38,10 @@
 #include "net/quic/set_quic_flag.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/ssl/ssl_key_logger_impl.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_protocol.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_tag.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "url/origin.h"
 
@@ -44,6 +50,47 @@
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
 namespace cronet {
+
+// There's still a risk where setting a tag to be ON does not
+// necessarily mean that it will actually be used as it could be
+// conflicting with another flag, for example: Enable TBBR will indicate
+// that QUICHE should use BBR as a congestion control algorithm. However,
+// if RENO is also declared, then QUICHE will end up using RENO instead of
+// BBR due to how the code is structured. This means that the flag user
+// should be aware of how the tag is used in QUICHE.
+//
+// The above warning applies to both client copts and copts.
+BASE_FEATURE(kOverrideConnectionOptions,
+             "OverrideConnectionOptions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// The expected format for this flag is comma-separated tags.
+BASE_FEATURE_PARAM(std::string,
+                   kConnectionOptionsForceOn,
+                   &kOverrideConnectionOptions,
+                   "ForceOn",
+                   "");
+// The expected format for this flag is comma-separated tags.
+BASE_FEATURE_PARAM(std::string,
+                   kConnectionOptionsForceOff,
+                   &kOverrideConnectionOptions,
+                   "ForceOff",
+                   "");
+
+BASE_FEATURE(kOverrideClientConnectionOptions,
+             "OverrideClientConnectionOptions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// The expected format for this flag is comma-separated tags.
+BASE_FEATURE_PARAM(std::string,
+                   kClientConnectionOptionsForceOn,
+                   &kOverrideClientConnectionOptions,
+                   "ForceOn",
+                   "");
+// The expected format for this flag is comma-separated tags.
+BASE_FEATURE_PARAM(std::string,
+                   kClientConnectionOptionsForceOff,
+                   &kOverrideClientConnectionOptions,
+                   "ForceOff",
+                   "");
 
 namespace {
 
@@ -723,6 +770,32 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
                    << iter->first << "\" with params \"" << iter->second;
       effective_experimental_options.Remove(iter->first);
     }
+  }
+
+  auto reconcile_quic_tags = [](quic::QuicTagVector& quic_tags,
+                                const quic::QuicTagVector& tags_to_force_on,
+                                const quic::QuicTagVector& tags_to_force_off) {
+    std::ranges::copy_if(tags_to_force_on, std::back_inserter(quic_tags),
+                         [&](quic::QuicTag tag) {
+                           return !quic::ContainsQuicTag(quic_tags, tag);
+                         });
+    std::erase_if(quic_tags, [&](quic::QuicTag tag) {
+      return quic::ContainsQuicTag(tags_to_force_off, tag);
+    });
+  };
+
+  if (base::FeatureList::IsEnabled(kOverrideClientConnectionOptions)) {
+    reconcile_quic_tags(
+        quic_params->client_connection_options,
+        quic::ParseQuicTagVector(kClientConnectionOptionsForceOn.Get()),
+        quic::ParseQuicTagVector(kClientConnectionOptionsForceOff.Get()));
+  }
+
+  if (base::FeatureList::IsEnabled(kOverrideConnectionOptions)) {
+    reconcile_quic_tags(
+        quic_params->connection_options,
+        quic::ParseQuicTagVector(kConnectionOptionsForceOn.Get()),
+        quic::ParseQuicTagVector(kConnectionOptionsForceOff.Get()));
   }
 
   if (async_dns_enable || stale_dns_enable || host_resolver_rules_enable ||

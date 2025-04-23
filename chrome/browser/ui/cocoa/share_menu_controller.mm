@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #import "chrome/browser/ui/cocoa/accelerators_cocoa.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "net/base/apple/url_conversions.h"
@@ -97,19 +96,16 @@ bool CanShare() {
   // to fetch sharing services that can handle the NSURL type.
   NSArray* services = [NSSharingService
       sharingServicesForItems:@[ [NSURL URLWithString:@"https://google.com"] ]];
-  bool directMail =
-      base::FeatureList::IsEnabled(features::kMacDirectEmailShare);
-  if (directMail) {
-    NSMenuItem* email = [[NSMenuItem alloc]
-        initWithTitle:l10n_util::GetNSString(IDS_EMAIL_LINK_MAC)
-               action:@selector(emailLink:)
-        keyEquivalent:[self keyEquivalentForMail]];
-    email.target = self;
-    [menu addItem:email];
-  }
+  NSMenuItem* email = [[NSMenuItem alloc]
+      initWithTitle:l10n_util::GetNSString(IDS_EMAIL_LINK_MAC)
+             action:@selector(emailLink:)
+      keyEquivalent:[self keyEquivalentForMail]];
+  email.target = self;
+  [menu addItem:email];
   for (NSSharingService* service in services) {
-    if (directMail &&
-        [service.name isEqualToString:NSSharingServiceNameComposeEmail]) {
+    // Email share service causes mysterious crashes, so share directly.
+    // See https://crbug.com/356643975
+    if ([service.name isEqualToString:NSSharingServiceNameComposeEmail]) {
       continue;
     }
     // Don't include "Add to Reading List".
@@ -290,13 +286,9 @@ bool CanShare() {
 
 // Creates a menu item that calls |service| when invoked.
 - (NSMenuItem*)menuItemForService:(NSSharingService*)service {
-  BOOL isMail = [service.name isEqual:NSSharingServiceNameComposeEmail];
-  NSString* keyEquivalent = isMail ? [self keyEquivalentForMail] : @"";
-  NSString* title = isMail ? l10n_util::GetNSString(IDS_EMAIL_LINK_MAC)
-                           : service.menuItemTitle;
-  NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:title
+  NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:service.menuItemTitle
                                                 action:@selector(performShare:)
-                                         keyEquivalent:keyEquivalent];
+                                         keyEquivalent:@""];
   item.target = self;
   item.image = service.image;
   item.representedObject = service;

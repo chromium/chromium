@@ -48,8 +48,9 @@ class DataTypeControllerDelegate {
   // Returns whether this data type has any unsynced changes, i.e. any local
   // changes that are waiting to be committed.
   // May be invoked at any time; if the model isn't loaded yet or is in an error
-  // state, this should typically return "false".
-  virtual void HasUnsyncedData(base::OnceCallback<void(bool)> callback) = 0;
+  // state, this should typically return 0.
+  virtual void GetUnsyncedDataCount(
+      base::OnceCallback<void(size_t)> callback) = 0;
 
   // Returns a Value::List representing all nodes for the type to `callback`.
   // Used for populating nodes in Sync Node Browser of chrome://sync-internals.

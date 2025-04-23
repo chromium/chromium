@@ -43,7 +43,6 @@
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
@@ -980,10 +979,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   }
 
   void UnloadExtension(std::string extension_id) {
-    auto* extension_service =
-        extensions::ExtensionSystem::Get(profile())->extension_service();
-    ASSERT_TRUE(extension_service);
-    extension_service->UnloadExtension(
+    extensions::ExtensionRegistrar::Get(profile())->RemoveExtension(
         extension_id, extensions::UnloadedExtensionReason::DISABLE);
   }
 
@@ -2384,59 +2380,6 @@ TEST_F(SiteSettingsHandlerTest, IncrementsTrackingProtectionMetrics) {
   EXPECT_EQ(user_actions.GetActionCount(
                 "Settings.TrackingProtection.SiteExceptionRemoved"),
             1);
-}
-
-class Reset3pcCategoryPermissionTest
-    : public SiteSettingsHandlerBaseTest,
-      public testing::WithParamInterface<bool> {
- public:
-  Reset3pcCategoryPermissionTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    enabled_features.push_back(
-        privacy_sandbox::kTrackingProtectionContentSettingUbControl);
-    if (GetParam()) {
-      enabled_features.push_back(
-          privacy_sandbox::kTrackingProtectionContentSettingInSettings);
-    }
-    feature_list_.InitWithFeatures(enabled_features, {});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All, Reset3pcCategoryPermissionTest, testing::Bool());
-
-TEST_P(Reset3pcCategoryPermissionTest,
-       RemovesTrackingProtectionExceptionsWhenFeatureIsOff) {
-  constexpr char kOrigin[] = "https://www.test.com:443";
-  base::Value::List set_args;
-  set_args.Append("*");      // Primary pattern.
-  set_args.Append(kOrigin);  // Secondary pattern.
-  set_args.Append(kTrackingProtection);
-  set_args.Append(
-      content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW));
-  set_args.Append(false);  // Incognito
-  handler()->HandleSetCategoryPermissionForPattern(set_args);
-  // We should have 1 Tracking Protection exception
-  base::Value::List initial_exceptions;
-  site_settings::GetExceptionsForContentType(
-      ContentSettingsType::TRACKING_PROTECTION, profile(), web_ui(),
-      /*incognito=*/false, &initial_exceptions);
-  EXPECT_EQ(initial_exceptions.size(), 1U);
-
-  base::Value::List reset_args;
-  reset_args.Append("*");      // Primary pattern.
-  reset_args.Append(kOrigin);  // Secondary pattern.
-  reset_args.Append(kCookies);
-  reset_args.Append(false);  // Incognito
-  handler()->HandleResetCategoryPermissionForPattern(reset_args);
-  base::Value::List actual_exceptions;
-  site_settings::GetExceptionsForContentType(
-      ContentSettingsType::TRACKING_PROTECTION, profile(), web_ui(),
-      /*incognito=*/false, &actual_exceptions);
-  // The exception should only have been removed if the feature is off.
-  EXPECT_EQ(actual_exceptions.size(), GetParam() ? 1U : 0U);
 }
 
 // TODO(crbug.com/40688152): Test flakes on TSAN and ASAN.
@@ -4307,134 +4250,6 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
 
   EXPECT_EQ(updated_data.arg1()->GetString(), kCallbackId);
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-class SmartCardReaderPermissionsSiteSettingsHandlerTest
-    : public SiteSettingsHandlerBaseTest {
-  void SetUp() override {
-    SiteSettingsHandlerBaseTest::SetUp();
-    handler_ = std::make_unique<SiteSettingsHandler>(profile());
-    handler_->set_web_ui(web_ui());
-    handler_->AllowJavascript();
-    web_ui()->ClearTrackedCalls();
-  }
-
-  void TearDown() override {
-    SiteSettingsHandlerBaseTest::TearDown();
-    handler_->DisallowJavascript();
-  }
-
- protected:
-  void GrantPersistentReaderPermission(SmartCardPermissionContext& context,
-                                       const url::Origin& origin,
-                                       const std::string& reader_name) {
-    return context.GrantPersistentReaderPermission(origin, reader_name);
-  }
-
- protected:
-  std::unique_ptr<SiteSettingsHandler> handler_;
-
- private:
-  base::test::ScopedFeatureList feature_list_{blink::features::kSmartCard};
-};
-
-TEST_F(SmartCardReaderPermissionsSiteSettingsHandlerTest,
-       HandleGetSmartCardReaderGrants) {
-  SmartCardPermissionContext& context =
-      SmartCardPermissionContextFactory::GetForProfile(*profile());
-
-  const auto kTestOrigin0 = url::Origin::Create(
-      GURL("isolated-app://"
-           "amoiebz32b7o24tilu257xne2yf3nkblkploanxzm7ebeglseqpfeaacai/"));
-  const auto kTestOrigin1 =
-      url::Origin::Create(GURL("https://www.example.com"));
-  const std::string kTestOrigin1DisplayName = "www.example.com";
-
-  const std::string kReader0 = "Reader 0";
-  const std::string kReader1 = "Reader 1";
-
-  GrantPersistentReaderPermission(context, kTestOrigin0, kReader0);
-  GrantPersistentReaderPermission(context, kTestOrigin0, kReader1);
-  GrantPersistentReaderPermission(context, kTestOrigin1, kReader1);
-  context.FlushScheduledSaveSettingsCalls();
-
-  handler_->HandleGetSmartCardReaderGrants(
-      base::Value::List().Append(kCallbackId));
-
-  EXPECT_EQ(
-      web_ui()->call_data().back()->arg3()->GetList(),
-      base::Value::List()
-          .Append(base::Value::Dict()
-                      .Set(site_settings::kReaderName, kReader0)
-                      .Set(site_settings::kOrigins,
-                           base::Value::List().Append(
-                               base::Value::Dict()
-                                   .Set(site_settings::kOrigin,
-                                        kTestOrigin0.Serialize())
-                                   .Set(site_settings::kDisplayName,
-                                        kTestOrigin0.Serialize()))))
-          .Append(base::Value::Dict()
-                      .Set(site_settings::kReaderName, kReader1)
-                      .Set(site_settings::kOrigins,
-                           base::Value::List()
-                               .Append(base::Value::Dict()
-                                           .Set(site_settings::kOrigin,
-                                                kTestOrigin0.Serialize())
-                                           .Set(site_settings::kDisplayName,
-                                                kTestOrigin0.Serialize()))
-                               .Append(base::Value::Dict()
-                                           .Set(site_settings::kOrigin,
-                                                kTestOrigin1.Serialize())
-                                           .Set(site_settings::kDisplayName,
-                                                kTestOrigin1DisplayName)))));
-}
-
-TEST_F(SmartCardReaderPermissionsSiteSettingsHandlerTest,
-       HandleRevokeAllSmartCardReaderGrants) {
-  SmartCardPermissionContext& context =
-      SmartCardPermissionContextFactory::GetForProfile(*profile());
-
-  const auto kTestOrigin1 = url::Origin::Create(
-      GURL("isolated-app://"
-           "amoiebz32b7o24tilu257xne2yf3nkblkploanxzm7ebeglseqpfeaacai/"));
-  const auto kTestOrigin2 = url::Origin::Create(
-      GURL("isolated-app://"
-           "anayaszofsyqapbofoli7ljxoxkp32qkothweire2o6t7xy6taz6oaacai/"));
-
-  const std::string kReader1 = "Reader 1";
-  const std::string kReader2 = "Reader 2";
-
-  GrantPersistentReaderPermission(context, kTestOrigin1, kReader1);
-  GrantPersistentReaderPermission(context, kTestOrigin1, kReader2);
-  GrantPersistentReaderPermission(context, kTestOrigin2, kReader2);
-  context.FlushScheduledSaveSettingsCalls();
-
-  EXPECT_EQ(context.GetAllGrantedObjects().size(), 3UL);
-  handler_->HandleRevokeAllSmartCardReaderGrants(base::Value::List());
-  context.FlushScheduledSaveSettingsCalls();
-  EXPECT_TRUE(context.GetAllGrantedObjects().empty());
-}
-
-TEST_F(SmartCardReaderPermissionsSiteSettingsHandlerTest,
-       HandleRevokeSmartCardReaderGrant) {
-  SmartCardPermissionContext& context =
-      SmartCardPermissionContextFactory::GetForProfile(*profile());
-
-  const auto kTestOrigin1 = url::Origin::Create(
-      GURL("isolated-app://"
-           "amoiebz32b7o24tilu257xne2yf3nkblkploanxzm7ebeglseqpfeaacai/"));
-  const std::string kReader1 = "Reader 1";
-
-  GrantPersistentReaderPermission(context, kTestOrigin1, kReader1);
-  context.FlushScheduledSaveSettingsCalls();
-
-  EXPECT_EQ(context.GetAllGrantedObjects().size(), 1UL);
-  handler_->HandleRevokeSmartCardReaderGrant(
-      base::Value::List().Append(kReader1).Append(kTestOrigin1.Serialize()));
-  context.FlushScheduledSaveSettingsCalls();
-  EXPECT_TRUE(context.GetAllGrantedObjects().empty());
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 

@@ -156,7 +156,8 @@ suite('shimlessRMAAppTest', function() {
     // This enables the next button on the landing page.
     assert(service);
     service.triggerHardwareVerificationStatusObserver(
-        /* isCompliant= */ true, /* errorMessage= */ '', /* delayMs= */ 0);
+        /* result= */ {passResult: {}},
+        /* delayMs= */ 0);
     await flushTasks();
     await clickNext();
 

@@ -1842,12 +1842,10 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
       }
 #endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 
-      if (!damage_rect_px.IsEmpty()) {
-        texture_quad->damage_rect = gfx::ToEnclosedRect(damage_rect_px);
-        render_pass->has_per_quad_damage = true;
-        // Clear handled damage so it will not be added to the |render_pass|.
-        damage_rect_px = gfx::RectF();
-      }
+      texture_quad->damage_rect = gfx::ToEnclosedRect(damage_rect_px);
+      render_pass->has_per_quad_damage = true;
+      // Clear handled damage so it will not be added to the |render_pass|.
+      damage_rect_px = gfx::RectF();
     }
     frame->resource_list.push_back(current_resource_);
   } else if (state_.basic_state.alpha != 0.0f) {

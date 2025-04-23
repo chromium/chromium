@@ -13,7 +13,7 @@ build_webui("build") {
     "media_router_internals.css",
     "media_router_internals.html",
   ]
-  non_web_component_files = [ "media_router_internals.ts" ]
+  ts_files = [ "media_router_internals.ts" ]
 
   ts_deps = [
     "//ui/webui/resources/cr_elements:build_ts",

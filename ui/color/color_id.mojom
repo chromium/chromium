@@ -9,6 +9,7 @@ module color.mojom;
 // defined subset of colors. If changing this you must also update the mapping
 // in color_provider_utils.cc.
 enum RendererColorId {
+  kColorCssSystemActiveText,
   kColorCssSystemBtnFace,
   kColorCssSystemBtnText,
   kColorCssSystemField,
@@ -17,8 +18,10 @@ enum RendererColorId {
   kColorCssSystemHighlight,
   kColorCssSystemHighlightText,
   kColorCssSystemHotlight,
+  kColorCssSystemLinkText,
   kColorCssSystemMenuHilight,
   kColorCssSystemScrollbar,
+  kColorCssSystemVisitedText,
   kColorCssSystemWindow,
   kColorCssSystemWindowText,
   kColorMenuBackground,

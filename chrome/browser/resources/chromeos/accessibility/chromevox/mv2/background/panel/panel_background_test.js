@@ -9,22 +9,23 @@ GEN_INCLUDE(['../../../../common/testing/documents.js']);
 /**
  * Test fixture for PanelBackground.
  */
-ChromeVoxPanelBackgroundTest = class extends ChromeVoxE2ETest {};
-
-AX_TEST_F('ChromeVoxPanelBackgroundTest', 'OnTutorialReady', async function() {
-  const callbackPromise = new Promise(
-      resolve => PanelBackground.instance.tutorialReadyCallback = resolve);
-
-  assertFalse(PanelBackground.instance.tutorialReadyForTesting);
-
-  PanelBackground.instance.onTutorialReady_();
-  await callbackPromise;
-
-  assertTrue(PanelBackground.instance.tutorialReadyForTesting);
-});
+ChromeVoxMV2PanelBackgroundTest = class extends ChromeVoxE2ETest {};
 
 AX_TEST_F(
-    'ChromeVoxPanelBackgroundTest', 'WaitForMenusLoaded', async function() {
+    'ChromeVoxMV2PanelBackgroundTest', 'OnTutorialReady', async function() {
+      const callbackPromise = new Promise(
+          resolve => PanelBackground.instance.tutorialReadyCallback = resolve);
+
+      assertFalse(PanelBackground.instance.tutorialReadyForTesting);
+
+      PanelBackground.instance.onTutorialReady_();
+      await callbackPromise;
+
+      assertTrue(PanelBackground.instance.tutorialReadyForTesting);
+    });
+
+AX_TEST_F(
+    'ChromeVoxMV2PanelBackgroundTest', 'WaitForMenusLoaded', async function() {
       const root = await this.runWithLoadedTree(Documents.link);
       const link = root.find({role: 'link'});
       assertNotNullNorUndefined(link);

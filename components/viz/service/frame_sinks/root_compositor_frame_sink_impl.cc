@@ -533,10 +533,6 @@ void RootCompositorFrameSinkImpl::SetWantsAnimateOnlyBeginFrames() {
   support_->SetWantsAnimateOnlyBeginFrames();
 }
 
-void RootCompositorFrameSinkImpl::SetWantsBeginFrameAcks() {
-  support_->SetWantsBeginFrameAcks();
-}
-
 void RootCompositorFrameSinkImpl::SetAutoNeedsBeginFrame() {
   support_->SetAutoNeedsBeginFrame();
 }

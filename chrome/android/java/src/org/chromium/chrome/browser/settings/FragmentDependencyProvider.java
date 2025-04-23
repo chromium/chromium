@@ -59,6 +59,7 @@ import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.privacy_sandbox.FingerprintingProtectionSettingsFragment;
+import org.chromium.components.privacy_sandbox.IncognitoTrackingProtectionsFragment;
 import org.chromium.components.privacy_sandbox.IpProtectionSettingsFragment;
 import org.chromium.components.privacy_sandbox.TrackingProtectionSettings;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -217,6 +218,10 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
         if (fragment
                 instanceof FingerprintingProtectionSettingsFragment fpProtectionSettingsFragment) {
             fpProtectionSettingsFragment.setTrackingProtectionDelegate(
+                    new ChromeTrackingProtectionDelegate(mProfile));
+        }
+        if (fragment instanceof IncognitoTrackingProtectionsFragment itpFragment) {
+            itpFragment.setTrackingProtectionDelegate(
                     new ChromeTrackingProtectionDelegate(mProfile));
         }
         if (fragment instanceof AutofillLocalIbanEditor) {

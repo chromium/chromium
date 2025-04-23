@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assertNonNull;
 
 import org.chromium.base.Log;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -32,6 +34,7 @@ import java.util.Locale;
  * startup completion signals from both local tab model and {@link TabGroupSyncService} and 2.
  * Modifies local tab model to ensure that both local and sync version of tab groups are equivalent.
  */
+@NullMarked
 public final class TabGroupSyncLocalObserver {
     private static final String TAG = "TG.LocalObserver";
     private final TabGroupModelFilter mTabGroupModelFilter;
@@ -100,13 +103,12 @@ public final class TabGroupSyncLocalObserver {
             @Override
             public void didAddTab(
                     Tab tab, int type, int creationState, boolean markedForSelection) {
-                if (!mIsObserving || tab.getTabGroupId() == null) return;
+                LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(tab);
+                if (!mIsObserving || localTabGroupId == null) return;
                 LogUtils.log(TAG, "didAddTab");
 
                 mRemoteTabGroupMutationHelper.addTab(
-                        TabGroupSyncUtils.getLocalTabGroupId(tab),
-                        tab,
-                        mTabGroupModelFilter.getIndexOfTabInGroup(tab));
+                        localTabGroupId, tab, mTabGroupModelFilter.getIndexOfTabInGroup(tab));
             }
 
             @Override
@@ -154,10 +156,7 @@ public final class TabGroupSyncLocalObserver {
             @Override
             public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
                 // Intentionally observing all tab selections regardless of their origin.
-                LocalTabGroupId localTabGroupId =
-                        mTabGroupModelFilter.isTabInTabGroup(tab)
-                                ? TabGroupSyncUtils.getLocalTabGroupId(tab)
-                                : null;
+                LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(tab);
 
                 // We notify TabGroupSyncService of the currently selected tab regardless of
                 // whether it's part of a tab group or not. The accurate tracking of currently
@@ -169,17 +168,20 @@ public final class TabGroupSyncLocalObserver {
                 SavedTabGroup savedGroup = mTabGroupSyncService.getGroup(localTabGroupId);
                 if (savedGroup == null) return;
 
-                if (mTabGroupSyncService.isRemoteDevice(savedGroup.creatorCacheGuid)) {
+                String creatorCacheGuid = savedGroup.creatorCacheGuid;
+                if (creatorCacheGuid != null
+                        && mTabGroupSyncService.isRemoteDevice(creatorCacheGuid)) {
                     RecordUserAction.record("TabGroups.Sync.SelectedTabInRemotelyCreatedGroup");
                 } else {
                     RecordUserAction.record("TabGroups.Sync.SelectedTabInLocallyCreatedGroup");
                 }
 
                 SavedTabGroupTab savedTab = getSavedTab(savedGroup, tab.getId());
+                String lastUpdaterCacheGuid =
+                        savedTab != null ? savedTab.lastUpdaterCacheGuid : null;
                 boolean tabWasLastUsedRemotely =
-                        savedTab != null
-                                && mTabGroupSyncService.isRemoteDevice(
-                                        savedGroup.lastUpdaterCacheGuid);
+                        lastUpdaterCacheGuid != null
+                                && mTabGroupSyncService.isRemoteDevice(lastUpdaterCacheGuid);
                 if (tabWasLastUsedRemotely) {
                     int tabId = tab.getId();
                     boolean wasAdded = mTabIdsSelectedInSession.add(tabId);
@@ -204,7 +206,7 @@ public final class TabGroupSyncLocalObserver {
             }
 
             @Override
-            public void didChangeTabGroupTitle(int rootId, String newTitle) {
+            public void didChangeTabGroupTitle(int rootId, @Nullable String newTitle) {
                 if (!mIsObserving) return;
                 LogUtils.log(TAG, "didChangeTabGroupTitle, rootId = " + rootId);
                 updateVisualData(
@@ -218,7 +220,8 @@ public final class TabGroupSyncLocalObserver {
                 LogUtils.log(TAG, "didMergeTabToGroup, rootId = " + rootId);
 
                 LocalTabGroupId tabGroupRootId =
-                        TabGroupSyncUtils.getLocalTabGroupId(mTabGroupModelFilter, rootId);
+                        assertNonNull(
+                                TabGroupSyncUtils.getLocalTabGroupId(mTabGroupModelFilter, rootId));
                 if (groupExistsInSync(tabGroupRootId)) {
                     int positionInGroup = mTabGroupModelFilter.getIndexOfTabInGroup(movedTab);
                     mRemoteTabGroupMutationHelper.addTab(tabGroupRootId, movedTab, positionInGroup);
@@ -231,6 +234,7 @@ public final class TabGroupSyncLocalObserver {
             public void didMoveWithinGroup(
                     Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {
                 if (!mIsObserving) return;
+
                 LogUtils.log(
                         TAG,
                         "didMoveWithinGroup, tabModelOldIndex = "
@@ -241,8 +245,9 @@ public final class TabGroupSyncLocalObserver {
                 // The tab position was changed. Update sync.
                 int positionInGroup = mTabGroupModelFilter.getIndexOfTabInGroup(movedTab);
                 int rootId = movedTab.getRootId();
-                LocalTabGroupId tabGroupId =
-                        TabGroupSyncUtils.getLocalTabGroupId(mTabGroupModelFilter, rootId);
+                LocalTabGroupId localTabGroupId =
+                        assertNonNull(
+                                TabGroupSyncUtils.getLocalTabGroupId(mTabGroupModelFilter, rootId));
                 Log.w(
                         TAG,
                         String.format(
@@ -250,9 +255,9 @@ public final class TabGroupSyncLocalObserver {
                                 "movedTab positionInGroup %d out of %d",
                                 positionInGroup,
                                 mTabGroupModelFilter.getTabCountForGroup(
-                                        movedTab.getTabGroupId())));
+                                        localTabGroupId.tabGroupId)));
                 mRemoteTabGroupMutationHelper.moveTab(
-                        tabGroupId, movedTab.getId(), positionInGroup);
+                        localTabGroupId, movedTab.getId(), positionInGroup);
             }
 
             @Override
@@ -275,8 +280,9 @@ public final class TabGroupSyncLocalObserver {
                 if (!mIsObserving) return;
                 LogUtils.log(TAG, "didCreateNewGroup");
                 LocalTabGroupId localTabGroupId =
-                        TabGroupSyncUtils.getLocalTabGroupId(
-                                mTabGroupModelFilter, destinationTab.getRootId());
+                        assertNonNull(
+                                TabGroupSyncUtils.getLocalTabGroupId(
+                                        mTabGroupModelFilter, destinationTab.getRootId()));
                 if (groupExistsInSync(localTabGroupId)) return;
 
                 mRemoteTabGroupMutationHelper.createRemoteTabGroup(localTabGroupId);
@@ -314,18 +320,18 @@ public final class TabGroupSyncLocalObserver {
         };
     }
 
-    private void updateVisualData(LocalTabGroupId tabGroupId) {
+    private void updateVisualData(@Nullable LocalTabGroupId tabGroupId) {
         // During group creation from sync, we set the title and color before the group is actually
         // created. Hence, tab group ID could be null.
         if (tabGroupId == null) return;
         mRemoteTabGroupMutationHelper.updateVisualData(tabGroupId);
     }
 
-    private boolean groupExistsInSync(LocalTabGroupId rootId) {
-        return mTabGroupSyncService.getGroup(rootId) != null;
+    private boolean groupExistsInSync(LocalTabGroupId localTabGroupId) {
+        return mTabGroupSyncService.getGroup(localTabGroupId) != null;
     }
 
-    private SavedTabGroupTab getSavedTab(SavedTabGroup savedGroup, int tabId) {
+    private @Nullable SavedTabGroupTab getSavedTab(SavedTabGroup savedGroup, int tabId) {
         for (SavedTabGroupTab savedTab : savedGroup.savedTabs) {
             if (savedTab.localId != null && savedTab.localId == tabId) return savedTab;
         }

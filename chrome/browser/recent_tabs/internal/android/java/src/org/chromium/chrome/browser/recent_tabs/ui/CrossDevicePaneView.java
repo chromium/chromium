@@ -13,13 +13,15 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.recent_tabs.R;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /** Conditionally displays empty state for cross device pane. */
+@NullMarked
 public class CrossDevicePaneView extends FrameLayout {
     private View mEmptyStateContainer;
     private ListView mListView;

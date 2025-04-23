@@ -34,7 +34,7 @@ class P2PSocketClientDelegate {
   virtual void OnDataReceived(const net::IPEndPoint& address,
                               base::span<const uint8_t> data,
                               const base::TimeTicks& timestamp,
-                              rtc::EcnMarking ecn) = 0;
+                              webrtc::EcnMarking ecn) = 0;
 };
 
 }  // namespace blink

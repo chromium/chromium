@@ -11,12 +11,13 @@ import static org.chromium.chrome.browser.hub.HubColorMixer.StateChange.TRANSLAT
 
 import androidx.annotation.IntDef;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.build.annotations.Nullable;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.function.DoubleConsumer;
 
 /**
  * Manages and updates the color scheme of the Hub UI.
@@ -31,6 +32,7 @@ import java.lang.annotation.RetentionPolicy;
  * should be passed via the {@link #COLOR_MIXER} property on these models whenever these {@link
  * HubViewColorBlend}s need to be registered.
  */
+@NullMarked
 public interface HubColorMixer {
 
     /**
@@ -59,7 +61,7 @@ public interface HubColorMixer {
         HUB_SHOWN,
         HUB_CLOSED,
         TRANSLATE_UP_TABLET_ANIMATION_END,
-        TRANSLATE_DOWN_TABLET_ANIMATION_START
+        TRANSLATE_DOWN_TABLET_ANIMATION_START,
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface StateChange {
@@ -68,6 +70,13 @@ public interface HubColorMixer {
         int TRANSLATE_UP_TABLET_ANIMATION_END = 2;
         int TRANSLATE_DOWN_TABLET_ANIMATION_START = 3;
     }
+
+    /**
+     * Observes alpha of the overview during a fade animation. The partially transparent overview is
+     * drawn over top of the toolbar during this time.
+     */
+    @FunctionalInterface
+    interface OverviewModeAlphaObserver extends DoubleConsumer {}
 
     /** Property key to allow for registering color schemes. */
     PropertyModel.WritableObjectPropertyKey<HubColorMixer> COLOR_MIXER =
@@ -79,7 +88,7 @@ public interface HubColorMixer {
     /**
      * Supplies the current overview mode color. This will be null if overview mode is not enabled.
      */
-    ObservableSupplierImpl<@Nullable Integer> getOverviewColorSupplier();
+    ObservableSupplier<Integer> getOverviewColorSupplier();
 
     /**
      * Updates overview mode based on the provided reason for the state change.
@@ -90,4 +99,7 @@ public interface HubColorMixer {
 
     /** Registers a {@link HubViewColorBlend} to receive color scheme updates. */
     void registerBlend(HubViewColorBlend colorBlend);
+
+    /** Gets the observer for overview mode alpha changes. */
+    OverviewModeAlphaObserver getOverviewModeAlphaObserver();
 }

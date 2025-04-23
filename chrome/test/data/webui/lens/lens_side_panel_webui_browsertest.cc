@@ -39,8 +39,12 @@ IN_PROC_BROWSER_TEST_F(LensSidePanelTest, GhostLoaderState) {
   RunTest("lens/side_panel/ghost_loader_state_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(LensSidePanelTest, ShowToast) {
-  RunTest("lens/side_panel/show_toast_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(LensSidePanelTest, MessageToast) {
+  RunTest("lens/side_panel/message_toast_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(LensSidePanelTest, FeedbackToast) {
+  RunTest("lens/side_panel/feedback_toast_test.js", "mocha.run()");
 }
 
 using LensGhostLoaderTest = LensSidePanelWebUIBrowserTest;

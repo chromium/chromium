@@ -1518,14 +1518,8 @@ void ServiceWorkerRegistry::NotifyRegistrationStored(
     const GURL& stored_scope,
     const blink::StorageKey& key,
     StatusCallback callback) {
-  scoped_refptr<ServiceWorkerRegistration> registration =
-      context_->GetLiveRegistration(stored_registration_id);
-  if (registration) {
-    registration->SetStored();
-    registration->set_resources_total_size_bytes(
-        stored_resources_total_size_bytes);
-  }
-  context_->NotifyRegistrationStored(stored_registration_id, stored_scope, key);
+  context_->NotifyRegistrationStored(stored_registration_id, stored_scope, key,
+                                     stored_resources_total_size_bytes);
 
   auto iter = registration_scope_cache_.Get(key);
   if (iter != registration_scope_cache_.end()) {

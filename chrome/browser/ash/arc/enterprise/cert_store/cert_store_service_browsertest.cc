@@ -440,7 +440,6 @@ void CertStoreServiceTest::SetUp() {
     base::SysInfo::SetChromeOSVersionInfoForTest(
         "CHROMEOS_ARC_ANDROID_SDK_VERSION=33",  // TM
         base::SysInfo::GetLsbReleaseTime());
-    feature_list_.InitAndEnableFeature(arc::kSwitchToKeyMintOnT);
   } else {
     base::SysInfo::SetChromeOSVersionInfoForTest(
         "CHROMEOS_ARC_ANDROID_SDK_VERSION=30",  // RVC

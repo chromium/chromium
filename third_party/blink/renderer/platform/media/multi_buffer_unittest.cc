@@ -126,7 +126,7 @@ class FakeMultiBufferDataProvider : public MultiBuffer::DataProvider {
     return ret;
   }
 
-  void Invalidate() final { NOTREACHED(); }
+  bool IsStale() const final { return false; }
 
  private:
   base::circular_deque<scoped_refptr<media::DataBuffer>> fifo_;

@@ -5,9 +5,9 @@
 package org.chromium.chrome.browser.hub;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.SyncOneshotSupplier;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.function.DoubleConsumer;
 
@@ -15,6 +15,7 @@ import java.util.function.DoubleConsumer;
  * Factory for creating {@link HubLayoutAnimatorProvider}s for shrink, expand, and new tab
  * animations. These will fallback to fade animations if dependencies aren't fulfilled in time.
  */
+@NullMarked
 public class ShrinkExpandHubLayoutAnimationFactory {
     /**
      * Creates an animation to use when creating a non-background new tab from Hub. This animation
@@ -29,11 +30,11 @@ public class ShrinkExpandHubLayoutAnimationFactory {
      * @param onAlphaChange Observer to notify when alpha changes during animations.
      */
     public static HubLayoutAnimatorProvider createNewTabAnimatorProvider(
-            @NonNull HubContainerView hubContainerView,
-            @NonNull SyncOneshotSupplier<ShrinkExpandAnimationData> animationDataSupplier,
+            HubContainerView hubContainerView,
+            SyncOneshotSupplier<ShrinkExpandAnimationData> animationDataSupplier,
             @ColorInt int backgroundColor,
             long durationMs,
-            @NonNull DoubleConsumer onAlphaChange) {
+            DoubleConsumer onAlphaChange) {
         return new ShrinkExpandHubLayoutAnimatorProvider(
                 HubLayoutAnimationType.EXPAND_NEW_TAB,
                 /* needsBitmap= */ false,
@@ -56,11 +57,11 @@ public class ShrinkExpandHubLayoutAnimationFactory {
      * @param onAlphaChange Observer to notify when alpha changes during animations.
      */
     public static HubLayoutAnimatorProvider createShrinkTabAnimatorProvider(
-            @NonNull HubContainerView hubContainerView,
-            @NonNull SyncOneshotSupplier<ShrinkExpandAnimationData> animationDataSupplier,
+            HubContainerView hubContainerView,
+            SyncOneshotSupplier<ShrinkExpandAnimationData> animationDataSupplier,
             @ColorInt int backgroundColor,
             long durationMs,
-            @NonNull DoubleConsumer onAlphaChange) {
+            DoubleConsumer onAlphaChange) {
         return new ShrinkExpandHubLayoutAnimatorProvider(
                 HubLayoutAnimationType.SHRINK_TAB,
                 /* needsBitmap= */ true,
@@ -84,11 +85,11 @@ public class ShrinkExpandHubLayoutAnimationFactory {
      * @param mOnAlphaChange Observer to notify when alpha changes during animations.
      */
     public static HubLayoutAnimatorProvider createExpandTabAnimatorProvider(
-            @NonNull HubContainerView hubContainerView,
-            @NonNull SyncOneshotSupplier<ShrinkExpandAnimationData> animationDataSupplier,
+            HubContainerView hubContainerView,
+            SyncOneshotSupplier<ShrinkExpandAnimationData> animationDataSupplier,
             @ColorInt int backgroundColor,
             long durationMs,
-            @NonNull DoubleConsumer mOnAlphaChange) {
+            DoubleConsumer mOnAlphaChange) {
         return new ShrinkExpandHubLayoutAnimatorProvider(
                 HubLayoutAnimationType.EXPAND_TAB,
                 /* needsBitmap= */ true,

@@ -256,6 +256,46 @@ TEST_P(StatisticsRecorderTest, FindHistogram) {
   EXPECT_FALSE(StatisticsRecorder::FindHistogram("TestHistogram"));
 }
 
+TEST_P(StatisticsRecorderTest, FindHistogramWithHash) {
+  HistogramBase* histogram1 = Histogram::FactoryGet(
+      "TestHistogram1", 1, 1000, 10, HistogramBase::kNoFlags);
+  HistogramBase* histogram2 = Histogram::FactoryGet(
+      "TestHistogram2", 1, 1000, 10, HistogramBase::kNoFlags);
+
+  auto hash_h1 = HashMetricName("TestHistogram1");
+  auto hash_h2 = HashMetricName("TestHistogram2");
+  auto hash_h = HashMetricName("TestHistogram");
+  EXPECT_EQ(histogram1,
+            StatisticsRecorder::FindHistogram(hash_h1, "TestHistogram1"));
+  EXPECT_EQ(histogram2,
+            StatisticsRecorder::FindHistogram(hash_h2, "TestHistogram2"));
+  EXPECT_FALSE(StatisticsRecorder::FindHistogram(hash_h, "TestHistogram"));
+
+  // Create a new global allocator using the same memory as the old one. Any
+  // old one is kept around so the memory doesn't get released.
+  GlobalHistogramAllocator* old_global_allocator =
+      GlobalHistogramAllocator::ReleaseForTesting();
+  if (use_persistent_histogram_allocator_) {
+    GlobalHistogramAllocator::CreateWithPersistentMemory(
+        const_cast<void*>(old_global_allocator->data()),
+        old_global_allocator->length(), 0, old_global_allocator->Id(),
+        old_global_allocator->Name());
+  }
+
+  // Reset statistics-recorder to validate operation from a clean start.
+  UninitializeStatisticsRecorder();
+  InitializeStatisticsRecorder();
+
+  if (use_persistent_histogram_allocator_) {
+    EXPECT_TRUE(StatisticsRecorder::FindHistogram(hash_h1, "TestHistogram1"));
+    EXPECT_TRUE(StatisticsRecorder::FindHistogram(hash_h2, "TestHistogram2"));
+  } else {
+    EXPECT_FALSE(StatisticsRecorder::FindHistogram(hash_h1, "TestHistogram1"));
+    EXPECT_FALSE(StatisticsRecorder::FindHistogram(hash_h2, "TestHistogram2"));
+  }
+  EXPECT_FALSE(StatisticsRecorder::FindHistogram(hash_h, "TestHistogram"));
+}
+
 TEST_P(StatisticsRecorderTest, WithName) {
   Histogram::FactoryGet("TestHistogram1", 1, 1000, 10, Histogram::kNoFlags);
   Histogram::FactoryGet("TestHistogram2", 1, 1000, 10, Histogram::kNoFlags);

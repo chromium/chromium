@@ -335,9 +335,8 @@ class TtsApiTest : public ExtensionApiTest,
   }
 
   void AddNetworkSpeechSynthesisExtension() {
-    ExtensionService* service =
-        extensions::ExtensionSystem::Get(profile())->extension_service();
-    service->component_loader()->AddNetworkSpeechSynthesisExtension();
+    auto* component_loader = extensions::ComponentLoader::Get(profile());
+    component_loader->AddNetworkSpeechSynthesisExtension();
 
     // Wait for any tts engine event listener to be added by the network tts
     // engine so that tests can be ready to validate state.

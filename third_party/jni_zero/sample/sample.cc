@@ -5,7 +5,7 @@
 // Generated file for JNI bindings from C++ to Java @CalledByNative methods.
 // Only to be included in one .cc file.
 // Name is based on the java file name: *.java -> jni/*_jni.h
-#include "third_party/jni_zero/sample/sample_header/Sample_jni.h"
+#include "third_party/jni_zero/sample/sample_jni/Sample_jni.h"
 
 using jni_zero::JavaParamRef;
 using jni_zero::ScopedJavaLocalRef;

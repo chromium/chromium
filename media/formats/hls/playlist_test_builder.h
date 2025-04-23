@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "media/base/media_serializers.h"
 #include "media/base/media_serializers_base.h"
 #include "media/formats/hls/playlist.h"
 #include "media/formats/hls/source_string.h"

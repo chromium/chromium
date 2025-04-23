@@ -3,6 +3,7 @@
   "maintainers": [
     {
       "github": "dtolnay",
+      "github_user_id": 1940490,
       "email": "dtolnay@gmail.com",
       "name": "David Tolnay"
     }

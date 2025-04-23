@@ -87,7 +87,7 @@ class SlimLayerTreeCompositorFrameTest : public testing::Test {
         /*source_id=*/1, ++sequence_id_, frame_time, frame_time + interval,
         interval, viz::BeginFrameArgs::NORMAL);
     frame_sink_->OnBeginFrame(begin_frame_args, std::move(next_timing_details_),
-                              /*frame_ack=*/false, {});
+                              {});
     next_timing_details_.clear();
     viz::CompositorFrame frame = frame_sink_->TakeLastFrame();
     if (out_list) {

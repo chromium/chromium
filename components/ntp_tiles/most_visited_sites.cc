@@ -153,6 +153,31 @@ std::u16string GenerateShortTitle(const std::u16string& title) {
 
 }  // namespace
 
+/******** CustomLinksCache ********/
+
+CustomLinksCache::CustomLinksCache() = default;
+CustomLinksCache::~CustomLinksCache() = default;
+
+void CustomLinksCache::PushBack(const NTPTile& tile) {
+  list_.push_back(tile);
+  url_set_.insert(tile.url);
+}
+
+void CustomLinksCache::Clear() {
+  list_.clear();
+  url_set_.clear();
+}
+
+bool CustomLinksCache::HasUrl(const GURL& url) const {
+  return url_set_.count(url) != 0;
+}
+
+const NTPTilesVector& CustomLinksCache::GetList() const {
+  return list_;
+}
+
+/******** MostVisitedSites ********/
+
 MostVisitedSites::MostVisitedSites(
     PrefService* prefs,
     signin::IdentityManager* identity_manager,
@@ -281,15 +306,22 @@ void MostVisitedSites::RefreshTiles() {
 }
 
 void MostVisitedSites::InitializeCustomLinks() {
-  if (!custom_links_manager_ || !current_tiles_.has_value() ||
-      !IsCustomLinksEnabled()) {
+  if (!custom_links_manager_ || !IsCustomLinksEnabled()) {
     return;
   }
 
-  // TODO(crbug.com/397422358): Convert |current_tiles_| to links in
-  // |custom_links_manager_| only if |is_custom_links_mixable_| is false.
-  if (custom_links_manager_->Initialize(current_tiles_.value())) {
-    custom_links_action_count_ = 0;
+  if (is_custom_links_mixable_) {
+    // Custom Tiles can mix with other tiles: Initialize as empty list.
+    if (custom_links_manager_->Initialize(NTPTilesVector())) {
+      custom_links_action_count_ = 0;
+    }
+  } else {
+    // Custom Tiles are stand-alone: Require other tiles to exist, and
+    // if so, convert them to Custom Tiles.
+    if (current_tiles_.has_value() &&
+        custom_links_manager_->Initialize(current_tiles_.value())) {
+      custom_links_action_count_ = 0;
+    }
   }
 }
 
@@ -359,6 +391,14 @@ bool MostVisitedSites::DeleteCustomLink(const GURL& url) {
   return ApplyCustomLinksAction(
       base::BindOnce(&CustomLinksManager::DeleteLink,
                      base::Unretained(custom_links_manager_.get()), url));
+}
+
+bool MostVisitedSites::HasCustomLink(const GURL& url) {
+  if (!custom_links_manager_ || !IsCustomLinksEnabled()) {
+    return false;
+  }
+
+  return custom_links_cache_.HasUrl(url);
 }
 
 void MostVisitedSites::UndoCustomLinkAction() {
@@ -477,12 +517,13 @@ void MostVisitedSites::OnMostVisitedURLsAvailable(
 }
 
 void MostVisitedSites::BuildCurrentTiles() {
+  ReloadCustomLinksCache();
   if (IsExclusivelyCustomLinks()) {
-    BuildCustomLinks(custom_links_manager_->GetLinks());
-    return;
+    SaveTilesAndNotify(NTPTilesVector(),
+                       std::map<SectionType, NTPTilesVector>());
+  } else {
+    InitiateTopSitesQuery();
   }
-
-  InitiateTopSitesQuery();
 }
 
 std::map<SectionType, NTPTilesVector>
@@ -646,24 +687,19 @@ bool MostVisitedSites::ApplyCustomLinksAction(
 
 void MostVisitedSites::OnCustomLinksChanged() {
   DCHECK(custom_links_manager_);
-  if (!IsCustomLinksEnabled()) {
+  BuildCurrentTiles();
+}
+
+void MostVisitedSites::ReloadCustomLinksCache() {
+  custom_links_cache_.Clear();
+  if (!IsCustomLinksInitialized() || !IsCustomLinksEnabled()) {
     return;
   }
 
-  if (custom_links_manager_->IsInitialized()) {
-    BuildCustomLinks(custom_links_manager_->GetLinks());
-  } else {
-    // Since custom links have been uninitialized (e.g. through Chrome sync), we
-    // should show the regular Most Visited tiles.
-    BuildCurrentTiles();
-  }
-}
-
-void MostVisitedSites::BuildCustomLinks(
-    const std::vector<CustomLinksManager::Link>& links) {
   DCHECK(custom_links_manager_);
+  const std::vector<CustomLinksManager::Link>& links =
+      custom_links_manager_->GetLinks();
 
-  NTPTilesVector tiles;
   // The maximum number of custom links that can be shown is independent of the
   // maximum number of Most Visited sites that can be shown.
   size_t num_tiles = std::min(links.size(), kMaxNumCustomLinks);
@@ -681,10 +717,8 @@ void MostVisitedSites::BuildCustomLinks(
     tile.url = link.url;
     tile.source = TileSource::CUSTOM_LINKS;
     tile.from_most_visited = link.is_most_visited;
-    tiles.push_back(std::move(tile));
+    custom_links_cache_.PushBack(tile);
   }
-
-  SaveTilesAndNotify(std::move(tiles), std::map<SectionType, NTPTilesVector>());
 }
 
 void MostVisitedSites::InitiateNotificationForNewTiles(
@@ -725,6 +759,17 @@ void MostVisitedSites::MergeMostVisitedTiles(NTPTilesVector personal_tiles) {
   SaveTilesAndNotify(std::move(new_tiles), std::move(sections));
 }
 
+NTPTilesVector MostVisitedSites::ImposeCustomLinks(NTPTilesVector tiles) {
+  NTPTilesVector out_tiles(custom_links_cache_.GetList());
+  // Exclude |tiles| elements with |url| found in |custom_links_cache_|.
+  std::copy_if(tiles.begin(), tiles.end(), std::back_inserter(out_tiles),
+               [&](const NTPTile& tile) -> bool {
+                 return !custom_links_cache_.HasUrl(tile.url);
+               });
+  out_tiles.resize(std::min(out_tiles.size(), GetMaxNumSites()));
+  return out_tiles;
+}
+
 void MostVisitedSites::SaveTilesAndNotify(
     NTPTilesVector new_tiles,
     std::map<SectionType, NTPTilesVector> sections) {
@@ -739,6 +784,8 @@ void MostVisitedSites::SaveTilesAndNotify(
     metrics::RecordsMigratedDefaultAppDeleted(
         DeletedTileType::kMostVisitedSite);
   }
+
+  fixed_tiles = ImposeCustomLinks(std::move(fixed_tiles));
   if (!current_tiles_.has_value() || (*current_tiles_ != fixed_tiles)) {
     current_tiles_.emplace(std::move(fixed_tiles));
 
@@ -829,6 +876,8 @@ void MostVisitedSites::TopSitesLoaded(TopSites* top_sites) {}
 void MostVisitedSites::TopSitesChanged(TopSites* top_sites,
                                        ChangeReason change_reason) {
   if (!IsExclusivelyCustomLinks()) {
+    // Call InitiateTopSitesQuery() instead of BuildCurrentTiles() to skip
+    // unneeded |custom_links_cache_| update.
     InitiateTopSitesQuery();
   }
 }

@@ -175,8 +175,6 @@ void SetupFakeUpdater(UpdaterScope scope,
 
 }  // namespace
 
-const char kChromeAppId[] = "{8A69D345-D564-463C-AFF1-A69D9E530F96}";
-
 bool IsProcessRunning(const base::FilePath::StringType& executable_name,
                       const base::ProcessFilter* filter) {
   return base::GetProcessCount(executable_name, filter) != 0;

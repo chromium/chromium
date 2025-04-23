@@ -32,6 +32,9 @@ void AddDuskPageColorsToMixer(ColorMixer& mixer) {
   mixer[kColorCssSystemWindowText] = {SK_ColorWHITE};
   mixer[kColorCssSystemField] = {kColorCssSystemWindow};
   mixer[kColorCssSystemFieldText] = {kColorCssSystemWindowText};
+  mixer[kColorCssSystemActiveText] = {kColorCssSystemHotlight};
+  mixer[kColorCssSystemLinkText] = {kColorCssSystemHotlight};
+  mixer[kColorCssSystemVisitedText] = {kColorCssSystemHotlight};
 }
 
 void AddDesertPageColorsToMixer(ColorMixer& mixer) {
@@ -47,6 +50,9 @@ void AddDesertPageColorsToMixer(ColorMixer& mixer) {
   mixer[kColorCssSystemWindowText] = {SkColorSetRGB(0x3D, 0x3D, 0x3D)};
   mixer[kColorCssSystemField] = {kColorCssSystemWindow};
   mixer[kColorCssSystemFieldText] = {kColorCssSystemWindowText};
+  mixer[kColorCssSystemActiveText] = {kColorCssSystemHotlight};
+  mixer[kColorCssSystemLinkText] = {kColorCssSystemHotlight};
+  mixer[kColorCssSystemVisitedText] = {kColorCssSystemHotlight};
 }
 
 void AddNightSkyPageColorsToMixer(ColorMixer& mixer) {
@@ -62,6 +68,9 @@ void AddNightSkyPageColorsToMixer(ColorMixer& mixer) {
   mixer[kColorCssSystemWindowText] = {SK_ColorWHITE};
   mixer[kColorCssSystemField] = {kColorCssSystemWindow};
   mixer[kColorCssSystemFieldText] = {kColorCssSystemWindowText};
+  mixer[kColorCssSystemActiveText] = {kColorCssSystemHotlight};
+  mixer[kColorCssSystemLinkText] = {kColorCssSystemHotlight};
+  mixer[kColorCssSystemVisitedText] = {kColorCssSystemHotlight};
 }
 
 void AddWhitePageColorsToMixer(ColorMixer& mixer) {
@@ -77,6 +86,9 @@ void AddWhitePageColorsToMixer(ColorMixer& mixer) {
   mixer[kColorCssSystemWindowText] = {SK_ColorBLACK};
   mixer[kColorCssSystemField] = {kColorCssSystemWindow};
   mixer[kColorCssSystemFieldText] = {kColorCssSystemWindowText};
+  mixer[kColorCssSystemActiveText] = {kColorCssSystemHotlight};
+  mixer[kColorCssSystemLinkText] = {kColorCssSystemHotlight};
+  mixer[kColorCssSystemVisitedText] = {kColorCssSystemHotlight};
 }
 
 void AddAquaticPageColorsToMixer(ColorMixer& mixer) {
@@ -92,6 +104,9 @@ void AddAquaticPageColorsToMixer(ColorMixer& mixer) {
   mixer[kColorCssSystemWindowText] = {SK_ColorWHITE};
   mixer[kColorCssSystemField] = {kColorCssSystemWindow};
   mixer[kColorCssSystemFieldText] = {kColorCssSystemWindowText};
+  mixer[kColorCssSystemActiveText] = {kColorCssSystemHotlight};
+  mixer[kColorCssSystemLinkText] = {kColorCssSystemHotlight};
+  mixer[kColorCssSystemVisitedText] = {kColorCssSystemHotlight};
 }
 
 void AddCssSystemColorMixer(ColorProvider* provider,

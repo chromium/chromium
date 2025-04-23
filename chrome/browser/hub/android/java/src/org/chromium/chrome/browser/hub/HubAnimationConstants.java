@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.hub;
 
 import android.view.animation.Interpolator;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.interpolators.Interpolators;
 
 /** Animation constants for the Hub. */
+@NullMarked
 public class HubAnimationConstants {
     // Copied from TabSwitcherLayout.
     /** Duration in milliseconds of translate animations for the Hub Layout.. */

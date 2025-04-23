@@ -25,6 +25,7 @@ import androidx.core.content.ContextCompat;
 
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -98,7 +99,7 @@ public class ColorPickerItemViewBinder {
             int colorListIndex,
             boolean isIncognito) {
         if (colorPickerType == ColorPickerType.TAB_GROUP) {
-            return ColorPickerUtils.getTabGroupColorPickerItemColor(
+            return TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
                     context, colorListIndex, isIncognito);
         } else {
             return Color.TRANSPARENT;

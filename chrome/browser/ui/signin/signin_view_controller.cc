@@ -38,6 +38,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/supervised_user/core/common/features.h"
+#include "components/sync/base/data_type_histogram.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
@@ -317,8 +318,8 @@ void SigninViewController::SignoutOrReauthWithPrompt(
   CHECK(profile->IsRegularProfile());
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
-  base::OnceCallback<void(syncer::DataTypeSet)> signout_prompt_with_datatypes =
-      base::BindOnce(
+  base::OnceCallback<void(absl::flat_hash_map<syncer::DataType, size_t>)>
+      signout_prompt_with_datatypes = base::BindOnce(
           &SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes,
           weak_ptr_factory_.GetWeakPtr(), reauth_access_point,
           profile_signout_source, token_signout_source);
@@ -332,7 +333,8 @@ void SigninViewController::SignoutOrReauthWithPrompt(
     return;
   }
   // Dice users don't see the prompt, pass empty datatypes.
-  std::move(signout_prompt_with_datatypes).Run(syncer::DataTypeSet());
+  std::move(signout_prompt_with_datatypes)
+      .Run(absl::flat_hash_map<syncer::DataType, size_t>());
 }
 
 void SigninViewController::MaybeShowChromeSigninDialogForExtensions(
@@ -656,7 +658,7 @@ void SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes(
     signin_metrics::AccessPoint reauth_access_point,
     signin_metrics::ProfileSignout profile_signout_source,
     signin_metrics::SourceForRefreshTokenOperation token_signout_source,
-    syncer::DataTypeSet unsynced_datatypes) {
+    absl::flat_hash_map<syncer::DataType, size_t> unsynced_datatypes) {
   Profile* profile = browser_->profile();
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
@@ -707,6 +709,23 @@ void SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes(
           signin::Tribool::kTrue) {
     prompt_variant =
         ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls;
+  }
+
+  switch (prompt_variant) {
+    case ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData:
+    case ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls:
+      break;
+    case ChromeSignoutConfirmationPromptVariant::kUnsyncedData:
+      syncer::SyncRecordDataTypeNumUnsyncedEntitiesFromDataCounts(
+          syncer::UnsyncedDataRecordingEvent::kOnSignoutConfirmation,
+          std::move(unsynced_datatypes));
+      break;
+    case ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton:
+      syncer::SyncRecordDataTypeNumUnsyncedEntitiesFromDataCounts(
+          syncer::UnsyncedDataRecordingEvent::
+              kOnSignoutConfirmationFromPendingState,
+          std::move(unsynced_datatypes));
+      break;
   }
 
   ShowSignoutConfirmationPrompt(prompt_variant, std::move(callback));

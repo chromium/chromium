@@ -27,6 +27,7 @@ class TipsNotificationClient : public PushNotificationClient {
   ~TipsNotificationClient() override;
 
   // Override PushNotificationClient::
+  bool CanHandleNotification(UNNotification* notification) override;
   bool HandleNotificationInteraction(
       UNNotificationResponse* notification_response) override;
   std::optional<UIBackgroundFetchResult> HandleNotificationReception(
@@ -140,6 +141,10 @@ class TipsNotificationClient : public PushNotificationClient {
   // IOSReactivationNotifications feature is enabled.
   bool CanSendReactivation();
 
+  // Updates the instance variable that stores whether provisional
+  // notifications are allowed by policy.
+  void UpdateProvisionalAllowed();
+
   // Returns true if the Dismiss Limit has been reached.
   bool DismissLimitReached();
 
@@ -159,6 +164,9 @@ class TipsNotificationClient : public PushNotificationClient {
 
   // Stores whether Tips notifications are permitted.
   bool permitted_ = false;
+
+  // Stores whether provisional notifications are allowed by policy.
+  bool provisional_allowed_ = false;
 
   // Stores the local state pref service.
   raw_ptr<PrefService> local_state_;

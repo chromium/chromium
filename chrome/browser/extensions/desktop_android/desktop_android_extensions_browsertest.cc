@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/desktop_android/desktop_android_extension_system.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/test/base/android/android_browser_test.h"
@@ -49,36 +50,11 @@ class DesktopAndroidExtensionsBrowserTest : public AndroidBrowserTest {
 
   // Attempts to parse and load an extension from the given `file_path` and add
   // it to the extensions system (which will also activate the extension).
-  // Returns the extension on success; on failure, returns null and adds a test
-  // failure.
-  const Extension* LoadExtensionFromDirectory(const base::FilePath& file_path) {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-
-    std::string load_error;
-    scoped_refptr<Extension> extension = file_util::LoadExtension(
-        file_path, mojom::ManifestLocation::kUnpacked, 0, &load_error);
-    if (!extension) {
-      ADD_FAILURE() << "Failed to parse extension: " << load_error;
-      return nullptr;
-    }
-
-    content::BrowserContext* browser_context =
-        GetActiveWebContents()->GetBrowserContext();
-
-    auto* android_system = static_cast<DesktopAndroidExtensionSystem*>(
-        ExtensionSystem::Get(browser_context));
-    std::string error;
-    if (!android_system->AddExtension(extension, error)) {
-      ADD_FAILURE() << "Failed to add extension: " << error;
-    }
-
-    ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context);
-    if (!registry->enabled_extensions().Contains(extension->id())) {
-      ADD_FAILURE() << "Extension is not properly enabled.";
-      return nullptr;
-    }
-
-    return extension.get();
+  // Returns the extension on success; on failure, returns null.
+  scoped_refptr<const Extension> LoadExtensionFromDirectory(
+      const base::FilePath& file_path) {
+    ChromeTestExtensionLoader loader(GetBrowserContext());
+    return loader.LoadExtension(file_path);
   }
 };
 
@@ -239,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(DesktopAndroidExtensionsBrowserTest,
       declarative_net_request::RulesMonitorService::Get(GetBrowserContext())
           ->ruleset_manager());
 
-  const Extension* extension =
+  scoped_refptr<const Extension> extension =
       LoadExtensionFromDirectory(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
@@ -281,13 +257,13 @@ IN_PROC_BROWSER_TEST_F(DesktopAndroidExtensionsBrowserTest,
   test_dir.WriteManifest(kManifest);
   test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), kContentScriptJs);
 
-  const Extension* extension =
+  scoped_refptr<const Extension> extension =
       LoadExtensionFromDirectory(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
   // Verify scripts were properly parsed.
   const UserScriptList& content_scripts =
-      ContentScriptsInfo::GetContentScripts(extension);
+      ContentScriptsInfo::GetContentScripts(extension.get());
   ASSERT_EQ(1u, content_scripts.size());
 
   // Wait for scripts to load (if they haven't already).

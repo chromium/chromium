@@ -10,6 +10,7 @@
 #include "media/capabilities/bucket_utility.h"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <iterator>
 
@@ -37,8 +38,12 @@ const int kSizeBuckets[] = {
 // information that is stored and exposed through the API. The pixel size
 // indices are used for logging, the pixel size buckets can therefore not be
 // changed unless the corresponding logging code is updated.
-constexpr int kWebrtcPixelsBuckets[] = {1280 * 720, 1920 * 1080, 2560 * 1440,
-                                        3840 * 2160};
+constexpr auto kWebrtcPixelsBuckets = std::to_array<int>({
+    1280 * 720,
+    1920 * 1080,
+    2560 * 1440,
+    3840 * 2160,
+});
 // The boundaries between buckets are calculated as the point between the two
 // buckets.
 constexpr int kWebrtcPixelsBoundaries[] = {

@@ -8,7 +8,7 @@ include_rules = [
     # It is allowed to depend on common chromium stuff (and itself).
     "+base",
     "+build",
-    "+crypto/sha2.h",
+    "+crypto/hash.h",
     "+cc/mojom/browser_controls_params.mojom.h",
     "+gpu/command_buffer/common/shared_image_usage.h",
     "+net",

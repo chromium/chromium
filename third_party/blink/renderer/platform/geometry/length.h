@@ -20,11 +20,6 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_LENGTH_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_LENGTH_H_
 
@@ -33,6 +28,7 @@
 #include <optional>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/memory/stack_allocated.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/geometry/evaluation_input.h"
@@ -163,7 +159,7 @@ class PLATFORM_EXPORT Length {
   explicit Length(scoped_refptr<const CalculationValue>);
 
   Length(const Length& length) {
-    memcpy(this, &length, sizeof(Length));
+    UNSAFE_TODO(memcpy(this, &length, sizeof(Length)));
     if (IsCalculated())
       IncrementCalculatedRef();
   }
@@ -173,7 +169,7 @@ class PLATFORM_EXPORT Length {
       length.IncrementCalculatedRef();
     if (IsCalculated())
       DecrementCalculatedRef();
-    memcpy(this, &length, sizeof(Length));
+    UNSAFE_TODO(memcpy(this, &length, sizeof(Length)));
     return *this;
   }
 
@@ -296,13 +292,17 @@ class PLATFORM_EXPORT Length {
   bool HasMinIntrinsic() const { return IsMinIntrinsic(); }
   bool HasFitContent() const;
 
-  // IsSpecified() is true for any Lengths that are a fixed length, a percent,
-  // or a calc() expression.  Note that this *includes* calc-size()
+  // CanConvertToCalculation() is true for any Lengths that are a fixed length,
+  // a percent, or a calc() expression.  Note that this *includes* calc-size()
   // expressions that contain sizing keywords, which may not be what you want.
-  // You may want HasOnlyFixedAndPercent instead.
-  // TODO(https://crbug.com/406530491): Audit remaining callers of
-  // IsSpecified().
-  bool IsSpecified() const {
+  //
+  // Compare to HasOnlyFixedAndPercent.  (The difference is relevant only when
+  // sizing keywords may be present.)
+  //
+  // Note that in some contexts sizing keywords can be converted to
+  // calculation expressions, but this function does *not* return true for
+  // those cases; the caller is required to convert appropriately.
+  bool CanConvertToCalculation() const {
     return GetType() == kFixed || GetType() == kPercent ||
            GetType() == kCalculated;
   }
@@ -311,6 +311,8 @@ class PLATFORM_EXPORT Length {
   // a percent, or calc() expressions that consist only of those.  (This
   // excludes calc() expressions with calc-size() that depend on sizing
   // keywords.)
+  // Compare to CanConvertToCalculation.  (The difference is relevant only
+  // when sizing keywords may be present.)
   bool HasOnlyFixedAndPercent() const;
 
   bool IsCalculated() const { return GetType() == kCalculated; }
@@ -353,8 +355,8 @@ class PLATFORM_EXPORT Length {
   bool IsDeviceHeight() const { return GetType() == kDeviceHeight; }
 
   Length Blend(const Length& from, double progress, ValueRange range) const {
-    DCHECK(IsSpecified());
-    DCHECK(from.IsSpecified());
+    DCHECK(CanConvertToCalculation());
+    DCHECK(from.CanConvertToCalculation());
 
     if (progress == 0.0)
       return from;

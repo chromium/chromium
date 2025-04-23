@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "google_apis/gaia/gaia_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/safety_check_notifications/utils/constants.h"
@@ -40,6 +41,18 @@ NSNumber* InsecurePasswordCount(
   return nil;
 }
 
+// Base helper for creating each Safety Check notification's userInfo
+// dictionary.
+template <typename SafetyCheckStateType>
+NSMutableDictionary* BaseUserInfoForNotification(NSString* type_id_key,
+                                                 SafetyCheckStateType state) {
+  return [@{
+    type_id_key : @YES,
+    kSafetyCheckNotificationCheckResultKey :
+        base::SysUTF8ToNSString(NameForSafetyCheckState(state))
+  } mutableCopy];
+}
+
 // Returns a user info dictionary for a Password safety check notification.
 // Contains the check result state, insecure password count, and a notification
 // ID for logging.
@@ -47,11 +60,7 @@ NSDictionary* UserInfoForPasswordNotification(
     PasswordSafetyCheckState state,
     password_manager::InsecurePasswordCounts insecure_password_counts) {
   NSMutableDictionary* user_info =
-      [NSMutableDictionary dictionaryWithDictionary:@{
-        kSafetyCheckPasswordNotificationID : @YES,
-        kSafetyCheckNotificationCheckResultKey :
-            base::SysUTF8ToNSString(NameForSafetyCheckState(state))
-      }];
+      BaseUserInfoForNotification(kSafetyCheckPasswordNotificationID, state);
 
   NSNumber* insecure_password_count =
       InsecurePasswordCount(state, insecure_password_counts);
@@ -69,22 +78,16 @@ NSDictionary* UserInfoForPasswordNotification(
 // logging.
 NSDictionary* UserInfoForUpdateChromeNotification(
     UpdateChromeSafetyCheckState state) {
-  return @{
-    kSafetyCheckUpdateChromeNotificationID : @YES,
-    kSafetyCheckNotificationCheckResultKey :
-        base::SysUTF8ToNSString(NameForSafetyCheckState(state))
-  };
+  return BaseUserInfoForNotification(kSafetyCheckUpdateChromeNotificationID,
+                                     state);
 }
 
 // Returns a user info dictionary for a Safe Browsing safety check notification.
 // Contains the check result state and a notification ID for logging.
 NSDictionary* UserInfoForSafeBrowsingNotification(
     SafeBrowsingSafetyCheckState state) {
-  return @{
-    kSafetyCheckSafeBrowsingNotificationID : @YES,
-    kSafetyCheckNotificationCheckResultKey :
-        base::SysUTF8ToNSString(NameForSafetyCheckState(state))
-  };
+  return BaseUserInfoForNotification(kSafetyCheckSafeBrowsingNotificationID,
+                                     state);
 }
 
 // Returns a notification content object with the provided `title`, `body`, and
@@ -107,15 +110,30 @@ UNNotificationContent* NotificationContent(NSString* title,
 // notifications are triggered. This duration can be modified through
 // Experimental settings or Finch. If no override is set, a default value is
 // used.
-double InactiveThresholdForNotifications() {
-  std::optional<int> forced_threshold = experimental_flags::
+base::TimeDelta InactiveThresholdForNotifications() {
+  // Check if an override is set via experimental flags.
+  std::optional<int> forced_threshold_seconds = experimental_flags::
       GetForcedInactivityThresholdForSafetyCheckNotifications();
 
-  if (!forced_threshold.has_value()) {
-    return InactiveThresholdForSafetyCheckNotifications().InSecondsF();
+  if (forced_threshold_seconds.has_value()) {
+    return base::Seconds(forced_threshold_seconds.value());
   }
 
-  return static_cast<double>(forced_threshold.value());
+  return InactiveThresholdForSafetyCheckNotifications();
+}
+
+// Helper to create the final scheduled request if `content` is valid.
+std::optional<ScheduledNotificationRequest> CreateScheduledNotificationRequest(
+    UNNotificationContent* content,
+    NSString* identifier) {
+  if (!content) {
+    return std::nullopt;
+  }
+
+  return ScheduledNotificationRequest{
+      .identifier = identifier,
+      .content = content,
+      .time_interval = InactiveThresholdForNotifications()};
 }
 
 }  // namespace
@@ -132,26 +150,14 @@ void LogSafetyCheckNotificationOptInSource(
       is_notifications_enabled ? opt_out_source : opt_in_source);
 }
 
-UNNotificationRequest* PasswordNotificationRequest(
+std::optional<ScheduledNotificationRequest> GetPasswordNotificationRequest(
     PasswordSafetyCheckState state,
     password_manager::InsecurePasswordCounts insecure_password_counts) {
   UNNotificationContent* content =
       NotificationForPasswordCheckState(state, insecure_password_counts);
 
-  if (!content) {
-    return nil;
-  }
-
-  // TODO(crbug.com/362475364): Enable Password notification trigger
-  // to be configurable via Finch to allow for better testing and
-  // experimentation.
-  return [UNNotificationRequest
-      requestWithIdentifier:kSafetyCheckPasswordNotificationID
-                    content:content
-                    trigger:[UNTimeIntervalNotificationTrigger
-                                triggerWithTimeInterval:
-                                    InactiveThresholdForNotifications()
-                                                repeats:NO]];
+  return CreateScheduledNotificationRequest(content,
+                                            kSafetyCheckPasswordNotificationID);
 }
 
 UNNotificationContent* NotificationForPasswordCheckState(
@@ -193,24 +199,12 @@ UNNotificationContent* NotificationForPasswordCheckState(
   return nil;
 }
 
-UNNotificationRequest* UpdateChromeNotificationRequest(
+std::optional<ScheduledNotificationRequest> GetUpdateChromeNotificationRequest(
     UpdateChromeSafetyCheckState state) {
   UNNotificationContent* content = NotificationForUpdateChromeCheckState(state);
 
-  if (!content) {
-    return nil;
-  }
-
-  // TODO(crbug.com/362475364): Enable Update Chrome notification trigger
-  // to be configurable via Finch to allow for better testing and
-  // experimentation.
-  return [UNNotificationRequest
-      requestWithIdentifier:kSafetyCheckUpdateChromeNotificationID
-                    content:content
-                    trigger:[UNTimeIntervalNotificationTrigger
-                                triggerWithTimeInterval:
-                                    InactiveThresholdForNotifications()
-                                                repeats:NO]];
+  return CreateScheduledNotificationRequest(
+      content, kSafetyCheckUpdateChromeNotificationID);
 }
 
 UNNotificationContent* NotificationForUpdateChromeCheckState(
@@ -226,24 +220,12 @@ UNNotificationContent* NotificationForUpdateChromeCheckState(
   return nil;
 }
 
-UNNotificationRequest* SafeBrowsingNotificationRequest(
+std::optional<ScheduledNotificationRequest> GetSafeBrowsingNotificationRequest(
     SafeBrowsingSafetyCheckState state) {
   UNNotificationContent* content = NotificationForSafeBrowsingCheckState(state);
 
-  if (!content) {
-    return nil;
-  }
-
-  // TODO(crbug.com/362475364): Enable Safe Browsing notification trigger
-  // to be configurable via Finch to allow for better testing and
-  // experimentation.
-  return [UNNotificationRequest
-      requestWithIdentifier:kSafetyCheckSafeBrowsingNotificationID
-                    content:content
-                    trigger:[UNTimeIntervalNotificationTrigger
-                                triggerWithTimeInterval:
-                                    InactiveThresholdForNotifications()
-                                                repeats:NO]];
+  return CreateScheduledNotificationRequest(
+      content, kSafetyCheckSafeBrowsingNotificationID);
 }
 
 UNNotificationContent* NotificationForSafeBrowsingCheckState(

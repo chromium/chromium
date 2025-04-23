@@ -49,9 +49,7 @@ class PLATFORM_EXPORT ScriptFetchOptions final {
                      network::mojom::CredentialsMode credentials_mode,
                      network::mojom::ReferrerPolicy referrer_policy,
                      mojom::blink::FetchPriorityHint fetch_priority_hint,
-                     RenderBlockingBehavior render_blocking_behavior,
-                     RejectCoepUnsafeNone reject_coep_unsafe_none =
-                         RejectCoepUnsafeNone(false));
+                     RenderBlockingBehavior render_blocking_behavior);
   ~ScriptFetchOptions();
 
   const String& Nonce() const { return nonce_; }
@@ -76,9 +74,6 @@ class PLATFORM_EXPORT ScriptFetchOptions final {
   }
   mojom::blink::FetchPriorityHint FetchPriorityHint() const {
     return fetch_priority_hint_;
-  }
-  RejectCoepUnsafeNone GetRejectCoepUnsafeNone() const {
-    return reject_coep_unsafe_none_;
   }
   RenderBlockingBehavior GetRenderBlockingBehavior() const {
     return render_blocking_behavior_;
@@ -130,12 +125,6 @@ class PLATFORM_EXPORT ScriptFetchOptions final {
 
   const RenderBlockingBehavior render_blocking_behavior_ =
       RenderBlockingBehavior::kUnset;
-  // True when we should reject a response with COEP: none.
-  // https://wicg.github.io/cross-origin-embedder-policy/#integration-html
-  // This is for dedicated workers.
-  // TODO(crbug.com/1064920): Remove this once PlzDedicatedWorker ships.
-  const RejectCoepUnsafeNone reject_coep_unsafe_none_ =
-      RejectCoepUnsafeNone(false);
 
   // https://wicg.github.io/attribution-reporting-api
   // TODO(crbug.com/1338976): make this member const once the attributionsrc

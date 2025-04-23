@@ -10,7 +10,7 @@ assert(is_chrome_branded)
 build_webui("build") {
   grd_prefix = "media_router_feedback"
   static_files = [ "feedback.html" ]
-  non_web_component_files = [
+  ts_files = [
     "cast_feedback_ui.html.ts",
     "cast_feedback_ui.ts",
   ]

@@ -10,6 +10,8 @@
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/media_effects/media_device_info.h"
 
+class Profile;
+
 namespace settings {
 
 // Handler for media devices selection in content settings.

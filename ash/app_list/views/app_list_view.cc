@@ -254,6 +254,8 @@ void AppListView::InitContents() {
   button_focus_skipper_ = std::make_unique<ButtonFocusSkipper>(this);
   button_focus_skipper_->AddButton(search_box_view->sunfish_button());
   button_focus_skipper_->AddButton(search_box_view->assistant_button());
+  button_focus_skipper_->AddButton(
+      search_box_view->assistant_new_entry_point_button());
 
   // Assign |app_list_main_view_| and |search_box_view_| here since they are
   // accessed during Init().

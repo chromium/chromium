@@ -6,10 +6,12 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "base/types/optional_util.h"
 #include "chrome/services/speech/audio_source_fetcher_impl.h"
@@ -24,6 +26,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "media/base/media_switches.h"
+#include "media/mojo/mojom/speech_recognition.mojom-shared.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -51,11 +54,27 @@ void PopulateFilePaths(
   }
 }
 
+std::unique_ptr<CrosSpeechRecognitionRecognizerImpl>
+CreateCrosSpeechRecognitionRecognizer(
+    mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> client,
+    media::mojom::SpeechRecognitionOptionsPtr options,
+    const base::FilePath& binary_path,
+    const base::flat_map<std::string, base::FilePath>& config_paths,
+    const std::string& primary_language_name,
+    const bool mask_offensive_words) {
+  return std::make_unique<CrosSpeechRecognitionRecognizerImpl>(
+      std::move(client), std::move(options), binary_path, config_paths,
+      primary_language_name, mask_offensive_words);
+}
+
 }  // namespace
 
 CrosSpeechRecognitionService::CrosSpeechRecognitionService(
     content::BrowserContext* context)
-    : ChromeSpeechRecognitionService(context) {}
+    : ChromeSpeechRecognitionService(context) {
+  cros_speech_recognition_recognizer_cb_ =
+      base::BindRepeating(CreateCrosSpeechRecognitionRecognizer);
+}
 
 CrosSpeechRecognitionService::~CrosSpeechRecognitionService() = default;
 
@@ -139,13 +158,19 @@ void CrosSpeechRecognitionService::BindAudioSourceFetcher(
       PrefService* profile_prefs = user_prefs::UserPrefs::Get(context());
       language_name = prefs::GetLiveCaptionLanguageCode(profile_prefs);
     }
+    // `mask_offensive_words` is always true for
+    // `RecognizerClientType::kSchoolTools`.
+    // TODO(crbug.com/40924425): Implement offensive word mask on ChromeOS for
+    // live caption as well so that mask_offensive_words is set according to the
+    //  settings for `RecognizerClientType::kLiveCaption`.
+    bool mask_offensive_words =
+        options->recognizer_client_type ==
+        media::mojom::RecognizerClientType::kSchoolTools;
     // CrosSpeechRecognitionService runs on browser UI thread.
     // Create AudioSourceFetcher on browser IO thread to avoid UI jank.
     // Note that its CrosSpeechRecognitionRecognizer must also run
     // on the IO thread. If CrosSpeechRecognitionService is moved away from
     // browser UI thread, we can call AudioSourceFetcherImpl::Create directly.
-    // TODO: Implement offensive word mask on ChromeOS so that
-    // mask_offensive_words is not hard-coded.
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -153,7 +178,7 @@ void CrosSpeechRecognitionService::BindAudioSourceFetcher(
                 CreateAudioSourceFetcherForOnDeviceRecognitionOnIOThread,
             weak_factory_.GetWeakPtr(), std::move(fetcher_receiver),
             std::move(client), std::move(options), binary_path, config_paths,
-            language_name, /* mask_offensive_words= */ false));
+            language_name, mask_offensive_words));
     std::move(callback).Run(
         CrosSpeechRecognitionRecognizerImpl::IsMultichannelSupported());
     return;
@@ -182,6 +207,12 @@ void CrosSpeechRecognitionService::BindAudioSourceFetcher(
 }
 
 void CrosSpeechRecognitionService::
+    SetCreateCrosSpeechRecognitionRecognizerCbForTesting(
+        CreateCrosSpeechRecognitionRecognizerCb callback) {
+  cros_speech_recognition_recognizer_cb_ = std::move(callback);
+}
+
+void CrosSpeechRecognitionService::
     CreateAudioSourceFetcherForOnDeviceRecognitionOnIOThread(
         mojo::PendingReceiver<media::mojom::AudioSourceFetcher>
             fetcher_receiver,
@@ -196,7 +227,7 @@ void CrosSpeechRecognitionService::
   DCHECK(!options->is_server_based);
   AudioSourceFetcherImpl::Create(
       std::move(fetcher_receiver),
-      std::make_unique<CrosSpeechRecognitionRecognizerImpl>(
+      cros_speech_recognition_recognizer_cb_.Run(
           std::move(client), std::move(options), binary_path, config_paths,
           primary_language_name, mask_offensive_words),
       CrosSpeechRecognitionRecognizerImpl::IsMultichannelSupported(),

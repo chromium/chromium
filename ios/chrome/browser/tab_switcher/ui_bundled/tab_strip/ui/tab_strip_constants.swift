@@ -37,6 +37,8 @@ public struct TabStripConstants {
     public static let maximumVisibleDistance: CGFloat = 10
     public static let closeButtonAccessibilityIdentifier: String =
       "TabStripCloseButtonAccessibilityIdentifier"
+    public static let blueDotAccessibilityIdentifier: String =
+      "TabStripBlueDotAccessibilityIdentifier"
   }
 
   /// Group item constants.
@@ -50,6 +52,8 @@ public struct TabStripConstants {
       titleContainerHorizontalPadding * 2 + titleContainerHorizontalMargin * 2
     public static let maxCellWidth = maxTitleWidth + minCellWidth
     public static let notificationDotSize: CGFloat = 6
+    public static let notificationDotAccessibilityIdentifier: String =
+      "TabStripNotificationDotAccessibilityIdentifier"
   }
 
   /// New tab button constants.

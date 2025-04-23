@@ -34,6 +34,8 @@ namespace os_crypt {
 
 namespace {
 
+AppBoundEncryptionOverridesForTesting* g_overrides_for_testing = nullptr;
+
 ProtectionLevel AddFlags(ProtectionLevel protection_level,
                          elevation_service::EncryptFlags flags) {
   // Check protection_level fits into 8-bits.
@@ -61,6 +63,11 @@ BASE_FEATURE(kAppBoundDataReencrypt,
 }  // namespace features
 
 SupportLevel GetAppBoundEncryptionSupportLevel(PrefService* local_state) {
+  if (g_overrides_for_testing) {
+    return g_overrides_for_testing->GetAppBoundEncryptionSupportLevel(
+        local_state);
+  }
+
   // Must be a system install.
   if (!install_static::IsSystemInstall()) {
     return SupportLevel::kNotSystemLevel;
@@ -149,6 +156,11 @@ HRESULT EncryptAppBoundString(ProtectionLevel protection_level,
                               std::string& ciphertext,
                               DWORD& last_error,
                               elevation_service::EncryptFlags* flags) {
+  if (g_overrides_for_testing) {
+    return g_overrides_for_testing->EncryptAppBoundString(
+        protection_level, plaintext, ciphertext, last_error, flags);
+  }
+
   base::win::AssertComInitialized();
   Microsoft::WRL::ComPtr<IElevator> elevator;
   last_error = ERROR_GEN_FAILURE;
@@ -193,6 +205,12 @@ HRESULT DecryptAppBoundString(const std::string& ciphertext,
                               std::optional<std::string>& new_ciphertext,
                               DWORD& last_error,
                               elevation_service::EncryptFlags* flags) {
+  if (g_overrides_for_testing) {
+    return g_overrides_for_testing->DecryptAppBoundString(
+        ciphertext, plaintext, protection_level, new_ciphertext, last_error,
+        flags);
+  }
+
   DCHECK(!ciphertext.empty());
   base::win::AssertComInitialized();
   Microsoft::WRL::ComPtr<IElevator> elevator;
@@ -234,15 +252,10 @@ HRESULT DecryptAppBoundString(const std::string& ciphertext,
     HRESULT encrypt_hr =
         elevator->EncryptData(protection_level, plaintext_data.Get(),
                               reencrypted_data.Receive(), &encrypt_last_error);
-    base::UmaHistogramSparse("OSCrypt.AppBound.ReEncrypt.ResultCode",
-                             encrypt_hr);
     if (SUCCEEDED(encrypt_hr)) {
       new_ciphertext.emplace(
           reinterpret_cast<std::string::value_type*>(reencrypted_data.Get()),
           reencrypted_data.ByteLength());
-    } else {
-      base::UmaHistogramSparse("OSCrypt.AppBound.ReEncrypt.ResultLastError",
-                               encrypt_last_error);
     }
   }
 
@@ -254,6 +267,11 @@ HRESULT DecryptAppBoundString(const std::string& ciphertext,
 
   last_error = ERROR_SUCCESS;
   return S_OK;
+}
+
+void SetOverridesForTesting(AppBoundEncryptionOverridesForTesting* overrides) {
+  CHECK(!g_overrides_for_testing || !overrides);
+  g_overrides_for_testing = overrides;
 }
 
 }  // namespace os_crypt

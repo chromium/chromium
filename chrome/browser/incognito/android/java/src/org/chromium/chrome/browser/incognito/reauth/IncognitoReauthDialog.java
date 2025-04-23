@@ -7,21 +7,22 @@ package org.chromium.chrome.browser.incognito.reauth;
 import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.NonNull;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Manages the actual showing and hiding of the full screen Incognito re-auth modal dialog. */
+@NullMarked
 class IncognitoReauthDialog {
     /** The {@link ModalDialogManager} which launches the full-screen re-auth dialog. */
-    private final @NonNull ModalDialogManager mModalDialogManager;
+    private final ModalDialogManager mModalDialogManager;
 
     /**
-     * The modal dialog controller to detect events on the dialog but it's not needed in our
-     * case.
+     * The modal dialog controller to detect events on the dialog but it's not needed in our case.
      */
     private final ModalDialogProperties.Controller mModalDialogController =
             new ModalDialogProperties.Controller() {
@@ -36,16 +37,16 @@ class IncognitoReauthDialog {
     private final PropertyModel mModalDialogPropertyModel;
 
     /**
-     * @param modalDialogManager The {@link ModalDialogManager} which is used to fire the
-     *                          dialog containing the Incognito re-auth view.
+     * @param modalDialogManager The {@link ModalDialogManager} which is used to fire the dialog
+     *     containing the Incognito re-auth view.
      * @param incognitoReauthView The underlying Incognito re-auth {@link View} to use as custom
      * @param backPressedCallback {@link OnBackPressedCallback} which would be called when a user
-     *         presses back while the fullscreen re-auth is shown.
+     *     presses back while the fullscreen re-auth is shown.
      */
     IncognitoReauthDialog(
-            @NonNull ModalDialogManager modalDialogManager,
-            @NonNull View incognitoReauthView,
-            @NonNull OnBackPressedCallback backPressedCallback) {
+            ModalDialogManager modalDialogManager,
+            @Nullable View incognitoReauthView,
+            OnBackPressedCallback backPressedCallback) {
         mModalDialogManager = modalDialogManager;
         mModalDialogPropertyModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)

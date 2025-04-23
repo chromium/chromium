@@ -42,9 +42,8 @@ typedef base::span<const UChar> TruncationFunction(const String&,
                                                    unsigned keep_count,
                                                    base::span<UChar> buffer);
 
-static inline int TextBreakAtOrPreceding(
-    const NonSharedCharacterBreakIterator& it,
-    int offset) {
+static inline int TextBreakAtOrPreceding(const CharacterBreakIterator& it,
+                                         int offset) {
   if (it.IsBreak(offset))
     return offset;
 
@@ -52,10 +51,9 @@ static inline int TextBreakAtOrPreceding(
   return result == kTextBreakDone ? 0 : result;
 }
 
-static inline int BoundedTextBreakFollowing(
-    const NonSharedCharacterBreakIterator& it,
-    int offset,
-    int length) {
+static inline int BoundedTextBreakFollowing(const CharacterBreakIterator& it,
+                                            int offset,
+                                            int length) {
   int result = it.Following(offset);
   return result == kTextBreakDone ? length : result;
 }
@@ -68,7 +66,7 @@ static base::span<const UChar> CenterTruncateToBuffer(
   DCHECK(keep_count < STRING_BUFFER_SIZE);
 
   unsigned omit_start = (keep_count + 1) / 2;
-  NonSharedCharacterBreakIterator it(string);
+  CharacterBreakIterator it(string);
   unsigned omit_end = BoundedTextBreakFollowing(
       it, omit_start + (string.length() - keep_count) - 1, string.length());
   omit_start = TextBreakAtOrPreceding(it, omit_start);
@@ -90,7 +88,7 @@ static base::span<const UChar> RightTruncateToBuffer(const String& string,
   DCHECK_LT(keep_count, string.length());
   DCHECK(keep_count < STRING_BUFFER_SIZE);
 
-  NonSharedCharacterBreakIterator it(string);
+  CharacterBreakIterator it(string);
   unsigned keep_length = TextBreakAtOrPreceding(it, keep_count);
   unsigned truncated_length = keep_length + 1;
 

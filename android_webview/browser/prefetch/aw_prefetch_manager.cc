@@ -73,7 +73,10 @@ class AwPrefetchRequestStatusListener
 };
 
 AwPrefetchManager::AwPrefetchManager(content::BrowserContext* browser_context)
-    : browser_context_(*browser_context) {}
+    : browser_context_(*browser_context) {
+  TRACE_EVENT_INSTANT("android_webview",
+                      "AwPrefetchManager::AwPrefetchManager");
+}
 
 AwPrefetchManager::~AwPrefetchManager() = default;
 
@@ -104,7 +107,7 @@ int AwPrefetchManager::StartPrefetchRequest(
   if (!browser_context_->IsPrefetchDuplicate(pf_url, expected_no_vary_search)) {
     std::unique_ptr<content::PrefetchHandle> prefetch_handle =
         browser_context_->StartBrowserPrefetchRequest(
-            pf_url,
+            pf_url, AW_PREFETCH_METRICS_SUFFIX,
             GetIsJavaScriptEnabledFromPrefetchParameters(env, prefetch_params),
             expected_no_vary_search, additional_headers,
             std::move(request_status_listener), base::Seconds(ttl_in_sec_),

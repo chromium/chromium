@@ -33,20 +33,17 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(ByConversionReason, ToFormDataProto) {
   FormData form = test::GetFormData(
       {.fields = {{.is_focusable = true,
-                   .is_visible = true,
                    .label = u"label",
                    .name = u"name",
                    .value = u"val",
                    .placeholder = u"placeholder",
                    .form_control_ax_id = 123},
                   {.is_focusable = false,
-                   .is_visible = true,
                    .label = u"label2",
                    .name = u"name2",
                    .value = u"value",
                    .form_control_ax_id = 124},
                   {.is_focusable = false,
-                   .is_visible = true,
                    .label = u"select",
                    .form_control_type = FormControlType::kSelectOne,
                    .select_options = {{{.value = u"1", .text = u"text1"},
@@ -62,7 +59,6 @@ TEST_P(ByConversionReason, ToFormDataProto) {
   EXPECT_EQ(field_data1.field_label(), "label");
   EXPECT_EQ(field_data1.field_value(), "");
   EXPECT_EQ(field_data1.field_name(), "name");
-  EXPECT_EQ(field_data1.is_visible(), true);
   EXPECT_EQ(field_data1.is_focusable(), true);
   EXPECT_EQ(field_data1.placeholder(), "placeholder");
   EXPECT_EQ(field_data1.form_control_ax_node_id(), 123);
@@ -72,7 +68,6 @@ TEST_P(ByConversionReason, ToFormDataProto) {
   EXPECT_EQ(field_data2.field_label(), "label2");
   EXPECT_EQ(field_data2.field_value(), "");
   EXPECT_EQ(field_data2.field_name(), "name2");
-  EXPECT_EQ(field_data2.is_visible(), true);
   EXPECT_EQ(field_data2.is_focusable(), false);
   EXPECT_EQ(field_data2.placeholder(), "");
   EXPECT_EQ(field_data2.form_control_ax_node_id(), 124);

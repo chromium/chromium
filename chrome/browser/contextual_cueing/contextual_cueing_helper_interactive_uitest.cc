@@ -10,10 +10,10 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -26,14 +26,12 @@
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
 #include "components/optimization_guide/proto/icon_view_metadata.pb.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
-#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -56,7 +54,8 @@ class FakeGlicNudgeObserver : public GlicNudgeObserver {
   base::test::TestFuture<void> future_;
 };
 
-class ContextualCueingHelperBrowserTest : public InProcessBrowserTest {
+class ContextualCueingHelperBrowserTest
+    : public glic::test::InteractiveGlicTest {
  public:
   ContextualCueingHelperBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -68,9 +67,7 @@ class ContextualCueingHelperBrowserTest : public InProcessBrowserTest {
            {"NudgeCapCount", "10"},
            {"MinPageCountBetweenNudges", "0"}}},
          {page_content_annotations::features::kAnnotatedPageContentExtraction,
-          {}},
-         {features::kGlic, {}},
-         {features::kTabstripComboButton, {}}},
+          {}}},
         /*disabled_features=*/{});
   }
 
@@ -79,22 +76,12 @@ class ContextualCueingHelperBrowserTest : public InProcessBrowserTest {
     https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
     ASSERT_TRUE(https_server_.Start());
 
-    InProcessBrowserTest::SetUp();
+    glic::test::InteractiveGlicTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    glic::test::InteractiveGlicTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
-    identity_test_env_adaptor_ =
-        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
-            browser()->profile());
-  }
-
-  void SetUpBrowserContextKeyedServices(
-      content::BrowserContext* context) override {
-    InProcessBrowserTest::SetUpBrowserContextKeyedServices(context);
-    IdentityTestEnvironmentProfileAdaptor::
-        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
   }
 
   void SetUpEnabledHints(
@@ -114,17 +101,6 @@ class ContextualCueingHelperBrowserTest : public InProcessBrowserTest {
             optimization_guide::proto::GLIC_CONTEXTUAL_CUEING, metadata);
   }
 
-  void EnableSignIn() {
-    auto account_info =
-        identity_test_env_adaptor_->identity_test_env()
-            ->MakePrimaryAccountAvailable("user@gmail.com",
-                                          signin::ConsentLevel::kSignin);
-    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-    mutator.set_can_use_model_execution_features(true);
-    identity_test_env_adaptor_->identity_test_env()
-        ->UpdateAccountInfoForAccount(account_info);
-  }
-
   tabs::GlicNudgeController* glic_nudge_controller() {
     return browser()->browser_window_features()->glic_nudge_controller();
   }
@@ -140,10 +116,6 @@ class ContextualCueingHelperBrowserTest : public InProcessBrowserTest {
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  // Identity test support.
-  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
-      identity_test_env_adaptor_;
-
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
@@ -152,7 +124,6 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-  EnableSignIn();
   SetUpEnabledHints();
 
   FakeGlicNudgeObserver nudge_observer;
@@ -180,6 +151,10 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   ukm_recorder.ExpectEntryMetric(
       entry, ukm::builders::ContextualCueing_NudgeDecision::kNudgeDecisionName,
       static_cast<int64_t>(contextual_cueing::NudgeDecision::kSuccess));
+
+  // Simulate reload.
+  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_EQ("test label", nudge_observer.last_nudge_label_);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
@@ -187,7 +162,6 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-  EnableSignIn();
   SetUpEnabledHints();
 
   FakeGlicNudgeObserver nudge_observer;
@@ -209,8 +183,6 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest, TestCueNotAvailable) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-
-  EnableSignIn();
 
   FakeGlicNudgeObserver nudge_observer;
   glic_nudge_controller()->AddObserver(&nudge_observer);
@@ -245,7 +217,6 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-  EnableSignIn();
   optimization_guide::OptimizationMetadata metadata;
   metadata.set_any_metadata(optimization_guide::proto::Any());
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
@@ -286,7 +257,6 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-  EnableSignIn();
   optimization_guide::proto::GlicContextualCueingMetadata cueing_metadata;
   auto* cueing_config = cueing_metadata.add_cueing_configurations();
   cueing_config->set_cue_label("cue label");
@@ -329,7 +299,6 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
                        TestCueLabelNotDisplayed) {
-  EnableSignIn();
   SetUpEnabledHints();
 
   FakeGlicNudgeObserver nudge_observer;
@@ -343,8 +312,27 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
+                       TestCueLabelClearedOnErrorPage) {
+  SetUpEnabledHints();
+
+  FakeGlicNudgeObserver nudge_observer;
+  glic_nudge_controller()->AddObserver(&nudge_observer);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(),
+      https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_EQ("test label", nudge_observer.last_nudge_label_);
+
+  // Make sure it's cleared on error page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("chrome://eeerrrooorrrpage")));
+  EXPECT_EQ("", nudge_observer.last_nudge_label_);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
                        TestCueLabelClearedOnTabChange) {
-  EnableSignIn();
   SetUpEnabledHints();
 
   FakeGlicNudgeObserver nudge_observer;
@@ -374,7 +362,6 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
                        TestCueShownHistogram) {
   base::HistogramTester histogram_tester;
 
-  EnableSignIn();
   SetUpEnabledHints();
 
   FakeGlicNudgeObserver nudge_observer;
@@ -395,7 +382,6 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
                        TestNudgeDismissedTabChangeHistogramShown) {
   base::HistogramTester histogram_tester;
 
-  EnableSignIn();
   SetUpEnabledHints();
 
   FakeGlicNudgeObserver nudge_observer;
@@ -428,7 +414,6 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-  EnableSignIn();
   optimization_guide::proto::GlicContextualCueingMetadata cueing_metadata;
   auto* cueing_config = cueing_metadata.add_cueing_configurations();
   cueing_config->set_cue_label("cue label");
@@ -472,7 +457,6 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest, NudgeHideAfterUnpin) {
-  EnableSignIn();
   SetUpEnabledHints();
 
   PrefService* const pref_service = browser()->profile()->GetPrefs();
@@ -498,7 +482,6 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest, NudgeHideAfterUnpin) {
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
                        TriggerNudgeWhileUnpinned) {
-  EnableSignIn();
   SetUpEnabledHints();
 
   PrefService* const pref_service = browser()->profile()->GetPrefs();

@@ -188,12 +188,11 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
   const RegistrationContext* GetReceiverRegistrationContextForSource();
   const RegistrationContext* GetReceiverRegistrationContextForTrigger();
 
-  void OsDataAvailable(
-      std::vector<attribution_reporting::OsRegistrationItem>,
-      bool was_fetched_via_service_worker,
-      const char* data_available_call_metric,
-      const RegistrationContext*,
-      attribution_reporting::mojom::RegistrationType);
+  void OsDataAvailable(std::vector<attribution_reporting::OsRegistrationItem>,
+                       bool was_fetched_via_service_worker,
+                       const char* data_available_call_metric,
+                       const RegistrationContext*,
+                       attribution_reporting::mojom::RegistrationType);
 
   void OnReceiverDisconnected();
 
@@ -214,9 +213,8 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
                    HeaderPendingDecode,
                    attribution_reporting::Registrar);
   void HandleNextWebDecode(const Registrations&);
-  void OnWebHeaderParsed(
-      RegistrationsId,
-      data_decoder::DataDecoder::ValueOrError result);
+  void OnWebHeaderParsed(RegistrationsId,
+                         data_decoder::DataDecoder::ValueOrError result);
 
   base::expected<void, attribution_reporting::mojom::SourceRegistrationError>
   HandleParsedWebSource(const Registrations&,
@@ -237,8 +235,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
 
   using OsParseResult =
       base::expected<net::structured_headers::List, std::string>;
-  void OnOsHeaderParsed(RegistrationsId,
-                        OsParseResult);
+  void OnOsHeaderParsed(RegistrationsId, OsParseResult);
 
   void MaybeOnRegistrationsFinished(
       base::flat_set<Registrations>::const_iterator);

@@ -76,17 +76,19 @@ class ExtensionPopup::ScopedDevToolsAgentHostObservation {
 
 // static
 ExtensionPopup* ExtensionPopup::last_popup_for_testing() {
+  CHECK_IS_TEST();
   return g_last_popup_for_testing;
 }
 
 // static
 void ExtensionPopup::ShowPopup(
+    Browser* browser,
     std::unique_ptr<extensions::ExtensionViewHost> host,
     views::View* anchor_view,
     views::BubbleBorder::Arrow arrow,
     PopupShowAction show_action,
     ShowPopupCallback callback) {
-  auto* popup = new ExtensionPopup(std::move(host), anchor_view, arrow,
+  auto* popup = new ExtensionPopup(browser, std::move(host), anchor_view, arrow,
                                    show_action, std::move(callback));
   views::BubbleDialogDelegateView::CreateBubble(popup);
 
@@ -243,6 +245,7 @@ void ExtensionPopup::DevToolsAgentHostDetached(
 }
 
 ExtensionPopup::ExtensionPopup(
+    Browser* browser,
     std::unique_ptr<extensions::ExtensionViewHost> host,
     views::View* anchor_view,
     views::BubbleBorder::Arrow arrow,
@@ -252,6 +255,7 @@ ExtensionPopup::ExtensionPopup(
                                arrow,
                                views::BubbleBorder::STANDARD_SHADOW,
                                /*autosize=*/true),
+      browser_(browser),
       host_(std::move(host)),
       show_action_(show_action),
       shown_callback_(std::move(callback)),
@@ -267,8 +271,8 @@ ExtensionPopup::ExtensionPopup(
   // the correct value while calculating max bounds.
   set_adjust_if_offscreen(views::PlatformStyle::kAdjustBubbleIfOffscreen);
 
-  extension_view_ =
-      AddChildView(std::make_unique<ExtensionViewViews>(host_.get()));
+  extension_view_ = AddChildView(
+      std::make_unique<ExtensionViewViews>(browser_->profile(), host_.get()));
   extension_view_->SetContainer(this);
   extension_view_->Init();
 
@@ -277,7 +281,7 @@ ExtensionPopup::ExtensionPopup(
 
   scoped_devtools_observation_ =
       std::make_unique<ScopedDevToolsAgentHostObservation>(this);
-  host_->GetBrowser()->tab_strip_model()->AddObserver(this);
+  browser_->tab_strip_model()->AddObserver(this);
 
   CHECK(anchor_widget());
   anchor_widget_observation_.Observe(anchor_widget()->GetPrimaryWindowWidget());
@@ -305,7 +309,7 @@ void ExtensionPopup::ShowBubble() {
   // Don't show the popup if there are visible security dialogs. This protects
   // the security dialogs from spoofing.
   if (extensions::SecurityDialogTracker::GetInstance()
-          ->BrowserHasVisibleSecurityDialogs(host_->GetBrowser())) {
+          ->BrowserHasVisibleSecurityDialogs(browser_)) {
     CloseDeferredIfNecessary();
     return;
   }

@@ -94,8 +94,6 @@ std::ostream& operator<<(std::ostream& os, WebappInstallSource source) {
       return os << "web install";
     case WebappInstallSource::CHROMEOS_HELP_APP:
       return os << "chromeos help app";
-    case WebappInstallSource::COUNT:
-      return os << "count";
   }
 }
 
@@ -186,8 +184,7 @@ bool IsUserUninstall(WebappUninstallSource source) {
 // static
 void InstallableMetrics::TrackInstallEvent(WebappInstallSource source) {
   DCHECK(IsReportableInstallSource(source));
-  base::UmaHistogramEnumeration("Webapp.Install.InstallEvent", source,
-                                WebappInstallSource::COUNT);
+  base::UmaHistogramEnumeration("Webapp.Install.InstallEvent", source);
 }
 
 // static
@@ -233,8 +230,6 @@ bool InstallableMetrics::IsReportableInstallSource(WebappInstallSource source) {
     case WebappInstallSource::SUB_APP:
     case WebappInstallSource::SYNC:
       return false;
-    case WebappInstallSource::COUNT:
-      NOTREACHED();
   }
 }
 
@@ -257,7 +252,7 @@ void InstallableMetrics::TrackInstallResult(bool result,
   if (IsReportableInstallSource(source)) {
     base::UmaHistogramEnumeration(result ? "WebApp.Install.Source.Success"
                                          : "WebApp.Install.Source.Failure",
-                                  source, WebappInstallSource::COUNT);
+                                  source);
   }
 }
 }  // namespace webapps

@@ -108,7 +108,17 @@
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #endif
 
+namespace {
+
 using predictors::AutocompleteActionPredictor;
+
+LensOverlayController* GetLensOverlayController(
+    content::WebContents* web_contents) {
+  return web_contents ? LensOverlayController::FromTabWebContents(web_contents)
+                      : nullptr;
+}
+
+}  // namespace
 
 ChromeOmniboxClient::ChromeOmniboxClient(LocationBar* location_bar,
                                          Browser* browser,
@@ -135,7 +145,12 @@ ChromeOmniboxClient::~ChromeOmniboxClient() {
 
 std::unique_ptr<AutocompleteProviderClient>
 ChromeOmniboxClient::CreateAutocompleteProviderClient() {
-  return std::make_unique<ChromeAutocompleteProviderClient>(profile_);
+  // base::Unretained(location_bar_) is safe because `location_bar_` outlives
+  // `ChromeOmniboxClient` which outlives `AutocompleteController` which owns
+  // `ChromeAutocompleteProviderClient`.
+  return std::make_unique<ChromeAutocompleteProviderClient>(
+      profile_, base::BindRepeating(&LocationBar::GetWebContents,
+                                    base::Unretained(location_bar_)));
 }
 
 bool ChromeOmniboxClient::CurrentPageExists() const {
@@ -354,34 +369,38 @@ void ChromeOmniboxClient::OnKeywordModeChanged(bool entered,
     // keyword mode is exited, lens should be closed.
     return;
   }
-  if (content::WebContents* web_contents = location_bar_->GetWebContents()) {
-    if (LensOverlayController* lens_controller =
-            LensOverlayController::GetController(web_contents)) {
-      if (TemplateURL* template_url =
-              GetTemplateURLService()->GetTemplateURLForKeyword(keyword)) {
-        if (template_url->starter_pack_id() ==
-            TemplateURLStarterPackData::kPage) {
-          // TODO(crbug.com/408073216): Create and use new dismissal source.
-          lens_controller->CloseUIAsync(
-              lens::LensOverlayDismissalSource::kEscapeKeyPress);
-        }
-      }
-    }
+
+  TemplateURL* template_url =
+      GetTemplateURLService()->GetTemplateURLForKeyword(keyword);
+  if (!template_url ||
+      template_url->starter_pack_id() != TemplateURLStarterPackData::kPage) {
+    return;
+  }
+
+  if (LensOverlayController* lens_overlay_controller =
+          GetLensOverlayController(location_bar_->GetWebContents())) {
+    // TODO(crbug.com/408073216): Create and use new dismissal source.
+    lens_overlay_controller->CloseUIAsync(
+        lens::LensOverlayDismissalSource::kEscapeKeyPress);
   }
 }
 
 void ChromeOmniboxClient::MaybeShowOnFocusHatsSurvey(
-    AutocompleteProviderClient* client,
-    std::u16string text) {
+    AutocompleteProviderClient* client) {
   if (!g_browser_process ||
       !base::StartsWith(g_browser_process->GetApplicationLocale(), "en")) {
     return;
   }
+
   // Check zero-suggest eligibility criteria.
   auto classification = GetPageClassification(/*is_prefetch=*/false);
-  AutocompleteInput input(text, classification, GetSchemeClassifier());
-  input.set_current_url(GetNavigationEntryURL());
+  AutocompleteInput input(
+      GetNavigationEntryURL().IsAboutBlank()
+          ? u""
+          : base::UTF8ToUTF16(GetNavigationEntryURL().spec()),
+      classification, GetSchemeClassifier());
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+  input.set_current_url(GetNavigationEntryURL());
   if (!ZeroSuggestProvider::GetResultTypeAndEligibility(client, input).second ||
       !MostVisitedSitesProvider::AllowMostVisitedSitesSuggestions(client,
                                                                   input)) {
@@ -475,10 +494,8 @@ void ChromeOmniboxClient::OnResultChanged(
     ++result_index;
     if (!match.icon_url.is_empty()) {
       request_ids_.push_back(bitmap_fetcher_service->RequestImage(
-          match.icon_url, base::BindOnce(on_bitmap_fetched, result_index)));
-    } else if (!match.ImageUrl().is_empty()) {
-      request_ids_.push_back(bitmap_fetcher_service->RequestImage(
-          match.ImageUrl(), base::BindOnce(on_bitmap_fetched, result_index)));
+          match.icon_url,
+          base::BindOnce(on_bitmap_fetched, result_index, match.icon_url)));
     } else if (match.associated_keyword) {
       // - Fetch the favicon here for non-featured matches that have the search
       // aggregator keyword hint attached to them (e.g., verbatim match when
@@ -494,9 +511,14 @@ void ChromeOmniboxClient::OnResultChanged(
       if (turl && turl->policy_origin() ==
                       TemplateURLData::PolicyOrigin::kSearchAggregator) {
         request_ids_.push_back(bitmap_fetcher_service->RequestImage(
-            turl->favicon_url(),
-            base::BindOnce(on_bitmap_fetched, result_index)));
+            turl->favicon_url(), base::BindOnce(on_bitmap_fetched, result_index,
+                                                turl->favicon_url())));
       }
+    }
+    if (!match.ImageUrl().is_empty()) {
+      request_ids_.push_back(bitmap_fetcher_service->RequestImage(
+          match.ImageUrl(),
+          base::BindOnce(on_bitmap_fetched, result_index, GURL())));
     }
   }
 }
@@ -723,16 +745,11 @@ bool ChromeOmniboxClient::IsHistoryEmbeddingsEnabled() const {
 
 std::optional<lens::proto::LensOverlaySuggestInputs>
 ChromeOmniboxClient::GetLensOverlaySuggestInputs() const {
-  content::WebContents* web_contents = location_bar_->GetWebContents();
-  if (!web_contents) {
-    return std::nullopt;
+  if (LensSearchboxClient* lens_overlay_controller =
+          GetLensOverlayController(location_bar_->GetWebContents())) {
+    return lens_overlay_controller->GetLensSuggestInputs();
   }
-  LensSearchboxClient* client =
-      LensOverlayController::GetController(web_contents);
-  if (!client) {
-    return std::nullopt;
-  }
-  return client->GetLensSuggestInputs();
+  return std::nullopt;
 }
 
 base::WeakPtr<OmniboxClient> ChromeOmniboxClient::AsWeakPtr() {

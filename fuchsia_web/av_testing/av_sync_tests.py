@@ -30,7 +30,7 @@ import monitors
 import perf_trace
 import version
 from chrome_driver_wrapper import ChromeDriverWrapper
-from common import get_build_info, get_free_local_port, get_ip_address
+from common import get_build_info, get_free_local_port, get_ip_address, ssh_run
 from repeating_log import RepeatingLog
 
 
@@ -196,22 +196,14 @@ def main() -> int:
             monitors.tag(
                 version.chrome_version_str(), build_info.version,
                 version.chrome_version_str() + '/' + build_info.version)
-            proxy_host = os.environ.get('GCS_PROXY_HOST')
-            if proxy_host:
-                # This is a hacky way to get the ip address of the host machine
-                # being accessible on the device by the fuchsia managed docker
-                # image.
-                host = proxy_host + '0'
-            else:
-                # If not running in the managed docker image, replace the last
-                # byte of the fuchsia device ipv4 address to 1, by default it's
-                # the ip address of the host machine being accessible on the
-                # device.
-                # TODO(40935291): This hacky way should be removed once the
-                # tests are migrated to the managed docker image.
-                host = '.'.join(
-                    get_ip_address(os.environ.get('FUCHSIA_NODENAME'),
-                                   True).exploded.split('.')[:-1] + ['1'])
+            # TODO(crbug.com/391663618): Remove the condition once all the hosts
+            # are migrated into chrome lab.
+            host = '.'.join(get_ip_address(os.environ.get('FUCHSIA_NODENAME'),
+                                           ipv4_only=True).
+                            exploded.split('.')[:-1] +
+                            [os.environ.get('CAMERA_SERIAL_NUMBER') and
+                             '10' or  # In chrome lab, the host is at .10.
+                             '1'])    # In media lab, the host is at .1.
 
             # Waiting for a change like https://crrev.com/c/6063979 to loose the
             # size limitation of the invocation which triggers an upload error

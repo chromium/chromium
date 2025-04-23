@@ -44,6 +44,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
@@ -2172,9 +2173,13 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
     }
   }
 
+  bool was_post_commit_error =
+      request->browser_initiated_error_navigation_type() ==
+      NavigationRequest::BrowserInitiatedErrorNavigationType::kPostCommit;
+
   InsertOrReplaceEntry(std::move(new_entry), replace_entry,
-                       !request->post_commit_error_page_html().empty(),
-                       rfh->IsNestedWithinFencedFrame(), commit_details);
+                       was_post_commit_error, rfh->IsNestedWithinFencedFrame(),
+                       commit_details);
 }
 
 void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
@@ -2613,6 +2618,10 @@ void NavigationControllerImpl::DiscardPendingEntry(bool was_failure) {
   // when the tab is being destroyed for shutdown, since it won't return to
   // NavigateToEntry in that case.)  http://crbug.com/347742.
   CHECK(!in_navigate_to_pending_entry_ || frame_tree_->IsBeingDestroyed());
+  if (can_be_in_navigate_to_pending_entry_ &&
+      !frame_tree_->IsBeingDestroyed()) {
+    CheckPotentialNavigationReentrancy();
+  }
 
   if (was_failure && pending_entry_) {
     failed_pending_entry_id_ = pending_entry_->GetUniqueID();
@@ -3380,6 +3389,7 @@ NavigationControllerImpl::NavigateToExistingPendingEntry(
   // This call does not support re-entrancy.  See http://crbug.com/347742.
   CHECK(!in_navigate_to_pending_entry_);
   in_navigate_to_pending_entry_ = true;
+  CheckPotentialNavigationReentrancy();
 
   // If the navigation-reentrancy is caused by calling
   // NavigateToExistingPendingEntry twice, this will note the previous call's
@@ -3658,6 +3668,12 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
                ? frame_tree_->FindByID(params.frame_tree_node_id)
                : frame_tree_->FindByName(params.frame_name);
     DCHECK(!node || &node->frame_tree() == &frame_tree());
+    if (!node && params.frame_tree_node_id) {
+      // If the specified FrameTreeNode exists in another FrameTree, the caller
+      // is using the wrong NavigationController.
+      CHECK(!FrameTreeNode::GloballyFindByID(params.frame_tree_node_id),
+            base::NotFatalUntil::M140);
+    }
   }
 
   // If no FrameTreeNode was specified, navigate the main frame.
@@ -3803,6 +3819,7 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
   // This call does not support re-entrancy.  See http://crbug.com/347742.
   CHECK(!in_navigate_to_pending_entry_);
   in_navigate_to_pending_entry_ = true;
+  CheckPotentialNavigationReentrancy();
 
   // It is not possible to delete the pending NavigationEntry while navigating
   // to it. Grab a reference to delay potential deletion until the end of this
@@ -4406,59 +4423,48 @@ NavigationControllerImpl::LoadPostCommitErrorPage(
     const std::string& error_page_html) {
   RenderFrameHostImpl* rfhi =
       static_cast<RenderFrameHostImpl*>(render_frame_host);
-
-  // Only active documents can load post-commit error pages:
-  // - If the document is in pending deletion, the browser already committed to
-  // destroying this RenderFrameHost so ignore loading the error page.
-  // - If the document is in back-forward cache, it's not allowed to navigate as
-  // it should remain frozen. Ignore the request and evict the document from
-  // back-forward cache.
-  // - If the document is prerendering, it can navigate but when loading error
-  // pages, cancel prerendering.
-  if (rfhi->IsInactiveAndDisallowActivation(
-          DisallowActivationReasonId::kLoadPostCommitErrorPage)) {
+  std::unique_ptr<NavigationRequest> navigation_request =
+      CreateNavigationRequestForErrorPage(rfhi, url, error_page_html,
+                                          /*is_post_commit_error_page=*/true);
+  if (!navigation_request) {
     return nullptr;
   }
 
   FrameTreeNode* node = rfhi->frame_tree_node();
-
-  blink::mojom::CommonNavigationParamsPtr common_params =
-      blink::CreateCommonNavigationParams();
-  // |url| might be empty, such as when LoadPostCommitErrorPage happens before
-  // the frame actually committed (e.g. iframe with "src" set to a
-  // slow-responding URL). We should rewrite the URL to about:blank in this
-  // case, as the renderer will only think a page is an error page if it has a
-  // non-empty unreachable URL.
-  common_params->url = url.is_empty() ? GURL("about:blank") : url;
-  blink::mojom::CommitNavigationParamsPtr commit_params =
-      blink::CreateCommitNavigationParams();
-  commit_params->original_url = common_params->url;
-
-  commit_params->navigation_timing->system_entropy_at_navigation_start =
-      SystemEntropyUtils::ComputeSystemEntropyForFrameTreeNode(
-          node, blink::mojom::SystemEntropy::kNormal);
-
-  // TODO(arthursonzogni): Consider providing the minimal capabilities to the
-  // error pages.
-  commit_params->frame_policy = node->pending_frame_policy();
-
-  std::unique_ptr<NavigationRequest> navigation_request =
-      NavigationRequest::CreateBrowserInitiated(
-          node, std::move(common_params), std::move(commit_params),
-          false /* was_opener_suppressed */, "" /* extra_headers */,
-          nullptr /* frame_entry */, nullptr /* entry */,
-          false /* is_form_submission */, nullptr /* navigation_ui_data */,
-          std::nullopt /* impression */, false /* is_pdf */);
-  navigation_request->set_post_commit_error_page_html(error_page_html);
-  navigation_request->set_net_error(net::ERR_BLOCKED_BY_CLIENT);
   node->TakeNavigationRequest(std::move(navigation_request));
   DCHECK(node->navigation_request());
 
+  // TODO(crbug.com/406729265): LoadPostCommitErrorPage() does not initiate a
+  // navigation via Navigator::Navigate(). We should fix that, so that
+  // post-commit error page navigations don't bypass other important checks in
+  // this function.
   // Calling BeginNavigation may destroy the NavigationRequest.
   base::WeakPtr<NavigationRequest> created_navigation_request(
       node->navigation_request()->GetWeakPtr());
   node->navigation_request()->BeginNavigation();
   return created_navigation_request;
+}
+
+void NavigationControllerImpl::NavigateFrameToErrorPage(
+    RenderFrameHostImpl* render_frame_host_impl,
+    const GURL& url,
+    const std::string& error_page_html) {
+  // For now, this function can only be used for fenced frame roots. In the
+  // future, it will be updated to work for any frame.
+  // TODO(crbug.com/406729265): Implement this method for all types of frames,
+  // including main frames and other subframe types.
+  CHECK(render_frame_host_impl->IsFencedFrameRoot());
+
+  std::unique_ptr<NavigationRequest> navigation_request =
+      CreateNavigationRequestForErrorPage(render_frame_host_impl, url,
+                                          error_page_html,
+                                          /*is_post_commit_error_page=*/false);
+  if (!navigation_request) {
+    return;
+  }
+
+  FrameTreeNode* node = render_frame_host_impl->frame_tree_node();
+  node->navigator().Navigate(std::move(navigation_request), ReloadType::NONE);
 }
 
 void NavigationControllerImpl::NotifyEntryChanged(NavigationEntry* entry) {
@@ -5025,6 +5031,88 @@ void NavigationControllerImpl::DidChangeReferrerPolicy(
   // in the navigation API when the referrer policy changes.
   entry->set_protect_url_in_navigation_api(
       ShouldProtectUrlInNavigationApi(referrer_policy));
+}
+
+void NavigationControllerImpl::CheckPotentialNavigationReentrancy() {
+  // DumpWithoutCrashing will be reported just once in one Chrome session since
+  // we want to avoid too many reports.
+  static bool has_dumped_without_crashing = false;
+  if (can_be_in_navigate_to_pending_entry_ && !has_dumped_without_crashing) {
+    has_dumped_without_crashing = true;
+    // This DumpWithoutCrashing is an investigation code for
+    // https://crbug.com/396998476.
+    base::debug::DumpWithoutCrashing();
+  }
+}
+
+std::unique_ptr<NavigationRequest>
+NavigationControllerImpl::CreateNavigationRequestForErrorPage(
+    RenderFrameHostImpl* render_frame_host_impl,
+    const GURL& url,
+    const std::string& error_page_html,
+    bool is_post_commit_error_page) {
+  // Only active documents can load error pages:
+  // - If the document is in pending deletion, the browser already committed to
+  // destroying this RenderFrameHost so ignore loading the error page.
+  // - If the document is in back-forward cache, it's not allowed to navigate as
+  // it should remain frozen. Ignore the request and evict the document from
+  // back-forward cache.
+  // - If the document is prerendering, it can navigate but when loading error
+  // pages, cancel prerendering.
+  if (render_frame_host_impl->IsInactiveAndDisallowActivation(
+          is_post_commit_error_page
+              ? DisallowActivationReasonId::kLoadPostCommitErrorPage
+              : DisallowActivationReasonId::kBrowserInitiatedErrorPage)) {
+    return nullptr;
+  }
+
+  FrameTreeNode* node = render_frame_host_impl->frame_tree_node();
+
+  blink::mojom::CommonNavigationParamsPtr common_params =
+      blink::CreateCommonNavigationParams();
+  // |url| might be empty, such as when this method is called before
+  // the frame actually committed (e.g. iframe with "src" set to a
+  // slow-responding URL). We should rewrite the URL to about:blank in this
+  // case, as the renderer will only think a page is an error page if it has a
+  // non-empty unreachable URL.
+  common_params->url = url.is_empty() ? GURL("about:blank") : url;
+
+  // Loading an error page via LoadPostCommitErrorPage() performs a temporary
+  // replacement of the entire NavigationEntry and swaps it back in later.
+  // All other error page types should permanently replace the current entry.
+  if (!is_post_commit_error_page) {
+    common_params->should_replace_current_entry = true;
+  }
+
+  blink::mojom::CommitNavigationParamsPtr commit_params =
+      blink::CreateCommitNavigationParams();
+  commit_params->original_url = common_params->url;
+
+  commit_params->navigation_timing->system_entropy_at_navigation_start =
+      SystemEntropyUtils::ComputeSystemEntropyForFrameTreeNode(
+          node, blink::mojom::SystemEntropy::kNormal);
+
+  // TODO(arthursonzogni): Consider providing the minimal capabilities to the
+  // error pages.
+  commit_params->frame_policy = node->pending_frame_policy();
+
+  std::unique_ptr<NavigationRequest> navigation_request =
+      NavigationRequest::CreateBrowserInitiated(
+          node, std::move(common_params), std::move(commit_params),
+          false /* was_opener_suppressed */, "" /* extra_headers */,
+          nullptr /* frame_entry */, nullptr /* entry */,
+          false /* is_form_submission */, nullptr /* navigation_ui_data */,
+          std::nullopt /* impression */, false /* is_pdf */);
+  if (is_post_commit_error_page) {
+    navigation_request->set_browser_initiated_error_navigation_type(
+        NavigationRequest::BrowserInitiatedErrorNavigationType::kPostCommit);
+  } else {
+    navigation_request->set_browser_initiated_error_navigation_type(
+        NavigationRequest::BrowserInitiatedErrorNavigationType::kRegular);
+  }
+  navigation_request->set_net_error(net::ERR_BLOCKED_BY_CLIENT);
+  navigation_request->set_error_page_html(error_page_html);
+  return navigation_request;
 }
 
 }  // namespace content

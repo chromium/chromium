@@ -33,7 +33,10 @@
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -73,19 +76,22 @@ float BasicShapeCircle::FloatValueForRadiusInBox(
 }
 
 Path BasicShapeCircle::GetPath(const gfx::RectF& bounding_box,
-                               float zoom) const {
+                               float /*zoom*/,
+                               float path_scale) const {
   const gfx::PointF center =
       PointForCenterCoordinate(center_x_, center_y_, bounding_box.size());
-  return GetPathFromCenter(center, bounding_box, zoom);
+  return GetPathFromCenter(center, bounding_box, path_scale);
 }
 
 Path BasicShapeCircle::GetPathFromCenter(const gfx::PointF& center,
                                          const gfx::RectF& bounding_box,
-                                         float) const {
-  const float radius = FloatValueForRadiusInBox(center, bounding_box.size());
+                                         float path_scale) const {
+  const gfx::PointF scaled_center =
+      gfx::ScalePoint(center + bounding_box.OffsetFromOrigin(), path_scale);
+  const float scaled_radius =
+      FloatValueForRadiusInBox(center, bounding_box.size()) * path_scale;
 
-  return Path::MakeEllipse(center + bounding_box.OffsetFromOrigin(), radius,
-                           radius);
+  return Path::MakeEllipse(scaled_center, scaled_radius, scaled_radius);
 }
 
 bool BasicShapeEllipse::IsEqualAssumingSameType(const BasicShape& o) const {
@@ -112,25 +118,31 @@ float BasicShapeEllipse::FloatValueForRadiusInBox(
 }
 
 Path BasicShapeEllipse::GetPath(const gfx::RectF& bounding_box,
-                                float zoom) const {
+                                float /*zoom*/,
+                                float path_scale) const {
   const gfx::PointF center =
       PointForCenterCoordinate(center_x_, center_y_, bounding_box.size());
-  return GetPathFromCenter(center, bounding_box, zoom);
+  return GetPathFromCenter(center, bounding_box, path_scale);
 }
 
 Path BasicShapeEllipse::GetPathFromCenter(const gfx::PointF& center,
                                           const gfx::RectF& bounding_box,
-                                          float) const {
-  const float radius_x =
-      FloatValueForRadiusInBox(radius_x_, center.x(), bounding_box.width());
-  const float radius_y =
-      FloatValueForRadiusInBox(radius_y_, center.y(), bounding_box.height());
+                                          float path_scale) const {
+  const gfx::PointF scaled_center =
+      gfx::ScalePoint(center + bounding_box.OffsetFromOrigin(), path_scale);
+  const gfx::Vector2dF scaled_radius = gfx::ScaleVector2d(
+      gfx::Vector2dF(
+          FloatValueForRadiusInBox(radius_x_, center.x(), bounding_box.width()),
+          FloatValueForRadiusInBox(radius_y_, center.y(),
+                                   bounding_box.height())),
+      path_scale);
 
-  return Path::MakeEllipse(center + bounding_box.OffsetFromOrigin(), radius_x,
-                           radius_y);
+  return Path::MakeEllipse(scaled_center, scaled_radius.x(), scaled_radius.y());
 }
 
-Path BasicShapePolygon::GetPath(const gfx::RectF& bounding_box, float) const {
+Path BasicShapePolygon::GetPath(const gfx::RectF& bounding_box,
+                                float /*zoom*/,
+                                float path_scale) const {
   DCHECK(!(values_.size() % 2));
   wtf_size_t length = values_.size();
 
@@ -140,17 +152,20 @@ Path BasicShapePolygon::GetPath(const gfx::RectF& bounding_box, float) const {
     return builder.Finalize();
   }
 
-  builder.MoveTo(
+  builder.MoveTo(gfx::ScalePoint(
       gfx::PointF(FloatValueForLength(values_.at(0), bounding_box.width()) +
                       bounding_box.x(),
                   FloatValueForLength(values_.at(1), bounding_box.height()) +
-                      bounding_box.y()));
+                      bounding_box.y()),
+      path_scale));
   for (wtf_size_t i = 2; i < length; i = i + 2) {
-    builder.LineTo(gfx::PointF(
-        FloatValueForLength(values_.at(i), bounding_box.width()) +
-            bounding_box.x(),
-        FloatValueForLength(values_.at(i + 1), bounding_box.height()) +
-            bounding_box.y()));
+    builder.LineTo(gfx::ScalePoint(
+        gfx::PointF(
+            FloatValueForLength(values_.at(i), bounding_box.width()) +
+                bounding_box.x(),
+            FloatValueForLength(values_.at(i + 1), bounding_box.height()) +
+                bounding_box.y()),
+        path_scale));
   }
   builder.Close();
 
@@ -172,25 +187,33 @@ bool BasicShapeInset::IsEqualAssumingSameType(const BasicShape& o) const {
          bottom_left_radius_ == other.bottom_left_radius_;
 }
 
-Path BasicShapeInset::GetPath(const gfx::RectF& bounding_box, float) const {
-  float left = FloatValueForLength(left_, bounding_box.width());
-  float top = FloatValueForLength(top_, bounding_box.height());
-  gfx::RectF rect(
-      left + bounding_box.x(), top + bounding_box.y(),
-      std::max<float>(bounding_box.width() - left -
-                          FloatValueForLength(right_, bounding_box.width()),
-                      0),
-      std::max<float>(bounding_box.height() - top -
-                          FloatValueForLength(bottom_, bounding_box.height()),
-                      0));
-  gfx::SizeF box_size = bounding_box.size();
-  auto radii = FloatRoundedRect::Radii(
-      SizeForLengthSize(top_left_radius_, box_size),
-      SizeForLengthSize(top_right_radius_, box_size),
-      SizeForLengthSize(bottom_left_radius_, box_size),
-      SizeForLengthSize(bottom_right_radius_, box_size));
+Path BasicShapeInset::GetPath(const gfx::RectF& bounding_box,
+                              float /*zoom*/,
+                              float path_scale) const {
+  const float left = FloatValueForLength(left_, bounding_box.width());
+  const float top = FloatValueForLength(top_, bounding_box.height());
+  const gfx::RectF scaled_rect = gfx::ScaleRect(
+      gfx::RectF(
+          left + bounding_box.x(), top + bounding_box.y(),
+          std::max<float>(bounding_box.width() - left -
+                              FloatValueForLength(right_, bounding_box.width()),
+                          0),
+          std::max<float>(
+              bounding_box.height() - top -
+                  FloatValueForLength(bottom_, bounding_box.height()),
+              0)),
+      path_scale);
+  const gfx::SizeF box_size = bounding_box.size();
+  const auto scaled_radii = FloatRoundedRect::Radii(
+      gfx::ScaleSize(SizeForLengthSize(top_left_radius_, box_size), path_scale),
+      gfx::ScaleSize(SizeForLengthSize(top_right_radius_, box_size),
+                     path_scale),
+      gfx::ScaleSize(SizeForLengthSize(bottom_left_radius_, box_size),
+                     path_scale),
+      gfx::ScaleSize(SizeForLengthSize(bottom_right_radius_, box_size),
+                     path_scale));
 
-  FloatRoundedRect final_rect(rect, radii);
+  FloatRoundedRect final_rect(scaled_rect, scaled_radii);
   final_rect.ConstrainRadii();
 
   return Path::MakeRoundedRect(final_rect);

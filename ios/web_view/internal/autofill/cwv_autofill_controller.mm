@@ -88,6 +88,9 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
   std::unique_ptr<autofill::FormActivityObserverBridge>
       _formActivityObserverBridge;
 
+  NSString* _lastFormActivityFormName;
+  NSString* _lastFormActivityFieldIdentifier;
+  NSString* _lastFormActivityFrameID;
   std::string _lastFormActivityWebFrameID;
   NSString* _lastFormActivityTypedValue;
   NSString* _lastFormActivityType;
@@ -213,6 +216,10 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
         }
       };
 
+  _lastFormActivityFormName = formName;
+  _lastFormActivityFrameID = frameID;
+  _lastFormActivityFieldIdentifier = fieldIdentifier;
+
   // Construct query.
   FormSuggestionProviderQuery* formQuery = [[FormSuggestionProviderQuery alloc]
       initWithFormName:formName
@@ -302,6 +309,32 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
   }
 }
 
+- (void)acceptCreditCardAsSuggestion:(CWVCreditCard*)card
+                             atIndex:(NSInteger)index
+                   completionHandler:
+                       (nullable void (^)(void))completionHandler {
+  FormSuggestion* suggestion = [FormSuggestion
+      suggestionWithValue:nil
+       displayDescription:nil
+                     icon:nil
+                     type:autofill::SuggestionType::kCreditCardEntry
+                  payload:autofill::Suggestion::Guid(card.internalCard->guid())
+           requiresReauth:NO];
+
+  [_autofillAgent didSelectSuggestion:suggestion
+                              atIndex:index
+                                 form:_lastFormActivityFormName
+                       formRendererID:_lastFormActivityFormRendererID
+                      fieldIdentifier:_lastFormActivityFieldIdentifier
+                      fieldRendererID:_lastFormActivityFieldRendererID
+                              frameID:_lastFormActivityFrameID
+                    completionHandler:^{
+                      if (completionHandler) {
+                        completionHandler();
+                      }
+                    }];
+}
+
 - (void)focusPreviousField {
   web::WebFramesManager* framesManager =
       autofill::AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
@@ -377,13 +410,13 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
 }
 
 - (void)
-    confirmSaveCreditCardToCloud:(const autofill::CreditCard&)creditCard
-               legalMessageLines:(autofill::LegalMessageLines)legalMessageLines
-           saveCreditCardOptions:
-               (autofill::payments::PaymentsAutofillClient::
-                    SaveCreditCardOptions)saveCreditCardOptions
-                        callback:(autofill::payments::PaymentsAutofillClient::
-                                      UploadSaveCardPromptCallback)callback {
+    showSaveCreditCardToCloud:(const autofill::CreditCard&)creditCard
+            legalMessageLines:(autofill::LegalMessageLines)legalMessageLines
+        saveCreditCardOptions:
+            (autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions)
+                saveCreditCardOptions
+                     callback:(autofill::payments::PaymentsAutofillClient::
+                                   UploadSaveCardPromptCallback)callback {
   if (![_delegate respondsToSelector:@selector(autofillController:
                                           saveCreditCardWithSaver:)]) {
     return;
@@ -748,6 +781,13 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
 
 - (void)showCredentialProviderPromo:(CredentialProviderPromoTrigger)trigger {
   // No op
+}
+
+- (void)didLoginWithExistingPassword {
+  if ([self.delegate respondsToSelector:@selector
+                     (autofillControllerDidLoginWithExistingPassword:)]) {
+    [self.delegate autofillControllerDidLoginWithExistingPassword:self];
+  }
 }
 
 #pragma mark - SharedPasswordControllerDelegate

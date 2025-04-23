@@ -24,6 +24,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_reuse_manager_factory.h"
@@ -43,6 +44,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/enterprise/connectors/core/reporting_event_router.h"
 #include "components/google/core/common/google_util.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
@@ -1308,26 +1310,42 @@ void ChromePasswordProtectionService::MaybeReportPasswordReuseDetected(
     // is called.
     std::string username_or_email =
         username.empty() ? GetAccountInfo().email : username;
-    auto* router =
+    auto* safe_browsing_event_router =
         extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
             profile_);
-    if (router) {
-      router->OnPolicySpecifiedPasswordReuseDetected(
+
+    if (safe_browsing_event_router) {
+      safe_browsing_event_router->OnPolicySpecifiedPasswordReuseDetected(
           main_frame_url, username_or_email, is_phishing_url, warning_shown);
+
       base::UmaHistogramBoolean(
           "PasswordProtection.GmailReportSent",
           base::EndsWith(username_or_email, "@gmail.com"));
+    }
+
+    auto* reporting_event_router = enterprise_connectors::
+        ReportingEventRouterFactory::GetForBrowserContext(profile_);
+    if (reporting_event_router) {
+      reporting_event_router->OnPasswordReuse(main_frame_url, username_or_email,
+                                              is_phishing_url, warning_shown);
     }
   }
 }
 
 void ChromePasswordProtectionService::ReportPasswordChanged() {
   if (!IsIncognito()) {
-    auto* router =
+    auto* safe_browsing_event_router =
         extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
             profile_);
-    if (router) {
-      router->OnPolicySpecifiedPasswordChanged(GetAccountInfo().email);
+    if (safe_browsing_event_router) {
+      safe_browsing_event_router->OnPolicySpecifiedPasswordChanged(
+          GetAccountInfo().email);
+    }
+
+    auto* reporting_event_router = enterprise_connectors::
+        ReportingEventRouterFactory::GetForBrowserContext(profile_);
+    if (reporting_event_router) {
+      reporting_event_router->OnPasswordChanged(GetAccountInfo().email);
     }
   }
 }

@@ -14,7 +14,7 @@ def CheckChangeOnUpload(input_api, output_api):
 
 
 def _CheckHistogramsAllowlist(input_api, output_api):
-    """Checks that histograms_allowlist.txt contains valid histograms."""
+    """Checks that HistogramsAllowlist.java contains valid histograms."""
     src_path = os.path.join(input_api.PresubmitLocalPath(), '..', '..', '..',
                             '..')
     histograms_path = os.path.join(src_path, 'tools', 'metrics', 'histograms')

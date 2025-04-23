@@ -24,7 +24,7 @@
         git config --global user.email CHANGE_ME@chromium.org
         git config --global depot-tools.useNewAuthStack 1
         update_depot_tools
-        git cl creds-check
+        git cl creds-check --global
 
 5. If you are using a @google.com account:
 

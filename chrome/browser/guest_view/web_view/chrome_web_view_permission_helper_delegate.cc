@@ -20,6 +20,7 @@
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -356,7 +357,10 @@ void ChromeWebViewPermissionHelperDelegate::OnGeolocationPermissionResponse(
       ->RequestPermissionFromCurrentDocument(
           web_view_guest()->embedder_rfh(),
           content::PermissionRequestDescription(
-              blink::PermissionType::GEOLOCATION, user_gesture),
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      blink::PermissionType::GEOLOCATION),
+              user_gesture),
           std::move(callback));
 }
 

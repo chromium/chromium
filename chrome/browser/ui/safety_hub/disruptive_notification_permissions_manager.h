@@ -24,19 +24,37 @@ class DisruptiveNotificationPermissionsManager {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   //
+  // kNotAllowedContentSetting, kInvalidContentSetting,
+  // kNotSiteScopedContentSetting, kManagedContentSetting, kNoRevokeDefaultBlock
+  // are returned for sites where the permission cannot be revoked.
+  //
+  // Shadow run: the site is proposed for revocation (kProposedRevoke) and
+  // returns kAlreadyInProposedRevokeList for all the next runs.
+  //
+  // False positives: when the increase in site engagement score is detected for
+  // proposed revocation, it's reported as kFalsePositive. In the next runs
+  // (until a notification is shown and metrics are reported), the site is
+  // reported as kAlreadyFalsePositive.
+  //
+  // Actual revocation: the site first is marked for revocation (returns
+  // kProposedRevoke) and then the permission is actually revoked (return
+  // kRevoke). After the permission is revoked, the content setting is removed
+  // so the site won't be reported anymore.
+  //
   // LINT.IfChange(RevocationResult)
   enum class RevocationResult {
     kNotAllowedContentSetting = 0,
     kInvalidContentSetting = 1,
     kNotSiteScopedContentSetting = 2,
     kManagedContentSetting = 3,
-    kAlreadyInRevokeList = 4,
+    kAlreadyInProposedRevokeList = 4,
     kFalsePositive = 5,
     kNotDisruptive = 6,
-    kRevoke = 7,
+    kProposedRevoke = 7,
     kNoRevokeDefaultBlock = 8,
     kAlreadyFalsePositive = 9,
-    kMaxValue = kAlreadyFalsePositive,
+    kRevoke = 10,
+    kMaxValue = kRevoke,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/settings/enums.xml:DisruptiveNotificationRevocationResult)
 
@@ -55,13 +73,40 @@ class DisruptiveNotificationPermissionsManager {
   // the revoked websites in the content setting.
   void RevokeDisruptiveNotifications();
 
+  // Returns the list of revoked disruptive notifications, excluding proposed
+  // revocations and false positives.
+  ContentSettingsForOneType GetRevokedNotifications();
+
+  // Returns true if settings are being changed due to auto revocation;
+  bool IsRevocationRunning();
+
   // Logs metrics for proposed disruptive notification revocation, to be called
   // when displaying a persistent notification.
   static void LogMetrics(Profile* profile,
                          const GURL& url,
                          ukm::SourceId source_id);
 
+  // Test support:
+  void SetClockForTesting(base::Clock* clock);
+
  private:
+  // Process existing content setting value: record false positive, revoke
+  // notifications or report the site as already in the proposed revocation
+  // list.
+  void HandleExistingValue(const GURL& url,
+                           base::Value stored_value,
+                           const content_settings::SettingInfo& info);
+
+  // Updates the content setting to false positive and reports metrics.
+  void RecordFalsePositive(const GURL& url,
+                           base::Value::Dict dict,
+                           const content_settings::SettingInfo& info,
+                           double new_score);
+
+  // Revokes notification permission, updates the content setting value to
+  // revoke and reports metrics.
+  void RevokeNotifications(const GURL& url, base::Value::Dict dict);
+
   // Whether the notification is disruptive based on the site engagement score
   // for the URL and the daily average notification count.
   bool IsNotificationDisruptive(const GURL& url, int daily_notification_count);
@@ -80,6 +125,10 @@ class DisruptiveNotificationPermissionsManager {
   raw_ptr<site_engagement::SiteEngagementService> site_engagement_service_;
 
   raw_ptr<base::Clock> clock_ = base::DefaultClock::GetInstance();
+
+  // Returns true if the revocation of disruptive notification
+  // permissions is happening.
+  bool is_revocation_running_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_DISRUPTIVE_NOTIFICATION_PERMISSIONS_MANAGER_H_

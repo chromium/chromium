@@ -36,10 +36,18 @@ void Hash(HashKind kind,
                    nullptr));
 }
 
+void Hash(HashKind kind, std::string_view data, base::span<uint8_t> digest) {
+  Hash(kind, base::as_byte_span(data), digest);
+}
+
 std::array<uint8_t, kSha1Size> Sha1(base::span<const uint8_t> data) {
   std::array<uint8_t, kSha1Size> result;
   Hash(HashKind::kSha1, data, result);
   return result;
+}
+
+std::array<uint8_t, kSha1Size> Sha1(std::string_view data) {
+  return Sha1(base::as_byte_span(data));
 }
 
 std::array<uint8_t, kSha256Size> Sha256(base::span<const uint8_t> data) {
@@ -48,10 +56,18 @@ std::array<uint8_t, kSha256Size> Sha256(base::span<const uint8_t> data) {
   return result;
 }
 
+std::array<uint8_t, kSha256Size> Sha256(std::string_view data) {
+  return Sha256(base::as_byte_span(data));
+}
+
 std::array<uint8_t, kSha512Size> Sha512(base::span<const uint8_t> data) {
   std::array<uint8_t, kSha512Size> result;
   Hash(HashKind::kSha512, data, result);
   return result;
+}
+
+std::array<uint8_t, kSha512Size> Sha512(std::string_view data) {
+  return Sha512(base::as_byte_span(data));
 }
 
 Hasher::Hasher(HashKind kind) {
@@ -80,6 +96,10 @@ Hasher::~Hasher() = default;
 
 void Hasher::Update(base::span<const uint8_t> data) {
   CHECK(EVP_DigestUpdate(ctx_.get(), data.data(), data.size()));
+}
+
+void Hasher::Update(std::string_view data) {
+  Update(base::as_byte_span(data));
 }
 
 void Hasher::Finish(base::span<uint8_t> digest) {

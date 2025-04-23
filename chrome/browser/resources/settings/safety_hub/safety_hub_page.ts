@@ -121,20 +121,20 @@ export class SettingsSafetyHubPageElement extends
     ];
   }
 
-  private passwordCardData_: CardInfo;
-  private versionCardData_: CardInfo;
-  private safeBrowsingCardData_: CardInfo;
-  private showNotificationPermissions_: boolean;
-  private hasDataForNotificationPermissions_: boolean;
-  private showUnusedSitePermissions_: boolean;
-  private hasDataForUnusedPermissions_: boolean;
-  private showNoRecommendationsState_: boolean;
-  private showExtensions_: boolean;
-  private hasDataForExtensions_: boolean;
+  declare private passwordCardData_: CardInfo;
+  declare private versionCardData_: CardInfo;
+  declare private safeBrowsingCardData_: CardInfo;
+  declare private showNotificationPermissions_: boolean;
+  declare private hasDataForNotificationPermissions_: boolean;
+  declare private showUnusedSitePermissions_: boolean;
+  declare private hasDataForUnusedPermissions_: boolean;
+  declare private showNoRecommendationsState_: boolean;
+  declare private showExtensions_: boolean;
+  declare private hasDataForExtensions_: boolean;
   private shouldRecordMetric_: boolean = false;
-  private userEducationItemList_: SiteInfo[];
-  private versionCardRole_: string;
-  private versionCardAriaDescription_: string;
+  declare private userEducationItemList_: SiteInfo[];
+  declare private versionCardRole_: string;
+  declare private versionCardAriaDescription_: string;
   private browserProxy_: SafetyHubBrowserProxy =
       SafetyHubBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -175,7 +175,7 @@ export class SettingsSafetyHubPageElement extends
   }
 
   private initializeCards_() {
-    // TODO(crbug.com/40267370): Add a listener for the Password card.
+    // TODO(crbug.com/40267370): Add listeners for Password and Version cards.
     this.browserProxy_.getPasswordCardData().then((data: CardInfo) => {
       this.passwordCardData_ = data;
     });
@@ -184,10 +184,6 @@ export class SettingsSafetyHubPageElement extends
       this.safeBrowsingCardData_ = data;
     });
 
-    this.addWebUiListener(
-        SafetyHubEvent.CHROME_VERSION_MAYBE_CHANGED, (data: CardInfo) => {
-          this.versionCardData_ = data;
-        });
     this.browserProxy_.getVersionCardData().then((data: CardInfo) => {
       this.versionCardData_ = data;
     });

@@ -67,7 +67,7 @@ features:
 future_on:
 - fuchsia
 owners:
-- dpr-eng@google.com
+- cbe-cep-eng@google.com
 - domfc@chromium.org
 schema:
   items:

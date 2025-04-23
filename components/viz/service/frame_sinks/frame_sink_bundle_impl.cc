@@ -109,10 +109,9 @@ class FrameSinkBundleImpl::SinkGroup : public BeginFrameObserver {
       uint32_t sink_id,
       const BeginFrameArgs& args,
       const base::flat_map<uint32_t, FrameTimingDetails>& details,
-      bool frame_ack,
       std::vector<ReturnedResource> resources) {
     pending_on_begin_frames_.push_back(mojom::BeginFrameInfo::New(
-        sink_id, args, details, frame_ack, std::move(resources)));
+        sink_id, args, details, std::move(resources)));
     if (!defer_on_begin_frames_) {
       FlushMessages();
     }
@@ -283,12 +282,6 @@ void FrameSinkBundleImpl::SetNeedsBeginFrame(uint32_t sink_id,
   }
 }
 
-void FrameSinkBundleImpl::SetWantsBeginFrameAcks(uint32_t sink_id) {
-  if (auto* sink = GetFrameSink(sink_id)) {
-    sink->SetWantsBeginFrameAcks();
-  }
-}
-
 void FrameSinkBundleImpl::Submit(
     std::vector<mojom::BundledFrameSubmissionPtr> submissions) {
   std::map<raw_ptr<SinkGroup>, base::WeakPtr<SinkGroup>> groups;
@@ -373,17 +366,15 @@ void FrameSinkBundleImpl::EnqueueOnBeginFrame(
     uint32_t sink_id,
     const BeginFrameArgs& args,
     const base::flat_map<uint32_t, FrameTimingDetails>& details,
-    bool frame_ack,
     std::vector<ReturnedResource> resources) {
   if (auto* group = GetSinkGroup(sink_id)) {
-    group->EnqueueOnBeginFrame(sink_id, args, details, frame_ack,
-                               std::move(resources));
+    group->EnqueueOnBeginFrame(sink_id, args, details, std::move(resources));
   } else {
     // The sink has no BeginFrameSource at the moment and therefore does not
     // belong to a SinkGroup. Forward directly without batching.
     std::vector<mojom::BeginFrameInfoPtr> begin_frames;
-    begin_frames.push_back(mojom::BeginFrameInfo::New(
-        sink_id, args, details, frame_ack, std::move(resources)));
+    begin_frames.push_back(mojom::BeginFrameInfo::New(sink_id, args, details,
+                                                      std::move(resources)));
     client_->FlushNotifications({}, std::move(begin_frames), {});
   }
 }

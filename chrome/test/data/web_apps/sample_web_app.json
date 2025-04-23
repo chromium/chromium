@@ -1,13 +1,13 @@
 {
    "!app_id": "ejhkbejlajgoplgondfmjmplbdjaofok",
    "!name": "Name1234",
-   "additional_search_terms": [ "Foo_1234_0", "Foo_1234_1", "Foo_1234_2", "Foo_1234_3" ],
-   "allowed_launch_protocols": [ "web+test_1234_0", "web+test_1234_1", "web+test_1234_2" ],
+   "additional_search_terms": [ "Foo_1234_0", "Foo_1234_1", "Foo_1234_2", "Foo_1234_3", "Foo_1234_4", "Foo_1234_5", "Foo_1234_6" ],
+   "allowed_launch_protocols": [ "web+test_1234_0", "web+test_1234_1", "web+test_1234_2", "web+test_1234_3", "web+test_1234_4" ],
    "always_show_toolbar_in_fullscreen": true,
    "app_service_icon_url": "chrome://app-icon/ejhkbejlajgoplgondfmjmplbdjaofok/32",
-   "app_size_in_bytes": "382722586",
+   "app_size_in_bytes": "3199527577",
    "background_color": "rgba(151,34,83,0.8823529411764706)",
-   "capture_links": "kNewClient",
+   "capture_links": "kNone",
    "current_os_integration_states": {
       "file_handling": [ {
          "accept": [ {
@@ -21,23 +21,23 @@
          "web+test0": "https://example.com/scope1234/start12340",
          "web+test1": "https://example.com/scope1234/start12341"
       },
-      "run_on_os_login": "windowed",
+      "run_on_os_login": "minimized",
       "shortcut_descriptions": {
          "description": "Description1234",
          "icon_size_to_timestamp_map": {
-            "32": "1970-01-29 03:24:16.532000 UTC"
+            "32": "1970-01-31 04:59:55.332000 UTC"
          },
          "title": "Name1234"
       },
       "shortcut_menus": [ {
          "icon_data_any": {
-            "32": "1970-01-26 00:21:49.441000 UTC"
+            "16": "1970-01-13 12:58:07.731000 UTC"
          },
          "icon_data_maskable": {
-            "32": "1970-01-26 00:21:49.441000 UTC"
+            "16": "1970-01-13 12:58:07.731000 UTC"
          },
          "icon_data_monochrome": {
-            "32": "1970-01-26 00:21:49.441000 UTC"
+            "16": "1970-01-13 12:58:07.731000 UTC"
          },
          "shortcut_launch_url": "https://example.com/scope1234/0",
          "shortcut_name": "shortcut_name0"
@@ -49,9 +49,9 @@
    },
    "dark_mode_background_color": "rgba(252,198,66,1)",
    "dark_mode_theme_color": "rgba(61,127,69,1)",
-   "data_size_in_bytes": "1450270097",
+   "data_size_in_bytes": "3081384793",
    "description": "Description1234",
-   "disallowed_launch_protocols": [ "web+disallowed_1234_0", "web+disallowed_1234_1", "web+disallowed_1234_2", "web+disallowed_1234_3", "web+disallowed_1234_4", "web+disallowed_1234_5", "web+disallowed_1234_6" ],
+   "disallowed_launch_protocols": [ "web+disallowed_1234_0", "web+disallowed_1234_1" ],
    "display_mode": "standalone",
    "display_override": [ "standalone", "fullscreen" ],
    "diy_app_icons_masked_on_mac": true,
@@ -164,12 +164,12 @@
    } ],
    "first_install_time": "1970-01-14 01:52:12.032000 UTC",
    "generated_icon_fix": {
-      "attempt_count": 6,
-      "last_attempt_time": "1970-02-16 01:03:53.549000 UTC",
+      "attempt_count": 13,
+      "last_attempt_time": "1970-01-04 11:45:24.967000 UTC",
       "source": "Retroactive",
-      "window_start_time": "1970-01-27 13:51:34.772000 UTC"
+      "window_start_time": "1970-02-12 14:58:19.416000 UTC"
    },
-   "install_state": "1",
+   "install_state": "2",
    "is_diy_app": true,
    "is_from_sync_and_pending_installation": true,
    "is_generated_icon": true,
@@ -178,12 +178,12 @@
       "controlled_frame_partitions (on-disk)": [ "partition_name" ],
       "integrity_block_data": {
          "signatures": [ {
-            "unknown": {
+            "ecdsa_p256_sha256": {
+               "public_key": "AxyCBzvQfu1yaF01392k1gu2qCtT1uA2+WfIEhlyJB5S",
+               "signature": "3044022007381524F538B04F99CCC62703F06C87F66EF41BDA18A22D8E57952AA23E53A6022063C7F81D3A44798CB95823FA38FC23B15E0483744657FF49E1E83AB8C06B63C2"
             }
          }, {
-            "ed25519": {
-               "public_key": "3QrKLntnXWmBkrbLLoobC0uh7u0ahMcKQSqsbX4q7MM=",
-               "signature": "94FBD9E3E0C0A4CD475067F1DC315E9EA30A5010350A9D3A4392CA9E0EBA854315372D7A6B48B6C4DDF9A5FAAE4E159D3B80632413DA2850B54A4D5D98EAE906"
+            "unknown": {
             }
          } ]
       },
@@ -195,12 +195,12 @@
       "pending_update_info": {
          "integrity_block_data": {
             "signatures": [ {
-               "unknown": {
+               "ecdsa_p256_sha256": {
+                  "public_key": "AxyCBzvQfu1yaF01392k1gu2qCtT1uA2+WfIEhlyJB5S",
+                  "signature": "3044022007381524F538B04F99CCC62703F06C87F66EF41BDA18A22D8E57952AA23E53A6022063C7F81D3A44798CB95823FA38FC23B15E0483744657FF49E1E83AB8C06B63C2"
                }
             }, {
-               "ed25519": {
-                  "public_key": "3QrKLntnXWmBkrbLLoobC0uh7u0ahMcKQSqsbX4q7MM=",
-                  "signature": "94FBD9E3E0C0A4CD475067F1DC315E9EA30A5010350A9D3A4392CA9E0EBA854315372D7A6B48B6C4DDF9A5FAAE4E159D3B80632413DA2850B54A4D5D98EAE906"
+               "unknown": {
                }
             } ]
          },
@@ -209,22 +209,22 @@
                "path": "1234"
             }
          },
-         "version": "2812060371.2831420433.2572177745"
+         "version": "2427438178.28552270.2758188330"
       },
       "update_channel": "default",
       "update_manifest_url": "https://update-manifest.com/",
-      "version": "2812060371.2831420433.2572177745"
+      "version": "2427438178.28552270.2758188330"
    },
    "last_badging_time": "1970-01-27 09:52:51.713000 UTC",
    "last_launch_time": "1970-01-02 14:58:07.045000 UTC",
-   "latest_install_source": "ml promotion",
-   "latest_install_time": "1970-01-06 12:19:09.338000 UTC",
+   "latest_install_source": "internal default",
+   "latest_install_time": "1970-02-04 08:53:43.316000 UTC",
    "launch_handler": {
-      "client_mode": "kNavigateExisting",
+      "client_mode": "kNavigateNew",
       "client_mode_valid_and_specified": true
    },
    "launch_query_params": "322714900",
-   "lock_screen_start_url": "https://example.com/scope1234/lock_screen_start_url2077353522",
+   "lock_screen_start_url": "https://example.com/scope1234/lock_screen_start_url3209113155",
    "management_type_to_external_configuration_map": {
       "ApsDefault": {
          "additional_policy_ids": [ "policy_id_1_1234", "policy_id_2_1234" ],
@@ -278,76 +278,76 @@
       "url": "https://example.com/icon2945661221"
    } ],
    "manifest_id": "https://example.com/manifest_id_1234?query=test",
-   "manifest_update_time": "1970-02-08 16:35:29.543000 UTC",
+   "manifest_update_time": "1970-01-02 21:27:51.199000 UTC",
    "manifest_url": "https://example.com/manifest1234.json",
-   "note_taking_new_note_url": "https://example.com/scope1234/new_note3209113155",
-   "parent_app_id": "463354209",
+   "note_taking_new_note_url": "https://example.com/scope1234/new_note4113628103",
+   "parent_app_id": "2710724071",
    "permissions_policy": [ {
-      "allowed_origins": [ "https://app-15481569330.com", "https://app-15481569331.com", "https://app-15481569332.com", "https://app-15481569333.com", "https://app-15481569334.com" ],
+      "allowed_origins": [ "https://app-25789046520.com", "https://app-25789046521.com", "https://app-25789046522.com", "https://app-25789046523.com", "https://app-25789046524.com" ],
       "feature": "accelerometer",
       "matches_all_origins": false,
       "matches_opaque_src": false
    } ],
    "protocol_handlers": [ {
-      "protocol": "web+test17396056590",
-      "url": "https://example.com/17396056590"
+      "protocol": "web+test30111629020",
+      "url": "https://example.com/30111629020"
    }, {
-      "protocol": "web+test17396056591",
-      "url": "https://example.com/17396056591"
+      "protocol": "web+test30111629021",
+      "url": "https://example.com/30111629021"
    }, {
-      "protocol": "web+test17396056592",
-      "url": "https://example.com/17396056592"
+      "protocol": "web+test30111629022",
+      "url": "https://example.com/30111629022"
    }, {
-      "protocol": "web+test17396056593",
-      "url": "https://example.com/17396056593"
+      "protocol": "web+test30111629023",
+      "url": "https://example.com/30111629023"
    }, {
-      "protocol": "web+test17396056594",
-      "url": "https://example.com/17396056594"
+      "protocol": "web+test30111629024",
+      "url": "https://example.com/30111629024"
    } ],
    "related_applications": [ {
       "id": "id3",
-      "platform": "windows",
+      "platform": "f-droid",
       "url": "https://example.com/3"
    }, {
       "id": "id2",
-      "platform": "f-droid",
+      "platform": "play",
       "url": "https://example.com/2"
    }, {
       "id": "id1",
-      "platform": "chromeos_play",
+      "platform": "play",
       "url": "https://example.com/1"
    }, {
       "id": "id0",
-      "platform": "windows",
+      "platform": "f-droid",
       "url": "https://example.com/0"
    } ],
-   "run_on_os_login_mode": "windowed",
+   "run_on_os_login_mode": "minimized",
    "scope": "https://example.com/scope1234/",
    "scope_extensions": [ {
       "has_origin_wildcard": true,
-      "origin": "https://app-30111629020.com",
-      "scope": "https://app-30111629020.com/"
+      "origin": "https://app-20773535220.com",
+      "scope": "https://app-20773535220.com/"
    }, {
       "has_origin_wildcard": true,
-      "origin": "https://app-30111629021.com",
-      "scope": "https://app-30111629021.com/"
+      "origin": "https://app-20773535221.com",
+      "scope": "https://app-20773535221.com/"
    }, {
       "has_origin_wildcard": true,
-      "origin": "https://app-30111629022.com",
-      "scope": "https://app-30111629022.com/"
+      "origin": "https://app-20773535222.com",
+      "scope": "https://app-20773535222.com/"
    } ],
    "scope_extensions_validated": [ {
       "has_origin_wildcard": true,
-      "origin": "https://app-30111629020.com",
-      "scope": "https://app-30111629020.com/"
+      "origin": "https://app-20773535220.com",
+      "scope": "https://app-20773535220.com/"
    }, {
       "has_origin_wildcard": true,
-      "origin": "https://app-30111629021.com",
-      "scope": "https://app-30111629021.com/"
+      "origin": "https://app-20773535221.com",
+      "scope": "https://app-20773535221.com/"
    }, {
       "has_origin_wildcard": true,
-      "origin": "https://app-30111629022.com",
-      "scope": "https://app-30111629022.com/"
+      "origin": "https://app-20773535222.com",
+      "scope": "https://app-20773535222.com/"
    } ],
    "share_target": {
       "action": "https://example.com/path/target/986688382",
@@ -374,97 +374,47 @@
       },
       "icons": {
          "ANY": [  ],
-         "MASKABLE": [ {
-            "square_size_px": 26,
-            "url": "https://example.com/shortcuts/icon338491214032"
-         }, {
-            "square_size_px": 4,
-            "url": "https://example.com/shortcuts/icon338491214030"
-         } ],
+         "MASKABLE": [  ],
          "MONOCHROME": [ {
-            "square_size_px": 19,
-            "url": "https://example.com/shortcuts/icon338491214031"
-         } ]
-      },
-      "name": "shortcut33849121403",
-      "url": "https://example.com/scope1234/shortcut33849121403"
-   }, {
-      "downloaded_icons_sizes": {
-         "ANY": [ 118 ],
-         "MASKABLE": [ 38 ],
-         "MONOCHROME": [ 228 ]
-      },
-      "icons": {
-         "ANY": [  ],
-         "MASKABLE": [ {
-            "square_size_px": 25,
-            "url": "https://example.com/shortcuts/icon338491214022"
-         }, {
-            "square_size_px": 11,
-            "url": "https://example.com/shortcuts/icon338491214021"
-         } ],
-         "MONOCHROME": [ {
-            "square_size_px": 3,
-            "url": "https://example.com/shortcuts/icon338491214020"
-         } ]
-      },
-      "name": "shortcut33849121402",
-      "url": "https://example.com/scope1234/shortcut33849121402"
-   }, {
-      "downloaded_icons_sizes": {
-         "ANY": [ 80, 47 ],
-         "MASKABLE": [ 240, 164 ],
-         "MONOCHROME": [ 138, 107 ]
-      },
-      "icons": {
-         "ANY": [  ],
-         "MASKABLE": [ {
             "square_size_px": 21,
-            "url": "https://example.com/shortcuts/icon338491214012"
+            "url": "https://example.com/shortcuts/icon130877204112"
          }, {
-            "square_size_px": 11,
-            "url": "https://example.com/shortcuts/icon338491214011"
+            "square_size_px": 14,
+            "url": "https://example.com/shortcuts/icon130877204111"
          }, {
-            "square_size_px": 4,
-            "url": "https://example.com/shortcuts/icon338491214010"
-         } ],
-         "MONOCHROME": [  ]
+            "square_size_px": 5,
+            "url": "https://example.com/shortcuts/icon130877204110"
+         } ]
       },
-      "name": "shortcut33849121401",
-      "url": "https://example.com/scope1234/shortcut33849121401"
+      "name": "shortcut13087720411",
+      "url": "https://example.com/scope1234/shortcut13087720411"
    }, {
       "downloaded_icons_sizes": {
-         "ANY": [ 3, 4, 22 ],
-         "MASKABLE": [ 141, 14, 123 ],
-         "MONOCHROME": [ 16, 115, 22 ]
+         "ANY": [ 149 ],
+         "MASKABLE": [ 9 ],
+         "MONOCHROME": [ 152 ]
       },
       "icons": {
          "ANY": [  ],
          "MASKABLE": [ {
-            "square_size_px": 41,
-            "url": "https://example.com/shortcuts/icon338491214004"
-         }, {
-            "square_size_px": 32,
-            "url": "https://example.com/shortcuts/icon338491214003"
+            "square_size_px": 28,
+            "url": "https://example.com/shortcuts/icon130877204102"
+         } ],
+         "MONOCHROME": [ {
+            "square_size_px": 11,
+            "url": "https://example.com/shortcuts/icon130877204101"
          }, {
             "square_size_px": 1,
-            "url": "https://example.com/shortcuts/icon338491214000"
-         } ],
-         "MONOCHROME": [ {
-            "square_size_px": 23,
-            "url": "https://example.com/shortcuts/icon338491214002"
-         }, {
-            "square_size_px": 16,
-            "url": "https://example.com/shortcuts/icon338491214001"
+            "url": "https://example.com/shortcuts/icon130877204100"
          } ]
       },
-      "name": "shortcut33849121400",
-      "url": "https://example.com/scope1234/shortcut33849121400"
+      "name": "shortcut13087720410",
+      "url": "https://example.com/scope1234/shortcut13087720410"
    } ],
    "sources": [ "System", "IwaShimlessRma", "Kiosk", "Policy", "IwaPolicy", "OEM", "SubApp", "WebAppStore", "OneDriveIntegration", "Sync", "UserInstalled", "IwaUserInstalled", "ApsDefault", "Default" ],
    "start_url": "https://example.com/scope1234/start1234",
-   "supported_links_offer_dismiss_count": -1701779570,
-   "supported_links_offer_ignore_count": 445271870,
+   "supported_links_offer_dismiss_count": 580345477,
+   "supported_links_offer_ignore_count": 1600328844,
    "sync_proto": {
       "icon_infos": [ {
          "purpose": "MONOCHROME",
@@ -485,41 +435,34 @@
       "home_tab": {
          "icons": [ {
             "purpose": [ "Maskable", "Monochrome" ],
-            "sizes": [ "486x66", "148x266", "87x39" ],
-            "src": "https://example.com/image3.webp",
+            "sizes": [ "420x363", "90x122", "187x111" ],
+            "src": "https://example.com/image2.webp",
             "type": "image/webp"
          }, {
-            "purpose": [ "Maskable", "Monochrome" ],
-            "sizes": [ "58x70", "76x106" ],
-            "src": "https://example.com/image2.svg",
+            "purpose": [ "Maskable", "Monochrome", "Any" ],
+            "sizes": [ "356x168", "111x75" ],
+            "src": "https://example.com/image1.svg",
             "type": "image/svg+xml"
          }, {
-            "purpose": [ "Monochrome", "Maskable", "Any" ],
-            "sizes": [ "189x78", "320x270", "110x132" ],
-            "src": "https://example.com/image1.webp",
-            "type": "image/webp"
-         }, {
-            "purpose": [ "Monochrome", "Maskable" ],
-            "sizes": [ "196x166", "72x134" ],
+            "purpose": [ "Maskable", "Monochrome" ],
+            "sizes": [ "86x350", "147x143" ],
             "src": "https://example.com/image0.svg",
             "type": "image/svg+xml"
          } ],
          "scope_patterns": [ {
-            "pathname": "{prefix3:name3\\suffix3}{prefix2:name2(.*)suffix2}?{prefix1:name1(.*)suffix1}?{prefix0:name0(.*)suffix0}?"
+            "pathname": "{prefix3:name3\\suffix3}+{prefix2:name2\\suffix2}+{prefix1:name1(.*)suffix1}+{prefix0:name0\\suffix0}?"
          }, {
-            "pathname": "{prefix4:name4(.*)suffix4}?{prefix3:name3(.*)suffix3}+{prefix2:name2(.*)suffix2}+{prefix1:name1\\suffix1}+{prefix0:name0(.*)suffix0}?"
+            "pathname": "{prefix4:name4(.*)suffix4}?{prefix3:name3(.*)suffix3}?{prefix2:name2(.*)suffix2}?{prefix1:name1\\suffix1}{prefix0:name0(.*)suffix0}+"
          }, {
-            "pathname": "{prefix2:name2(.*)suffix2}?{prefix1:name1\\suffix1}?{prefix0:name0(.*)suffix0}?"
-         }, {
-            "pathname": "{prefix3:name3(.*)suffix3}{prefix2:name2\\suffix2}?{prefix1:name1\\suffix1}+{prefix0:name0(.*)suffix0}+"
+            "pathname": "{prefix3:name3(.*)suffix3}?{prefix2:name2\\suffix2}?{prefix1:name1(.*)suffix1}+{prefix0:name0\\suffix0}"
          } ]
       },
       "new_tab_button": {
-         "url": "https://example.com/scope1234/new_tab_button_url428675460"
+         "url": "https://example.com/scope1234/new_tab_button_url682992910"
       }
    },
    "theme_color": "rgba(220,247,174,0.6470588235294118)",
-   "update_token": "2892851035",
+   "update_token": "2229210051",
    "user_link_capturing_preference": "1",
    "was_shortcut_app": true,
    "window_controls_overlay_enabled": false

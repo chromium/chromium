@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
+#include "components/optimization_guide/core/model_execution/execute_remote_fn.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_fetcher.h"
@@ -74,17 +75,6 @@ class ScopedModelExecutionResponseLogger {
   raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 };
 
-// Returns the URL endpoint for the model execution service.
-GURL GetModelExecutionServiceURL() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(
-          switches::kOptimizationGuideServiceModelExecutionURL)) {
-    return GURL(command_line->GetSwitchValueASCII(
-        switches::kOptimizationGuideServiceModelExecutionURL));
-  }
-  return GURL(kOptimizationGuideServiceModelExecutionDefaultURL);
-}
-
 void RecordSessionUsedRemoteExecutionHistogram(ModelBasedCapabilityKey feature,
                                                bool is_remote) {
   base::UmaHistogramBoolean(
@@ -100,26 +90,6 @@ void RecordModelExecutionResultHistogram(ModelBasedCapabilityKey feature,
       base::StrCat({"OptimizationGuide.ModelExecution.Result.",
                     GetStringNameForModelExecutionFeature(feature)}),
       result);
-}
-
-void NoOpExecuteRemoteFn(
-    ModelBasedCapabilityKey feature,
-    const google::protobuf::MessageLite& request,
-    std::optional<base::TimeDelta> timeout,
-    std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,
-    OptimizationGuideModelExecutionResultCallback callback) {
-  auto execution_info = std::make_unique<proto::ModelExecutionInfo>();
-  execution_info->set_model_execution_error_enum(
-      static_cast<uint32_t>(OptimizationGuideModelExecutionError::
-                                ModelExecutionError::kGenericFailure));
-  std::move(callback).Run(
-      OptimizationGuideModelExecutionResult(
-          base::unexpected(
-              OptimizationGuideModelExecutionError::FromModelExecutionError(
-                  OptimizationGuideModelExecutionError::ModelExecutionError::
-                      kGenericFailure)),
-          std::move(execution_info)),
-      nullptr);
 }
 
 }  // namespace
@@ -138,14 +108,13 @@ ModelExecutionManager::ModelExecutionManager(
     : model_quality_uploader_service_(model_quality_uploader_service),
       optimization_guide_logger_(optimization_guide_logger),
       model_execution_service_url_(net::AppendOrReplaceQueryParameter(
-          GetModelExecutionServiceURL(),
+          switches::GetModelExecutionServiceURL(),
           "key",
           features::GetOptimizationGuideServiceAPIKey())),
       url_loader_factory_(url_loader_factory),
       identity_manager_(identity_manager),
       on_device_model_service_controller_(
-          std::move(on_device_model_service_controller)) {
-}
+          std::move(on_device_model_service_controller)) {}
 
 ModelExecutionManager::~ModelExecutionManager() {
 }
@@ -234,7 +203,7 @@ ModelExecutionManager::StartSession(
                     : SessionConfigParams::ExecutionMode::kDefault;
   ExecuteRemoteFn execute_fn =
       execution_mode == SessionConfigParams::ExecutionMode::kOnDeviceOnly
-          ? base::BindRepeating(&NoOpExecuteRemoteFn)
+          ? CreateNoOpExecuteRemoteFn()
           : base::BindRepeating(&ModelExecutionManager::ExecuteModel,
                                 weak_ptr_factory_.GetWeakPtr());
   if (on_device_model_service_controller_ &&

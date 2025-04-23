@@ -326,12 +326,16 @@ void HlsRenditionImpl::Stop() {
 }
 
 void HlsRenditionImpl::UpdatePlaylist(
-    scoped_refptr<hls::MediaPlaylist> playlist,
-    std::optional<GURL> new_playlist_uri) {
+    scoped_refptr<hls::MediaPlaylist> playlist) {
   segments_->SetNewPlaylist(std::move(playlist));
-  if (new_playlist_uri.has_value()) {
-    media_playlist_uri_ = new_playlist_uri.value();
-  }
+}
+
+void HlsRenditionImpl::UpdatePlaylistURI(const GURL& playlist_uri) {
+  media_playlist_uri_ = playlist_uri;
+}
+
+const GURL& HlsRenditionImpl::MediaPlaylistUri() const {
+  return media_playlist_uri_;
 }
 
 base::TimeDelta HlsRenditionImpl::ClearOldSegments(base::TimeDelta media_time) {

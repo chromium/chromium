@@ -112,6 +112,7 @@
 #include "third_party/blink/renderer/core/dom/popover_data.h"
 #include "third_party/blink/renderer/core/dom/presentation_attribute_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
@@ -150,6 +151,7 @@
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
+#include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
@@ -248,6 +250,7 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 #include "ui/accessibility/ax_mode.h"
@@ -488,11 +491,10 @@ void EnqueueAutofocus(Element& element) {
     window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kSecurity,
         mojom::ConsoleMessageLevel::kError,
-        String::Format(
-            "Blocked autofocusing on a <%s> element because the element's "
-            "frame "
-            "is sandboxed and the 'allow-scripts' permission is not set.",
-            element.TagQName().ToString().Ascii().c_str())));
+        WTF::StrCat({"Blocked autofocusing on a <",
+                     element.TagQName().ToString(),
+                     "> element because the element's frame is sandboxed and "
+                     "the 'allow-scripts' permission is not set."})));
     return;
   }
 
@@ -506,9 +508,9 @@ void EnqueueAutofocus(Element& element) {
     window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kSecurity,
         mojom::ConsoleMessageLevel::kError,
-        String::Format("Blocked autofocusing on a <%s> element in a "
-                       "cross-origin subframe.",
-                       element.TagQName().ToString().Ascii().c_str())));
+        WTF::StrCat({"Blocked autofocusing on a <",
+                     element.TagQName().ToString(),
+                     "> element in a cross-origin subframe."})));
     return;
   }
 
@@ -1592,6 +1594,34 @@ bool Element::InterestLost(Element& interest_target) {
 }
 
 void Element::DefaultEventHandler(Event& event) {
+  if (GetInterestState() != Element::InterestState::kNoInterest) [[unlikely]] {
+    CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+        GetDocument().GetExecutionContext()));
+    if (auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
+        keyboard_event && event.type() == event_type_names::kKeydown) {
+      const int modifiers =
+          keyboard_event->GetModifiers() & blink::WebInputEvent::kKeyModifiers;
+      auto* target = InterestTargetElement();
+      if (GetInterestState() == Element::InterestState::kPartialInterest &&
+          keyboard_event->key() == keywords::kArrowUp &&
+          modifiers == WebInputEvent::kAltKey) {
+        // Hitting the hotkey (Alt-UpArrow) on an invoker that has partial
+        // interest causes interest to be "upgraded" to full interest. It also
+        // focuses the first focusable element within the target.
+        ChangeInterestState(target, InterestState::kFullInterest);
+        if (Element* first_focusable = target->GetFocusDelegate()) {
+          first_focusable->Focus();
+        }
+        event.SetDefaultHandled();
+        return;
+      } else if (keyboard_event->key() == keywords::kEscape && !modifiers) {
+        if (GainOrLoseInterest(this, target, InterestState::kNoInterest)) {
+          event.SetDefaultHandled();
+          return;
+        }
+      }
+    }
+  }
   ContainerNode::DefaultEventHandler(event);
 }
 
@@ -3136,6 +3166,10 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
     UpdateClassList(params.old_value, params.new_value);
   } else if (name == html_names::kNameAttr) {
     SetHasName(!params.new_value.IsNull());
+  } else if (HasTagName(html_names::kATag) && name == html_names::kHrefAttr) {
+    // <a> element is a potential scroll marker, set flag to check and update if
+    // needed.
+    GetDocument().SetNeedsScrollMarkerGroupRelationsUpdate();
   } else if (name == html_names::kPartAttr) {
     part().DidUpdateAttributeValue(params.old_value, params.new_value);
     GetDocument().GetStyleEngine().PartChangedForElement(*this);
@@ -5592,6 +5626,35 @@ void Element::ClearTargetedSnapAreaIdsForSnapContainers() {
   }
 }
 
+GCedHeapVector<Member<Element>>* Element::ElementsFromAttributeOrInternals(
+    const QualifiedName& attribute) const {
+  GCedHeapVector<Member<Element>>* attr_associated_elements =
+      GetAttrAssociatedElements(attribute,
+                                /*resolve_reference_target=*/true);
+  if (attr_associated_elements) {
+    if (attr_associated_elements->empty()) {
+      return nullptr;
+    }
+    return attr_associated_elements;
+  }
+
+  const ElementInternals* element_internals = GetElementInternals();
+  if (!element_internals) {
+    return nullptr;
+  }
+
+  const FrozenArray<Element>* element_internals_attr_elements =
+      element_internals->GetElementArrayAttribute(attribute);
+
+  if (!element_internals_attr_elements ||
+      element_internals_attr_elements->empty()) {
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<GCedHeapVector<Member<Element>>>(
+      element_internals_attr_elements->AsVector());
+}
+
 Element::HighlightRecalc Element::CalculateHighlightRecalc(
     const ComputedStyle* old_style,
     const ComputedStyle& new_style,
@@ -6009,6 +6072,12 @@ CustomElementDefinition* Element::GetCustomElementDefinition() const {
   if (const ElementRareDataVector* data = GetElementRareData()) {
     return data->GetCustomElementDefinition();
   }
+  return nullptr;
+}
+
+// Scoped Custom Elements
+CustomElementRegistry* Element::customElementRegistry() const {
+  DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
   return nullptr;
 }
 
@@ -6499,20 +6568,22 @@ void Element::ParseAttribute(const AttributeModificationParams& params) {
       if (!params.old_value.IsNull() && params.old_value != params.new_value) {
         // We are changing the value of the `interesttarget` attribute, which
         // might "point" it at a different target element. So clear the
-        // InterestInvokerTargetData from the old target.
-        if (Element* old_target = InterestTargetElement()) {
+        // InterestInvokerTargetData from the old target, and invalidate the
+        // pseudo classes that might change.
+        Element* old_target = InterestTargetElement();
+        ChangeInterestState(old_target, InterestState::kNoInterest);
+        if (old_target) {
           old_target->RemoveInterestInvokerTargetData();
         }
-      }
-      if (params.new_value.IsNull()) {
-        // We are removing the attribute, so remove interest invoker data.
-        if (auto* invoker_data = GetInvokerData()) {
+        auto* invoker_data = GetInvokerData();
+        if (params.new_value.IsNull() && invoker_data) {
+          // Cancel any tasks that might be running.
+          DCHECK_EQ(invoker_data->GetInterestState(),
+                    InterestState::kNoInterest);
           invoker_data->CancelInterestLostTask();
+          invoker_data->CancelInterestGainedTask();
         }
       }
-      // Changing the `interesttarget` attribute could change the state of the
-      // `:has-interest` pseudo class, e.g. by pointing to a different target.
-      PseudoStateChanged(CSSSelector::kPseudoHasInterest);
     }
   }
 }
@@ -6939,19 +7010,10 @@ void Element::SetFocused(bool now_focused, mojom::blink::FocusType focus_type) {
 
   FocusStateChanged();
 
-  // Handle interest invokers for focus gained or lost.
   if (RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
           GetDocument().GetExecutionContext())) {
-    if (InterestTargetElement()) {
-      if (now_focused) {
-        ScheduleInterestGainedTask();
-      } else {
-        ScheduleInterestLostTask();
-      }
-    } else if (auto* invoker = GetInterestInvoker();
-               invoker && invoker->HasInterest() && !now_focused) {
-      invoker->ScheduleInterestLostTask();
-    }
+    HandleInterestTargetHoverOrFocus(now_focused ? InterestTargetSource::kFocus
+                                                 : InterestTargetSource::kBlur);
   }
 
   if (GetLayoutObject() || now_focused) {
@@ -7144,10 +7206,19 @@ bool Element::HasSpatialNavigationFocusHeuristics() const {
   // are. Here we make Hand-trees' tip, the first (biggest) node with {cursor:
   // pointer}, navigable because users shouldn't need to navigate through every
   // sub element that inherit this CSS.
-  if (GetComputedStyle()->Cursor() == ECursor::kPointer &&
-      (!ParentComputedStyle() ||
-       (ParentComputedStyle()->Cursor() != ECursor::kPointer))) {
-    return true;
+  if (GetComputedStyle()->Cursor() == ECursor::kPointer) {
+    bool cursor_was_inherited = false;
+    if (RuntimeEnabledFeatures::SpatNavUsesCursorInheritanceEnabled()) {
+      cursor_was_inherited = GetComputedStyle()->CursorIsInherited();
+    } else {
+      cursor_was_inherited =
+          ParentComputedStyle() &&
+          ParentComputedStyle()->Cursor() == ECursor::kPointer;
+    }
+
+    if (!cursor_was_inherited) {
+      return true;
+    }
   }
 
   if (!IsSVGElement()) {
@@ -7217,11 +7288,48 @@ bool Element::IsKeyboardFocusableScroller(
   return true;
 }
 
+// TODO(crbug.com/326681249): Should `tabindex` take precedence?
+bool Element::IsInPartialInterestPopover() const {
+  if (!RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+          GetDocument().GetExecutionContext())) {
+    return false;
+  }
+  for (const ContainerNode* node = this; node;
+       node = FlatTreeTraversal::Parent(*node)) {
+    auto* element = DynamicTo<Element>(node);
+    if (!element) {
+      continue;
+    }
+    Element* invoker = element->GetInterestInvoker();
+    if (!invoker) {
+      continue;
+    }
+    // At this point, we are at the target of an interest invoker. Return true
+    // if this is an open popover and it has partial interest. False otherwise.
+    if (auto* html_element = DynamicTo<HTMLElement>(element);
+        html_element && html_element->popoverOpen() &&
+        invoker->GetInterestState() == InterestState::kPartialInterest) {
+      DCHECK_EQ(invoker->InterestTargetElement(), html_element);
+      return true;
+    }
+    return false;
+  }
+  return false;
+}
+
 bool Element::IsKeyboardFocusableSlow(UpdateBehavior update_behavior) const {
   FocusableState focusable_state = Element::IsFocusableState(update_behavior);
   if (focusable_state == FocusableState::kNotFocusable) {
     return false;
   }
+
+  // Interest invoker targets with partial interest aren't keyboard focusable.
+  if (IsInPartialInterestPopover()) {
+    CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+        GetDocument().GetExecutionContext()));
+    return false;
+  }
+
   // If the element has a tabindex, then that determines keyboard
   // focusability.
   if (HasElementFlag(ElementFlags::kTabIndexWasSetExplicitly)) {
@@ -7822,8 +7930,8 @@ void Element::setOuterHTML(const String& html,
   if (!parent) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNoModificationAllowedError,
-        "This element's parent is of type '" + p->nodeName() +
-            "', which is not an element node.");
+        WTF::StrCat({"This element's parent is of type '", p->nodeName(),
+                     "', which is not an element node."}));
     return;
   }
 
@@ -7895,9 +8003,9 @@ Node* Element::InsertAdjacent(const String& where,
 
   exception_state.ThrowDOMException(
       DOMExceptionCode::kSyntaxError,
-      "The value provided ('" + where +
-          "') is not one of 'beforeBegin', 'afterBegin', "
-          "'beforeEnd', or 'afterEnd'.");
+      WTF::StrCat({"The value provided ('", where,
+                   "') is not one of 'beforeBegin', 'afterBegin', "
+                   "'beforeEnd', or 'afterEnd'."}));
   return nullptr;
 }
 
@@ -8030,9 +8138,9 @@ static Node* ContextNodeForInsertion(const String& where,
   }
   exception_state.ThrowDOMException(
       DOMExceptionCode::kSyntaxError,
-      "The value provided ('" + where +
-          "') is not one of 'beforeBegin', 'afterBegin', "
-          "'beforeEnd', or 'afterEnd'.");
+      WTF::StrCat({"The value provided ('", where,
+                   "') is not one of 'beforeBegin', 'afterBegin', "
+                   "'beforeEnd', or 'afterEnd'."}));
   return nullptr;
 }
 
@@ -10590,83 +10698,100 @@ bool Element::ChildStyleRecalcBlockedByDisplayLock() const {
   return context && !context->ShouldStyleChildren();
 }
 
+void Element::ChangeInterestState(Element* target, InterestState new_state) {
+  EnsureElementRareData().EnsureInvokerData().SetInterestState(new_state);
+  PseudoStateChanged(CSSSelector::kPseudoHasInterest);
+  PseudoStateChanged(CSSSelector::kPseudoHasPartialInterest);
+  if (target) {
+    target->PseudoStateChanged(CSSSelector::kPseudoTargetOfInterest);
+    target->PseudoStateChanged(CSSSelector::kPseudoTargetOfPartialInterest);
+  }
+}
+
 // static
 bool Element::GainOrLoseInterest(Element* invoker,
                                  Element* target,
-                                 bool interest_gained) {
+                                 InterestState new_state) {
   // Check pre-conditions. This function is called from posted tasks, so things
   // may have changed since invoker and target were passed.
   if (!invoker || !target || !invoker->IsInTreeScope() ||
       !invoker->GetDocument().IsActive() ||
       invoker->InterestTargetElement() != target ||
-      (!interest_gained && target->GetInterestInvoker() != invoker)) {
+      (new_state == InterestState::kNoInterest &&
+       target->GetInterestInvoker() != invoker)) {
     return false;
   }
 
   // We've reached the point where interest has officially been
   // gained or lost. Fire the event and run any default actions.
-  if (interest_gained) {
-    if (Element* existing_invoker = target->GetInterestInvoker()) {
-      // We're gaining interest, but the target already has an active interest
-      // invoker. There are two cases:
-      //  1. This is the same invoker. An example case is that the gain interest
-      //     delay is short, but the lose interest delay is long, and we just
-      //     de-hovered and then re-hovered the invoker. In this case, we can
-      //     just cancel any interest lost event and move on.
-      //  2. This is a different invoker. An example is that again, the lose
-      //     interest delay is long, and we've hovered a different invoker for
-      //     the same target. In this case, we need to immediately lose interest
-      //     from the old invoker before gaining it via the new one.
-      if (existing_invoker == invoker) {
-        // Case 1.
-        auto* invoker_data = invoker->GetInvokerData();
-        CHECK(!invoker_data->HasInterestGainedTask());
-        invoker_data->CancelInterestLostTask();
-        return false;
-      } else {
-        // Case 2.
-        if (!existing_invoker->GainOrLoseInterest(existing_invoker, target,
-                                                  /*interest_gained*/ false)) {
+  switch (new_state) {
+    case InterestState::kPartialInterest:
+    case InterestState::kFullInterest:
+      if (Element* existing_invoker = target->GetInterestInvoker()) {
+        // We're gaining interest, but the target already has an active interest
+        // invoker. There are two cases:
+        //  1. This is the same invoker. An example case is that the gain
+        //     interest delay is short, but the lose interest delay is long, and
+        //     we just de-hovered and then re-hovered the invoker. In this case,
+        //     we can just cancel any interest lost event and move on.
+        //  2. This is a different invoker. An example is that again, the lose
+        //     interest delay is long, and we've hovered a different invoker for
+        //     the same target. In this case, we need to immediately lose
+        //     interest from the old invoker before gaining it via the new one.
+        if (existing_invoker == invoker) {
+          // Case 1.
+          auto* invoker_data = invoker->GetInvokerData();
+          CHECK(!invoker_data->HasInterestGainedTask());
+          invoker_data->CancelInterestLostTask();
           return false;
-        }
-        // Event handlers might have changed things around, so re-check.
-        if (!invoker || !target || !invoker->IsInTreeScope() ||
-            !invoker->GetDocument().IsActive() ||
-            invoker->InterestTargetElement() != target) {
-          return false;
+        } else {
+          // Case 2.
+          if (!existing_invoker->GainOrLoseInterest(
+                  existing_invoker, target, InterestState::kNoInterest)) {
+            return false;
+          }
+          // Event handlers might have changed things around, so re-check.
+          if (!invoker || !target || !invoker->IsInTreeScope() ||
+              !invoker->GetDocument().IsActive() ||
+              invoker->InterestTargetElement() != target) {
+            return false;
+          }
         }
       }
-    }
-    if (!invoker->InterestGained(*target)) {
-      return false;  // event was cancelled.
-    }
-    // This is now the target's interest invoker
-    CHECK(!target->GetInterestInvoker());
-    target->EnsureElementRareData()
-        .EnsureInterestInvokerTargetData()
-        .setInterestInvoker(invoker);
-    invoker->PseudoStateChanged(CSSSelector::kPseudoHasInterest);
-    DCHECK(!invoker->GetDocument().CurrentInterestTargetElements().Contains(
-        invoker));
-    invoker->GetDocument().CurrentInterestTargetElements().insert(invoker);
-  } else {
-    if (!invoker->InterestLost(*target)) {
-      return false;  // event was cancelled.
-    }
-    // If the target still thinks this invoker is its invoker, remove it.
-    if (auto* targets_invoker = target->GetInterestInvoker();
-        targets_invoker && targets_invoker == invoker) {
-      target->EnsureElementRareData().RemoveInterestInvokerTargetData();
-      invoker->PseudoStateChanged(CSSSelector::kPseudoHasInterest);
-      DCHECK(invoker->GetDocument().CurrentInterestTargetElements().Contains(
+      if (!invoker->InterestGained(*target)) {
+        return false;  // event was cancelled.
+      }
+      // This is now the target's interest invoker
+      CHECK(!target->GetInterestInvoker());
+      target->EnsureElementRareData()
+          .EnsureInterestInvokerTargetData()
+          .setInterestInvoker(invoker);
+      invoker->ChangeInterestState(target, new_state);
+      DCHECK(!invoker->GetDocument().CurrentInterestTargetElements().Contains(
           invoker));
-      invoker->GetDocument().CurrentInterestTargetElements().erase(invoker);
-    }
+      invoker->GetDocument().CurrentInterestTargetElements().insert(invoker);
+      break;
+
+    case InterestState::kNoInterest:
+      if (!invoker->InterestLost(*target)) {
+        return false;  // event was cancelled.
+      }
+      // If the target still thinks this invoker is its invoker, remove it.
+      if (auto* targets_invoker = target->GetInterestInvoker();
+          targets_invoker && targets_invoker == invoker) {
+        target->EnsureElementRareData().RemoveInterestInvokerTargetData();
+        invoker->ChangeInterestState(target, InterestState::kNoInterest);
+        DCHECK(invoker->GetDocument().CurrentInterestTargetElements().Contains(
+            invoker));
+        invoker->GetDocument().CurrentInterestTargetElements().erase(invoker);
+      }
+      break;
   }
   return true;
 }
 
-void Element::ScheduleInterestGainedTask() {
+void Element::ScheduleInterestGainedTask(InterestState new_state) {
+  CHECK_NE(new_state, InterestState::kNoInterest);
   // This should be called on an interest invoker only.
   auto* target = InterestTargetElement();
   CHECK(target);
@@ -10689,10 +10814,10 @@ void Element::ScheduleInterestGainedTask() {
       *GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI),
       FROM_HERE,
       WTF::BindOnce(
-          [](Element* invoker, Element* target) {
-            GainOrLoseInterest(invoker, target, /*interest_gained*/ true);
+          [](Element* invoker, Element* target, InterestState new_state) {
+            GainOrLoseInterest(invoker, target, new_state);
           },
-          WrapWeakPersistent(this), WrapWeakPersistent(target)),
+          WrapWeakPersistent(this), WrapWeakPersistent(target), new_state),
       base::Seconds(show_delay_seconds)));
 }
 
@@ -10720,7 +10845,7 @@ void Element::ScheduleInterestLostTask() {
       FROM_HERE,
       WTF::BindOnce(
           [](Element* invoker, Element* target) {
-            GainOrLoseInterest(invoker, target, /*interest_gained*/ false);
+            GainOrLoseInterest(invoker, target, InterestState::kNoInterest);
           },
           WrapWeakPersistent(this), WrapWeakPersistent(target)),
       base::Seconds(hide_delay_seconds)));
@@ -10735,21 +10860,123 @@ Element* Element::GetInterestInvoker() const {
   if (!invoker) {
     return nullptr;
   }
-  if (!invoker->InterestTargetElement()) {
-    // Don't return it if it doesn't still have the `interesttarget` attribute.
-    return nullptr;
-  }
+  DCHECK_EQ(invoker->InterestTargetElement(), this);
+  DCHECK_NE(invoker->GetInterestState(), Element::InterestState::kNoInterest);
+  DCHECK_EQ(invoker->InterestTargetElement(), this);
   return invoker;
 }
 
-bool Element::HasInterest() {
-  CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
-      GetDocument().GetExecutionContext()));
-  auto* target = InterestTargetElement();
-  if (!target) {
-    return false;
+Element::InterestState Element::GetInterestState() {
+  if (!RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+          GetDocument().GetExecutionContext())) {
+    return InterestState::kNoInterest;
   }
-  return target->GetInterestInvoker() == this;
+  auto* invoker_data = GetInvokerData();
+  if (!invoker_data) {
+    return InterestState::kNoInterest;
+  }
+  return invoker_data->GetInterestState();
+}
+
+// Mechanics of `interesttarget` invokers ("interest invokers"):
+//  - It is possible for there to be nested DOM elements that both have the
+//    `interesttarget` attribute, in which case, *both* can be active at
+//    once, when the innermost one is hovered/focused (e.g. because a hover on
+//    a descendent element also triggers hover on the ancestor).
+//  - It is also possible for one element to be both an interest invoker
+//    *and* the target of an interest invoker.
+//  - When hover changes, SetHovered(false) is first called on the entire
+//    element chain "losing" hover, starting from the leaf and working up to
+//    the common ancestor of the element chain "gaining" hover. Then
+//    SetHovered(true) is called on the element chain "gaining" hover.
+//  - When focus changes, SetFocused(false) is called on just the element
+//    losing focus (not any ancestors), and then SetFocused(true) is called on
+//    the element gaining focus. Because the ancestor chain is not automatically
+//    notified, this function must walk the ancestors manually.
+void Element::HandleInterestTargetHoverOrFocus(InterestTargetSource source) {
+  DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+      GetDocument().GetExecutionContext()));
+  if (!IsInTreeScope() || !GetDocument().IsActive()) {
+    return;
+  }
+  if (source == InterestTargetSource::kBlur ||
+      source == InterestTargetSource::kFocus) {
+    for (auto& node : FlatTreeTraversal::InclusiveAncestorsOf(*this)) {
+      if (Element* element = DynamicTo<Element>(node)) {
+        element->HandleInterestTargetHoverOrFocus(
+            source == InterestTargetSource::kBlur
+                ? InterestTargetSource::kBlurElementChain
+                : InterestTargetSource::kFocusElementChain);
+      }
+    }
+    return;
+  }
+
+  InvokerData* invoker_data = GetInvokerData();
+  Element* upstream_invoker = GetInterestInvoker();
+  DCHECK(!upstream_invoker ||
+         (upstream_invoker->InterestTargetElement() == this &&
+          upstream_invoker->GetInvokerData()->GetInterestState() !=
+              InterestState::kNoInterest));
+  if (source == InterestTargetSource::kHover ||
+      source == InterestTargetSource::kFocusElementChain) {
+    if (invoker_data) [[unlikely]] {
+      // Cancel (unconditionally) any InterestLost tasks on this element (as
+      // an interest invoker), even if the interesttarget attribute
+      // has been removed.
+      invoker_data->CancelInterestLostTask();
+    }
+    if (upstream_invoker) [[unlikely]] {
+      // Cancel (unconditionally) any InterestLost tasks on the interest
+      // invoker for this element.
+      auto* upstream_data = upstream_invoker->GetInvokerData();
+      upstream_data->CancelInterestLostTask();
+      if (upstream_data->GetInterestState() ==
+          InterestState::kPartialInterest) {
+        // Hovering (or focusing, if the developer allowed that) triggers full
+        // interest in the invoker.
+        upstream_invoker->ChangeInterestState(this,
+                                              InterestState::kFullInterest);
+      }
+    }
+    if (InterestTargetElement()) [[unlikely]] {
+      // This is an interest invoker that was just hovered or focused. Schedule
+      // an InterestGained task, with a new state of "full interest" (for
+      // hover), or "partial interest" (for focus).
+      ScheduleInterestGainedTask(source == InterestTargetSource::kHover
+                                     ? InterestState::kFullInterest
+                                     : InterestState::kPartialInterest);
+    }
+  } else {
+    DCHECK(source == InterestTargetSource::kDeHover ||
+           source == InterestTargetSource::kBlurElementChain);
+    if (invoker_data && invoker_data->GetInterestState() !=
+                            InterestState::kNoInterest) [[unlikely]] {
+      // This is an active interest invoker which was just de-hovered or
+      // blurred. Cancel any pending InterestGained tasks, and schedule an
+      // InterestLost task if needed.
+      invoker_data->CancelInterestGainedTask();
+      ScheduleInterestLostTask();
+    }
+    if (upstream_invoker) [[unlikely]] {
+      // This is the target of an interest invoker, which was just de-hovered or
+      // blurred. There are two possibilities:
+      // 1. The upstream invoker is either not an ancestor of this target
+      //    element, or it, too, lost hover/focus. In either case, we need to
+      //    cancel any InterestGained tasks, and schedule an InterestLost task.
+      // 2. The upstream invoker is an ancestor of this target element, we're
+      //    handling a de-hover (not a keyboard blur), and the upstream invoker
+      //    is still hovered. I.e. we moved the mouse off of the target popover
+      //    and back into a descendant of the invoker. In this case, since
+      //    SetFocused() will never be called on the actual invoker, we should
+      //    be careful not to schedule the interestlost task.
+      upstream_invoker->GetInvokerData()->CancelInterestGainedTask();
+      if (source == InterestTargetSource::kBlurElementChain ||
+          !upstream_invoker->IsHovered()) {
+        upstream_invoker->ScheduleInterestLostTask();
+      }
+    }
+  }
 }
 
 void Element::SetHovered(bool hovered) {
@@ -10776,72 +11003,9 @@ void Element::SetHovered(bool hovered) {
   InvalidateIfHasEffectiveAppearance();
 
   if (RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
-          GetDocument().GetExecutionContext()) &&
-      IsInTreeScope() && document.IsActive()) {
-    // Mechanics of `interesttarget` invokers ("interest invokers"):
-    //  - It is possible for there to be nested DOM elements that both have the
-    //    `interesttarget` attribute, in which case, *both* can be active at
-    //    once, when the innermost one is hovered (because a hover on a
-    //    descendent element also triggers hover on the ancestor).
-    //  - It is also possible for one element to be both an interest invoker
-    //    *and* the target of an interest invoker.
-    //  - When hover changes, SetHovered(false) is first called first on the
-    //    element chain "losing" hover, up to the common ancestor of the element
-    //    chain "gaining" hover. Then SetHovered(true) is called on the element
-    //    chain "gaining" hover.
-    InvokerData* invoker_data = GetInvokerData();
-    Element* target = InterestTargetElement();
-    Element* upstream_invoker = GetInterestInvoker();
-    if (hovered) {
-      if (invoker_data) [[unlikely]] {
-        // Cancel (unconditionally) any InterestLost tasks on this element (as
-        // an interest invoker), even if the interesttarget attribute
-        // has been removed.
-        invoker_data->CancelInterestLostTask();
-      }
-      if (upstream_invoker) [[unlikely]] {
-        // Cancel (unconditionally) any InterestLost tasks on the interest
-        // invoker for this element.
-        if (InvokerData* upstream_invoker_data =
-                upstream_invoker->GetInvokerData()) {
-          upstream_invoker_data->CancelInterestLostTask();
-        }
-      }
-      if (target) [[unlikely]] {
-        // This is an interest invoker that was just hovered. Schedule an
-        // InterestGained task.
-        ScheduleInterestGainedTask();
-      }
-    } else {
-      if (target && invoker_data) [[unlikely]] {
-        // This is an interest invoker which was just de-hovered. Cancel any
-        // pending InterestGained tasks, and schedule an InterestLost task if
-        // needed. (We need to check that invoker_data is non-nullptr because
-        // the `invoketarget` attribute might have been added while this element
-        // was already hovered.)
-        invoker_data->CancelInterestGainedTask();
-        if (target->GetInterestInvoker() == this) {
-          ScheduleInterestLostTask();
-        }
-      }
-      if (upstream_invoker) [[unlikely]] {
-        // This is the target of an interest invoker, which was just de-hovered.
-        // There are two possibilities:
-        // 1. The upstream invoker is an ancestor of this target element, and
-        //    that element is still hovered. In this case, we should not
-        //    schedule the interestlost task.
-        // 2. The upstream invoker is either not an ancestor of this target
-        //    element, or it, too, lost hover. In either case, we need to
-        //    schedule an InterestLost task. Any existing InterestLost tasks
-        //    would have been cancelled (above) when this element was hovered.
-        // Note that an element can be both an interest invoker and a target.
-        CHECK(!upstream_invoker->GetInvokerData() ||
-              !upstream_invoker->GetInvokerData()->HasInterestGainedTask());
-        if (!upstream_invoker->IsHovered()) {
-          upstream_invoker->ScheduleInterestLostTask();
-        }
-      }
-    }
+          GetDocument().GetExecutionContext())) {
+    HandleInterestTargetHoverOrFocus(hovered ? InterestTargetSource::kHover
+                                             : InterestTargetSource::kDeHover);
   }
 }
 

@@ -41,9 +41,11 @@ class InteractionTestUtilSimulatorViews
                                         InputType input_type) override;
   ui::test::ActionResult DoDefaultAction(ui::TrackedElement* element,
                                          InputType input_type) override;
-  ui::test::ActionResult SelectTab(ui::TrackedElement* tab_collection,
-                                   size_t index,
-                                   InputType input_type) override;
+  ui::test::ActionResult SelectTab(
+      ui::TrackedElement* tab_collection,
+      size_t index,
+      InputType input_type,
+      std::optional<size_t> expected_index_after_selection) override;
   ui::test::ActionResult SelectDropdownItem(ui::TrackedElement* dropdown,
                                             size_t index,
                                             InputType input_type) override;

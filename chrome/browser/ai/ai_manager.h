@@ -17,6 +17,8 @@
 #include "chrome/browser/ai/ai_summarizer.h"
 #include "chrome/browser/ai/ai_utils.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/render_widget_host_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -30,17 +32,23 @@ namespace base {
 class SupportsUserData;
 }  // namespace base
 
+namespace content {
+class RenderFrameHost;
+}  // namespace content
+
 using blink::mojom::AILanguageCodePtr;
 
 // Owned by the host of the document / service worker via `SupportUserData`.
 // The browser-side implementation of `blink::mojom::AIManager`.
 class AIManager : public base::SupportsUserData::Data,
-                  public blink::mojom::AIManager {
+                  public blink::mojom::AIManager,
+                  public content::RenderWidgetHostObserver {
  public:
   using AILanguageModelOrCreationError =
       base::expected<std::unique_ptr<AILanguageModel>,
                      blink::mojom::AIManagerCreateClientError>;
-  explicit AIManager(content::BrowserContext* browser_context);
+  AIManager(content::BrowserContext* browser_context,
+            content::RenderFrameHost* rfh);
   AIManager(const AIManager&) = delete;
   AIManager& operator=(const AIManager&) = delete;
 
@@ -54,10 +62,7 @@ class AIManager : public base::SupportsUserData::Data,
       AIContextBoundObjectSet& context_bound_object_set,
       const AILanguageModel::Context& context,
       mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
-          client_remote,
-      std::unique_ptr<
-          optimization_guide::OptimizationGuideModelExecutor::Session>
-          override_session);
+          client_remote);
 
   size_t GetContextBoundObjectSetSizeForTesting() {
     return context_bound_object_set_.GetSizeForTesting();
@@ -146,13 +151,16 @@ class AIManager : public base::SupportsUserData::Data,
       AIContextBoundObjectSet& context_bound_object_set,
       base::OnceCallback<void(AILanguageModelOrCreationError)> callback,
       const std::optional<const AILanguageModel::Context>& context =
-          std::nullopt,
-      std::unique_ptr<
-          optimization_guide::OptimizationGuideModelExecutor::Session>
-          override_session = nullptr);
+          std::nullopt);
 
   void SendDownloadProgressUpdate(uint64_t downloaded_bytes,
                                   uint64_t total_bytes);
+
+  // content::RenderWidgetHostObserver:
+  void RenderWidgetHostVisibilityChanged(content::RenderWidgetHost* widget_host,
+                                         bool became_visible) override;
+  void RenderWidgetHostDestroyed(
+      content::RenderWidgetHost* widget_host) override;
 
   mojo::ReceiverSet<blink::mojom::AIManager> receivers_;
   mojo::RemoteSet<blink::mojom::ModelDownloadProgressObserver>
@@ -161,6 +169,10 @@ class AIManager : public base::SupportsUserData::Data,
 
   AIContextBoundObjectSet context_bound_object_set_;
   raw_ptr<content::BrowserContext> browser_context_;
+
+  base::ScopedObservation<content::RenderWidgetHost,
+                          content::RenderWidgetHostObserver>
+      widget_observer_{this};
 
   base::WeakPtrFactory<AIManager> weak_factory_{this};
 };

@@ -17,6 +17,7 @@
 #include "pdf/pdf_ink_transform.h"
 #include "pdf/pdf_transform.h"
 #include "pdf/pdfium/pdfium_api_wrappers.h"
+#include "pdf/pdfium/pdfium_rotation.h"
 #include "printing/units.h"
 #include "third_party/ink/src/ink/geometry/mesh.h"
 #include "third_party/ink/src/ink/geometry/partitioned_mesh.h"
@@ -24,8 +25,8 @@
 #include "third_party/ink/src/ink/geometry/tessellator.h"
 #include "third_party/pdfium/public/fpdf_edit.h"
 #include "third_party/pdfium/public/fpdfview.h"
-#include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace chrome_pdf {
 
@@ -61,7 +62,7 @@ gfx::PointF GetSegmentPoint(FPDF_PATHSEGMENT segment) {
 // with Ink code. Although the actual transform depends on the values in
 // `transform` and `point`, this should always be used to convert PDF
 // coordinates to canonical coordinates.
-ink::Point GetTransformedInkPoint(const gfx::AxisTransform2d& transform,
+ink::Point GetTransformedInkPoint(const gfx::Transform& transform,
                                   const gfx::PointF& point) {
   return InkPointFromGfxPoint(transform.MapPoint(point));
 }
@@ -92,7 +93,7 @@ std::optional<ink::Mesh> CreateInkMeshFromPolyline(
 
 std::optional<ink::PartitionedMesh> ReadV2InkModeledShapeFromPath(
     FPDF_PAGEOBJECT path,
-    const gfx::AxisTransform2d& transform) {
+    const gfx::Transform& transform) {
   CHECK_EQ(FPDFPageObj_GetType(path), FPDF_PAGEOBJ_PATH);
 
   const int segment_count = FPDFPath_CountSegments(path);
@@ -179,9 +180,11 @@ std::vector<ReadV2InkPathResult> ReadV2InkPathsFromPageAsModeledShapes(
   CHECK(result);
   const gfx::Vector2dF offset(bounding_box.left, bounding_box.bottom);
 
-  gfx::AxisTransform2d transform =
-      GetCanonicalToPdfTransform(FPDF_GetPageHeightF(page), offset);
-  transform.Invert();
+  const gfx::Transform transform =
+      GetCanonicalToPdfTransform(
+          {FPDF_GetPageWidthF(page), FPDF_GetPageHeightF(page)},
+          GetPageRotation(page).value_or(PageRotation::kRotate0), offset)
+          .GetCheckedInverse();
 
   const int page_object_count = FPDFPage_CountObjects(page);
   for (int i = 0; i < page_object_count; ++i) {

@@ -14,6 +14,9 @@ public interface EducationalTipCardProvider {
     /** Gets the description of the card. */
     String getCardDescription();
 
+    /** Gets the string for the button of the card. */
+    String getCardButtonText();
+
     /** Gets the image of the card. */
     @DrawableRes
     int getCardImage();

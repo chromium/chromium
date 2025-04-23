@@ -581,7 +581,8 @@ void AdjustVirtualCardSuggestionContent(Suggestion& suggestion,
     suggestion.labels = {};
   }
 #else   // Desktop dropdown.
-  if (trigger_field_type == CREDIT_CARD_NUMBER) {
+  // The label fields will be consistent regardless of focused field.
+  if (ShouldUseNewFopDisplay() || trigger_field_type == CREDIT_CARD_NUMBER) {
     // Reset the labels as we only show benefit and virtual card label to
     // conserve space.
     suggestion.labels = {};
@@ -1449,10 +1450,8 @@ std::vector<Suggestion> GetSuggestionsForIbans(const std::vector<Iban>& ibans) {
     Suggestion suggestion;
     suggestion.custom_icon =
         ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-            base::FeatureList::IsEnabled(
-                features::kAutofillEnableNewFopDisplayDesktop)
-                ? IDR_AUTOFILL_IBAN
-                : IDR_AUTOFILL_IBAN_OLD);
+            ShouldUseNewFopDisplay() ? IDR_AUTOFILL_IBAN
+                                     : IDR_AUTOFILL_IBAN_OLD);
     suggestion.icon = Suggestion::Icon::kIban;
     suggestion.type = SuggestionType::kIbanEntry;
     if (iban.record_type() == Iban::kLocalIban) {

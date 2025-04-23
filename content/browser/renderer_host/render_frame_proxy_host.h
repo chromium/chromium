@@ -361,9 +361,6 @@ class CONTENT_EXPORT RenderFrameProxyHost
   // some form of page context.
   scoped_refptr<RenderViewHostImpl> render_view_host_;
 
-  std::unique_ptr<blink::AssociatedInterfaceProvider>
-      remote_associated_interfaces_;
-
   // Holder of Mojo connection with the Frame service in Blink.
   mojo::AssociatedRemote<blink::mojom::RemoteFrame> remote_frame_;
 

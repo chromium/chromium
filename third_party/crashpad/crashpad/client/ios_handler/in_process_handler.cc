@@ -147,6 +147,9 @@ void InProcessHandler::DumpExceptionFromSignal(siginfo_t* siginfo,
     CRASHPAD_RAW_LOG("Cannot DumpExceptionFromSignal without writer");
     return;
   }
+  if (exception_callback_for_testing_) {
+    exception_callback_for_testing_();
+  }
   ScopedReport report(writer.GetWriter(), system_data_, annotations_);
   InProcessIntermediateDumpHandler::WriteExceptionFromSignal(
       writer.GetWriter(), system_data_, siginfo, context);
@@ -170,8 +173,8 @@ void InProcessHandler::DumpExceptionFromMachException(
     return;
   }
 
-  if (mach_exception_callback_for_testing_) {
-    mach_exception_callback_for_testing_();
+  if (exception_callback_for_testing_) {
+    exception_callback_for_testing_();
   }
 
   ScopedReport report(writer.GetWriter(), system_data_, annotations_);

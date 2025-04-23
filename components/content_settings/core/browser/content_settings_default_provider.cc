@@ -395,15 +395,13 @@ void DefaultProvider::RecordHistogramMetrics() {
       CONTENT_SETTING_NUM_SETTINGS);
 #endif
 
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_IOS)
   base::UmaHistogramEnumeration(
       "ContentSettings.RegularProfile.DefaultImagesSetting",
       IntToContentSetting(
           prefs_->GetInteger(GetPrefName(ContentSettingsType::IMAGES))),
       CONTENT_SETTING_NUM_SETTINGS);
-#endif
 
-#if !BUILDFLAG(IS_IOS)
   base::UmaHistogramEnumeration(
       "ContentSettings.RegularProfile.DefaultJavaScriptSetting",
       IntToContentSetting(

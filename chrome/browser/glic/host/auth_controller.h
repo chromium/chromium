@@ -19,25 +19,6 @@ class GlicCookieSynchronizer;
 // Decides when to refresh sign-in cookies for the webview.
 class AuthController : public signin::IdentityManager::Observer {
  public:
-  // What to do if cookie sync fails, but chrome's sign-in state looks good?
-  enum class FallbackBehavior {
-    // Do nothing, return an error.
-    kNone,
-    // Show the reauth page, return kShowingReauthSigninPage.
-    kShowReauthPage,
-  };
-
-  // Result of `BeforeShow()`.
-  enum BeforeShowResult {
-    // The glic webview should have valid sign-in cookies.
-    kReady = 0,
-    // Sign-in cookies cannot be automatically refreshed. A new tab has been
-    // opened to allow the user to sign-in manually.
-    kShowingReauthSigninPage = 1,
-    // Syncing cookies failed, and `show_reauth_on_failure` was false.
-    kSyncFailed = 2,
-  };
-
   AuthController(Profile* profile,
                  signin::IdentityManager* identity_manager,
                  bool use_for_fre);
@@ -49,10 +30,10 @@ class AuthController : public signin::IdentityManager::Observer {
   void CheckAuthBeforeLoad(
       base::OnceCallback<void(mojom::PrepareForClientResult)> callback);
 
-  // Called before the glic window is shown. Checks status of sign-in state and
-  // webview cookies. See `BeforeShowResult` for result detail.
-  void CheckAuthBeforeShow(FallbackBehavior fallback_behavior,
-                           base::OnceCallback<void(BeforeShowResult)> callback);
+  // Called before the glic window is shown. Returns true if the glic window
+  // should be shown. Returns false if the login page is shown instead, in which
+  // case the glic window should not be shown.
+  bool CheckAuthBeforeShowSync(base::OnceClosure after_signin);
 
   // Sync cookies, even if it appears as though a sync is not required.
   void ForceSyncCookies(base::OnceCallback<void(bool)> callback);
@@ -68,6 +49,8 @@ class AuthController : public signin::IdentityManager::Observer {
   // TODO(crbug.com/406529330): Track sign-in flow correctly.
   void ShowReauthForAccount(base::OnceClosure after_signin);
   void OnGlicWindowOpened();
+
+  bool RequiresSignIn() const;
 
   void SetCookieSynchronizerForTesting(
       std::unique_ptr<GlicCookieSynchronizer> synchronizer);
@@ -94,9 +77,6 @@ class AuthController : public signin::IdentityManager::Observer {
     kOk,
   };
   TokenState GetTokenState() const;
-  void DoFallback(FallbackBehavior fallback_behavior,
-                  base::OnceCallback<void(BeforeShowResult)> callback,
-                  bool sync_success);
   base::WeakPtr<AuthController> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }

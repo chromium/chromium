@@ -5,9 +5,9 @@
 GEN_INCLUDE(['dictation_test_base.js']);
 
 /** Dictation feature using accessibility common extension browser tests. */
-DictationE2ETest = class extends DictationE2ETestBase {};
+DictationMV2E2ETest = class extends DictationE2ETestBase {};
 
-AX_TEST_F('DictationE2ETest', 'ResetsImeAfterToggleOff', async function() {
+AX_TEST_F('DictationMV2E2ETest', 'ResetsImeAfterToggleOff', async function() {
   // Set something as the active IME.
   this.mockInputMethodPrivate.setCurrentInputMethod('keyboard_cat');
   this.mockLanguageSettingsPrivate.addInputMethod('keyboard_cat');
@@ -16,7 +16,7 @@ AX_TEST_F('DictationE2ETest', 'ResetsImeAfterToggleOff', async function() {
   this.checkDictationImeInactive('keyboard_cat');
 });
 
-AX_TEST_F('DictationE2ETest', 'UpdateRecognitionProps', async function() {
+AX_TEST_F('DictationMV2E2ETest', 'UpdateRecognitionProps', async function() {
   assertFalse(this.getSpeechRecognitionActive());
   assertEquals(undefined, this.getSpeechRecognitionLocale());
   assertEquals(undefined, this.getSpeechRecognitionInterimResults());
@@ -30,7 +30,7 @@ AX_TEST_F('DictationE2ETest', 'UpdateRecognitionProps', async function() {
 });
 
 AX_TEST_F(
-    'DictationE2ETest', 'UpdatesSpeechRecognitionLangOnLocaleChange',
+    'DictationMV2E2ETest', 'UpdatesSpeechRecognitionLangOnLocaleChange',
     async function() {
       let locale = await this.getPref(Dictation.DICTATION_LOCALE_PREF);
       this.updateSpeechRecognitionProperties({locale: locale.value});
@@ -42,14 +42,14 @@ AX_TEST_F(
       assertEquals('es-ES', this.getSpeechRecognitionLocale());
     });
 
-AX_TEST_F('DictationE2ETest', 'StopsOnRecognitionError', async function() {
+AX_TEST_F('DictationMV2E2ETest', 'StopsOnRecognitionError', async function() {
   this.toggleDictationOn();
   this.sendSpeechRecognitionErrorEvent();
   assertFalse(this.getDictationActive());
   assertFalse(this.getSpeechRecognitionActive());
 });
 
-AX_TEST_F('DictationE2ETest', 'StopsOnImeBlur', async function() {
+AX_TEST_F('DictationMV2E2ETest', 'StopsOnImeBlur', async function() {
   this.toggleDictationOn();
   this.blurInputContext();
   assertFalse(this.getSpeechRecognitionActive());
@@ -57,7 +57,7 @@ AX_TEST_F('DictationE2ETest', 'StopsOnImeBlur', async function() {
   assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
 });
 
-AX_TEST_F('DictationE2ETest', 'CommitsFinalResults', async function() {
+AX_TEST_F('DictationMV2E2ETest', 'CommitsFinalResults', async function() {
   this.toggleDictationOn();
   this.sendInterimSpeechResult('kittens');
   assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
@@ -80,7 +80,7 @@ AX_TEST_F('DictationE2ETest', 'CommitsFinalResults', async function() {
 });
 
 AX_TEST_F(
-    'DictationE2ETest', 'CommitsInterimResultsWhenRecognitionStops',
+    'DictationMV2E2ETest', 'CommitsInterimResultsWhenRecognitionStops',
     async function() {
       this.toggleDictationOn();
       this.sendInterimSpeechResult('fish fly');
@@ -90,7 +90,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'DictationE2ETest', 'DoesNotCommitInterimResultsAfterImeBlur',
+    'DictationMV2E2ETest', 'DoesNotCommitInterimResultsAfterImeBlur',
     async function() {
       this.toggleDictationOn();
       this.sendInterimSpeechResult('ducks dig');
@@ -99,7 +99,7 @@ AX_TEST_F(
       assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
     });
 
-AX_TEST_F('DictationE2ETest', 'TimesOutWithNoImeContext', async function() {
+AX_TEST_F('DictationMV2E2ETest', 'TimesOutWithNoImeContext', async function() {
   this.mockSetTimeoutMethod();
   this.toggleDictationOn();
 
@@ -115,44 +115,48 @@ AX_TEST_F('DictationE2ETest', 'TimesOutWithNoImeContext', async function() {
   assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
 });
 
-AX_TEST_F('DictationE2ETest', 'TimesOutWithNoSpeechNetwork', async function() {
-  this.mockSpeechRecognitionPrivate.setSpeechRecognitionType(
-      SpeechRecognitionType.NETWORK);
-  this.mockSetTimeoutMethod();
-  this.toggleDictationOn();
+AX_TEST_F(
+    'DictationMV2E2ETest', 'TimesOutWithNoSpeechNetwork', async function() {
+      this.mockSpeechRecognitionPrivate.setSpeechRecognitionType(
+          SpeechRecognitionType.NETWORK);
+      this.mockSetTimeoutMethod();
+      this.toggleDictationOn();
 
-  const callback =
-      this.getCallbackWithDelay(Dictation.Timeouts.NO_SPEECH_NETWORK_MS);
-  assertNotNullNorUndefined(callback);
+      const callback =
+          this.getCallbackWithDelay(Dictation.Timeouts.NO_SPEECH_NETWORK_MS);
+      assertNotNullNorUndefined(callback);
 
-  // Triggering the timeout should cause a request to toggle Dictation, but
-  // nothing should be committed after AccessibilityPrivate toggle is received.
-  callback();
-  this.clearSetTimeoutData();
-  assertFalse(this.getDictationActive());
-  assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
-});
-
-AX_TEST_F('DictationE2ETest', 'TimesOutWithNoSpeechOnDevice', async function() {
-  this.mockSpeechRecognitionPrivate.setSpeechRecognitionType(
-      SpeechRecognitionType.ON_DEVICE);
-  this.mockSetTimeoutMethod();
-  this.toggleDictationOn();
-
-  const callback =
-      this.getCallbackWithDelay(Dictation.Timeouts.NO_SPEECH_ONDEVICE_MS);
-  assertNotNullNorUndefined(callback);
-
-  // Triggering the timeout should cause a request to toggle Dictation, but
-  // nothing should be committed after AccessibilityPrivate toggle is received.
-  callback();
-  this.clearSetTimeoutData();
-  assertFalse(this.getDictationActive());
-  assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
-});
+      // Triggering the timeout should cause a request to toggle Dictation, but
+      // nothing should be committed after AccessibilityPrivate toggle is
+      // received.
+      callback();
+      this.clearSetTimeoutData();
+      assertFalse(this.getDictationActive());
+      assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
+    });
 
 AX_TEST_F(
-    'DictationE2ETest', 'TimesOutAfterInterimResultsAndCommits',
+    'DictationMV2E2ETest', 'TimesOutWithNoSpeechOnDevice', async function() {
+      this.mockSpeechRecognitionPrivate.setSpeechRecognitionType(
+          SpeechRecognitionType.ON_DEVICE);
+      this.mockSetTimeoutMethod();
+      this.toggleDictationOn();
+
+      const callback =
+          this.getCallbackWithDelay(Dictation.Timeouts.NO_SPEECH_ONDEVICE_MS);
+      assertNotNullNorUndefined(callback);
+
+      // Triggering the timeout should cause a request to toggle Dictation, but
+      // nothing should be committed after AccessibilityPrivate toggle is
+      // received.
+      callback();
+      this.clearSetTimeoutData();
+      assertFalse(this.getDictationActive());
+      assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
+    });
+
+AX_TEST_F(
+    'DictationMV2E2ETest', 'TimesOutAfterInterimResultsAndCommits',
     async function() {
       this.mockSetTimeoutMethod();
       this.toggleDictationOn();
@@ -173,7 +177,7 @@ AX_TEST_F(
       await this.assertCommittedText('sheep sleep');
     });
 
-AX_TEST_F('DictationE2ETest', 'TimesOutAfterFinalResults', async function() {
+AX_TEST_F('DictationMV2E2ETest', 'TimesOutAfterFinalResults', async function() {
   this.mockSetTimeoutMethod();
   this.toggleDictationOn();
   this.sendFinalSpeechResult('bats bounce');
@@ -192,7 +196,7 @@ AX_TEST_F('DictationE2ETest', 'TimesOutAfterFinalResults', async function() {
 });
 
 AX_TEST_F(
-    'DictationE2ETest', 'CommandsDoNotCommitThemselves', async function() {
+    'DictationMV2E2ETest', 'CommandsDoNotCommitThemselves', async function() {
       this.toggleDictationOn();
       for (const command of Object.values(this.commandStrings)) {
         this.sendInterimSpeechResult(command);
@@ -217,48 +221,50 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'DictationE2ETest', 'TypePrefixWorksForNonCommands', async function() {
+    'DictationMV2E2ETest', 'TypePrefixWorksForNonCommands', async function() {
       this.toggleDictationOn();
       this.sendFinalSpeechResult('type this is a test');
       await this.assertCommittedText('this is a test');
     });
 
-AX_TEST_F('DictationE2ETest', 'DontCommitAfterMacroSuccess', async function() {
-  this.toggleDictationOn();
-  this.sendInterimSpeechResult('move to the next line');
-  // Perform the next line command.
-  this.sendFinalSpeechResult('move to the next line');
-  // Wait for the UI to show macro success.
-  await this.waitForUIProperties({
-    visible: true,
-    icon: this.iconType.MACRO_SUCCESS,
-    text: this.commandStrings.NAV_NEXT_LINE,
-  });
-  this.toggleDictationOff();
-  // No text should be committed.
-  assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
-});
+AX_TEST_F(
+    'DictationMV2E2ETest', 'DontCommitAfterMacroSuccess', async function() {
+      this.toggleDictationOn();
+      this.sendInterimSpeechResult('move to the next line');
+      // Perform the next line command.
+      this.sendFinalSpeechResult('move to the next line');
+      // Wait for the UI to show macro success.
+      await this.waitForUIProperties({
+        visible: true,
+        icon: this.iconType.MACRO_SUCCESS,
+        text: this.commandStrings.NAV_NEXT_LINE,
+      });
+      this.toggleDictationOff();
+      // No text should be committed.
+      assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
+    });
 
 
-AX_TEST_F('DictationE2ETest', 'NoCommandsWhenNotSupported', async function() {
-  this.toggleDictationOn();
-  this.sendFinalSpeechResult('New line');
-  await this.assertCommittedText('\n');
-  this.mockInputIme.clearLastParameters();
+AX_TEST_F(
+    'DictationMV2E2ETest', 'NoCommandsWhenNotSupported', async function() {
+      this.toggleDictationOn();
+      this.sendFinalSpeechResult('New line');
+      await this.assertCommittedText('\n');
+      this.mockInputIme.clearLastParameters();
 
-  // System language is en-US. If the Dictation locale doesn't match,
-  // commands should not work.
-  await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'es-ES');
+      // System language is en-US. If the Dictation locale doesn't match,
+      // commands should not work.
+      await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'es-ES');
 
-  // Now this text should just get typed in instead of reinterpreted.
-  this.sendFinalSpeechResult('New line');
-  await this.assertCommittedText('New line');
-  this.mockInputIme.clearLastParameters();
-});
+      // Now this text should just get typed in instead of reinterpreted.
+      this.sendFinalSpeechResult('New line');
+      await this.assertCommittedText('New line');
+      this.mockInputIme.clearLastParameters();
+    });
 
 // TODO(crbug.com/1442591) flaky test
 AX_TEST_F(
-    'DictationE2ETest', 'DISABLED_SilencesSpokenFeedbackWhenStarting',
+    'DictationMV2E2ETest', 'DISABLED_SilencesSpokenFeedbackWhenStarting',
     async function() {
       assertEquals(
           0, this.mockAccessibilityPrivate.getSpokenFeedbackSilencedCount());
@@ -278,7 +284,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'DictationE2ETest', 'DoesNotSilenceSpokenFeedbackUnnecessarily',
+    'DictationMV2E2ETest', 'DoesNotSilenceSpokenFeedbackUnnecessarily',
     async function() {
       assertEquals(
           0, this.mockAccessibilityPrivate.getSpokenFeedbackSilencedCount());
@@ -294,7 +300,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'DictationE2ETest', 'SurroundingInfoResetsAfterToggleOff',
+    'DictationMV2E2ETest', 'SurroundingInfoResetsAfterToggleOff',
     async function() {
       assertEquals(null, this.getInputController().surroundingInfo_);
       this.toggleDictationOn();
@@ -313,7 +319,7 @@ AX_TEST_F(
       assertEquals(null, this.getInputController().surroundingInfo_);
     });
 
-AX_TEST_F('DictationE2ETest', 'ShowsToastWhenMicMuted', async function() {
+AX_TEST_F('DictationMV2E2ETest', 'ShowsToastWhenMicMuted', async function() {
   const StreamType = chrome.audio.StreamType;
   const ToastType = chrome.accessibilityPrivate.ToastType;
 

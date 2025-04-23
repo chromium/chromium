@@ -348,7 +348,12 @@ interface InferredLabel {
  * @return An inferred label or null.
  */
 function buildInferredLabelIfValid(label: string): InferredLabel | null {
-  const isValid = label.search(/[^\s*:()\u2013-]/) >= 0;
+  // LINT.IfChange(InvalidLabelCriteria)
+  const isValid = gCrWebLegacy.autofill_form_features
+                      .isAutofillDisallowSlashDotLabelsEnabled() ?
+      label.search(/[^\s*:()\/\.\u2013-]/) >= 0 :
+      label.search(/[^\s*:()\u2013-]/) >= 0;
+  // LINT.ThenChange(/components/autofill/content/renderer/form_autofill_util.cc:InvalidLabelCriteria)
   if (isValid) {
     return {label: label.trim()};
   }

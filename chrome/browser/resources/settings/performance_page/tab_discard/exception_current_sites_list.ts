@@ -85,11 +85,11 @@ export class ExceptionCurrentSitesListElement extends
   private metricsProxy_: PerformanceMetricsProxy =
       PerformanceMetricsProxyImpl.getInstance();
 
-  private currentSites_: Site[];
-  private selectedSites_: Set<Site>;
-  private submitDisabled: boolean;
-  private updateIntervalMS_: number;
-  visible: boolean;
+  declare private currentSites_: Site[];
+  declare private selectedSites_: Set<Site>;
+  declare private submitDisabled: boolean;
+  declare private updateIntervalMS_: number;
+  declare visible: boolean;
 
   private onVisibilityChangedListener_: () => void;
   private updateIntervalID_: number|undefined = undefined;

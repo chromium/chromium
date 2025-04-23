@@ -11,6 +11,7 @@
 #import "components/data_sharing/public/data_sharing_service.h"
 #import "components/data_sharing/public/features.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -24,11 +25,21 @@ class DataSharingServiceFactoryTest : public PlatformTest {
 
   void InitService(bool enable_feature) {
     if (enable_feature) {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          {{data_sharing::features::kDataSharingFeature, {}}}, {});
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/
+          {
+              kTabGroupSync,
+              kTabGroupsIPad,
+              data_sharing::features::kDataSharingJoinOnly,
+          },
+          /*disable_features=*/{});
     } else {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          {}, {{data_sharing::features::kDataSharingFeature}});
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disable_features=*/{
+              data_sharing::features::kDataSharingJoinOnly,
+              data_sharing::features::kDataSharingFeature,
+          });
     }
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(DataSharingServiceFactory::GetInstance(),
@@ -38,8 +49,9 @@ class DataSharingServiceFactoryTest : public PlatformTest {
 
   void TearDown() override { web_task_env_.RunUntilIdle(); }
 
-  web::WebTaskEnvironment web_task_env_;
+ protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  web::WebTaskEnvironment web_task_env_;
   std::unique_ptr<TestProfileIOS> profile_;
 };
 

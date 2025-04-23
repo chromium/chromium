@@ -34,21 +34,18 @@ static bool GetDeviceNamesWinImpl(EDataFlow data_flow,
                                   AudioDeviceNames* device_names) {
   // It is assumed that this method is called from a COM thread, i.e.,
   // CoInitializeEx() is not called here again to avoid STA/MTA conflicts.
-  Microsoft::WRL::ComPtr<IMMDeviceEnumerator> enumerator;
-  HRESULT hr =
-      ::CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL,
-                         CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&enumerator));
-  DCHECK_NE(CO_E_NOTINITIALIZED, hr);
-  if (FAILED(hr)) {
-    LOG(WARNING) << "Failed to create IMMDeviceEnumerator: " << std::hex << hr;
+  Microsoft::WRL::ComPtr<IMMDeviceEnumerator> enumerator =
+      CoreAudioUtil::CreateDeviceEnumerator();
+  if (!enumerator) {
+    LOG(WARNING) << "Failed to create IMMDeviceEnumerator: ";
     return false;
   }
 
   // Generate a collection of active audio endpoint devices.
   // This method will succeed even if all devices are disabled.
   Microsoft::WRL::ComPtr<IMMDeviceCollection> collection;
-  hr = enumerator->EnumAudioEndpoints(data_flow, DEVICE_STATE_ACTIVE,
-                                      &collection);
+  HRESULT hr = enumerator->EnumAudioEndpoints(data_flow, DEVICE_STATE_ACTIVE,
+                                              &collection);
   if (FAILED(hr))
     return false;
 

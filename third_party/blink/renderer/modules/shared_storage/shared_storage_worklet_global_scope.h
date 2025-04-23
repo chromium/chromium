@@ -187,7 +187,7 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
       mojom::blink::PrivateAggregationOperationDetailsPtr pa_operation_details);
 
   // Notifies the `private_aggregation_` that the operation with the given ID
-  // has finished and whether it finished due to an uncaught exception.
+  // has finished and whether it finished due to an uncaught error.
   void FinishOperation(
       int64_t operation_id,
       PrivateAggregation::TerminationStatus termination_status);

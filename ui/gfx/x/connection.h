@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #ifndef UI_GFX_X_CONNECTION_H_
 #define UI_GFX_X_CONNECTION_H_
 
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
@@ -382,7 +378,7 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
     size_t byte_len = response->value_len * response->format / 8u;
     value->resize(response->value_len);
     if (byte_len > 0u) {
-      memcpy(value->data(), response->value->bytes(), byte_len);
+      UNSAFE_TODO(memcpy(value->data(), response->value->bytes(), byte_len));
     }
     if (out_type) {
       *out_type = response->type;

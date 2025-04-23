@@ -3,7 +3,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from aggregation import AggregationKind, AggregationDetails, GetAggregationDetails
+from aggregation import AggregationKind
+from aggregation import AggregationDetails
+from aggregation import GetAggregationDetails
+from aggregation import GenerateCCAggregation
+from aggregation import GenerateHHAggregation
 import unittest
 
 
@@ -106,7 +110,7 @@ class AggregationTest(unittest.TestCase):
     })
 
     # Expect the result to be sorted as well.
-    self.assertEqual([["a", "a"], ["b", "b"], ["c", "c"], ["d", "d"]],
+    self.assertEqual([("a", "a"), ("b", "b"), ("c", "c"), ("d", "d")],
                      aggregation.GetSortedMapElements())
 
   def testGetSortedMapElementsWithAliases(self):
@@ -127,9 +131,8 @@ class AggregationTest(unittest.TestCase):
     })
 
     # Expect the result to be sorted as well.
-    self.assertEqual(
-        [["a", "d"], ["b", "c"], ["c", "c"], ["d", "d"], ["e", "c"]],
-        aggregation.GetSortedMapElements())
+    self.assertEqual([("a", "d"), ("b", "c"), ("c", "c"), ("d", "d"),
+                      ("e", "c")], aggregation.GetSortedMapElements())
 
   def testGenerateMapWithConflictingAliases(self):
     self.assertRaisesRegex(
@@ -194,6 +197,104 @@ class AggregationTest(unittest.TestCase):
                 "type": "map",
             }
         }))
+
+  def BuildTestElements(self, source: str, target: str,
+                        count: int) -> dict[str, str]:
+    """Generate a map of `count` test elements.
+
+      Elements are named `<source>_<id>` and point to `<target>_<id>`.
+      """
+    res = {}
+    for index in range(count):
+      res[f'{source}_{index+1}'] = f'{target}_{index+1}'
+    return res
+
+  def testHHNoAggregation(self):
+    agg = AggregationDetails(
+        kind=AggregationKind.NONE,
+        name='kTestAggregation',
+        elements=self.BuildTestElements('item', 'item', 5),
+        export_items=True,
+        map_key_type=None,
+    )
+
+    self.assertIsNone(GenerateHHAggregation('TypeName', agg))
+
+  def testHHArrayAggregation(self):
+    agg = AggregationDetails(
+        kind=AggregationKind.ARRAY,
+        name='kTestArray',
+        elements=self.BuildTestElements('item', 'item', 5),
+        export_items=True,
+        map_key_type=None,
+    )
+
+    self.assertEqual(
+        GenerateHHAggregation('TypeName', agg).strip(),
+        'extern const std::array<const TypeName*, 5> kTestArray;')
+
+  def testHHMapAggregation(self):
+    agg = AggregationDetails(
+        kind=AggregationKind.MAP,
+        name='kTestMap',
+        elements=self.BuildTestElements('src', 'tgt', 5),
+        export_items=True,
+        map_key_type='std::string_view',
+    )
+
+    self.assertEqual(
+        GenerateHHAggregation('ValueTypeName', agg).strip(),
+        'extern const base::fixed_flat_map<std::string_view, const ValueTypeName*, 5> kTestMap;'
+    )
+
+  def testCCNoAggregation(self):
+    agg = AggregationDetails(
+        kind=AggregationKind.NONE,
+        name='kTestAggregation',
+        elements=self.BuildTestElements('item', 'item', 5),
+        export_items=True,
+        map_key_type=None,
+    )
+
+    self.assertIsNone(GenerateCCAggregation('TypeName', agg))
+
+  def testCCArrayAggregation(self):
+    agg = AggregationDetails(
+        kind=AggregationKind.ARRAY,
+        name='kTestArray',
+        elements=self.BuildTestElements('item', 'item', 3),
+        export_items=True,
+        map_key_type=None,
+    )
+
+    self.assertEqual(
+        GenerateCCAggregation('TypeName', agg), '''
+const auto kTestArray =
+    std::array<const TypeName*, 3>({{
+  &item_1,
+  &item_2,
+  &item_3,
+}});
+''')
+
+  def testCCMapAggregation(self):
+    agg = AggregationDetails(
+        kind=AggregationKind.MAP,
+        name='kTestMap',
+        elements=self.BuildTestElements('src', 'tgt', 3),
+        export_items=True,
+        map_key_type='std::string',
+    )
+
+    self.assertEqual(
+        GenerateCCAggregation('ValueTypeName', agg), '''
+const auto kTestMap =
+    base::MakeFixedFlatMap<std::string, const ValueTypeName*>({
+  {std::string("src_1"), &tgt_1},
+  {std::string("src_2"), &tgt_2},
+  {std::string("src_3"), &tgt_3},
+});
+''')
 
 
 if __name__ == '__main__':

@@ -22,8 +22,7 @@ namespace {
 
 // Converts the 4-byte prefix of an MD5 hash into a int32_t value.
 int32_t DigestToInt32(const base::MD5Digest& digest) {
-  return static_cast<int32_t>(
-      base::numerics::U32FromLittleEndian(base::span(digest.a).first<4u>()));
+  return base::I32FromLittleEndian(base::span(digest.a).first<4u>());
 }
 
 // Returns a hash of the given |name|, encoded as a 32-bit signed integer.

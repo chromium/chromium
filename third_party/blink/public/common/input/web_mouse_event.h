@@ -52,7 +52,7 @@ class BLINK_COMMON_EXPORT WebMouseEvent : public WebInputEvent,
                 base::TimeTicks time_stamp_param,
                 PointerId id_param = kMousePointerId)
       : WebInputEvent(type_param, modifiers_param, time_stamp_param),
-        WebPointerProperties(id_param) {}
+        WebPointerProperties(id_param, PointerType::kMouse) {}
 
   WebMouseEvent() : WebMouseEvent(kMousePointerId) {}
 
@@ -93,7 +93,8 @@ class BLINK_COMMON_EXPORT WebMouseEvent : public WebInputEvent,
   void UpdateEventModifiersToMatchButton();
 
  protected:
-  WebMouseEvent(PointerId id_param) : WebPointerProperties(id_param) {}
+  WebMouseEvent(PointerId id_param)
+      : WebPointerProperties(id_param, PointerType::kMouse) {}
 
   void FlattenTransformSelf();
 

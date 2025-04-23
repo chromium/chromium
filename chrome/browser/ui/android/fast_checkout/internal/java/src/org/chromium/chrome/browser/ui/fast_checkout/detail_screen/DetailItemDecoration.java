@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.fast_checkout.detail_screen;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.view.View;
@@ -13,14 +15,15 @@ import androidx.annotation.Px;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.fast_checkout.R;
 
 /**
- * The item decoration used on the Autofill profile selection screen and the
- * credit card selection screen that adds horizontal spacing between elements
- * and chooses the correct item background depending on the position of the item
- * in the list.
+ * The item decoration used on the Autofill profile selection screen and the credit card selection
+ * screen that adds horizontal spacing between elements and chooses the correct item background
+ * depending on the position of the item in the list.
  */
+@NullMarked
 public class DetailItemDecoration extends RecyclerView.ItemDecoration {
     private final int mHorizontalSpacing;
 
@@ -44,11 +47,10 @@ public class DetailItemDecoration extends RecyclerView.ItemDecoration {
         for (int index = 0; index < parent.getChildCount(); ++index) {
             View child = parent.getChildAt(index);
             int positionInAdapter = parent.getChildAdapterPosition(child);
+            int count = assumeNonNull(parent.getAdapter()).getItemCount();
             child.setBackground(
                     AppCompatResources.getDrawable(
-                            parent.getContext(),
-                            getBackgroundDrawable(
-                                    positionInAdapter, parent.getAdapter().getItemCount())));
+                            parent.getContext(), getBackgroundDrawable(positionInAdapter, count)));
         }
     }
 

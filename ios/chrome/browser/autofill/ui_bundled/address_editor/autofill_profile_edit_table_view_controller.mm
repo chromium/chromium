@@ -64,8 +64,13 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   // If YES, the new address is being added manually.
   BOOL _addManualAddress;
 
-  // Points to the save/update button in the modal view.
+  // The item for the save/update button. Used when the
+  // `kAutofillDynamicallyLoadsFieldsForAddressInput` feature is disabled.
   TableViewTextButtonItem* _modalSaveUpdateButton;
+
+  // The button footer item for the save/update button. Used when the
+  // `kAutofillDynamicallyLoadsFieldsForAddressInput` feature is enabled.
+  AutofillEditProfileButtonFooterItem* _saveUpdateButtonFooterItem;
 
   // If YES, the table view has a save button.
   BOOL _hasSaveButton;
@@ -478,22 +483,19 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     _controller.navigationItem.rightBarButtonItem.enabled = enabled;
   } else {
     if (_dynamicallyLoadInputFieldsEnabled) {
-      [_controller.tableView beginUpdates];
+      _saveUpdateButtonFooterItem.enabled = enabled;
 
       NSInteger section = [[_controller tableViewModel]
           sectionForSectionIdentifier:
               AutofillProfileDetailsSectionIdentifierButton];
-      UITableViewHeaderFooterView* footer =
+      UITableViewHeaderFooterView* footerView =
           [_controller.tableView footerViewForSection:section];
-      AutofillEditProfileButtonFooterCell* buttonFooter =
-          base::apple::ObjCCastStrict<AutofillEditProfileButtonFooterCell>(
-              footer);
-      // TODO(crbug.com/407279413): Use the button footer item to change the
-      // state and remove the cell's `updateButtonColorBasedOnStatus` method.
-      buttonFooter.button.enabled = enabled;
-      [buttonFooter updateButtonColorBasedOnStatus];
 
-      [_controller.tableView endUpdates];
+      if (footerView) {
+        [_saveUpdateButtonFooterItem
+            configureHeaderFooterView:footerView
+                           withStyler:_controller.styler];
+      }
     } else {
       _modalSaveUpdateButton.enabled = enabled;
       [_controller reconfigureCellsForItems:@[ _modalSaveUpdateButton ]];
@@ -683,21 +685,20 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 - (AutofillEditProfileButtonFooterItem*)saveUpdateButtonAsFooter:(BOOL)update {
   CHECK(!_settingsView);
-  AutofillEditProfileButtonFooterItem* buttonFooter =
-      [[AutofillEditProfileButtonFooterItem alloc]
-          initWithType:AutofillProfileDetailsItemTypeSaveButton];
+  _saveUpdateButtonFooterItem = [[AutofillEditProfileButtonFooterItem alloc]
+      initWithType:AutofillProfileDetailsItemTypeSaveButton];
   if (self.migrationPrompt) {
-    buttonFooter.buttonText = l10n_util::GetNSString(
+    _saveUpdateButtonFooterItem.buttonText = l10n_util::GetNSString(
         IDS_AUTOFILL_ADDRESS_MIGRATION_TO_ACCOUNT_PROMPT_OK_BUTTON_LABEL);
   } else {
-    buttonFooter.buttonText = l10n_util::GetNSString(
+    _saveUpdateButtonFooterItem.buttonText = l10n_util::GetNSString(
         update ? IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL
                : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
   }
   // The button should initially be disabled when manually adding a new address
   // to the account.
-  buttonFooter.enabled = !_addManualAddress || !_accountProfile;
-  return buttonFooter;
+  _saveUpdateButtonFooterItem.enabled = !_addManualAddress || !_accountProfile;
+  return _saveUpdateButtonFooterItem;
 }
 
 #pragma mark - Private

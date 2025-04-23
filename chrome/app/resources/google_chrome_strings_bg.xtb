@@ -263,6 +263,7 @@
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">За да се възползвате от персонализиране и други функции, включете Chrome в „Активност в мрежата и приложенията“ и свързаните услуги на Google</translation>
 <translation id="4334294535648607276">Изтеглянето завърши.</translation>
+<translation id="4337324600316876133">За да получавате бъдещи актуализации на Google Chrome, трябва да използвате macOS 12 или по-нова версия. Компютърът ви работи с macOS 11.</translation>
 <translation id="4343195214584226067">Разширението <ph name="EXTENSION_NAME" /> бе добавено към Chrome</translation>
 <translation id="4348548358339558429">За да се възползвате от персонализиране, включете Chrome в „Активност в мрежата и приложенията“</translation>
 <translation id="436060642166082913">Chrome блокира това изтегляне, защото файлът може да навреди на личния ви профил и на профилите ви в социалните мрежи</translation>
@@ -298,7 +299,6 @@
 <translation id="4842397268809523050">ChromeOS Flex не успя да синхронизира данните ви, защото синхронизирането не е налице за домейна ви.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> вече е в профила си.  За да бъде сърфирането ви отделно, влезте в Chrome със свой собствен потребителски профил като <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">За да споделите екрана си, разрешете записването на екрана за Chrome в System Settings</translation>
-<translation id="4873692836499071887">За да получавате бъдещи актуализации на Google Chrome, трябва да използвате macOS 11 или по-нова версия. Компютърът ви работи с macOS 10.15.</translation>
 <translation id="4873783916118289636">Прегледайте ключовите контроли в Chrome за поверителност и сигурност</translation>
 <translation id="4885446229353981848">Прекият път към Google Обектив да се показва винаги</translation>
 <translation id="4891791193823137474">Google Chrome да се изпълнява на заден план</translation>

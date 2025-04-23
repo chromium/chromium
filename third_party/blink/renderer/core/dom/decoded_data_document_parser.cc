@@ -67,7 +67,8 @@ void DecodedDataDocumentParser::AppendBytes(base::span<const uint8_t> bytes) {
   if (!auto_detected_charset.empty()) {
     GetDocument()->CountUse(WebFeature::kCharsetAutoDetection);
     if (auto_detected_charset == "ISO-2022-JP") {
-      GetDocument()->CountUse(WebFeature::kCharsetAutoDetectionISO2022JP);
+      GetDocument()->CountDeprecation(
+          WebFeature::kCharsetAutoDetectionISO2022JP);
     }
   }
   UpdateDocument(decoded);

@@ -83,12 +83,8 @@ void UserSecuritySignalsService::OnStatePolicyValueChanged() {
 
 void UserSecuritySignalsService::TriggerReport(SecurityReportTrigger trigger) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &Delegate::OnReportEventTriggered, base::Unretained(delegate_),
-          trigger,
-          base::BindOnce(&UserSecuritySignalsService::OnReportUploaded,
-                         weak_factory_.GetWeakPtr())));
+      FROM_HERE, base::BindOnce(&Delegate::OnReportEventTriggered,
+                                base::Unretained(delegate_), trigger));
 }
 
 }  // namespace enterprise_reporting

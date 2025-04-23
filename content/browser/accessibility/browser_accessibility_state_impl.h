@@ -43,7 +43,8 @@ struct FocusedNodeDetails;
 class CONTENT_EXPORT BrowserAccessibilityStateImpl
     : public BrowserAccessibilityState,
       public ui::AXPlatform::Delegate,
-      public content::RenderWidgetHost::InputEventObserver {
+      public content::RenderWidgetHost::InputEventObserver,
+      public ScopedModeCollection::Delegate {
  public:
   BrowserAccessibilityStateImpl(const BrowserAccessibilityStateImpl&) = delete;
   BrowserAccessibilityStateImpl& operator=(
@@ -59,9 +60,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   static std::unique_ptr<BrowserAccessibilityStateImpl> Create();
 
   // BrowserAccessibilityState implementation.
-  void EnableProcessAccessibility() override;
-  void DisableProcessAccessibility() override;
-  bool IsAccessibilityAllowed() override;
   ui::AXMode GetAccessibilityMode() override;
   ui::AXMode GetAccessibilityModeForBrowserContext(
       BrowserContext* browser_context) override;
@@ -92,6 +90,8 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
       ui::AXMode mode) override;
   void SetAXModeChangeAllowed(bool allowed) override;
   bool IsAXModeChangeAllowed() const override;
+  void SetActivationFromPlatformEnabled(bool enabled) override;
+  bool IsActivationFromPlatformEnabled() override;
   void NotifyWebContentsPreferencesChanged() const override;
 
   // ui::AXPlatform::Delegate:
@@ -136,8 +136,14 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
 
   void UpdateAccessibilityActivityTask();
 
+  // ScopedModeCollection::Delegate:
   // Handles a change to the effective accessibility mode for the process.
-  void OnModeChangedForProcess(ui::AXMode old_mode, ui::AXMode new_mode);
+  void OnModeChanged(ui::AXMode old_mode, ui::AXMode new_mode) override;
+
+  // Filters out `kFromPlatform` from `mode` if activation from platform
+  // integration is enabled; otherwise, filters all mode flags from `mode` if
+  // `kFromPlatform` is present in it.
+  ui::AXMode FilterModeFlags(ui::AXMode mode) override;
 
   // Handles a change to the effective accessibility mode for `browser_context`.
   void OnModeChangedForBrowserContext(BrowserContext* browser_context,
@@ -155,7 +161,7 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   virtual void RefreshAssistiveTech() {}
 
   // The process's single AXPlatform instance.
-  ui::AXPlatform ax_platform_;
+  ui::AXPlatform ax_platform_{*this};
 
   // Whether there is a pending task to run UpdateAccessibilityActivityTask.
   bool accessibility_update_task_pending_ = false;
@@ -174,6 +180,10 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // the current session. Toggled to true when accessibility is first enabled,
   // and never toggled back to false.
   bool has_enabled_accessibility_in_session_ = false;
+
+  // True if activation of accessibility from interactions with the platform's
+  // accessibility integration is enabled.
+  bool activation_from_platform_enabled_ = true;
 
   // Timer used to track the time between start-up and engine first-use.
   base::ElapsedTimer first_use_timer_;
@@ -213,7 +223,7 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
 
   // The collection of active ScopedAccessibilityMode instances targeting all
   // WebContentses in the process.
-  ScopedModeCollection scoped_modes_for_process_;
+  ScopedModeCollection scoped_modes_for_process_{*this};
 
   // A ScopedAccessibilityMode that holds the process-wide mode flags modified
   // via ui::AXPlatformNode::NotifyAddAXModeFlags(),

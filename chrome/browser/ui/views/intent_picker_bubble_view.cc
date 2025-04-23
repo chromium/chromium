@@ -408,7 +408,7 @@ class IntentPickerAppListView
       scrollable_view->AddChildViewAt(std::move(app_button), i);
     }
 
-    SetBackgroundThemeColorId(ui::kColorBubbleBackground);
+    SetBackgroundColor(ui::kColorBubbleBackground);
     SetContents(std::move(scrollable_view));
     DCHECK(!contents()->children().empty());
     const int row_height =

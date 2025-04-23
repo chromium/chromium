@@ -687,22 +687,6 @@ ScriptValue DeserializeScriptValue(ScriptState* script_state,
   return ScriptValue(isolate, serialized_value->Deserialize(isolate, options));
 }
 
-SQLValue NativeValueTraits<SQLValue>::NativeValue(
-    v8::Isolate* isolate,
-    v8::Local<v8::Value> value,
-    ExceptionState& exception_state) {
-  if (value.IsEmpty() || value->IsNull())
-    return SQLValue();
-  if (value->IsNumber())
-    return SQLValue(value.As<v8::Number>()->Value());
-  V8StringResource<> string_value(isolate, value);
-  if (!string_value.Prepare(exception_state)) {
-    return SQLValue();
-  }
-  return SQLValue(string_value);
-}
-
-
 #if DCHECK_IS_ON()
 // This assertion is used when a value has been retrieved from an object store
 // with implicit keys (i.e. a key path). It verifies that either the value

@@ -30,7 +30,7 @@ build_webui("build") {
     "parent_access_ui.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "parent_access_controller.ts",
     "parent_access_screen.ts",
     "parent_access_ui_handler.ts",

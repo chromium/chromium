@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.privacy_guide;
 
 import static org.chromium.chrome.browser.privacy_guide.PrivacyGuideUtils.canUpdateHistorySyncValue;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -15,6 +16,7 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsMode;
 
 /** Computes for each privacy guide step whether it should be displayed or not. */
+@NullMarked
 class StepDisplayHandlerImpl implements StepDisplayHandler {
     private final Profile mProfile;
     private PrivacySandboxBridge mPrivacySandboxBridge;

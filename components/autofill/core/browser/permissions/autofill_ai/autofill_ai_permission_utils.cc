@@ -43,6 +43,7 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
     case AutofillAiAction::kFilling:
     case AutofillAiAction::kImport:
     case AutofillAiAction::kIphForOptIn:
+    case AutofillAiAction::kLogToMqls:
     case AutofillAiAction::kOptIn:
     case AutofillAiAction::kServerClassificationModel:
     case AutofillAiAction::kUseCachedServerClassificationModelResults:
@@ -77,6 +78,7 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
     case AutofillAiAction::kFilling:
     case AutofillAiAction::kImport:
     case AutofillAiAction::kListEntityInstancesInSettings:
+    case AutofillAiAction::kLogToMqls:
     case AutofillAiAction::kOptIn:
       return true;
   }
@@ -99,15 +101,38 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
   }
 
   // State of the AutofillAI-specific enterprise policy pref.
+  constexpr int kAutofillPredictionSettingsAllowWithoutLogging =
+      base::to_underlying(
+          optimization_guide::model_execution::prefs::
+              ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
   constexpr int kAutofillPredictionSettingsDisabled =
       base::to_underlying(optimization_guide::model_execution::prefs::
                               ModelExecutionEnterprisePolicyValue::kDisable);
+  static_assert(kAutofillPredictionSettingsAllowWithoutLogging == 1);
   static_assert(kAutofillPredictionSettingsDisabled == 2);
-  if (prefs->GetInteger(
-          optimization_guide::prefs::
-              kAutofillPredictionImprovementsEnterprisePolicyAllowed) ==
-      kAutofillPredictionSettingsDisabled) {
+
+  const int policy_pref_state = prefs->GetInteger(
+      optimization_guide::prefs::
+          kAutofillPredictionImprovementsEnterprisePolicyAllowed);
+  if (policy_pref_state == kAutofillPredictionSettingsDisabled) {
     return false;
+  }
+  if (policy_pref_state == kAutofillPredictionSettingsAllowWithoutLogging) {
+    switch (action) {
+      case AutofillAiAction::kLogToMqls:
+        return false;
+      case AutofillAiAction::kAddEntityInstanceInSettings:
+      case AutofillAiAction::kCrowdsourcingVote:
+      case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
+      case AutofillAiAction::kFilling:
+      case AutofillAiAction::kImport:
+      case AutofillAiAction::kIphForOptIn:
+      case AutofillAiAction::kListEntityInstancesInSettings:
+      case AutofillAiAction::kOptIn:
+      case AutofillAiAction::kServerClassificationModel:
+      case AutofillAiAction::kUseCachedServerClassificationModelResults:
+        break;
+    }
   }
 
   // State of the Address-Autofill pref.
@@ -123,6 +148,7 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
     case AutofillAiAction::kFilling:
     case AutofillAiAction::kImport:
     case AutofillAiAction::kListEntityInstancesInSettings:
+    case AutofillAiAction::kLogToMqls:
     case AutofillAiAction::kServerClassificationModel:
     case AutofillAiAction::kUseCachedServerClassificationModelResults:
       return autofill_ai_enabled;
@@ -182,6 +208,7 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
     case AutofillAiAction::kImport:
     case AutofillAiAction::kIphForOptIn:
     case AutofillAiAction::kListEntityInstancesInSettings:
+    case AutofillAiAction::kLogToMqls:
     case AutofillAiAction::kOptIn:
     case AutofillAiAction::kServerClassificationModel: {
       if (is_off_the_record) {

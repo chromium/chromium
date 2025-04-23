@@ -49,7 +49,7 @@ ABSL_FLAG(std::string, image_path, "",
 ABSL_FLAG(std::string, output_png, "",
           "Absolute path to a file where to draw the detection results on top "
           "of the input image. Must have a '.png' extension.");
-ABSL_FLAG(int32, max_results, 5,
+ABSL_FLAG(int32_t, max_results, 5,
           "Maximum number of detection results to display.");
 ABSL_FLAG(
     float, score_threshold, std::numeric_limits<float>::lowest(),
@@ -92,7 +92,7 @@ constexpr std::array<absl::string_view, 10> kColorMapNames = {
 
 // The colors used for drawing the detection results as a flattened array of
 // {R,G,B} components.
-constexpr uint8 kColorMapComponents[30] = {
+constexpr uint8_t kColorMapComponents[30] = {
     255, 0, 0, 0, 255, 0, 0, 0, 255, 255, 255, 0,   255, 0, 255,
     128, 0, 0, 0, 128, 0, 0, 0, 128, 128, 128, 128, 0,   0, 0};
 }  // namespace
@@ -133,9 +133,9 @@ absl::Status EncodeResultToPngFile(const DetectionResult& result,
     const int right = box.origin_x() + box.width();
     const int bottom = box.origin_y() + box.height();
     // Get color components.
-    const uint8 r = kColorMapComponents[3 * (index % kColorMapSize)];
-    const uint8 g = kColorMapComponents[3 * (index % kColorMapSize) + 1];
-    const uint8 b = kColorMapComponents[3 * (index % kColorMapSize) + 2];
+    const uint8_t r = kColorMapComponents[3 * (index % kColorMapSize)];
+    const uint8_t g = kColorMapComponents[3 * (index % kColorMapSize) + 1];
+    const uint8_t b = kColorMapComponents[3 * (index % kColorMapSize) + 2];
     // Draw. Boxes might have coordinates outside of [0, w( x [0, h( so clamping
     // is applied.
     for (int y = std::max(0, top); y < std::min(image->height, bottom); ++y) {

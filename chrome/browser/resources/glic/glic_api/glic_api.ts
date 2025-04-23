@@ -414,6 +414,17 @@ export declare interface GlicBrowserHost {
    * panel and false when the user stops.
    */
   isManuallyResizing?(): ObservableValue<boolean>;
+
+  /**
+   * @todo Not yet implemented. https://crbug.com/404617216
+   *
+   * Returns the set of zero state suggestions for the currently focused tab
+   * based on if the client is currently in it's is_first_run.
+   * Callers should verify the current focused tab matches the
+   * ZeroStateSuggestions tabId and url before using it.
+   */
+  getZeroStateSuggestionsForFocusedTab?
+      (is_first_run?: boolean): Promise<ZeroStateSuggestions>;
 }
 
 /** Fields of interest from the Glic settings page. */
@@ -1084,6 +1095,25 @@ export declare interface GlicApiBootMessage {
   glicApiSource: string;
 }
 
+/** Zero-state suggestions for the current tab. */
+export declare interface ZeroStateSuggestions {
+  /**
+   * A collection of suggestions associated with the linked tab. This may be
+   * empty.
+   */
+  suggestions: SuggestionContent[];
+  /** A unique ID to track the the associated tab. */
+  tabId: string;
+  /** The url of the associated tab. */
+  url: string;
+}
+
+/** Zero-state suggestion for the current tab.*/
+export declare interface SuggestionContent {
+  /** The suggestion text. Always provided. */
+  suggestion: string;
+}
+
 //
 // Types used in presubmit check.
 //
@@ -1121,6 +1151,7 @@ export interface BackwardsCompatibleTypes {
   webClient: GlicWebClient;
   webPageData: WebPageData;
   openSettingsOptions: OpenSettingsOptions;
+  zeroStateSuggestions: ZeroStateSuggestions;
 }
 
 // Enums that should not be changed.

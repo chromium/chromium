@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.theme;
 
 import androidx.annotation.StyleRes;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Interface that provides a theme overlay resource ID. */
+@NullMarked
 public interface ThemeOverlayProvider {
     /** Get the theme overlay resource ID provided by the instance. */
     @StyleRes

@@ -13,8 +13,6 @@ per-file platform_font*=etienneb@chromium.org
 per-file platform_font*=robliao@chromium.org
 
 # Color utils.
-per-file color_palette.h=pkasting@chromium.org
-per-file color_utils*=pkasting@chromium.org
 per-file color_conversions*=fserb@chromium.org
 per-file color_conversions*=ccameron@chromium.org
 per-file color_conversions*=aaronhk@chromium.org
@@ -25,6 +23,7 @@ per-file screen*=oshima@chromium.org
 
 # Overlay states, configurations, etc.
 per-file overlay*=spang@chromium.org
+per-file overlay*=file://components/viz/OWNERS
 
 # Transform, interpolated transform and transform util.
 per-file transform*=vollick@chromium.org

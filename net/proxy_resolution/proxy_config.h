@@ -104,7 +104,7 @@ class NET_EXPORT ProxyConfig {
     //   "http=foopy;socks=foopy2   --  use HTTP proxy "foopy" for http URLs,
     //                                  and use socks4://foopy2 for all other
     //                                  URLs.
-    void ParseFromString(const std::string& proxy_rules,
+    void ParseFromString(std::string_view proxy_rules,
                          bool allow_bracketed_proxy_chains = false,
                          bool is_quic_allowed = false);
 
@@ -150,7 +150,7 @@ class NET_EXPORT ProxyConfig {
     // call this if the type is Type::PROXY_LIST_PER_SCHEME. Intentionally
     // returns NULL for "ws" and "wss" as those are handled specially by
     // GetProxyListForWebSocketScheme().
-    ProxyList* MapUrlSchemeToProxyListNoFallback(const std::string& scheme);
+    ProxyList* MapUrlSchemeToProxyListNoFallback(std::string_view scheme);
 
     // Returns the first of {&fallback_proxies, &proxies_for_https,
     // &proxies_for_http} that is non-empty, or NULL.

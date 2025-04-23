@@ -267,6 +267,12 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // hitting the number limit of running prerenders.
   bool IsAllowedToStartPrerenderingForEmbedder();
 
+  // Cancels the existing hosts for the given origin filter.
+  // Currently used for browsing data removal and Clear-Site-Data header.
+  void CancelHostsByOriginFilter(
+      const StoragePartition::StorageKeyMatcherFunction& storage_key_filter,
+      PrerenderFinalStatus final_status);
+
  private:
   // WebContentsObserver implementation:
   void DidStartNavigation(NavigationHandle* navigation_handle) override;

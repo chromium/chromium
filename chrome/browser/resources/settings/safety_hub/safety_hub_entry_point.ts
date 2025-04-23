@@ -66,11 +66,11 @@ export class SettingsSafetyHubEntryPointElement extends
     };
   }
 
-  private buttonClass_: string;
-  private hasRecommendations_: boolean;
-  private headerString_: string;
-  private subheaderString_: string;
-  private headerIconColor_: string;
+  declare private buttonClass_: string;
+  declare private hasRecommendations_: boolean;
+  declare private headerString_: string;
+  declare private subheaderString_: string;
+  declare private headerIconColor_: string;
   private safetyHubBrowserProxy_: SafetyHubBrowserProxy =
       SafetyHubBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =

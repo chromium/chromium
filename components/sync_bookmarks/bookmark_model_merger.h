@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "components/sync/base/previously_syncing_gaia_id_info_for_metrics.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 
@@ -41,7 +42,9 @@ class BookmarkModelMerger {
   BookmarkModelMerger(syncer::UpdateResponseDataList updates,
                       BookmarkModelView* bookmark_model,
                       favicon::FaviconService* favicon_service,
-                      SyncedBookmarkTracker* bookmark_tracker);
+                      SyncedBookmarkTracker* bookmark_tracker,
+                      syncer::PreviouslySyncingGaiaIdInfoForMetrics
+                          previously_syncing_gaia_id_info);
 
   BookmarkModelMerger(const BookmarkModelMerger&) = delete;
   BookmarkModelMerger& operator=(const BookmarkModelMerger&) = delete;
@@ -55,8 +58,8 @@ class BookmarkModelMerger {
   // and metadata entities in the injected tracker.
   void Merge();
 
- private:
-  // Internal representation of a remote tree, composed of nodes.
+  // Internal representation of a remote tree, composed of nodes. Exposed
+  // publicly for metric recording.
   class RemoteTreeNode final {
    private:
     using UpdatesPerParentUuid =
@@ -76,6 +79,10 @@ class BookmarkModelMerger {
         syncer::UpdateResponseData update,
         size_t max_depth,
         UpdatesPerParentUuid* updates_per_parent_uuid);
+
+    // Test-only factory function.
+    static RemoteTreeNode BuildForTesting(syncer::UpdateResponseData update,
+                                          std::vector<RemoteTreeNode> children);
 
     ~RemoteTreeNode();
 
@@ -113,6 +120,7 @@ class BookmarkModelMerger {
   // a permanent node, keyed by server-defined unique tag of the root.
   using RemoteForest = std::unordered_map<std::string, RemoteTreeNode>;
 
+ private:
   // Represents a pair of bookmarks, one local and one remote, that have been
   // matched by UUID. They are guaranteed to have the same type and URL (if
   // applicable).
@@ -228,6 +236,8 @@ class BookmarkModelMerger {
   const raw_ptr<BookmarkModelView> bookmark_model_;
   const raw_ptr<favicon::FaviconService> favicon_service_;
   const raw_ptr<SyncedBookmarkTracker> bookmark_tracker_;
+  const syncer::PreviouslySyncingGaiaIdInfoForMetrics
+      previously_syncing_gaia_id_info_;
   const size_t remote_updates_size_;
   // Preprocessed remote nodes in the form a forest where each tree's root is a
   // permanent node. Computed upon construction via BuildRemoteForest().

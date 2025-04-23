@@ -111,7 +111,6 @@ const base::TimeDelta Session::kDefaultScriptTimeout = base::Seconds(30);
 const base::TimeDelta Session::kDefaultBrowserStartupTimeout =
     base::Seconds(60);
 const char Session::kChannelSuffix[] = "/chan";
-const char Session::kNoChannelSuffix[] = "/nochan";
 
 Session::Session(const std::string& id)
     : id(id),
@@ -229,7 +228,7 @@ Status Session::OnBidiResponse(base::Value::Dict payload) {
     return status;
   }
 
-  if (suffix == kNoChannelSuffix) {
+  if (channel->empty()) {
     payload.Remove("goog:channel");
   } else if (suffix != kChannelSuffix) {
     return Status{kUnknownError,
@@ -325,13 +324,26 @@ void Session::HandleMessagesAndTerminateIfNecessary() {
   }
 
   Status status = session->chrome->Client()->HandleReceivedEvents();
+
+  if (session->chrome->GetWebViewCount() <= 1) {
+    // There can be web views created by BiDi Mapper. Update ChromeDriver web
+    // views.
+    std::list<std::string> tab_view_ids;
+    status = session->chrome->GetTopLevelWebViewIds(&tab_view_ids,
+                                                    session->w3c_compliant);
+    if (status.IsError()) {
+      VLOG(0) << "error while updating top level web views: "
+              << status.message();
+    }
+  }
+
   if (status.IsOk() && session->chrome->GetWebViewCount() > 1) {
     return;
   }
 
   // Either is true:
   // * status.IsError()
-  // * web view count <= 0
+  // * web view count <= 1
 
   if (status.code() != kDisconnected) {
     VLOG(0) << "error while processing messages from the browser: "

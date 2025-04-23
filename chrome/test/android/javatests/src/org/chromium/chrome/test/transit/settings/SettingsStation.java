@@ -34,7 +34,7 @@ public class SettingsStation<FragmentT extends ChromeBaseSettingsFragment>
     }
 
     public PreferenceFacility scrollToPref(String prefKey) {
-        assertSuppliersCanBeUsed();
+        assertInPhase(Phase.ACTIVE);
         String title = mFragmentElement.get().findPreference(prefKey).getTitle().toString();
         return enterFacilitySync(
                 new PreferenceFacility(title),

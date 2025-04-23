@@ -59,7 +59,7 @@ export class PrivacyGuideCookiesFragmentElement extends
     };
   }
 
-  private isAlwaysBlock3pcsIncognitoEnabled_: boolean;
+  declare private isAlwaysBlock3pcsIncognitoEnabled_: boolean;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
   private startStateBlock3PIncognito_: boolean;

@@ -69,6 +69,11 @@ using password_manager::CredentialLeakType;
 // Shows Credential Provider Promo with |trigger|.
 - (void)showCredentialProviderPromo:(CredentialProviderPromoTrigger)trigger;
 
+// Shows a message informing that the user has successfully signed in with a
+// saved credential.
+@optional
+- (void)showSignedInWithSavedCredentialMessage;
+
 @end
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_IOS_PASSWORD_MANAGER_CLIENT_BRIDGE_H_

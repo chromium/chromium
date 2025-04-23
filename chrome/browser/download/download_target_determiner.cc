@@ -965,8 +965,6 @@ void DownloadTargetDeterminer::CheckAppVerificationDone(
     safe_browsing::VerifyAppsEnabledResult result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(STATE_CHECK_VISITED_REFERRER_BEFORE, next_state_);
-  base::UmaHistogramEnumeration("SBClientDownload.AndroidAppVerificationResult",
-                                result);
   is_app_verification_enabled_ =
       result == safe_browsing::VerifyAppsEnabledResult::SUCCESS_ENABLED;
   DoLoop();

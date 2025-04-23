@@ -48,9 +48,9 @@ public class TemplatePreservingTextView extends AppCompatTextView {
      * new template text to take effect.
      *
      * @param template Template format string (e.g. "Closed %s"), or null. If null is passed, this
-     *                 view acts like a normal TextView.
+     *     view acts like a normal TextView.
      */
-    public void setTemplate(String template) {
+    public void setTemplate(@Nullable String template) {
         mTemplate = TextUtils.isEmpty(template) ? null : template;
     }
 

@@ -92,7 +92,7 @@ public class QuickDeleteControllerTest {
                 .clearBrowsingData(any(), any(), any(), anyInt(), any(), any(), any(), any());
 
         // Set the time for the initial tab to be outside of the quick delete time span.
-        Tab initialTab = firstPage.getLoadedTab();
+        Tab initialTab = firstPage.loadedTabElement.get();
         runOnUiThreadBlocking(
                 () -> {
                     TabTestUtils.setLastNavigationCommittedTimestampMillis(
@@ -119,7 +119,8 @@ public class QuickDeleteControllerTest {
     public void testDefaultTimePeriodSelectedIs15Minutes() {
         QuickDeleteDialogFacility dialog = mSecondPage.openRegularTabAppMenu().clearBrowsingData();
         var option =
-                (TimePeriodUtils.TimePeriodSpinnerOption) dialog.getSpinner().getSelectedItem();
+                (TimePeriodUtils.TimePeriodSpinnerOption)
+                        dialog.spinnerElement.get().getSelectedItem();
         assertEquals(TimePeriod.LAST_15_MINUTES, option.getTimePeriod());
         dialog.clickCancel();
     }
@@ -228,7 +229,7 @@ public class QuickDeleteControllerTest {
     @Test
     @MediumTest
     public void testMoreOptions_OpensClearBrowsingData() {
-        Tab secondTab = mSecondPage.getLoadedTab();
+        Tab secondTab = mSecondPage.loadedTabElement.get();
         QuickDeleteDialogFacility dialog = mSecondPage.openRegularTabAppMenu().clearBrowsingData();
 
         HistogramWatcher histogramWatcher =

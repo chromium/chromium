@@ -27,6 +27,8 @@ void TabHandleLayer::SetProperties(
     int id,
     ui::Resource* close_button_resource,
     ui::Resource* close_button_background_resource,
+    bool is_close_keyboard_focused,
+    ui::Resource* close_button_keyboard_focus_ring_resource,
     ui::Resource* divider_resource,
     ui::NinePatchResource* tab_handle_resource,
     ui::NinePatchResource* tab_handle_outline_resource,
@@ -48,7 +50,12 @@ void TabHandleLayer::SetProperties(
     bool is_end_divider_visible,
     bool is_loading,
     float spinner_rotation,
-    float opacity) {
+    float opacity,
+    bool is_keyboard_focused,
+    ui::NinePatchResource* keyboard_focus_ring_drawable,
+    int keyboard_focus_ring_offset,
+    int stroke_width,
+    float folio_foot_length) {
   if (foreground != foreground_ || opacity != opacity_) {
     foreground_ = foreground;
     opacity_ = opacity;
@@ -193,23 +200,26 @@ void TabHandleLayer::SetProperties(
       title_layer->SetIsLoading(false);
     }
   }
+
+  // Pull this out of the close-button-related block so it can be used for
+  // keyboard focus ring calculation as well.
+  int close_y;
+
+  // Close button image is larger than divider image, so close button will
+  // appear slightly lower even the close_y are set in the same value as
+  // divider_y. Thus need this offset to account for the effect of image
+  // size difference has on close_y.
+  int close_y_offset_tsr = std::max(0, (close_button_resource->size().height() -
+                                        divider_resource->size().height()) /
+                                           2);
+  close_y = content_offset_y - std::abs(close_y_offset_tsr);
+
   if (close_button_alpha == 0.f) {
     close_button_->SetIsDrawable(false);
     close_button_hover_highlight_->SetIsDrawable(false);
   } else {
     close_button_->SetIsDrawable(true);
     close_button_hover_highlight_->SetIsDrawable(true);
-    int close_y;
-
-    // Close button image is larger than divider image, so close button will
-    // appear slightly lower even the close_y are set in the same value as
-    // divider_y. Thus need this offset to account for the effect of image
-    // size difference has on close_y.
-    int close_y_offset_tsr =
-        std::max(0, (close_button_resource->size().height() -
-                     divider_resource->size().height()) /
-                        2);
-    close_y = content_offset_y - std::abs(close_y_offset_tsr);
 
     int close_x = is_rtl ? padding_left - close_button_padding
                          : width - padding_right - close_width;
@@ -226,6 +236,52 @@ void TabHandleLayer::SetProperties(
         gfx::PointF(background_left_offset, background_top_offset));
     close_button_->SetOpacity(close_button_alpha);
     close_button_hover_highlight_->SetPosition(gfx::PointF(close_x, close_y));
+    if (is_close_keyboard_focused) {
+      close_keyboard_focus_ring_->SetIsDrawable(true);
+      close_keyboard_focus_ring_->SetUIResourceId(
+          close_button_keyboard_focus_ring_resource->ui_resource()->id());
+      close_keyboard_focus_ring_->SetPosition(gfx::PointF(close_x, close_y));
+      close_keyboard_focus_ring_->SetBounds(gfx::Size(
+          close_button_keyboard_focus_ring_resource->size().width(),
+          close_button_keyboard_focus_ring_resource->size().height()));
+    } else {
+      // Clean up the keyboard focus ring if it was previously showing but
+      // shouldn't be showing now.
+      close_keyboard_focus_ring_->SetIsDrawable(false);
+    }
+  }
+  if (is_keyboard_focused) {
+    keyboard_focus_ring_->SetIsDrawable(true);
+    keyboard_focus_ring_->SetUIResourceId(
+        keyboard_focus_ring_drawable->ui_resource()->id());
+    keyboard_focus_ring_->SetAperture(keyboard_focus_ring_drawable->aperture());
+
+    float close_button_center_y =
+        close_y + close_button_resource->size().height() / 2;
+    if (shouldShowTabOutline) {
+      float keyboard_focus_ring_y = keyboard_focus_ring_offset + stroke_width;
+      keyboard_focus_ring_->SetPosition(
+          gfx::PointF(folio_foot_length + keyboard_focus_ring_offset,
+                      keyboard_focus_ring_y));
+      keyboard_focus_ring_->SetBounds(gfx::Size(
+          width - folio_foot_length * 2 - keyboard_focus_ring_offset * 2,
+          (close_button_center_y - keyboard_focus_ring_y) * 2));
+    } else {
+      float keyboard_focus_ring_y = 0;
+      keyboard_focus_ring_->SetPosition(
+          gfx::PointF(folio_foot_length, keyboard_focus_ring_y));
+      keyboard_focus_ring_->SetBounds(
+          gfx::Size(width - folio_foot_length * 2,
+                    (close_button_center_y - keyboard_focus_ring_y) * 2));
+    }
+
+    keyboard_focus_ring_->SetFillCenter(true);
+    keyboard_focus_ring_->SetBorder(
+        keyboard_focus_ring_drawable->Border(keyboard_focus_ring_->bounds()));
+  } else {
+    // Clean up the keyboard focus ring if it was previously showing but
+    // shouldn't be showing now.
+    keyboard_focus_ring_->SetIsDrawable(false);
   }
 }
 
@@ -243,10 +299,12 @@ TabHandleLayer::TabHandleLayer(LayerTitleCache* layer_title_cache)
       tab_(cc::slim::Layer::Create()),
       close_button_(cc::slim::UIResourceLayer::Create()),
       close_button_hover_highlight_(cc::slim::UIResourceLayer::Create()),
+      close_keyboard_focus_ring_(cc::slim::UIResourceLayer::Create()),
       start_divider_(cc::slim::UIResourceLayer::Create()),
       end_divider_(cc::slim::UIResourceLayer::Create()),
       decoration_tab_(cc::slim::NinePatchLayer::Create()),
       tab_outline_(cc::slim::NinePatchLayer::Create()),
+      keyboard_focus_ring_(cc::slim::NinePatchLayer::Create()),
       foreground_(false) {
   decoration_tab_->SetIsDrawable(true);
 
@@ -263,6 +321,8 @@ TabHandleLayer::TabHandleLayer(LayerTitleCache* layer_title_cache)
   layer_->AddChild(tab_);
   layer_->AddChild(start_divider_);
   layer_->AddChild(end_divider_);
+  layer_->AddChild(close_keyboard_focus_ring_);
+  layer_->AddChild(keyboard_focus_ring_);
 }
 
 TabHandleLayer::~TabHandleLayer() = default;

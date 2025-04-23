@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
+#import "ios/chrome/browser/authentication/ui_bundled/change_profile_continuation_provider.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 
 @class AuthenticationFlow;
@@ -32,6 +33,8 @@ enum class AccessPoint;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithAccessPoint:(signin_metrics::AccessPoint)accessPoint
+               continuationProvider:(const ChangeProfileContinuationProvider&)
+                                        continuationProvider
     NS_DESIGNATED_INITIALIZER;
 
 @property(nonatomic, weak) id<InstantSigninMediatorDelegate> delegate;
@@ -40,13 +43,8 @@ enum class AccessPoint;
 - (void)startSignInOnlyFlowWithAuthenticationFlow:
     (AuthenticationFlow*)authenticationFlow;
 
-// Disconnect the mediator.
+// Stops the sign-in flow. Disconnect the mediator.
 - (void)disconnect;
-
-// Stops the sign-in flow. This method can only be called once, and only after
-// `startSignInOnlyFlowWithAuthenticationFlow:` has ben called. `completion` is
-// run synchronously.
-- (void)interrupt;
 
 @end
 

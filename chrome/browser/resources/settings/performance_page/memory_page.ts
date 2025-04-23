@@ -63,8 +63,8 @@ export class SettingsMemoryPageElement extends SettingsMemoryPageElementBase {
     };
   }
 
-  private numericUncheckedValues_: MemorySaverModeState[];
-  private numericCheckedValue_: MemorySaverModeState[];
+  declare private numericUncheckedValues_: MemorySaverModeState[];
+  declare private numericCheckedValue_: MemorySaverModeState[];
   private metricsProxy_: PerformanceMetricsProxy =
       PerformanceMetricsProxyImpl.getInstance();
 

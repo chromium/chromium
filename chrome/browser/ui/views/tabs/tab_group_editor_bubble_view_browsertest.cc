@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/test/browser_test.h"
@@ -30,6 +31,13 @@
 #include "ui/views/test/button_test_api.h"
 
 class TabGroupEditorBubbleViewDialogBrowserTest : public DialogBrowserTest {
+ public:
+  TabGroupEditorBubbleViewDialogBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {}, {data_sharing::features::kDataSharingFeature,
+             data_sharing::features::kDataSharingJoinOnly});
+  }
+
  protected:
   void ShowUi(const std::string& name) override {
     group_ = browser()->tab_strip_model()->AddToNewGroup({0});
@@ -53,6 +61,7 @@ class TabGroupEditorBubbleViewDialogBrowserTest : public DialogBrowserTest {
   }
 
   std::optional<tab_groups::TabGroupId> group_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,

@@ -27,7 +27,8 @@ std::vector<ash::TabInfo> ChromeTabStripDelegate::GetTabsListForWindow(
   // If the given `window` contains a browser frame
   auto* browser_view = BrowserView::GetBrowserViewForNativeWindow(window);
 
-  if (!browser_view) {
+  // Not fetching incognito window.
+  if (!browser_view || browser_view->GetIncognito()) {
     return {};
   }
 

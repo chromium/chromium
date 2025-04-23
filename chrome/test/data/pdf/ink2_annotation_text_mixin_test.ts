@@ -6,7 +6,7 @@ import {hexToColor, Ink2Manager, InkAnnotationTextMixin, TEXT_COLORS, TEXT_SIZES
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {setupTestMockPluginForInk} from './test_util.js';
+import {assertDeepEquals, setupTestMockPluginForInk} from './test_util.js';
 
 setupTestMockPluginForInk();
 const manager = Ink2Manager.getInstance();
@@ -32,11 +32,27 @@ class TestElement extends TestElementBase {
   }
 }
 
+const initializationPromise = eventToPromise('text-changed', manager);
 customElements.define(TestElement.is, TestElement);
 const testElement = document.createElement('test-element') as TestElement;
 document.body.appendChild(testElement);
 
 chrome.test.runTests([
+  async function testInitialization() {
+    // The mixin should request the fonts from the backend initially, and
+    // update its text parameters based on the values in the manager. This
+    // is asynchronous (eventually, the fonts will be requested from the
+    // plugin).
+    const initEvent = await initializationPromise;
+    const expectedFonts = ['Roboto', 'Serif', 'Sans', 'Monospace'];
+    assertDeepEquals(expectedFonts, testElement.fonts);
+    assertDeepEquals(testElement.currentColor, initEvent.detail.color);
+    chrome.test.assertEq(testElement.currentFont, initEvent.detail.font);
+    chrome.test.assertEq(testElement.currentSize, initEvent.detail.size);
+
+    chrome.test.succeed();
+  },
+
   async function testSetProperties() {
     // Verify that calling onCurrentColorChanged with a new color calls the
     // manager and results in an event firing.
@@ -46,9 +62,7 @@ chrome.test.runTests([
     let whenChanged = eventToPromise('text-changed', manager);
     testElement.onCurrentColorChanged(colorEvent);
     let changedEvent = await whenChanged;
-    chrome.test.assertEq(newColor.r, changedEvent.detail.color.r);
-    chrome.test.assertEq(newColor.g, changedEvent.detail.color.g);
-    chrome.test.assertEq(newColor.b, changedEvent.detail.color.b);
+    assertDeepEquals(newColor, changedEvent.detail.color);
 
     // Test firing a change event from a <select> with onFontSelected
     // registered as the listener calls the manager and results in an event.
@@ -78,11 +92,10 @@ chrome.test.runTests([
   function testOnTextChanged() {
     // Initial state
     const initialColor = hexToColor(TEXT_COLORS[0]!.color);
-    chrome.test.assertEq(initialColor.r, testElement.currentColor.r);
-    chrome.test.assertEq(initialColor.g, testElement.currentColor.g);
-    chrome.test.assertEq(initialColor.b, testElement.currentColor.b);
-    chrome.test.assertEq(TEXT_SIZES[0], testElement.currentSize);
-    chrome.test.assertEq('', testElement.currentFont);
+    assertDeepEquals(initialColor, testElement.currentColor);
+    chrome.test.assertEq(12, testElement.currentSize);
+    // First font returned by the current dummy code.
+    chrome.test.assertEq('Roboto', testElement.currentFont);
 
     const newColor = hexToColor(TEXT_COLORS[1]!.color);
     testElement.onTextChanged({
@@ -97,9 +110,7 @@ chrome.test.runTests([
         [TextStyle.STRIKETHROUGH]: false,
       },
     });
-    chrome.test.assertEq(newColor.r, testElement.currentColor.r);
-    chrome.test.assertEq(newColor.g, testElement.currentColor.g);
-    chrome.test.assertEq(newColor.b, testElement.currentColor.b);
+    assertDeepEquals(newColor, testElement.currentColor);
     chrome.test.assertEq(TEXT_SIZES[1]!, testElement.currentSize);
     chrome.test.assertEq('Serif', testElement.currentFont);
 

@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/styled_stroke_data.h"
@@ -228,20 +229,20 @@ Path PrepareWavyStrokePath(const WavyParams& params) {
   gfx::PointF cp1{start + gfx::Vector2dF(step, +control_point_distance)};
   gfx::PointF cp2{start + gfx::Vector2dF(step, -control_point_distance)};
 
-  Path result{};
+  PathBuilder result;
   result.MoveTo(start);
 
-  result.AddBezierCurveTo(cp1, cp2, end);
+  result.CubicTo(cp1, cp2, end);
   cp1.set_x(cp1.x() + 2.f * step);
   cp2.set_x(cp2.x() + 2.f * step);
   end.set_x(end.x() + 2.f * step);
-  result.AddBezierCurveTo(cp1, cp2, end);
+  result.CubicTo(cp1, cp2, end);
   cp1.set_x(cp1.x() + 2.f * step);
   cp2.set_x(cp2.x() + 2.f * step);
   end.set_x(end.x() + 2.f * step);
-  result.AddBezierCurveTo(cp1, cp2, end);
+  result.CubicTo(cp1, cp2, end);
 
-  return result;
+  return result.Finalize();
 }
 
 cc::PaintRecord PrepareWavyTileRecord(const WavyParams& params,

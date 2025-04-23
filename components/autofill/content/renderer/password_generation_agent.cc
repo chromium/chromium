@@ -835,7 +835,7 @@ void PasswordGenerationAgent::MaybeCreateCurrentGenerationItem(
   current_generation_item_ = std::make_unique<GenerationItemInfo>(
       generation_element, std::move(*form_data), std::move(passwords));
 
-  generation_element.SetHasBeenPasswordField();
+  generation_element.MaybeSetHasBeenPasswordField();
 
   generation_element.SetAttribute("aria-autocomplete", "list");
 }

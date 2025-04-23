@@ -1582,12 +1582,10 @@ class SoftwareTextureLayerSwitchTreesTest : public SoftwareTextureLayerTest {
 
   void DisplayReceivedCompositorFrameOnThread(
       const viz::CompositorFrame& frame) override {
-    if (step_ >= 0 && step_ <= 4) {
-      verified_frames_++;
-    }
+    verified_frames_++;
   }
 
-  void AfterTest() override { EXPECT_EQ(5, verified_frames_); }
+  void AfterTest() override { EXPECT_EQ(6, verified_frames_); }
 
   int step_ = 0;
   int verified_frames_ = 0;
@@ -1730,9 +1728,7 @@ class SoftwareTextureLayerMultipleResourceTest
 
   void DisplayReceivedCompositorFrameOnThread(
       const viz::CompositorFrame& frame) override {
-    if (step_ >= 0 && step_ <= 3) {
-      verified_frames_++;
-    }
+    verified_frames_++;
   }
 
   void AfterTest() override { EXPECT_EQ(4, verified_frames_); }
@@ -1808,9 +1804,7 @@ class SoftwareTextureLayerLoseFrameSinkTest : public SoftwareTextureLayerTest {
 
   void DisplayReceivedCompositorFrameOnThread(
       const viz::CompositorFrame& frame) override {
-    if (step_ >= 0 && step_ <= 2) {
-      verified_frames_++;
-    }
+    verified_frames_++;
   }
 
   void WillCommit(const CommitState& commit_state) override {
@@ -1830,7 +1824,7 @@ class SoftwareTextureLayerLoseFrameSinkTest : public SoftwareTextureLayerTest {
     EndTest();
   }
 
-  void AfterTest() override { EXPECT_EQ(3, verified_frames_); }
+  void AfterTest() override { EXPECT_EQ(4, verified_frames_); }
 
   int step_ = 0;
   int verified_frames_ = 0;

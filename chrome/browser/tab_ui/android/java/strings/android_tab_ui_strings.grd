@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- android_chrome_strings.grd contains strings for tab ui DFM of Chrome for Android. -->
+<grit current_release="1" latest_public_release="0">
+  <outputs>
+    <output filename="values-af/android_tab_ui_strings.xml" lang="af" type="android" />
+    <output filename="values-am/android_tab_ui_strings.xml" lang="am" type="android" />
+    <output filename="values-ar/android_tab_ui_strings.xml" lang="ar" type="android" />
+    <output filename="values-as/android_tab_ui_strings.xml" lang="as" type="android" />
+    <output filename="values-az/android_tab_ui_strings.xml" lang="az" type="android" />
+    <output filename="values-be/android_tab_ui_strings.xml" lang="be" type="android" />
+    <output filename="values-bg/android_tab_ui_strings.xml" lang="bg" type="android" />
+    <output filename="values-bn/android_tab_ui_strings.xml" lang="bn" type="android" />
+    <output filename="values-bs/android_tab_ui_strings.xml" lang="bs" type="android" />
+    <output filename="values-ca/android_tab_ui_strings.xml" lang="ca" type="android" />
+    <output filename="values-cs/android_tab_ui_strings.xml" lang="cs" type="android" />
+    <output filename="values-da/android_tab_ui_strings.xml" lang="da" type="android" />
+    <output filename="values-de/android_tab_ui_strings.xml" lang="de" type="android" />
+    <output filename="values-el/android_tab_ui_strings.xml" lang="el" type="android" />
+    <output filename="values/android_tab_ui_strings.xml" lang="en" type="android" />
+    <output filename="values-en-rGB/android_tab_ui_strings.xml" lang="en-GB" type="android" />
+    <output filename="values-es/android_tab_ui_strings.xml" lang="es" type="android" />
+    <output filename="values-es-rUS/android_tab_ui_strings.xml" lang="es-419" type="android" />
+    <output filename="values-et/android_tab_ui_strings.xml" lang="et" type="android" />
+    <output filename="values-eu/android_tab_ui_strings.xml" lang="eu" type="android" />
+    <output filename="values-fa/android_tab_ui_strings.xml" lang="fa" type="android" />
+    <output filename="values-fi/android_tab_ui_strings.xml" lang="fi" type="android" />
+    <output filename="values-tl/android_tab_ui_strings.xml" lang="fil" type="android" />
+    <output filename="values-fr/android_tab_ui_strings.xml" lang="fr" type="android" />
+    <output filename="values-fr-rCA/android_tab_ui_strings.xml" lang="fr-CA" type="android" />
+    <output filename="values-gl/android_tab_ui_strings.xml" lang="gl" type="android" />
+    <output filename="values-gu/android_tab_ui_strings.xml" lang="gu" type="android" />
+    <output filename="values-hi/android_tab_ui_strings.xml" lang="hi" type="android" />
+    <output filename="values-hr/android_tab_ui_strings.xml" lang="hr" type="android" />
+    <output filename="values-hu/android_tab_ui_strings.xml" lang="hu" type="android" />
+    <output filename="values-hy/android_tab_ui_strings.xml" lang="hy" type="android" />
+    <output filename="values-in/android_tab_ui_strings.xml" lang="id" type="android" />
+    <output filename="values-is/android_tab_ui_strings.xml" lang="is" type="android" />
+    <output filename="values-it/android_tab_ui_strings.xml" lang="it" type="android" />
+    <output filename="values-iw/android_tab_ui_strings.xml" lang="iw" type="android" />
+    <output filename="values-ja/android_tab_ui_strings.xml" lang="ja" type="android" />
+    <output filename="values-ka/android_tab_ui_strings.xml" lang="ka" type="android" />
+    <output filename="values-kk/android_tab_ui_strings.xml" lang="kk" type="android" />
+    <output filename="values-km/android_tab_ui_strings.xml" lang="km" type="android" />
+    <output filename="values-kn/android_tab_ui_strings.xml" lang="kn" type="android" />
+    <output filename="values-ko/android_tab_ui_strings.xml" lang="ko" type="android" />
+    <output filename="values-ky/android_tab_ui_strings.xml" lang="ky" type="android" />
+    <output filename="values-lo/android_tab_ui_strings.xml" lang="lo" type="android" />
+    <output filename="values-lt/android_tab_ui_strings.xml" lang="lt" type="android" />
+    <output filename="values-lv/android_tab_ui_strings.xml" lang="lv" type="android" />
+    <output filename="values-mk/android_tab_ui_strings.xml" lang="mk" type="android" />
+    <output filename="values-ml/android_tab_ui_strings.xml" lang="ml" type="android" />
+    <output filename="values-mn/android_tab_ui_strings.xml" lang="mn" type="android" />
+    <output filename="values-mr/android_tab_ui_strings.xml" lang="mr" type="android" />
+    <output filename="values-ms/android_tab_ui_strings.xml" lang="ms" type="android" />
+    <output filename="values-my/android_tab_ui_strings.xml" lang="my" type="android" />
+    <output filename="values-ne/android_tab_ui_strings.xml" lang="ne" type="android" />
+    <output filename="values-nl/android_tab_ui_strings.xml" lang="nl" type="android" />
+    <output filename="values-nb/android_tab_ui_strings.xml" lang="no" type="android" />
+    <output filename="values-or/android_tab_ui_strings.xml" lang="or" type="android" />
+    <output filename="values-pa/android_tab_ui_strings.xml" lang="pa" type="android" />
+    <output filename="values-pl/android_tab_ui_strings.xml" lang="pl" type="android" />
+    <output filename="values-pt-rBR/android_tab_ui_strings.xml" lang="pt-BR" type="android" />
+    <output filename="values-pt-rPT/android_tab_ui_strings.xml" lang="pt-PT" type="android" />
+    <output filename="values-ro/android_tab_ui_strings.xml" lang="ro" type="android" />
+    <output filename="values-ru/android_tab_ui_strings.xml" lang="ru" type="android" />
+    <output filename="values-si/android_tab_ui_strings.xml" lang="si" type="android" />
+    <output filename="values-sk/android_tab_ui_strings.xml" lang="sk" type="android" />
+    <output filename="values-sl/android_tab_ui_strings.xml" lang="sl" type="android" />
+    <output filename="values-sq/android_tab_ui_strings.xml" lang="sq" type="android" />
+    <output filename="values-sr/android_tab_ui_strings.xml" lang="sr" type="android" />
+    <output filename="values-b+sr+Latn/android_tab_ui_strings.xml" lang="sr-Latn" type="android" />
+    <output filename="values-sv/android_tab_ui_strings.xml" lang="sv" type="android" />
+    <output filename="values-sw/android_tab_ui_strings.xml" lang="sw" type="android" />
+    <output filename="values-ta/android_tab_ui_strings.xml" lang="ta" type="android" />
+    <output filename="values-te/android_tab_ui_strings.xml" lang="te" type="android" />
+    <output filename="values-th/android_tab_ui_strings.xml" lang="th" type="android" />
+    <output filename="values-tr/android_tab_ui_strings.xml" lang="tr" type="android" />
+    <output filename="values-uk/android_tab_ui_strings.xml" lang="uk" type="android" />
+    <output filename="values-ur/android_tab_ui_strings.xml" lang="ur" type="android" />
+    <output filename="values-uz/android_tab_ui_strings.xml" lang="uz" type="android" />
+    <output filename="values-vi/android_tab_ui_strings.xml" lang="vi" type="android" />
+    <output filename="values-zh-rCN/android_tab_ui_strings.xml" lang="zh-CN" type="android" />
+    <output filename="values-zh-rHK/android_tab_ui_strings.xml" lang="zh-HK" type="android" />
+    <output filename="values-zh-rTW/android_tab_ui_strings.xml" lang="zh-TW" type="android" />
+    <output filename="values-zu/android_tab_ui_strings.xml" lang="zu" type="android" />
+    <!-- Pseudolocales -->
+    <output filename="values-ar-rXB/android_tab_ui_strings.xml" lang="ar-XB" type="android" />
+    <output filename="values-en-rXA/android_tab_ui_strings.xml" lang="en-XA" type="android" />
+  </outputs>
+  <translations>
+    <file path="translations/android_tab_ui_strings_af.xtb" lang="af" />
+    <file path="translations/android_tab_ui_strings_am.xtb" lang="am" />
+    <file path="translations/android_tab_ui_strings_ar.xtb" lang="ar" />
+    <file path="translations/android_tab_ui_strings_as.xtb" lang="as" />
+    <file path="translations/android_tab_ui_strings_az.xtb" lang="az" />
+    <file path="translations/android_tab_ui_strings_be.xtb" lang="be" />
+    <file path="translations/android_tab_ui_strings_bg.xtb" lang="bg" />
+    <file path="translations/android_tab_ui_strings_bn.xtb" lang="bn" />
+    <file path="translations/android_tab_ui_strings_bs.xtb" lang="bs" />
+    <file path="translations/android_tab_ui_strings_ca.xtb" lang="ca" />
+    <file path="translations/android_tab_ui_strings_cs.xtb" lang="cs" />
+    <file path="translations/android_tab_ui_strings_cy.xtb" lang="cy" />
+    <file path="translations/android_tab_ui_strings_da.xtb" lang="da" />
+    <file path="translations/android_tab_ui_strings_de.xtb" lang="de" />
+    <file path="translations/android_tab_ui_strings_el.xtb" lang="el" />
+    <file path="translations/android_tab_ui_strings_en-GB.xtb" lang="en-GB" />
+    <file path="translations/android_tab_ui_strings_es.xtb" lang="es" />
+    <file path="translations/android_tab_ui_strings_es-419.xtb" lang="es-419" />
+    <file path="translations/android_tab_ui_strings_et.xtb" lang="et" />
+    <file path="translations/android_tab_ui_strings_eu.xtb" lang="eu" />
+    <file path="translations/android_tab_ui_strings_fa.xtb" lang="fa" />
+    <file path="translations/android_tab_ui_strings_fi.xtb" lang="fi" />
+    <file path="translations/android_tab_ui_strings_fil.xtb" lang="fil" />
+    <file path="translations/android_tab_ui_strings_fr.xtb" lang="fr" />
+    <file path="translations/android_tab_ui_strings_fr-CA.xtb" lang="fr-CA" />
+    <file path="translations/android_tab_ui_strings_gl.xtb" lang="gl" />
+    <file path="translations/android_tab_ui_strings_gu.xtb" lang="gu" />
+    <file path="translations/android_tab_ui_strings_hi.xtb" lang="hi" />
+    <file path="translations/android_tab_ui_strings_hr.xtb" lang="hr" />
+    <file path="translations/android_tab_ui_strings_hu.xtb" lang="hu" />
+    <file path="translations/android_tab_ui_strings_hy.xtb" lang="hy" />
+    <file path="translations/android_tab_ui_strings_id.xtb" lang="id" />
+    <file path="translations/android_tab_ui_strings_is.xtb" lang="is" />
+    <file path="translations/android_tab_ui_strings_it.xtb" lang="it" />
+    <file path="translations/android_tab_ui_strings_iw.xtb" lang="iw" />
+    <file path="translations/android_tab_ui_strings_ja.xtb" lang="ja" />
+    <file path="translations/android_tab_ui_strings_ka.xtb" lang="ka" />
+    <file path="translations/android_tab_ui_strings_kk.xtb" lang="kk" />
+    <file path="translations/android_tab_ui_strings_km.xtb" lang="km" />
+    <file path="translations/android_tab_ui_strings_kn.xtb" lang="kn" />
+    <file path="translations/android_tab_ui_strings_ko.xtb" lang="ko" />
+    <file path="translations/android_tab_ui_strings_ky.xtb" lang="ky" />
+    <file path="translations/android_tab_ui_strings_lo.xtb" lang="lo" />
+    <file path="translations/android_tab_ui_strings_lt.xtb" lang="lt" />
+    <file path="translations/android_tab_ui_strings_lv.xtb" lang="lv" />
+    <file path="translations/android_tab_ui_strings_mk.xtb" lang="mk" />
+    <file path="translations/android_tab_ui_strings_ml.xtb" lang="ml" />
+    <file path="translations/android_tab_ui_strings_mn.xtb" lang="mn" />
+    <file path="translations/android_tab_ui_strings_mr.xtb" lang="mr" />
+    <file path="translations/android_tab_ui_strings_ms.xtb" lang="ms" />
+    <file path="translations/android_tab_ui_strings_my.xtb" lang="my" />
+    <file path="translations/android_tab_ui_strings_ne.xtb" lang="ne" />
+    <file path="translations/android_tab_ui_strings_nl.xtb" lang="nl" />
+    <file path="translations/android_tab_ui_strings_no.xtb" lang="no" />
+    <file path="translations/android_tab_ui_strings_or.xtb" lang="or" />
+    <file path="translations/android_tab_ui_strings_pa.xtb" lang="pa" />
+    <file path="translations/android_tab_ui_strings_pl.xtb" lang="pl" />
+    <file path="translations/android_tab_ui_strings_pt-BR.xtb" lang="pt-BR" />
+    <file path="translations/android_tab_ui_strings_pt-PT.xtb" lang="pt-PT" />
+    <file path="translations/android_tab_ui_strings_ro.xtb" lang="ro" />
+    <file path="translations/android_tab_ui_strings_ru.xtb" lang="ru" />
+    <file path="translations/android_tab_ui_strings_si.xtb" lang="si" />
+    <file path="translations/android_tab_ui_strings_sk.xtb" lang="sk" />
+    <file path="translations/android_tab_ui_strings_sl.xtb" lang="sl" />
+    <file path="translations/android_tab_ui_strings_sq.xtb" lang="sq" />
+    <file path="translations/android_tab_ui_strings_sr.xtb" lang="sr" />
+    <file path="translations/android_tab_ui_strings_sr-Latn.xtb" lang="sr-Latn" />
+    <file path="translations/android_tab_ui_strings_sv.xtb" lang="sv" />
+    <file path="translations/android_tab_ui_strings_sw.xtb" lang="sw" />
+    <file path="translations/android_tab_ui_strings_ta.xtb" lang="ta" />
+    <file path="translations/android_tab_ui_strings_te.xtb" lang="te" />
+    <file path="translations/android_tab_ui_strings_th.xtb" lang="th" />
+    <file path="translations/android_tab_ui_strings_tr.xtb" lang="tr" />
+    <file path="translations/android_tab_ui_strings_uk.xtb" lang="uk" />
+    <file path="translations/android_tab_ui_strings_ur.xtb" lang="ur" />
+    <file path="translations/android_tab_ui_strings_uz.xtb" lang="uz" />
+    <file path="translations/android_tab_ui_strings_vi.xtb" lang="vi" />
+    <file path="translations/android_tab_ui_strings_zh-CN.xtb" lang="zh-CN" />
+    <file path="translations/android_tab_ui_strings_zh-HK.xtb" lang="zh-HK" />
+    <file path="translations/android_tab_ui_strings_zh-TW.xtb" lang="zh-TW" />
+    <file path="translations/android_tab_ui_strings_zu.xtb" lang="zu" />
+  </translations>
+  <release seq="1">
+    <messages fallback_to_english="true">
+      <message name="IDS_CLOSE_FROM_GROUP_DESCRIPTION" desc="Description of the action of deleting a tab and a group, shown in a confirmation dialog.">
+        This will delete the group from all devices signed into <ph name="USER_EMAIL">%1$s<ex>test@gmail.com</ex></ph>
+      </message>
+      <message name="IDS_CLOSE_FROM_GROUP_DIALOG_TITLE" desc="Title of a dialog asking if the user really wants to close a tab and group.">
+        Close tab and delete group?
+      </message>
+      <message name="IDS_DELETE_SHARED_TAB_GROUP_DIALOG_TITLE" desc="Title of a dialog asking if the user really wants to delete a tab group that is shared with other users.">
+        Delete group?
+      </message>
+      <message name="IDS_DELETE_SHARED_TAB_GROUP_DESCRIPTION" desc="Menu item text which will prompt a confirmation dialog to delete a tab group that is shared with other users.">
+        Everyone will immediately lose access to the "<ph name="GROUP_NAME">%1$s<ex>Vacation</ex></ph>" tab group, and it will be deleted from all devices
+      </message>
+      <message name="IDS_DELETE_TAB_GROUP_DIALOG_TITLE" desc="Title of a dialog asking if the user really wants to delete a tab group.">
+        Delete tab group?
+      </message>
+      <message name="IDS_DELETE_TAB_GROUP_DESCRIPTION" desc="Description of the action of deleting a tab group, shown in a confirmation dialog.">
+        This will delete the group from all devices signed into <ph name="USER_EMAIL">%1$s<ex>test@gmail.com</ex></ph>
+      </message>
+      <message name="IDS_DELETE_TAB_GROUP_NO_SYNC_DESCRIPTION" desc="Description of the action of deleting a tab group, shown in a confirmation dialog.">
+        This will permanently delete the group from your device
+      </message>
+      <message name="IDS_DELETE_TAB_GROUP_ACTION" desc="Button text in a confirmation dialog which will delete a tab group.">
+        Delete group
+      </message>
+      <message name="IDS_DELETE_TAB_GROUP_MENU_ITEM" desc="Menu item text which will prompt a confirmation dialog to delete a tab group.">
+        Delete
+      </message>
+      <message name="IDS_KEEP_TAB_GROUP_DIALOG_TITLE" desc="Title of a dialog asking the user if they want to keep the tab group.">
+        Keep group?
+      </message>
+      <message name="IDS_KEEP_TAB_GROUP_DIALOG_DESCRIPTION_OWNER" desc="Main text content of a dialog asking the owner of a shared group if they want to keep it. The &#10; is a newline character to force formatting.">
+        Keep this group to add tabs later, or delete it if you no longer need it.&#10;&#10;If you delete it, everyone will immediately lose access to the "<ph name="TITLE_OF_GROUP">%1$s<ex>Shopping cart</ex></ph>" tab group, and it will be deleted from all devices.
+      </message>
+      <message name="IDS_KEEP_TAB_GROUP_DIALOG_DESCRIPTION_MEMBER" desc="Main text content of a dialog asking a member of a shared group if they want to keep it or leave.">
+        Keep this group to add tabs later, or leave it if you no longer want access to it
+      </message>
+      <message name="IDS_KEEP_TAB_GROUP_DIALOG_KEEP_ACTION" desc="Action button to keep the tab group in the keep group dialog.">
+        Keep group
+      </message>
+      <message name="IDS_KEEP_TAB_GROUP_DIALOG_DELETE_ACTION" desc="Action button for the owner of a group to delete the tab group in the keep group dialog.">
+        Delete group
+      </message>
+      <message name="IDS_KEEP_TAB_GROUP_DIALOG_LEAVE_ACTION" desc="Action button for a member of a group to leave the tab group in the keep group dialog.">
+        Leave group
+      </message>
+      <message name="IDS_LEAVE_TAB_GROUP_MENU_ITEM" desc="Menu item text for an item which will leave a group the user does not own.">
+        Leave
+      </message>
+      <message name="IDS_LEAVE_TAB_GROUP_DIALOG_TITLE" desc="Title of a dialog asking if the user really wants to leave a shared tab group.">
+        Leave group?
+      </message>
+      <message name="IDS_LEAVE_TAB_GROUP_DESCRIPTION" desc="Description of the action of leaving a shared tab group, shown in a confirmation dialog.">
+        You’ll immediately lose access to the "<ph name="GROUP_NAME">%1$s<ex>Vacation</ex></ph>" tab group, and it will be deleted from all your devices
+      </message>
+      <message name="IDS_UNGROUP_TAB_GROUP_DIALOG_TITLE" desc="Title of a dialog asking if the user really wants to ungroup all tabs in a group.">
+        Ungroup tab group?
+      </message>
+      <message name="IDS_UNGROUP_TAB_GROUP_DESCRIPTION" desc="Description of the impact of ungrouping the tabs in a group, shown in a confirmation dialog.">
+        The tabs will remain open on this device but the group will be deleted from all devices signed into <ph name="USER_EMAIL">%1$s<ex>test@gmail.com</ex></ph>
+      </message>
+      <message name="IDS_UNGROUP_TAB_GROUP_NO_SYNC_DESCRIPTION" desc="Description of the impact of ungrouping the tabs in a group, shown in a confirmation dialog.">
+        The tabs will remain open on this device but the group will be permanently deleted
+      </message>
+      <message name="IDS_UNGROUP_TAB_GROUP_ACTION" desc="Button text in a confirmation dialog which will ungroup tabs in a group.">
+        Ungroup
+      </message>
+      <message name="IDS_UNGROUP_TAB_GROUP_MENU_ITEM" desc="Menu item text which will prompt a confirmation dialog to ungroup a tab group.">
+        Ungroup
+      </message>
+      <message name="IDS_REMOVE_FROM_GROUP_DIALOG_MESSAGE" desc="Title of a dialog asking if the user really wants to remove all tabs in a group.">
+        Remove tab(s) and delete group?
+      </message>
+      <message name="IDS_REMOVE_FROM_GROUP_DESCRIPTION" desc="Description of the action of removing all tabs in a group, shown in a confirmation dialog.">
+        This will delete the group from all devices signed into <ph name="USER_EMAIL">%1$s<ex>test@gmail.com</ex></ph>
+      </message>
+    </messages>
+  </release>
+</grit>

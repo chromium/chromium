@@ -105,7 +105,7 @@ class AssertingCaptureCallback : public AudioCapturerSource::CaptureCallback {
   base::WaitableEvent capture_called_event_;
 };
 
-}  // namespace.
+}  // namespace
 
 class AudioInputDeviceTest
     : public ::testing::TestWithParam<AudioInputDevice::DeadStreamDetection> {
@@ -313,4 +313,4 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(AudioInputDevice::DeadStreamDetection::kDisabled,
                       AudioInputDevice::DeadStreamDetection::kEnabled));
 
-}  // namespace media.
+}  // namespace media

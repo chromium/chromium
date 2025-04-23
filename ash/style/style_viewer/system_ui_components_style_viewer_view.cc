@@ -19,6 +19,8 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/background.h"
@@ -67,11 +69,13 @@ class SystemUIComponentsStyleViewerClientView : public views::ClientView {
   ~SystemUIComponentsStyleViewerClientView() override = default;
 
   // ClientView:
-  void UpdateWindowRoundedCorners(int corner_radius) override {
-    //  The top corners will be rounded by NonClientFrameViewAsh. The
+  void UpdateWindowRoundedCorners(
+      const gfx::RoundedCornersF& window_radii) override {
+    // The top corners will be rounded by NonClientFrameViewAsh. The
     // client-view is responsible for rounding the bottom corners.
 
-    const gfx::RoundedCornersF radii(0, 0, corner_radius, corner_radius);
+    const gfx::RoundedCornersF radii(0, 0, window_radii.lower_right(),
+                                     window_radii.lower_left());
     contents_view()->SetBackground(
         views::CreateRoundedRectBackground(ui::kColorDialogBackground, radii));
   }
@@ -160,13 +164,14 @@ SystemUIComponentsStyleViewerView::~SystemUIComponentsStyleViewerView() =
 // static.
 void SystemUIComponentsStyleViewerView::CreateAndShowWidget() {
   // Only create widget when there is no running instance.
-  if (g_instance)
+  if (g_instance) {
     return;
+  }
 
   // Owned by widget.
   SystemUIComponentsStyleViewerView* viewer_view =
       new SystemUIComponentsStyleViewerView();
-  viewer_view->SetOwnedByWidget(true);
+  viewer_view->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
 
   viewer_view->AddComponent(
       u"PillButton", base::BindRepeating(&CreatePillButtonInstancesGirdView));

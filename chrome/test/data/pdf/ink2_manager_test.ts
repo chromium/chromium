@@ -5,11 +5,39 @@
 import type {AnnotationBrush, AnnotationText} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {AnnotationBrushType, Ink2Manager, TextAlignment} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {assertAnnotationBrush, setGetAnnotationBrushReply, setupTestMockPluginForInk} from './test_util.js';
+import {assertAnnotationBrush, assertDeepEquals, setGetAnnotationBrushReply, setupTestViewportAndMockPluginForInk} from './test_util.js';
+import type {MockPdfPluginElement} from './test_util.js';
 
-const mockPlugin = setupTestMockPluginForInk();
+const {viewport, mockPlugin} = setupTestViewportAndMockPluginForInk();
 const manager = Ink2Manager.getInstance();
+
+/**
+ * Tests that the current annotation text matches `expectedText`. Clears all
+ * messages from `mockPlugin` after, otherwise subsequent calls would continue
+ * to find and use the same message.
+ * @param mockPlugin The mock plugin receiving messages.
+ * @param expectedText The expected text that the current annotation text
+ * should match.
+ */
+export function assertAnnotationText(
+    mockPlugin: MockPdfPluginElement, expectedText: AnnotationText) {
+  const setAnnotationTextMessage =
+      mockPlugin.findMessage('setTextAnnotationFont');
+  chrome.test.assertTrue(setAnnotationTextMessage !== undefined);
+  chrome.test.assertEq('setTextAnnotationFont', setAnnotationTextMessage.type);
+  chrome.test.assertEq(
+      expectedText.font, setAnnotationTextMessage.data.typeface);
+  chrome.test.assertEq(
+      expectedText.size, setAnnotationTextMessage.data.fontSize);
+  chrome.test.assertEq(
+      expectedText.alignment, setAnnotationTextMessage.data.alignment);
+  assertDeepEquals(expectedText.color, setAnnotationTextMessage.data.color);
+  assertDeepEquals(expectedText.styles, setAnnotationTextMessage.data.style);
+
+  mockPlugin.clearMessages();
+}
 
 chrome.test.runTests([
   async function testInitializeBrush() {
@@ -52,10 +80,7 @@ chrome.test.runTests([
       chrome.test.assertEq(index + 1, brushUpdates.length);
       chrome.test.assertEq(expected.type, brushUpdates[index]!.type);
       if (expected.color) {
-        assert(brushUpdates[index]!.color);
-        chrome.test.assertEq(expected.color.r, brushUpdates[index]!.color.r);
-        chrome.test.assertEq(expected.color.g, brushUpdates[index]!.color.g);
-        chrome.test.assertEq(expected.color.b, brushUpdates[index]!.color.b);
+        assertDeepEquals(expected.color, brushUpdates[index]!.color);
       }
       chrome.test.assertEq(expected.size, brushUpdates[index]!.size);
     }
@@ -98,6 +123,47 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  async function testGetTextAnnotationFonts() {
+    // Checks that requesting the fonts for the first time retrieves the
+    // fonts from the plugin and fires a text-changed event with the font
+    // set to the first font returned.
+    const whenChanged = eventToPromise('text-changed', manager);
+    const fonts = await manager.getTextAnnotationFonts();
+
+    // For now, these are hardcoded in controller.ts.
+    const expectedFonts = ['Roboto', 'Serif', 'Sans', 'Monospace'];
+    chrome.test.assertEq(fonts.length, expectedFonts.length);
+    for (let i = 0; i < expectedFonts.length; i++) {
+      chrome.test.assertEq(fonts[i], expectedFonts[i]);
+    }
+
+    // Check that the manager requested the fonts.
+    const getTextAnnotFontNamesMessage =
+        mockPlugin.findMessage('getTextAnnotFontNames');
+    chrome.test.assertTrue(getTextAnnotFontNamesMessage !== undefined);
+    chrome.test.assertEq(
+        'getTextAnnotFontNames', getTextAnnotFontNamesMessage.type);
+
+    // Check that an event was fired.
+    const changedEvent = await whenChanged;
+    chrome.test.assertEq('Roboto', changedEvent.detail.font);
+    // Manager should also have sent the initial text settings to the plugin.
+    const expectedText = {
+      font: 'Roboto',
+      size: 12,
+      color: {r: 0, g: 0, b: 0},
+      alignment: TextAlignment.LEFT,
+      styles: {
+        bold: false,
+        italic: false,
+        underline: false,
+        strikethrough: false,
+      },
+    };
+    assertAnnotationText(mockPlugin, expectedText);
+    chrome.test.succeed();
+  },
+
   function testSetTextProperties() {
     const textUpdates: AnnotationText[] = [];
     manager.addEventListener('text-changed', e => {
@@ -108,19 +174,9 @@ chrome.test.runTests([
       chrome.test.assertEq(index + 1, textUpdates.length);
       chrome.test.assertEq(expected.font, textUpdates[index]!.font);
       chrome.test.assertEq(expected.size, textUpdates[index]!.size);
-      chrome.test.assertEq(expected.color.r, textUpdates[index]!.color.r);
-      chrome.test.assertEq(expected.color.g, textUpdates[index]!.color.g);
-      chrome.test.assertEq(expected.color.b, textUpdates[index]!.color.b);
+      assertDeepEquals(expected.color, textUpdates[index]!.color);
       chrome.test.assertEq(expected.alignment, textUpdates[index]!.alignment);
-      chrome.test.assertEq(
-          expected.styles.bold, textUpdates[index]!.styles.bold);
-      chrome.test.assertEq(
-          expected.styles.italic, textUpdates[index]!.styles.italic);
-      chrome.test.assertEq(
-          expected.styles.underline, textUpdates[index]!.styles.underline);
-      chrome.test.assertEq(
-          expected.styles.strikethrough,
-          textUpdates[index]!.styles.strikethrough);
+      assertDeepEquals(expected.styles, textUpdates[index]!.styles);
     }
 
     // Update font. Note the other `expectedText` values come from the defaults
@@ -138,22 +194,26 @@ chrome.test.runTests([
         strikethrough: false,
       },
     };
+    assertAnnotationText(mockPlugin, expectedText);
     assertTextUpdate(0, expectedText);
 
     // Set size to 10.
     manager.setTextSize(10);
     expectedText.size = 10;
+    assertAnnotationText(mockPlugin, expectedText);
     assertTextUpdate(1, expectedText);
 
     // Set alignment to CENTER.
     manager.setTextAlignment(TextAlignment.CENTER);
     expectedText.alignment = TextAlignment.CENTER;
+    assertAnnotationText(mockPlugin, expectedText);
     assertTextUpdate(2, expectedText);
 
     // Set color to blue.
     const blue = {r: 0, b: 100, g: 0};
     manager.setTextColor(blue);
     expectedText.color = blue;
+    assertAnnotationText(mockPlugin, expectedText);
     assertTextUpdate(3, expectedText);
 
     // Set style to bold + italic.
@@ -161,8 +221,89 @@ chrome.test.runTests([
         {bold: true, italic: true, underline: false, strikethrough: false};
     manager.setTextStyles(boldItalic);
     expectedText.styles = boldItalic;
+    assertAnnotationText(mockPlugin, expectedText);
     assertTextUpdate(4, expectedText);
 
+    chrome.test.succeed();
+  },
+
+  async function testDispatchUpdateTextBox() {
+    const whenUpdateEvent = eventToPromise('update-text-box', manager);
+    mockPlugin.dispatchEvent(new MessageEvent('message', {
+      data: {
+        type: 'updateTextAnnotTextBoxRect',
+        height: 50,
+        locationX: 150,
+        locationY: 250,
+        width: 200,
+      },
+      origin: '*',
+    }));
+    const event = await whenUpdateEvent;
+    chrome.test.assertEq(50, event.detail.height);
+    chrome.test.assertEq(150, event.detail.locationX);
+    chrome.test.assertEq(250, event.detail.locationY);
+    chrome.test.assertEq(200, event.detail.width);
+    chrome.test.succeed();
+  },
+
+  function testSetTextBoxRect() {
+    const newRect = {
+      height: 100,
+      locationX: 200,
+      locationY: 300,
+      width: 400,
+    };
+    manager.setTextBoxRect(newRect);
+    const setTextAnnotTextBoxRectMessage =
+        mockPlugin.findMessage('setTextAnnotTextBoxRect');
+    chrome.test.assertTrue(setTextAnnotTextBoxRectMessage !== undefined);
+    chrome.test.assertEq(
+        'setTextAnnotTextBoxRect', setTextAnnotTextBoxRectMessage.type);
+    chrome.test.assertTrue(
+        chrome.test.checkDeepEq(newRect, setTextAnnotTextBoxRectMessage.data));
+    chrome.test.succeed();
+  },
+
+  async function testViewport() {
+    const initialParams = manager.getViewportParams();
+    chrome.test.assertEq(1.0, initialParams.zoom);
+    // pageMarginY * zoom = 3 * 1
+    chrome.test.assertEq(3, initialParams.pageY);
+    // (windowWidth - docWidth * zoom)/2 + pageMarginX * zoom =
+    // (100 - 90 * 1)/2 + 5 * 1
+    chrome.test.assertEq(10, initialParams.pageX);
+
+    // Zoom out should fire an event.
+    let whenViewportChanged = eventToPromise('viewport-changed', manager);
+    viewport.setZoom(0.5);
+    let changedEvent = await whenViewportChanged;
+    chrome.test.assertEq(0.5, changedEvent.detail.zoom);
+    // pageMarginY * zoom = 3 * .5
+    chrome.test.assertEq(1.5, changedEvent.detail.pageY);
+    // (windowWidth - docWidth * zoom)/2 + pageMarginX * zoom =
+    // (100 - 90 * .5)/2 + 5 * .5
+    chrome.test.assertEq(30, changedEvent.detail.pageX);
+
+    // Zoom in should fire an event.
+    whenViewportChanged = eventToPromise('viewport-changed', manager);
+    viewport.setZoom(2.0);
+    changedEvent = await whenViewportChanged;
+    chrome.test.assertEq(2, changedEvent.detail.zoom);
+    // pageMarginY * zoom = 3 * 2
+    chrome.test.assertEq(6, changedEvent.detail.pageY);
+    // docWidth * zoom > windowWidth, so this is now pageMarginX * zoom = 5 * 2
+    chrome.test.assertEq(10, changedEvent.detail.pageX);
+
+    // Translation.
+    whenViewportChanged = eventToPromise('viewport-changed', manager);
+    viewport.goToPageAndXy(0, 20, 20);
+    changedEvent = await whenViewportChanged;
+    chrome.test.assertEq(2, changedEvent.detail.zoom);
+    // Shifts by -20 * zoom = -40 from previous position.
+    chrome.test.assertEq(-34, changedEvent.detail.pageY);
+    // Shifts by -20 * zoom = -40 from previous position.
+    chrome.test.assertEq(-30, changedEvent.detail.pageX);
     chrome.test.succeed();
   },
 ]);

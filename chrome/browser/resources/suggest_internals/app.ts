@@ -188,8 +188,7 @@ class SuggestInternalsAppElement extends CrLitElement {
 
   private onRequestStarted_(request: Request) {
     const index = this.requests_.findIndex((element: Request) => {
-      return request.id.high === element.id.high &&
-          request.id.low === element.id.low;
+      return request.id === element.id;
     });
     // If the request is known, update it with the additional information.
     if (index !== -1) {
@@ -203,8 +202,7 @@ class SuggestInternalsAppElement extends CrLitElement {
 
   private onRequestCompleted_(request: Request) {
     const index = this.requests_.findIndex((element: Request) => {
-      return request.id.high === element.id.high &&
-          request.id.low === element.id.low;
+      return request.id === element.id;
     });
     // If the request is known, update it with the additional information.
     if (index !== -1) {

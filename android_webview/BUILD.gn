@@ -929,6 +929,7 @@ android_library("common_java") {
     "//components/gwp_asan/client/android:gwp_asan_java",
     "//components/metrics:metrics_java",
     "//components/network_session_configurator/android:network_session_configurator_java",
+    "//components/payments/content/android:feature_list_java",
     "//components/permissions/android:core_java",
     "//components/safe_browsing/android:safe_browsing_java",
     "//components/sensitive_content:sensitive_content_features_java",
@@ -1140,7 +1141,6 @@ android_resources("resources") {
     "java/res/layout/aw_context_menu_fullscreen_container.xml",
     "java/res/layout/aw_context_menu_header.xml",
     "java/res/layout/aw_context_menu_row.xml",
-    "java/res/raw/histograms_allowlist.txt",
     "java/res/values/styles.xml",
   ]
   deps = [ ":strings_grd" ]

@@ -11,7 +11,6 @@
 #include "base/files/safe_base_name.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
-#include "storage/browser/file_system/file_system_util.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -272,7 +271,6 @@ BucketLocator FileSystemURL::GetBucket() const {
   }
 
   auto bucket = storage::BucketLocator::ForDefaultBucket(storage_key());
-  bucket.type = storage::FileSystemTypeToQuotaStorageType(type());
   return bucket;
 }
 

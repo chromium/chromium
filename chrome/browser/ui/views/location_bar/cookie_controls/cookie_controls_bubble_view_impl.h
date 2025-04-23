@@ -47,7 +47,7 @@ class CookieControlsBubbleViewImpl : public CookieControlsBubbleView,
 
   void CloseWidget() override;
 
-  base::CallbackListSubscription RegisterOnUserClosedContentViewCallback(
+  base::CallbackListSubscription RegisterOnUserTriggeredReloadingActionCallback(
       base::RepeatingClosureList::CallbackType callback) override;
 
  protected:
@@ -63,7 +63,7 @@ class CookieControlsBubbleViewImpl : public CookieControlsBubbleView,
   raw_ptr<View> reloading_view_ = nullptr;
   raw_ptr<CookieControlsContentView> content_view_ = nullptr;
 
-  base::RepeatingClosureList on_user_closed_content_view_callback_list_;
+  base::RepeatingClosureList on_user_triggered_reloading_action_callback_list_;
   OnCloseBubbleCallback callback_;
 };
 

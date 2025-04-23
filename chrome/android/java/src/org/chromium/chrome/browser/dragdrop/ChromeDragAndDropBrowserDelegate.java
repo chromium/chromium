@@ -120,7 +120,7 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
         }
 
         // Dragging to existing instances.
-        String text = chromeDropDataAndroid.buildTabClipDataText();
+        String text = chromeDropDataAndroid.buildTabClipDataText(mActivitySupplier.get());
         return new ClipData(null, chromeDropDataAndroid.getSupportedMimeTypes(), new Item(text));
     }
 
@@ -144,11 +144,10 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
                         intent,
                         PendingIntent.FLAG_IMMUTABLE,
                         opts.toBundle());
-        Item item = buildClipDataItemWithPendingIntent(pendingIntent);
-        return new ClipData(
-                null,
-                chromeDropDataAndroid.getSupportedMimeTypes(),
-                (item != null ? item : new Item(intent)));
+        String clipDataText = chromeDropDataAndroid.buildTabClipDataText(mActivitySupplier.get());
+        Item item = buildClipDataItemWithPendingIntent(clipDataText, pendingIntent);
+        if (item == null) item = new Item(clipDataText, intent, /* uri= */ null);
+        return new ClipData(/* label= */ null, chromeDropDataAndroid.getSupportedMimeTypes(), item);
     }
 
     @Override
@@ -164,7 +163,8 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
     }
 
     @SuppressWarnings("NewApi")
-    private static ClipData.Item buildClipDataItemWithPendingIntent(PendingIntent pendingIntent) {
+    private static ClipData.Item buildClipDataItemWithPendingIntent(
+            String clipDataText, PendingIntent pendingIntent) {
         if (sDefinedItemWithPendingIntentForTesting) return sItemWithPendingIntentForTesting;
         // This invocation is wrapped in a try-catch block to allow backporting of the
         // ClipData.Item.Builder() class on pre-V devices. On pre-V devices not supporting this,
@@ -172,6 +172,7 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
         if (sClipDataItemBuilderNotFound) return null;
         try {
             return new ClipData.Item.Builder()
+                    .setText(clipDataText)
                     .setIntentSender(pendingIntent.getIntentSender())
                     .build();
         } catch (NoClassDefFoundError e) {

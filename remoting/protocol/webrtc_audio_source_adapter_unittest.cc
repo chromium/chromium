@@ -64,8 +64,9 @@ class FakeAudioSink : public webrtc::AudioTrackSinkInterface {
 class WebrtcAudioSourceAdapterTest : public testing::Test {
  public:
   void SetUp() override {
-    audio_source_adapter_ = new rtc::RefCountedObject<WebrtcAudioSourceAdapter>(
-        task_environment_.GetMainThreadTaskRunner());
+    audio_source_adapter_ =
+        new webrtc::RefCountedObject<WebrtcAudioSourceAdapter>(
+            task_environment_.GetMainThreadTaskRunner());
     audio_source_ = new FakeAudioSource();
     audio_source_adapter_->Start(base::WrapUnique(audio_source_.get()));
     audio_source_adapter_->AddSink(&sink_);

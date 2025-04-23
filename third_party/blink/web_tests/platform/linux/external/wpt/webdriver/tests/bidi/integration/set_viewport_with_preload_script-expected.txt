@@ -1,5 +1,0 @@
-This is a wdspec test.
-[FAIL] test_order
-  AssertionError: assert {'width': 250, 'height': 300} == {'height': 513, 'width': 800}
-Harness: the test ran to completion.
-

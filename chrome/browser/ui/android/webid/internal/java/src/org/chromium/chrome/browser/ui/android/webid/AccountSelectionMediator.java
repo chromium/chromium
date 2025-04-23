@@ -484,6 +484,9 @@ class AccountSelectionMediator {
     }
 
     private void handleBackPress() {
+        if (mWasDismissed) {
+            return;
+        }
         mSelectedAccount = null;
         if (mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL) {
             mDisclosureDialogState = DisclosureDialogResult.BACK_PRESS;
@@ -721,6 +724,9 @@ class AccountSelectionMediator {
             List<IdentityProviderData> idpDataList,
             boolean isAutoReauthn,
             List<Account> newAccounts) {
+        if (mWasDismissed) {
+            return false;
+        }
         mRpForDisplay = rpForDisplay;
         mAccounts = accounts;
         mIdpDataListForShowAccounts = idpDataList;
@@ -1303,7 +1309,6 @@ class AccountSelectionMediator {
         // This method only has an Account to match the type of the event listener. However, it
         // should be non-null because an account must have been selected in order to reach an error
         // dialog.
-        assert buttonData.mIdpMetadata == null;
         assert buttonData.mAccount != null;
         if (!shouldInputBeProcessed()) return;
         onDismissed(IdentityRequestDialogDismissReason.GOT_IT_BUTTON);
@@ -1345,6 +1350,9 @@ class AccountSelectionMediator {
     }
 
     void onDismissed(@IdentityRequestDialogDismissReason int dismissReason) {
+        if (mWasDismissed) {
+            return;
+        }
         boolean isUseOtherAccountCctDismissed =
                 mHeaderType == HeaderType.SIGN_IN && mIsModalDialogOpen;
         // If dismissed from use other account CCT, reshow the accounts dialog.

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/modules/peerconnection/rtc_stats_report.h"
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -957,23 +953,23 @@ RTCStats* RTCStatsToIDL(ScriptState* script_state,
                         const webrtc::RTCStats& stat,
                         bool expose_hardware_caps) {
   RTCStats* v8_stats = nullptr;
-  if (strcmp(stat.type(), "codec") == 0) {
+  if (UNSAFE_TODO(strcmp(stat.type(), "codec")) == 0) {
     v8_stats = ToV8Stat(script_state, stat.cast_to<webrtc::RTCCodecStats>());
-  } else if (strcmp(stat.type(), "inbound-rtp") == 0) {
+  } else if (UNSAFE_TODO(strcmp(stat.type(), "inbound-rtp")) == 0) {
     v8_stats =
         ToV8Stat(script_state, stat.cast_to<webrtc::RTCInboundRtpStreamStats>(),
                  expose_hardware_caps);
-  } else if (strcmp(stat.type(), "outbound-rtp") == 0) {
+  } else if (UNSAFE_TODO(strcmp(stat.type(), "outbound-rtp")) == 0) {
     v8_stats = ToV8Stat(script_state,
                         stat.cast_to<webrtc::RTCOutboundRtpStreamStats>(),
                         expose_hardware_caps);
-  } else if (strcmp(stat.type(), "remote-inbound-rtp") == 0) {
+  } else if (UNSAFE_TODO(strcmp(stat.type(), "remote-inbound-rtp")) == 0) {
     v8_stats = ToV8Stat(script_state,
                         stat.cast_to<webrtc::RTCRemoteInboundRtpStreamStats>());
-  } else if (strcmp(stat.type(), "remote-outbound-rtp") == 0) {
+  } else if (UNSAFE_TODO(strcmp(stat.type(), "remote-outbound-rtp")) == 0) {
     v8_stats = ToV8Stat(
         script_state, stat.cast_to<webrtc::RTCRemoteOutboundRtpStreamStats>());
-  } else if (strcmp(stat.type(), "media-source") == 0) {
+  } else if (UNSAFE_TODO(strcmp(stat.type(), "media-source")) == 0) {
     // Type media-source indicates a parent type. The actual stats are based on
     // the kind.
     const auto& media_source =
@@ -990,28 +986,28 @@ RTCStats* RTCStatsToIDL(ScriptState* script_state,
       NOTIMPLEMENTED() << "Unhandled media source stat type: " << kind;
       return nullptr;
     }
-  } else if (strcmp(stat.type(), "media-playout") == 0) {
+  } else if (UNSAFE_TODO(strcmp(stat.type(), "media-playout")) == 0) {
     v8_stats =
         ToV8Stat(script_state, stat.cast_to<webrtc::RTCAudioPlayoutStats>());
-  } else if (strcmp(stat.type(), "peer-connection") == 0) {
+  } else if (UNSAFE_TODO(strcmp(stat.type(), "peer-connection")) == 0) {
     v8_stats =
         ToV8Stat(script_state, stat.cast_to<webrtc::RTCPeerConnectionStats>());
-  } else if (strcmp(stat.type(), "data-channel") == 0) {
+  } else if (UNSAFE_TODO(strcmp(stat.type(), "data-channel")) == 0) {
     v8_stats =
         ToV8Stat(script_state, stat.cast_to<webrtc::RTCDataChannelStats>());
-  } else if (strcmp(stat.type(), "transport") == 0) {
+  } else if (UNSAFE_TODO(strcmp(stat.type(), "transport")) == 0) {
     v8_stats =
         ToV8Stat(script_state, stat.cast_to<webrtc::RTCTransportStats>());
-  } else if (strcmp(stat.type(), "candidate-pair") == 0) {
+  } else if (UNSAFE_TODO(strcmp(stat.type(), "candidate-pair")) == 0) {
     v8_stats = ToV8Stat(script_state,
                         stat.cast_to<webrtc::RTCIceCandidatePairStats>());
-  } else if (strcmp(stat.type(), "local-candidate") == 0) {
+  } else if (UNSAFE_TODO(strcmp(stat.type(), "local-candidate")) == 0) {
     v8_stats = ToV8Stat(script_state,
                         stat.cast_to<webrtc::RTCLocalIceCandidateStats>());
-  } else if (strcmp(stat.type(), "remote-candidate") == 0) {
+  } else if (UNSAFE_TODO(strcmp(stat.type(), "remote-candidate")) == 0) {
     v8_stats = ToV8Stat(script_state,
                         stat.cast_to<webrtc::RTCRemoteIceCandidateStats>());
-  } else if (strcmp(stat.type(), "certificate") == 0) {
+  } else if (UNSAFE_TODO(strcmp(stat.type(), "certificate")) == 0) {
     v8_stats =
         ToV8Stat(script_state, stat.cast_to<webrtc::RTCCertificateStats>());
   } else {

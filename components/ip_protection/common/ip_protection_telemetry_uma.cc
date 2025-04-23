@@ -313,6 +313,13 @@ void IpProtectionTelemetryUma::IsProbabilisticRevealTokenAvailable(
   }
 }
 
+void IpProtectionTelemetryUma::ProbabilisticRevealTokenRandomizationTime(
+    base::TimeDelta duration) {
+  base::UmaHistogramTimes(
+      "NetworkService.IpProtection.ProbabilisticRevealTokenRandomizationTime",
+      duration);
+}
+
 void IpProtectionTelemetryUma::QuicProxiesFailed(int after_requests) {
   base::UmaHistogramCounts1000("NetworkService.IpProtection.QuicProxiesFailed",
                                after_requests);

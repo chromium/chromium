@@ -9,6 +9,7 @@
 #import "components/signin/public/identity_manager/primary_account_change_event.h"
 #import "ios/chrome/browser/commerce/model/price_alert_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_account_context_manager.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -42,8 +43,10 @@ void OnPrimaryAccountSet(CoreAccountInfo primary_account) {
 
 PushNotificationProfileService::PushNotificationProfileService(
     signin::IdentityManager* identity_manager,
+    std::unique_ptr<PushNotificationClientManager> client_manager,
     base::FilePath profile_state_path)
     : identity_manager_(identity_manager),
+      client_manager_(std::move(client_manager)),
       profile_state_path_(profile_state_path) {
   identity_manager->AddObserver(this);
 }
@@ -52,6 +55,11 @@ PushNotificationProfileService::~PushNotificationProfileService() = default;
 
 void PushNotificationProfileService::Shutdown() {
   identity_manager_->RemoveObserver(this);
+}
+
+PushNotificationClientManager*
+PushNotificationProfileService::GetPushNotificationClientManager() {
+  return client_manager_.get();
 }
 
 void PushNotificationProfileService::OnPrimaryAccountChanged(

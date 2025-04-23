@@ -36,52 +36,6 @@ dependencyCheck {
     ]
 }
 
-// See https://github.com/google/guava/releases/tag/v33.3.1
-dependencies.constraints {
-    compile("com.google.guava:guava:33.3.1-android") {
-        attributes {
-            attribute(
-                    TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
-                    objects.named(TargetJvmEnvironment, TargetJvmEnvironment.ANDROID))
-        }
-    }
-    compileLatest("com.google.guava:guava:33.3.1-android") {
-        attributes {
-            attribute(
-                    TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
-                    objects.named(TargetJvmEnvironment, TargetJvmEnvironment.ANDROID))
-        }
-    }
-    buildCompile("com.google.guava:guava:33.3.1-jre") {
-        attributes {
-            attribute(
-                    TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
-                    objects.named(TargetJvmEnvironment, TargetJvmEnvironment.STANDARD_JVM))
-        }
-    }
-    buildCompileLatest("com.google.guava:guava:33.3.1-jre") {
-        attributes {
-            attribute(
-                    TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
-                    objects.named(TargetJvmEnvironment, TargetJvmEnvironment.STANDARD_JVM))
-        }
-    }
-    testCompile("com.google.guava:guava:33.3.1-jre") {
-        attributes {
-            attribute(
-                    TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
-                    objects.named(TargetJvmEnvironment, TargetJvmEnvironment.STANDARD_JVM))
-        }
-    }
-    testCompileLatest("com.google.guava:guava:33.3.1-jre") {
-        attributes {
-            attribute(
-                    TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
-                    objects.named(TargetJvmEnvironment, TargetJvmEnvironment.STANDARD_JVM))
-        }
-    }
-}
-
 dependencies {
     // Note about the configuration names: they are defined in buildSrc/ChromiumPlugin
 
@@ -100,7 +54,7 @@ dependencies {
     compile "com.google.android.gms:play-services-cast:22.0.0"
     compile "com.google.android.gms:play-services-fido:21.1.0"
     compile "com.google.android.gms:play-services-gcm:17.0.0"
-    compile "com.google.android.gms:play-services-identity-credentials:16.0.0-alpha05"
+    compile "com.google.android.gms:play-services-identity-credentials:16.0.0-alpha06"
     compile "com.google.android.gms:play-services-iid:17.0.0"
     compile "com.google.android.gms:play-services-instantapps:18.1.0"
     compile "com.google.android.gms:play-services-location:21.3.0"
@@ -209,7 +163,7 @@ dependencies {
     // Used by //third_party/byte_buddy
     androidTestCompile "net.bytebuddy:byte-buddy:1.14.5"
 
-    // Use testCompile to have is_robolectric = true set on targets.
+    // Use testCompile to have requires_robolectric = true set on targets.
     testCompile "org.robolectric:robolectric:4.14.1"
 }
 

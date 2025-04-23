@@ -12,7 +12,7 @@ build_webui("build") {
     "serviceworker_internals.html",
   ]
 
-  non_web_component_files = [ "serviceworker_internals.ts" ]
+  ts_files = [ "serviceworker_internals.ts" ]
 
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [

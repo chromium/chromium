@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "components/cross_device/logging/logging.h"
 
 namespace {
@@ -52,14 +53,13 @@ void CompanionAppParser::OnDeviceMetadataRetrieved(
 
   const std::string intent_uri_from_metadata =
       device_metadata->GetDetails().intent_uri();
-  if (intent_uri_from_metadata.find(kIntentKeyPrefix) != 0) {
+  std::optional<std::string_view> remainder =
+      base::RemovePrefix(intent_uri_from_metadata, kIntentKeyPrefix);
+  if (!remainder) {
     std::move(callback).Run(std::nullopt);
     return;
   }
-
-  std::optional<std::string> result = GetCompanionAppExtra(
-      intent_uri_from_metadata.substr(strlen(kIntentKeyPrefix)));
-  std::move(callback).Run(result);
+  std::move(callback).Run(GetCompanionAppExtra(std::string(*remainder)));
 }
 
 std::optional<std::string> CompanionAppParser::GetCompanionAppExtra(

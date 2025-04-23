@@ -103,10 +103,14 @@ class SchemaRegistryNativeHandler : public ObjectBackedNativeHandler {
 
 }  // namespace
 
-V8SchemaRegistry::V8SchemaRegistry() {
-}
+V8SchemaRegistry::V8SchemaRegistry() = default;
 
 V8SchemaRegistry::~V8SchemaRegistry() {
+  if (!context_holder_) {
+    return;
+  }
+  v8::HandleScope handle_scope(context_holder_->isolate());
+  context_holder_.reset();
 }
 
 std::unique_ptr<NativeHandler> V8SchemaRegistry::AsNativeHandler(

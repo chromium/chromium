@@ -44,9 +44,9 @@ export class HistoryRouterElement extends PolymerElement {
     };
   }
 
-  lastSelectedTab: number;
-  selectedPage: string;
-  queryState: QueryState;
+  declare lastSelectedTab: number;
+  declare selectedPage: string;
+  declare queryState: QueryState;
   timeRangeStart?: Date;
 
   private eventTracker_: EventTracker = new EventTracker();

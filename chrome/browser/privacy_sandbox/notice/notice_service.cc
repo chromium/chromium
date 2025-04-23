@@ -4,101 +4,33 @@
 
 #include "chrome/browser/privacy_sandbox/notice/notice_service.h"
 
-#include "chrome/browser/privacy_sandbox/notice/notice_features.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_catalog.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
-#include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
-#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_storage.h"
+#include "chrome/browser/profiles/profile.h"
 
 namespace privacy_sandbox {
-namespace {
-using notice::mojom::PrivacySandboxNotice;
-using notice::mojom::PrivacySandboxNoticeEvent;
 
-using privacy_sandbox::notice::mojom::PrivacySandboxNotice;
+using ::privacy_sandbox::notice::mojom::PrivacySandboxNotice;
+using ::privacy_sandbox::notice::mojom::PrivacySandboxNoticeEvent;
 
-template <typename T>
-std::unique_ptr<Notice> Make(NoticeId id) {
-  return std::make_unique<T>(id);
-}
-
-// Defines all existing notices and populates the notice catalog.
-void PopulateNoticeCatalog(std::unique_ptr<NoticeCatalog>& catalog) {
-  // TODO(crbug.com/392612108): Add all eligibility and result callbacks.
-  // Define APIs.
-  NoticeApi* topics = catalog->RegisterAndRetrieveNewApi();
-  NoticeApi* fledge = catalog->RegisterAndRetrieveNewApi();
-  NoticeApi* measurement = catalog->RegisterAndRetrieveNewApi();
-
-  // Define Notices.
-  catalog->RegisterNoticeGroup(
-      &Make<Consent>,
-      {{{PrivacySandboxNotice::kTopicsConsentNotice,
-         SurfaceType::kDesktopNewTab},
-        &privacy_sandbox::kTopicsConsentDesktopModalFeature},
-       {{PrivacySandboxNotice::kTopicsConsentNotice, SurfaceType::kClankBrApp},
-        &privacy_sandbox::kTopicsConsentModalClankBrAppFeature},
-       {{PrivacySandboxNotice::kTopicsConsentNotice,
-         SurfaceType::kClankCustomTab},
-        &privacy_sandbox::kTopicsConsentModalClankCCTFeature}},
-      {topics});
-
-  catalog->RegisterNoticeGroup(
-      &Make<Notice>,
-      {{{PrivacySandboxNotice::kThreeAdsApisNotice,
-         SurfaceType::kDesktopNewTab},
-        &privacy_sandbox::kThreeAdsAPIsNoticeModalFeature},
-       {{PrivacySandboxNotice::kThreeAdsApisNotice, SurfaceType::kClankBrApp},
-        &privacy_sandbox::kThreeAdsAPIsNoticeModalClankBrAppFeature},
-       {{PrivacySandboxNotice::kThreeAdsApisNotice,
-         SurfaceType::kClankCustomTab},
-        &privacy_sandbox::kThreeAdsAPIsNoticeModalClankCCTFeature}},
-      {topics, fledge, measurement});
-
-  catalog->RegisterNoticeGroup(
-      &Make<Notice>,
-      {{{PrivacySandboxNotice::kProtectedAudienceMeasurementNotice,
-         SurfaceType::kDesktopNewTab},
-        &privacy_sandbox::kProtectedAudienceMeasurementNoticeModalFeature},
-       {{PrivacySandboxNotice::kProtectedAudienceMeasurementNotice,
-         SurfaceType::kClankBrApp},
-        &privacy_sandbox::
-            kProtectedAudienceMeasurementNoticeModalClankBrAppFeature},
-       {{PrivacySandboxNotice::kProtectedAudienceMeasurementNotice,
-         SurfaceType::kClankCustomTab},
-        &privacy_sandbox::
-            kProtectedAudienceMeasurementNoticeModalClankCCTFeature}},
-      {fledge, measurement});
-
-  catalog->RegisterNoticeGroup(
-      &Make<Notice>,
-      {{{PrivacySandboxNotice::kMeasurementNotice, SurfaceType::kDesktopNewTab},
-        &privacy_sandbox::kMeasurementNoticeModalFeature},
-       {{PrivacySandboxNotice::kMeasurementNotice, SurfaceType::kClankBrApp},
-        &privacy_sandbox::kMeasurementNoticeModalClankBrAppFeature},
-       {{PrivacySandboxNotice::kMeasurementNotice,
-         SurfaceType::kClankCustomTab},
-        &privacy_sandbox::kMeasurementNoticeModalClankCCTFeature}},
-      {measurement});
-
-  // TODO(crbug.com/392612108): Add other notices like re-notice, or v2 notices.
-}
-}  // namespace
-
-PrivacySandboxNoticeService::PrivacySandboxNoticeService(Profile* profile)
-    : profile_(profile) {
-  notice_storage_ = std::make_unique<PrivacySandboxNoticeStorage>();
-  catalog_ = std::make_unique<NoticeCatalog>();
+PrivacySandboxNoticeService::PrivacySandboxNoticeService(
+    Profile* profile,
+    std::unique_ptr<NoticeCatalog> catalog,
+    std::unique_ptr<NoticeStorage> storage)
+    : profile_(profile),
+      catalog_(std::move(catalog)),
+      notice_storage_(std::move(storage)) {
   CHECK(profile_);
   CHECK(notice_storage_);
   CHECK(catalog_);
 
 #if !BUILDFLAG(IS_ANDROID)
-  desktop_view_manager_ = std::make_unique<DesktopViewManager>();
+  desktop_view_manager_ = std::make_unique<DesktopViewManager>(this);
   CHECK(desktop_view_manager_);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  PopulateNoticeCatalog(catalog_);
+  EmitStartupHistograms();
 }
 
 PrivacySandboxNoticeService::~PrivacySandboxNoticeService() = default;
@@ -112,27 +44,13 @@ void PrivacySandboxNoticeService::Shutdown() {
 void PrivacySandboxNoticeService::EventOccurred(
     NoticeId notice_id,
     PrivacySandboxNoticeEvent event) {
-  // Crash if notice_id could not be found.
-  auto it = catalog_->GetNoticeMap().find(notice_id);
-  CHECK(it != catalog_->GetNoticeMap().end())
-      << "EventOccurred on unregistered notice id for noticeId "
-      << notice_id.first << " and surfaceType "
-      << static_cast<int>(notice_id.second);
+  GetNoticeStorage()->RecordEvent(notice_id, event);
 
-  Notice* notice = it->second.get();
-  std::string_view name = notice->GetFeature()->name;
+  auto notice_ptr = catalog_->GetNoticeMap().find(notice_id);
+  CHECK(notice_ptr != catalog_->GetNoticeMap().end());
+  CHECK(notice_ptr->second != nullptr);
 
-  // TODO(crbug.com/392612108): Consolidate to single function call after
-  // consolidate these two methods on notice storage side.
-  if (event == PrivacySandboxNoticeEvent::kShown) {
-    GetNoticeStorage()->SetNoticeShown(GetPrefService(), name,
-                                       base::Time::Now());
-  } else {
-    GetNoticeStorage()->SetNoticeActionTaken(GetPrefService(), name, event,
-                                             base::Time::Now());
-  }
-
-  notice->UpdateTargetApiResults(event);
+  notice_ptr->second->UpdateTargetApiResults(event);
 }
 
 // TODO(crbug.com/392612108): Implement this function.
@@ -142,7 +60,7 @@ PrivacySandboxNoticeService::GetRequiredNotices(SurfaceType surface) {
   return required_notices;
 }
 
-PrivacySandboxNoticeStorage* PrivacySandboxNoticeService::GetNoticeStorage() {
+NoticeStorage* PrivacySandboxNoticeService::GetNoticeStorage() {
   return notice_storage_.get();
 }
 
@@ -152,6 +70,10 @@ PrefService* PrivacySandboxNoticeService::GetPrefService() {
 
 NoticeCatalog* PrivacySandboxNoticeService::GetCatalog() {
   return catalog_.get();
+}
+
+void PrivacySandboxNoticeService::EmitStartupHistograms() {
+  GetNoticeStorage()->RecordStartupHistograms();
 }
 
 #if !BUILDFLAG(IS_ANDROID)

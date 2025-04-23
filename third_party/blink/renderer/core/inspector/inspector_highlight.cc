@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
@@ -52,76 +53,86 @@ namespace blink {
 
 namespace {
 
-class PathBuilder {
+class HighlightPathBuilder {
   STACK_ALLOCATED();
 
  public:
-  PathBuilder() : path_(protocol::ListValue::create()) {}
-  PathBuilder(const PathBuilder&) = delete;
-  PathBuilder& operator=(const PathBuilder&) = delete;
-  virtual ~PathBuilder() = default;
+  HighlightPathBuilder() : path_(protocol::ListValue::create()) {}
+  HighlightPathBuilder(const HighlightPathBuilder&) = delete;
+  HighlightPathBuilder& operator=(const HighlightPathBuilder&) = delete;
+  virtual ~HighlightPathBuilder() = default;
 
   std::unique_ptr<protocol::ListValue> Release() { return std::move(path_); }
 
   void AppendPath(const Path& path, float scale) {
-    Path transform_path(path);
-    transform_path.Transform(AffineTransform().Scale(scale));
-    transform_path.Apply(this, &PathBuilder::AppendPathElement);
+    ApplyInfo apply_info{this, scale};
+    path.Apply(&apply_info, &HighlightPathBuilder::AppendPathElement);
   }
 
  protected:
   virtual gfx::PointF TranslatePoint(const gfx::PointF& point) { return point; }
 
  private:
-  static void AppendPathElement(void* path_builder,
-                                const PathElement& path_element) {
-    static_cast<PathBuilder*>(path_builder)->AppendPathElement(path_element);
+  struct ApplyInfo {
+    STACK_ALLOCATED();
+
+   public:
+    HighlightPathBuilder* builder;
+    float scale;
+  };
+
+  static void AppendPathElement(void* info, const PathElement& path_element) {
+    const ApplyInfo* apply_info = static_cast<ApplyInfo*>(info);
+    apply_info->builder->AppendPathElement(path_element, apply_info->scale);
   }
 
-  void AppendPathElement(const PathElement&);
+  void AppendPathElement(const PathElement&, float scale);
   void AppendPathCommandAndPoints(const char* command,
-                                  base::span<const gfx::PointF> points);
+                                  base::span<const gfx::PointF> points,
+                                  float scale);
 
   std::unique_ptr<protocol::ListValue> path_;
 };
 
-void PathBuilder::AppendPathCommandAndPoints(
+void HighlightPathBuilder::AppendPathCommandAndPoints(
     const char* command,
-    base::span<const gfx::PointF> points) {
+    base::span<const gfx::PointF> points,
+    float scale) {
   path_->pushValue(protocol::StringValue::create(command));
   for (const auto& orig_point : points) {
-    gfx::PointF point = TranslatePoint(orig_point);
+    gfx::PointF point = TranslatePoint(gfx::ScalePoint(orig_point, scale));
     path_->pushValue(protocol::FundamentalValue::create(point.x()));
     path_->pushValue(protocol::FundamentalValue::create(point.y()));
   }
 }
 
-void PathBuilder::AppendPathElement(const PathElement& path_element) {
+void HighlightPathBuilder::AppendPathElement(const PathElement& path_element,
+                                             float scale) {
   switch (path_element.type) {
     // The points member will contain 1 value.
     case kPathElementMoveToPoint:
-      AppendPathCommandAndPoints("M", path_element.points);
+      AppendPathCommandAndPoints("M", path_element.points, scale);
       break;
     // The points member will contain 1 value.
     case kPathElementAddLineToPoint:
-      AppendPathCommandAndPoints("L", path_element.points);
+      AppendPathCommandAndPoints("L", path_element.points, scale);
       break;
     // The points member will contain 3 values.
     case kPathElementAddCurveToPoint:
-      AppendPathCommandAndPoints("C", path_element.points);
+      AppendPathCommandAndPoints("C", path_element.points, scale);
       break;
     // The points member will contain 2 values.
     case kPathElementAddQuadCurveToPoint:
-      AppendPathCommandAndPoints("Q", path_element.points);
+      AppendPathCommandAndPoints("Q", path_element.points, scale);
       break;
     // The points member will contain no values.
     case kPathElementCloseSubpath:
-      AppendPathCommandAndPoints("Z", path_element.points);
+      AppendPathCommandAndPoints("Z", path_element.points, scale);
       break;
   }
 }
 
-class ShapePathBuilder : public PathBuilder {
+class ShapePathBuilder : public HighlightPathBuilder {
  public:
   ShapePathBuilder(LocalFrameView& view,
                    LayoutObject& layout_object,
@@ -165,35 +176,35 @@ std::unique_ptr<protocol::Array<double>> BuildArrayForQuad(
 }
 
 Path QuadToPath(const gfx::QuadF& quad) {
-  Path quad_path;
-  quad_path.MoveTo(quad.p1());
-  quad_path.AddLineTo(quad.p2());
-  quad_path.AddLineTo(quad.p3());
-  quad_path.AddLineTo(quad.p4());
-  quad_path.CloseSubpath();
-  return quad_path;
+  return PathBuilder()
+      .MoveTo(quad.p1())
+      .LineTo(quad.p2())
+      .LineTo(quad.p3())
+      .LineTo(quad.p4())
+      .Close()
+      .Finalize();
 }
 
 Path RowQuadToPath(const gfx::QuadF& quad, bool draw_end_line) {
-  Path quad_path;
+  PathBuilder quad_path;
   quad_path.MoveTo(quad.p1());
-  quad_path.AddLineTo(quad.p2());
+  quad_path.LineTo(quad.p2());
   if (draw_end_line) {
     quad_path.MoveTo(quad.p3());
-    quad_path.AddLineTo(quad.p4());
+    quad_path.LineTo(quad.p4());
   }
-  return quad_path;
+  return quad_path.Finalize();
 }
 
 Path ColumnQuadToPath(const gfx::QuadF& quad, bool draw_end_line) {
-  Path quad_path;
+  PathBuilder quad_path;
   quad_path.MoveTo(quad.p1());
-  quad_path.AddLineTo(quad.p4());
+  quad_path.LineTo(quad.p4());
   if (draw_end_line) {
     quad_path.MoveTo(quad.p3());
-    quad_path.AddLineTo(quad.p2());
+    quad_path.LineTo(quad.p2());
   }
-  return quad_path;
+  return quad_path.Finalize();
 }
 
 gfx::PointF FramePointToViewport(const LocalFrameView* view,
@@ -671,7 +682,7 @@ std::unique_ptr<protocol::ListValue> BuildPathFromQuad(
     const blink::LocalFrameView* containing_view,
     gfx::QuadF quad) {
   FrameQuadToViewport(containing_view, quad);
-  PathBuilder builder;
+  HighlightPathBuilder builder;
   builder.AppendPath(QuadToPath(quad),
                      DeviceScaleFromFrameView(containing_view));
   return builder.Release();
@@ -926,7 +937,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildAreaNamePaths(
                         end_row - start_row - row_gap_offset);
       gfx::QuadF area_quad = grid->LocalRectToAbsoluteQuad({position, size});
       FrameQuadToViewport(containing_view, area_quad);
-      PathBuilder area_builder;
+      HighlightPathBuilder area_builder;
       area_builder.AppendPath(QuadToPath(area_quad), scale);
 
       area_paths->setValue(name, area_builder.Release());
@@ -1165,7 +1176,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildFlexContainerInfo(
       protocol::DictionaryValue::create();
 
   // Create the path for the flex container
-  PathBuilder container_builder;
+  HighlightPathBuilder container_builder;
   PhysicalRect content_box = layout_box->PhysicalContentBoxRect();
   gfx::QuadF content_quad = layout_object->LocalRectToAbsoluteQuad(content_box);
   FrameQuadToViewport(containing_view, content_quad);
@@ -1189,7 +1200,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildFlexContainerInfo(
       gfx::QuadF item_margin_quad =
           layout_object->LocalRectToAbsoluteQuad(item_data.rect);
       FrameQuadToViewport(containing_view, item_margin_quad);
-      PathBuilder item_builder;
+      HighlightPathBuilder item_builder;
       item_builder.AppendPath(QuadToPath(item_margin_quad), scale);
 
       item_info->setValue("itemBorder", item_builder.Release());
@@ -1334,8 +1345,8 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfo(
 
   bool is_ltr = grid->StyleRef().IsLeftToRightDirection();
 
-  PathBuilder row_builder;
-  PathBuilder row_gap_builder;
+  HighlightPathBuilder row_builder;
+  HighlightPathBuilder row_gap_builder;
   LayoutUnit row_left = columns.front();
   if (!is_ltr) {
     row_left += rtl_offset;
@@ -1365,8 +1376,8 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfo(
   grid_info->setValue("rows", row_builder.Release());
   grid_info->setValue("rowGaps", row_gap_builder.Release());
 
-  PathBuilder column_builder;
-  PathBuilder column_gap_builder;
+  HighlightPathBuilder column_builder;
+  HighlightPathBuilder column_gap_builder;
   LayoutUnit column_top = rows.front();
   LayoutUnit column_height = rows.back() - rows.front();
   for (wtf_size_t i = 1; i < columns.size(); ++i) {
@@ -1445,7 +1456,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfo(
   }
 
   // Grid border
-  PathBuilder grid_border_builder;
+  HighlightPathBuilder grid_border_builder;
   PhysicalOffset grid_position(row_left, column_top);
   PhysicalSize grid_size(row_width, column_height);
   PhysicalRect grid_rect(grid_position, grid_size);
@@ -1683,7 +1694,7 @@ void InspectorHighlightBase::AppendQuad(const gfx::QuadF& quad,
                                         const Color& outline_color,
                                         const String& name) {
   Path path = QuadToPath(quad);
-  PathBuilder builder;
+  HighlightPathBuilder builder;
   builder.AppendPath(path, scale_);
   AppendPath(builder.Release(), fill_color, outline_color, name);
 }
@@ -2348,7 +2359,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildContainerQueryContainerInfo(
   std::unique_ptr<protocol::DictionaryValue> container_query_container_info =
       protocol::DictionaryValue::create();
 
-  PathBuilder container_builder;
+  HighlightPathBuilder container_builder;
   auto content_box = layout_box->PhysicalContentBoxRect();
   gfx::QuadF content_quad = layout_box->LocalRectToAbsoluteQuad(content_box);
   FrameQuadToViewport(containing_view, content_quad);

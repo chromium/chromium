@@ -155,3 +155,16 @@ try_.builder(
     ),
     contact_team_email = "chrome-deet-core@google.com",
 )
+
+try_.builder(
+    name = "linux-libfuzzer-high-end-asan-dbg",
+    mirrors = ["ci/Libfuzzer High End Upload Linux ASan Debug"],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Libfuzzer High End Upload Linux ASan Debug",
+            "no_symbols",
+            "skip_generate_fuzzer_owners",
+        ],
+    ),
+    contact_team_email = "chrome-deet-core@google.com",
+)

@@ -61,6 +61,11 @@ class WebStateID;
 // Shows the recent activity for the shared group.
 - (void)showRecentActivityForTabGroup:(base::WeakPtr<const TabGroup>)tabGroup;
 
+// Starts the leave or delete shared group flow.
+- (void)startLeaveOrDeleteSharedGroupItem:(TabGroupItem*)tabGroupItem
+                                forAction:(TabGroupActionType)actionType
+                               sourceView:(UIView*)sourceView;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_TAB_STRIP_COMMANDS_H_

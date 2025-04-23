@@ -455,7 +455,7 @@ void FrameFetchContext::PrepareRequest(
         webreq);
   }
 
-  request.SetAllowsDeviceBoundSessions(
+  request.SetAllowsDeviceBoundSessionRegistration(
       RuntimeEnabledFeatures::DeviceBoundSessionCredentialsEnabled(
           GetExecutionContext()));
 }
@@ -836,29 +836,21 @@ void FrameFetchContext::WillSendRequest(ResourceRequest& resource_request) {
 
 void FrameFetchContext::PopulateResourceRequestBeforeCacheAccess(
     const ResourceLoaderOptions& options,
-    ResourceRequest& request,
-    FetchParameters::HasPreloadedResponseCandidate
-        has_preloaded_response_candidate) {
+    ResourceRequest& request) {
   if (!GetResourceFetcherProperties().IsDetached()) {
     probe::SetDevToolsIds(Probe(), request, options.initiator_info);
   }
 
-  if (!RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled()) {
-    CHECK(!has_preloaded_response_candidate);
-    // CSP may change the url, if Upgrade-Insecure-Request is enforced for
-    // mixed content.
-    ModifyRequestForMixedContentUpgrade(request);
-    if (!request.Url().IsValid()) {
-      return;
-    }
+  // CSP may change the url, if Upgrade-Insecure-Request is enforced for
+  // mixed content.
+  ModifyRequestForMixedContentUpgrade(request);
+  if (!request.Url().IsValid()) {
+    return;
   }
-  const bool has_inspector_agents =
-      CoreProbeSink::HasAgentsGlobal(CoreProbeSink::kInspectorEmulationAgent |
-                                     CoreProbeSink::kInspectorNetworkAgent);
-  if (!has_preloaded_response_candidate || has_inspector_agents) {
-    SetFirstPartyCookie(request);
-  }
-  if (has_inspector_agents) {
+
+  SetFirstPartyCookie(request);
+  if (CoreProbeSink::HasAgentsGlobal(CoreProbeSink::kInspectorEmulationAgent |
+                                     CoreProbeSink::kInspectorNetworkAgent)) {
     request.SetRequiresUpgradeForLoader();
   }
   if (document_loader_->ForceFetchCacheMode()) {
@@ -1319,9 +1311,8 @@ std::optional<ResourceRequestBlockedReason> FrameFetchContext::CanRequest(
     const KURL& url,
     const ResourceLoaderOptions& options,
     ReportingDisposition reporting_disposition,
-    base::optional_ref<const ResourceRequest::RedirectInfo> redirect_info,
-    FetchParameters::HasPreloadedResponseCandidate
-        has_preloaded_response_candidate) const {
+    base::optional_ref<const ResourceRequest::RedirectInfo> redirect_info)
+    const {
   const bool detached = GetResourceFetcherProperties().IsDetached();
   if (!detached && document_->IsFreezingInProgress() &&
       !resource_request.GetKeepalive()) {
@@ -1335,8 +1326,7 @@ std::optional<ResourceRequestBlockedReason> FrameFetchContext::CanRequest(
   }
   std::optional<ResourceRequestBlockedReason> blocked_reason =
       BaseFetchContext::CanRequest(type, resource_request, url, options,
-                                   reporting_disposition, redirect_info,
-                                   has_preloaded_response_candidate);
+                                   reporting_disposition, redirect_info);
   if (blocked_reason) {
     return blocked_reason;
   }

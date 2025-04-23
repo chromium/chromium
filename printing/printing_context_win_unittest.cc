@@ -62,7 +62,7 @@ class MockPrintingContextWin : public PrintingContextSystemDialogWin {
   MockPrintingContextWin(Delegate* delegate)
       : PrintingContextSystemDialogWin(
             delegate,
-            PrintingContext::ProcessBehavior::kOopDisabled) {}
+            PrintingContext::OutOfProcessBehavior::kDisabled) {}
 
  protected:
   // This is a fake PrintDlgEx implementation that sets the right fields in
@@ -192,7 +192,7 @@ TEST_F(PrintingContextTest, DISABLED_Base) {
   settings->set_device_name(base::WideToUTF16(GetDefaultPrinter()));
   // Initialize it.
   PrintingContextWin context(this,
-                             PrintingContext::ProcessBehavior::kOopDisabled);
+                             PrintingContext::OutOfProcessBehavior::kDisabled);
   EXPECT_EQ(mojom::ResultCode::kSuccess,
             context.InitWithSettingsForTest(std::move(settings)));
 

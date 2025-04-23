@@ -25,6 +25,5 @@ proto_library("autofill_ai_proto") {
   # system_profile.proto, which is used in the model_quality_metadata.proto
   # that is contained in the optimization guide proto target.
   import_dirs = [ "//third_party/metrics_proto/" ]
-  proto_deps =
-      [ "//components/optimization_guide/proto:optimization_guide_proto" ]
+  deps = [ "//components/optimization_guide/proto:optimization_guide_proto" ]
 }

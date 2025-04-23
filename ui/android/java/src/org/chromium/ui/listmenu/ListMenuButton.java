@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.widget.ChromeImageButton;
 
@@ -57,7 +58,7 @@ public class ListMenuButton extends ChromeImageButton {
      *
      * @param delegate The {@link ListMenuDelegate} to use for menu creation and selection handling.
      */
-    public void setDelegate(ListMenuDelegate delegate) {
+    public void setDelegate(@Nullable ListMenuDelegate delegate) {
         setDelegate(delegate, true);
     }
 
@@ -69,7 +70,7 @@ public class ListMenuButton extends ChromeImageButton {
      * @param overrideOnClickListener Whether to override the click listener which can trigger the
      *     popup menu.
      */
-    public void setDelegate(ListMenuDelegate delegate, boolean overrideOnClickListener) {
+    public void setDelegate(@Nullable ListMenuDelegate delegate, boolean overrideOnClickListener) {
         mListMenuHost.setDelegate(delegate, overrideOnClickListener);
     }
 

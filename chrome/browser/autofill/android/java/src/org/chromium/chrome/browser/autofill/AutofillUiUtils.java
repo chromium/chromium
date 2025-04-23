@@ -618,12 +618,12 @@ public class AutofillUiUtils {
 
     /**
      * If {@code showCustomIcon} is true, and the {@code cardArtUrl} is valid, it fetches the bitmap
-     * of the required size from PersonalDataManager. If not, the default icon {@code defaultIconId}
-     * is fetched from the resources. If the bitmap is not available in cache, then it is fetched
-     * from the server and stored in cache for the next time.
+     * of the required size from {@code imageFetcher}. If not, the default icon {@code
+     * defaultIconId} is fetched from the resources. If the bitmap is not available in cache, then
+     * it is fetched from the server and stored in cache for the next time.
      *
      * @param context Context required to get resources.
-     * @param personalDataManager The PDM associated with the card.
+     * @param imageFetcher The {@link AutofillImageFetcher} associated with the profile.
      * @param cardArtUrl The URL to fetch the icon.
      * @param defaultIconId Resource Id for the default (network) icon if the card art could not be
      *     retrieved.
@@ -634,7 +634,7 @@ public class AutofillUiUtils {
      */
     public static @Nullable Drawable getCardIcon(
             Context context,
-            PersonalDataManager personalDataManager,
+            AutofillImageFetcher imageFetcher,
             @Nullable GURL cardArtUrl,
             int defaultIconId,
             @ImageSize int cardIconSize,
@@ -650,7 +650,7 @@ public class AutofillUiUtils {
         }
 
         Optional<Bitmap> customIconBitmap =
-                personalDataManager.getCustomImageForAutofillSuggestionIfAvailable(
+                imageFetcher.getImageIfAvailable(
                         cardArtUrl, CardIconSpecs.create(context, cardIconSize));
         if (!customIconBitmap.isPresent()) {
             return defaultIcon;
@@ -755,7 +755,7 @@ public class AutofillUiUtils {
      * Adds credit card details in the card details section.
      *
      * @param context to get the resources.
-     * @param personalDataManager The PDM associated with the card.
+     * @param imageFetcher The {@link AutofillImageFetcher} associated with the profile.
      * @param parentView View that contains the card details section.
      * @param cardName Card's nickname/product name/network name.
      * @param cardNumber Card's obfuscated last 4 digits.
@@ -773,7 +773,7 @@ public class AutofillUiUtils {
      */
     public static void addCardDetails(
             Context context,
-            PersonalDataManager personalDataManager,
+            AutofillImageFetcher imageFetcher,
             View parentView,
             String cardName,
             String cardNumber,
@@ -789,7 +789,7 @@ public class AutofillUiUtils {
         cardIconView.setImageDrawable(
                 getCardIcon(
                         context,
-                        personalDataManager,
+                        imageFetcher,
                         cardArtUrl,
                         defaultIconId,
                         cardIconSize,

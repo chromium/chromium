@@ -109,7 +109,7 @@
 +                sizeof(((silk_decoder *)decState)->sStereo));
 +    /* Not strictly needed, but it's cleaner that way */
 +    ((silk_decoder *)decState)->prev_decode_only_middle = 0;
- 
+
      return ret;
  }
 <CODE ENDS>
@@ -189,29 +189,29 @@
 RESAMPLER_ORDER_FIR_12 ];
 +    opus_int16 buf[ 2*RESAMPLER_MAX_BATCH_SIZE_IN + \
 RESAMPLER_ORDER_FIR_12 ];
- 
+
      /* Copy buffered samples to start of buffer */
 -    silk_memcpy( buf, S->sFIR, RESAMPLER_ORDER_FIR_12 \
 * sizeof( opus_int32 ) );
 +    silk_memcpy( buf, S->sFIR, RESAMPLER_ORDER_FIR_12 \
 * sizeof( opus_int16 ) );
- 
+
      /* Iterate over blocks of frameSizeIn input samples */
      index_increment_Q16 = S->invRatio_Q16;
      while( 1 ) {
          nSamplesIn = silk_min( inLen, S->batchSize );
- 
+
          /* Upsample 2x */
          silk_resampler_private_up2_HQ( S->sIIR, &buf[ \
 RESAMPLER_ORDER_FIR_12 ], in, nSamplesIn );
- 
+
          max_index_Q16 = silk_LSHIFT32( nSamplesIn, 16 + 1 \
 );         /* + 1 because 2x upsampling */
          out = silk_resampler_private_IIR_FIR_INTERPOL( out, \
 buf, max_index_Q16, index_increment_Q16 );
          in += nSamplesIn;
          inLen -= nSamplesIn;
- 
+
          if( inLen > 0 ) {
              /* More iterations to do; copy last part of \
 filtered signal to beginning of buffer */
@@ -223,7 +223,7 @@ RESAMPLER_ORDER_FIR_12 * sizeof( opus_int16 ) );
              break;
          }
      }
- 
+
      /* Copy last part of filtered signal to the state for \
 the next call */
 -    silk_memcpy( S->sFIR, &buf[ nSamplesIn << 1 ], \
@@ -284,7 +284,7 @@ rc_mult2 ), mult2Q);
 NLSF_Q15[i-1] + NDeltaMin_Q15[i] );
 +            NLSF_Q15[i] = silk_max_int( NLSF_Q15[i], \
 silk_ADD_SAT16( NLSF_Q15[i-1], NDeltaMin_Q15[i] ) );
- 
+
          /* Last NLSF should be no higher than 1 - NDeltaMin[L] */
 <CODE ENDS>
 ]]></artwork>
@@ -334,13 +334,13 @@ silk_ADD_SAT16( NLSF_Q15[i-1], NDeltaMin_Q15[i] ) );
 <CODE BEGINS>
           b = 0;
        }
- 
+
 -      if (resynth && M*eBands[i]-N >= M*eBands[start] && \
 (update_lowband || lowband_offset==0))
 +      if (resynth && (M*eBands[i]-N >= M*eBands[start] || \
 i==start+1) && (update_lowband || lowband_offset==0))
              lowband_offset = i;
- 
+
 +      if (i == start+1)
 +      {
 +         int n1, n2;

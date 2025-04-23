@@ -1,8 +1,8 @@
 include_rules = [
-  "+components/collaboration/internal/metrics.h",
   "+components/data_sharing/public/data_sharing_sdk_delegate.h",
   # Minimize dependencies on internal code, but allow service construction.
   "+components/data_sharing/internal/data_sharing_service_impl.h",
   "+components/data_sharing/internal/empty_data_sharing_service.h",
   "+components/data_sharing/test_support",
+  "+components/collaboration/test_support",
 ]

@@ -20,7 +20,6 @@ pybind_extension(
     pytype_srcs = [
         "pywrap_tflite_registerer.pyi",
     ],
-    srcs_version = "PY3ONLY",
     deps = [
         "//tensorflow_lite_support/custom_ops/kernel/ragged:py_tflite_registerer",
         "@local_config_python//:python_headers",

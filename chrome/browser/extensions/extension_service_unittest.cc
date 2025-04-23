@@ -73,7 +73,6 @@
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/managed_installation_mode.h"
 #include "chrome/browser/extensions/pack_extension_job.h"
-#include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/extensions/permissions/permissions_test_util.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/plugin_manager.h"
@@ -137,6 +136,7 @@
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/mock_external_provider.h"
 #include "extensions/browser/pending_extension_info.h"
+#include "extensions/browser/pending_extension_manager.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/test_management_policy.h"
@@ -1241,7 +1241,7 @@ TEST_F(ExtensionServiceTest, ReloadExtensionWithPendingImports) {
 
   // Reload the extension, and verify that the installed version does not
   // change.
-  service()->ReloadExtension(id);
+  registrar()->ReloadExtension(id);
   EXPECT_TRUE(registry()->enabled_extensions().Contains(id));
   EXPECT_EQ(id, reload_observer.last_extension_loaded);
   EXPECT_EQ(id, reload_observer.last_extension_unloaded);
@@ -2533,7 +2533,7 @@ TEST_F(ExtensionServiceTest, LoadLocalizedTheme) {
   // modify the source tree.
   ThemeService::DisableThemePackForTesting();
 
-  UnpackedInstaller::Create(service())->Load(extension_path);
+  UnpackedInstaller::Create(profile())->Load(extension_path);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(0u, GetErrors().size());
   ASSERT_EQ(1u, loaded_extensions().size());
@@ -2565,7 +2565,7 @@ TEST_F(ExtensionServiceTest, UnpackedExtensionMayContainSymlinkedFiles) {
 
   // Load extension.
   InitializeEmptyExtensionService();
-  UnpackedInstaller::Create(service())->Load(extension_path);
+  UnpackedInstaller::Create(profile())->Load(extension_path);
   task_environment()->RunUntilIdle();
 
   EXPECT_TRUE(GetErrors().empty());
@@ -2585,7 +2585,7 @@ TEST_F(ExtensionServiceTest, UnpackedExtensionWithEmptyMetadataFolder) {
   PersistExtensionWithPaths(extension_dir, {metadata_dir}, {});
   EXPECT_TRUE(base::DirectoryExists(metadata_dir));
 
-  UnpackedInstaller::Create(service())->Load(extension_dir);
+  UnpackedInstaller::Create(profile())->Load(extension_dir);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(0u, GetErrors().size());
   EXPECT_EQ(1u, registry()->enabled_extensions().size());
@@ -2608,7 +2608,7 @@ TEST_F(ExtensionServiceTest, UnpackedExtensionWithReservedMetadataFiles) {
       file_util::GetReservedMetadataFilePaths(extension_dir));
   EXPECT_TRUE(base::DirectoryExists(metadata_dir));
 
-  UnpackedInstaller::Create(service())->Load(extension_dir);
+  UnpackedInstaller::Create(profile())->Load(extension_dir);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(0u, GetErrors().size());
   EXPECT_EQ(1u, registry()->enabled_extensions().size());
@@ -2633,7 +2633,7 @@ TEST_F(ExtensionServiceTest, UnpackedExtensionWithUserMetadataFiles) {
       {file_util::GetVerifiedContentsPath(extension_dir), non_reserved_file});
   EXPECT_TRUE(base::PathExists(non_reserved_file));
 
-  UnpackedInstaller::Create(service())->Load(extension_dir);
+  UnpackedInstaller::Create(profile())->Load(extension_dir);
   task_environment()->RunUntilIdle();
   ASSERT_EQ(1u, GetErrors().size());
 
@@ -2666,7 +2666,7 @@ TEST_F(ExtensionServiceTest,
       {metadata_dir, extension_dir.Append(FILE_PATH_LITERAL("_badfolder"))},
       {});
 
-  UnpackedInstaller::Create(service())->Load(extension_dir);
+  UnpackedInstaller::Create(profile())->Load(extension_dir);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(1u, GetErrors().size());
 
@@ -2699,7 +2699,7 @@ TEST_F(ExtensionServiceTest, UnpackedExtensionMayNotHaveUnderscore) {
       {underscore_folder.Append(FILE_PATH_LITERAL("a.js"))});
   EXPECT_TRUE(base::DirectoryExists(underscore_folder));
 
-  UnpackedInstaller::Create(service())->Load(extension_dir);
+  UnpackedInstaller::Create(profile())->Load(extension_dir);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(1u, GetErrors().size());
 
@@ -2734,7 +2734,7 @@ TEST_F(ExtensionServiceTest,
   ASSERT_TRUE(serializer.Serialize(manifest));
 
   // Load the extension successfully.
-  UnpackedInstaller::Create(service())->Load(extension_dir);
+  UnpackedInstaller::Create(profile())->Load(extension_dir);
   task_environment()->RunUntilIdle();
   // Verify that Load was successful
   EXPECT_EQ(0u, GetErrors().size());
@@ -2750,7 +2750,7 @@ TEST_F(ExtensionServiceTest,
   std::string extension_id = loaded_extensions()[0]->id();
 
   // Reload the extension.
-  service()->ReloadExtension(extension_id);
+  registrar()->ReloadExtension(extension_id);
   task_environment()->RunUntilIdle();
 
   // An error is generated.
@@ -2768,7 +2768,7 @@ TEST_F(ExtensionServiceTest,
   ASSERT_TRUE(serializer.Serialize(manifest));
 
   // Reload the extension.
-  service()->ReloadExtension(extension_id);
+  registrar()->ReloadExtension(extension_id);
   task_environment()->RunUntilIdle();
 
   // No new error is generated. Since the error generated above is still there,
@@ -3010,7 +3010,7 @@ TEST_F(ExtensionServiceTest, UpdateAppsRetainOrdinals) {
 // Ensures that the CWS has properly initialized ordinals.
 TEST_F(ExtensionServiceTest, EnsureCWSOrdinalsInitialized) {
   InitializeEmptyExtensionService();
-  service()->component_loader()->Add(
+  ComponentLoader::Get(profile())->Add(
       IDR_WEBSTORE_MANIFEST, base::FilePath(FILE_PATH_LITERAL("web_store")));
   service()->Init();
 
@@ -3364,7 +3364,7 @@ TEST_F(ExtensionServiceTest, LoadExtensionsCanDowngrade) {
   JSONFileValueSerializer serializer(manifest_path);
   ASSERT_TRUE(serializer.Serialize(manifest));
 
-  UnpackedInstaller::Create(service())->Load(extension_path);
+  UnpackedInstaller::Create(profile())->Load(extension_path);
   task_environment()->RunUntilIdle();
 
   EXPECT_EQ(0u, GetErrors().size());
@@ -3378,7 +3378,7 @@ TEST_F(ExtensionServiceTest, LoadExtensionsCanDowngrade) {
   manifest.Set("version", "1.0");
   ASSERT_TRUE(serializer.Serialize(manifest));
 
-  UnpackedInstaller::Create(service())->Load(extension_path);
+  UnpackedInstaller::Create(profile())->Load(extension_path);
   task_environment()->RunUntilIdle();
 
   EXPECT_EQ(0u, GetErrors().size());
@@ -3975,8 +3975,8 @@ TEST_F(ExtensionServiceTest, ReloadBlocklistedExtension) {
   EXPECT_EQ(StringSet(good1, good2),
             registry()->blocklisted_extensions().GetIDs());
 
-  service()->ReloadExtension(good1);
-  service()->ReloadExtension(good2);
+  registrar()->ReloadExtension(good1);
+  registrar()->ReloadExtension(good2);
   task_environment()->RunUntilIdle();
 
   EXPECT_EQ(StringSet(good0), registry()->enabled_extensions().GetIDs());
@@ -4095,7 +4095,7 @@ TEST_F(ExtensionServiceTest, BlockAndUnblockEnabledComponentExtension) {
   std::string manifest;
   ASSERT_TRUE(
       base::ReadFileToString(path.Append(kManifestFilename), &manifest));
-  service()->component_loader()->Add(manifest, path);
+  ComponentLoader::Get(profile())->Add(manifest, path);
   service()->Init();
 
   // Component extension should never block.
@@ -4202,7 +4202,7 @@ TEST_F(ExtensionServiceTest, ComponentExtensionAllowlisted) {
   std::string manifest;
   ASSERT_TRUE(
       base::ReadFileToString(path.Append(kManifestFilename), &manifest));
-  service()->component_loader()->Add(manifest, path);
+  ComponentLoader::Get(profile())->Add(manifest, path);
   service()->Init();
 
   // Extension should be installed despite blocklist.
@@ -4238,7 +4238,7 @@ TEST_F(ExtensionServiceTest, ComponentExtensionAllowlistedPermission) {
   std::string manifest;
   ASSERT_TRUE(
       base::ReadFileToString(path.Append(kManifestFilename), &manifest));
-  service()->component_loader()->Add(manifest, path);
+  ComponentLoader::Get(profile())->Add(manifest, path);
   service()->Init();
 
   // Extension should have the "tabs" permission.
@@ -4405,7 +4405,7 @@ TEST_F(ExtensionServiceTest, ManagementPolicyProhibitsLoadFromPrefs) {
 
   const Extension* extension =
       (registry()->enabled_extensions().begin())->get();
-  EXPECT_TRUE(service()->UninstallExtension(
+  EXPECT_TRUE(registrar()->UninstallExtension(
       extension->id(), UNINSTALL_REASON_FOR_TESTING, nullptr));
   EXPECT_EQ(0u, registry()->enabled_extensions().size());
 
@@ -4465,7 +4465,7 @@ TEST_F(ExtensionServiceTest, ManagementPolicyProhibitsUninstall) {
   GetManagementPolicy()->RegisterProvider(&provider);
 
   // Attempt to uninstall it.
-  EXPECT_FALSE(service()->UninstallExtension(
+  EXPECT_FALSE(registrar()->UninstallExtension(
       good_crx, UNINSTALL_REASON_FOR_TESTING, nullptr));
 
   EXPECT_EQ(1u, registry()->enabled_extensions().size());
@@ -5243,7 +5243,7 @@ TEST_F(ExtensionServiceTest, DisableTerminatedExtension) {
 // the ExtensionService...
 TEST_F(ExtensionServiceTest, PRE_DisableAllExtensions) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ::switches::kDisableExtensions);
+      extensions::switches::kDisableExtensions);
   InitializeGoodInstalledExtensionService();
   service()->Init();
   EXPECT_TRUE(registry()->GenerateInstalledExtensionsSet().empty());
@@ -5252,7 +5252,7 @@ TEST_F(ExtensionServiceTest, PRE_DisableAllExtensions) {
 // ... But, if we remove the switch, they are.
 TEST_F(ExtensionServiceTest, DisableAllExtensions) {
   EXPECT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ::switches::kDisableExtensions));
+      switches::kDisableExtensions));
   InitializeGoodInstalledExtensionService();
   service()->Init();
   EXPECT_FALSE(registry()->GenerateInstalledExtensionsSet().empty());
@@ -5313,13 +5313,13 @@ TEST_F(ExtensionServiceTest, ReloadExtension) {
                            .AppendASCII("Extensions")
                            .AppendASCII(extension_id)
                            .AppendASCII("1.0.0.0");
-  UnpackedInstaller::Create(service())->Load(ext);
+  UnpackedInstaller::Create(profile())->Load(ext);
   task_environment()->RunUntilIdle();
 
   EXPECT_EQ(1u, registry()->enabled_extensions().size());
   EXPECT_EQ(0u, registry()->disabled_extensions().size());
 
-  service()->ReloadExtension(extension_id);
+  registrar()->ReloadExtension(extension_id);
 
   // Extension should be disabled now, waiting to be reloaded.
   EXPECT_EQ(0u, registry()->enabled_extensions().size());
@@ -5328,7 +5328,7 @@ TEST_F(ExtensionServiceTest, ReloadExtension) {
               testing::UnorderedElementsAre(disable_reason::DISABLE_RELOAD));
 
   // Reloading again should not crash.
-  service()->ReloadExtension(extension_id);
+  registrar()->ReloadExtension(extension_id);
 
   // Finish reloading
   task_environment()->RunUntilIdle();
@@ -5420,7 +5420,7 @@ TEST_F(ExtensionServiceZipUninstallProfileFeatureTest,
   ASSERT_TRUE(base::PathExists(original_path)) << original_path.value();
   scoped_refptr<ZipFileInstaller> zipfile_installer = ZipFileInstaller::Create(
       GetExtensionFileTaskRunner(),
-      MakeRegisterInExtensionServiceCallback(service()));
+      MakeRegisterInExtensionServiceCallback(profile()));
 
   registry()->AddObserver(&observer);
 
@@ -5573,7 +5573,7 @@ TEST_F(ExtensionServiceTest, UnpackedRequirements) {
 
   base::FilePath path =
       data_dir().AppendASCII("requirements").AppendASCII("v2_bad_requirements");
-  UnpackedInstaller::Create(service())->Load(path);
+  UnpackedInstaller::Create(profile())->Load(path);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(1u, GetErrors().size());
   EXPECT_EQ(0u, registry()->enabled_extensions().size());
@@ -5650,7 +5650,8 @@ TEST_F(ExtensionServiceTest, ClearExtensionData) {
   auto& idb_control =
       profile()->GetDefaultStoragePartition()->GetIndexedDBControl();
   mojo::Remote<storage::mojom::IndexedDBControlTest> idb_control_test;
-  idb_control.BindTestInterface(idb_control_test.BindNewPipeAndPassReceiver());
+  idb_control.BindTestInterfaceForTesting(
+      idb_control_test.BindNewPipeAndPassReceiver());
 
   base::FilePath idb_path;
   {
@@ -5670,7 +5671,7 @@ TEST_F(ExtensionServiceTest, ClearExtensionData) {
   }
 
   // Uninstall the extension.
-  ASSERT_TRUE(service()->UninstallExtension(
+  ASSERT_TRUE(registrar()->UninstallExtension(
       good_crx, UNINSTALL_REASON_FOR_TESTING, nullptr));
   // The data deletion happens on the IO thread; since we use a
   // BrowserTaskEnvironment (without REAL_IO_THREAD), the IO and UI threads are
@@ -5791,7 +5792,8 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
   auto& idb_control =
       profile()->GetDefaultStoragePartition()->GetIndexedDBControl();
   mojo::Remote<storage::mojom::IndexedDBControlTest> idb_control_test;
-  idb_control.BindTestInterface(idb_control_test.BindNewPipeAndPassReceiver());
+  idb_control.BindTestInterfaceForTesting(
+      idb_control_test.BindNewPipeAndPassReceiver());
 
   base::FilePath idb_path;
   {
@@ -5918,7 +5920,8 @@ TEST_F(ExtensionServiceTest, LoadExtension) {
   const ExtensionId good_id =
       get_extension_by_name(registry()->enabled_extensions(), kGoodExtension)
           ->id();
-  service()->UninstallExtension(good_id, UNINSTALL_REASON_FOR_TESTING, nullptr);
+  registrar()->UninstallExtension(good_id, UNINSTALL_REASON_FOR_TESTING,
+                                  nullptr);
   task_environment()->RunUntilIdle();
   EXPECT_TRUE(registry()->GenerateInstalledExtensionsSet().empty());
 }
@@ -6033,7 +6036,7 @@ TEST_F(ExtensionServiceTest, GenerateID) {
   InitializeEmptyExtensionService();
 
   base::FilePath no_id_ext = data_dir().AppendASCII("no_id");
-  UnpackedInstaller::Create(service())->Load(no_id_ext);
+  UnpackedInstaller::Create(profile())->Load(no_id_ext);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(0u, GetErrors().size());
   ASSERT_EQ(1u, loaded_extensions().size());
@@ -6045,7 +6048,7 @@ TEST_F(ExtensionServiceTest, GenerateID) {
   std::string previous_id = loaded_extensions()[0]->id();
 
   // If we reload the same path, we should get the same extension ID.
-  UnpackedInstaller::Create(service())->Load(no_id_ext);
+  UnpackedInstaller::Create(profile())->Load(no_id_ext);
   task_environment()->RunUntilIdle();
   ASSERT_EQ(1u, loaded_extensions().size());
   ASSERT_EQ(previous_id, loaded_extensions()[0]->id());
@@ -6056,7 +6059,7 @@ TEST_F(ExtensionServiceTest, UnpackedValidatesLocales) {
 
   base::FilePath bad_locale =
       data_dir().AppendASCII("unpacked").AppendASCII("bad_messages_file");
-  UnpackedInstaller::Create(service())->Load(bad_locale);
+  UnpackedInstaller::Create(profile())->Load(bad_locale);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(1u, GetErrors().size());
   base::FilePath ms_messages_file = bad_locale.AppendASCII("_locales")
@@ -6127,7 +6130,7 @@ void ExtensionServiceTest::TestExternalProvider(MockExternalProvider* provider,
   EXPECT_EQ(id, good_crx);
   bool no_uninstall = GetManagementPolicy()->MustRemainEnabled(
       loaded_extensions()[0].get(), nullptr);
-  service()->UninstallExtension(id, UNINSTALL_REASON_FOR_TESTING, nullptr);
+  registrar()->UninstallExtension(id, UNINSTALL_REASON_FOR_TESTING, nullptr);
   task_environment()->RunUntilIdle();
 
   base::FilePath install_path = extensions_install_dir().AppendASCII(id);
@@ -6181,7 +6184,7 @@ void ExtensionServiceTest::TestExternalProvider(MockExternalProvider* provider,
     ASSERT_EQ(0u, GetErrors().size());
 
     // User uninstalls.
-    service()->UninstallExtension(id, UNINSTALL_REASON_FOR_TESTING, nullptr);
+    registrar()->UninstallExtension(id, UNINSTALL_REASON_FOR_TESTING, nullptr);
     task_environment()->RunUntilIdle();
     ASSERT_EQ(0u, loaded_extensions().size());
 
@@ -6840,7 +6843,7 @@ TEST_F(ExtensionServiceTestSimple, Enabledness) {
 
     base::FilePath install_dir =
         profile->GetPath().AppendASCII(kInstallDirectoryName);
-    command_line->AppendSwitch(::switches::kDisableExtensions);
+    command_line->AppendSwitch(switches::kDisableExtensions);
     ExtensionService* service =
         static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile.get()))
             ->CreateExtensionService(command_line.get(), install_dir, false);
@@ -6917,9 +6920,9 @@ TEST_F(ExtensionServiceTest, StorageQuota) {
   base::FilePath unlimited_quota_ext2 =
       extensions_path.AppendASCII("unlimited_quota")
       .AppendASCII("2.0");
-  UnpackedInstaller::Create(service())->Load(limited_quota_ext);
-  UnpackedInstaller::Create(service())->Load(unlimited_quota_ext);
-  UnpackedInstaller::Create(service())->Load(unlimited_quota_ext2);
+  UnpackedInstaller::Create(profile())->Load(limited_quota_ext);
+  UnpackedInstaller::Create(profile())->Load(unlimited_quota_ext);
+  UnpackedInstaller::Create(profile())->Load(unlimited_quota_ext2);
   task_environment()->RunUntilIdle();
 
   ASSERT_EQ(3u, loaded_extensions().size());
@@ -6949,7 +6952,7 @@ TEST_F(ExtensionServiceTest, ComponentExtensions) {
   ASSERT_TRUE(
       base::ReadFileToString(path.Append(kManifestFilename), &manifest));
 
-  service()->component_loader()->Add(manifest, path);
+  ComponentLoader::Get(profile())->Add(manifest, path);
   service()->Init();
 
   // Note that we do not pump messages -- the extension should be loaded
@@ -8088,7 +8091,7 @@ TEST_F(ExtensionServiceTest, InstallBlocklistedExtension) {
   TestExtensionRegistryObserver observer(ExtensionRegistry::Get(profile()));
   // Installation should be allowed but the extension should never have been
   // loaded and it should be blocklisted in prefs.
-  service()->OnExtensionInstalled(
+  registrar()->OnExtensionInstalled(
       extension.get(), syncer::StringOrdinal(),
       (kInstallFlagIsBlocklistedForMalware | kInstallFlagInstallImmediately));
   task_environment()->RunUntilIdle();
@@ -8138,8 +8141,8 @@ TEST_F(ExtensionServiceTest, CannotDisableSharedModules) {
           .AddFlags(Extension::FROM_WEBSTORE)
           .Build();
 
-  service()->OnExtensionInstalled(extension.get(), syncer::StringOrdinal(),
-                                  kInstallFlagInstallImmediately);
+  registrar()->OnExtensionInstalled(extension.get(), syncer::StringOrdinal(),
+                                    kInstallFlagInstallImmediately);
 
   ASSERT_TRUE(registry()->enabled_extensions().Contains(extension->id()));
   // Try to disable the extension.
@@ -8160,8 +8163,8 @@ TEST_F(ExtensionServiceTest, UninstallBlocklistedExtension) {
   service()->BlocklistExtensionForTest(id);
   EXPECT_NE(nullptr, registry()->GetInstalledExtension(id));
   std::u16string error;
-  EXPECT_TRUE(service()->UninstallExtension(id, UNINSTALL_REASON_USER_INITIATED,
-                                            nullptr));
+  EXPECT_TRUE(registrar()->UninstallExtension(
+      id, UNINSTALL_REASON_USER_INITIATED, nullptr));
   EXPECT_EQ(nullptr, registry()->GetInstalledExtension(id));
 }
 
@@ -8220,7 +8223,7 @@ TEST_F(ExtensionServiceTest, ReloadAndReEnableExtension) {
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kExtensionId));
 
   // Begin the reload process.
-  service()->ReloadExtension(extension->id());
+  registrar()->ReloadExtension(extension->id());
   EXPECT_TRUE(registry()->disabled_extensions().Contains(kExtensionId));
 
   // While the extension is reloading, try to re-enable it. This is the flow
@@ -8260,7 +8263,7 @@ TEST_F(ExtensionServiceTest, ReloadSharedModule) {
 
   // Reload the extension and wait for it to complete. This previously crashed
   // (see crbug.com/676815).
-  service()->ReloadExtension(kExtensionId);
+  registrar()->ReloadExtension(kExtensionId);
   task_environment()->RunUntilIdle();
   // The shared module should be enabled.
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kExtensionId));
@@ -8277,7 +8280,7 @@ TEST_F(ExtensionServiceTest, UninstallMigratedComponentExtensions) {
           .SetID(video_player_app)
           .SetLocation(ManifestLocation::kInternal)
           .Build();
-  service()->AddComponentExtension(video_player_extension.get());
+  registrar()->AddComponentExtension(video_player_extension.get());
   ASSERT_TRUE(registry()->enabled_extensions().Contains(video_player_app));
 
   service()->UninstallMigratedExtensionsForTest();
@@ -8296,7 +8299,7 @@ TEST_F(ExtensionServiceTest, UninstallMigratedExtensionsKeepsGoodComponents) {
           .SetID(good0)
           .SetLocation(ManifestLocation::kInternal)
           .Build();
-  service()->AddComponentExtension(good_extension.get());
+  registrar()->AddComponentExtension(good_extension.get());
   ASSERT_TRUE(registry()->enabled_extensions().Contains(good0));
 
   service()->UninstallMigratedExtensionsForTest();
@@ -8315,7 +8318,7 @@ TEST_F(ExtensionServiceTest, UninstallMigratedExtensionsMultipleCalls) {
           .SetID(video_player_app)
           .SetLocation(ManifestLocation::kInternal)
           .Build();
-  service()->AddComponentExtension(video_player_extension.get());
+  registrar()->AddComponentExtension(video_player_extension.get());
 
   service()->UninstallMigratedExtensionsForTest();
   service()->UninstallMigratedExtensionsForTest();

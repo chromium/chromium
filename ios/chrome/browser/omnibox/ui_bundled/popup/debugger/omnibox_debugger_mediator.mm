@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_debugger_mediator.h"
 
-#import "base/strings/utf_string_conversions.h"
 #import "components/omnibox/browser/autocomplete_controller.h"
 #import "components/omnibox/browser/remote_suggestions_service.h"
 #import "components/variations/variations_ids_provider.h"
@@ -14,6 +13,7 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_remote_suggestion_event.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/remote_suggestions_service_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/common/NSString+Chromium.h"
 #import "services/network/public/cpp/resource_request.h"
 
 @implementation OmniboxDebuggerMediator {
@@ -86,7 +86,7 @@
                          request:(const network::ResourceRequest*)request {
   OmniboxRemoteSuggestionEvent* event = [[OmniboxRemoteSuggestionEvent alloc]
       initWithUniqueIdentifier:requestIdentifier];
-  event.requestURL = base::SysUTF8ToNSString(request->url.spec());
+  event.requestURL = [NSString cr_fromString:request->url.spec()];
 
   [self.consumer registerNewOmniboxEvent:event];
 }
@@ -132,9 +132,10 @@
             (OmniboxAutocompleteController*)autocompleteController
     didUpdateWithSuggestionsAvailable:(BOOL)hasSuggestions {
   [self.consumer
-      setVariationIDString:base::SysUTF8ToNSString(
-                               variations::VariationsIdsProvider::GetInstance()
-                                   ->GetTriggerVariationsString())];
+      setVariationIDString:
+          [NSString
+              cr_fromString:variations::VariationsIdsProvider::GetInstance()
+                                ->GetTriggerVariationsString()]];
 
   if (!hasSuggestions) {
     [self.consumer removeAllObjects];

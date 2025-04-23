@@ -6,6 +6,9 @@
 #define CHROME_BROWSER_EXTENSIONS_BOOKMARKS_BOOKMARKS_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

@@ -24,7 +24,7 @@ struct PolicyValidationResult;
 using DMPolicyMap = base::flat_map<std::string, std::string>;
 
 // The policy type for Omaha policy settings.
-extern const char kGoogleUpdatePolicyType[];
+inline constexpr char kGoogleUpdatePolicyType[] = "google/machine-level-omaha";
 
 // Returns the serialized data from a DeviceManagementRequest, which wraps
 // a RegisterBrowserRequest, to register the current device.

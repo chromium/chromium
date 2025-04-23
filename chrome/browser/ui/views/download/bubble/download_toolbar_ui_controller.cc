@@ -335,17 +335,19 @@ class DownloadsImageBadge : public views::ImageView {
                    int progress_download_count,
                    SkColor badge_text_color,
                    SkColor badge_background_color) {
-    // Only display the badge if there are multiple downloads.
-    if (!is_active || progress_download_count < 2) {
+    const int badge_size = std::min(bounds().height(), bounds().width());
+    // Only display the badge if there are multiple downloads, or this image
+    // view is visible. Use 2dp to make sure that the image has size even with
+    // scale factor < 1.0. (this can happen on CrOS).
+    if (!is_active || progress_download_count < 2 || badge_size < 2) {
       SetImage(ui::ImageModel());
       return;
     }
-    const int badge_height = bounds().height();
     // base::Unretained is safe because this owns the ImageView to which the
     // image source is applied.
     SetImage(ui::ImageModel::FromImageSkia(
         gfx::CanvasImageSource::MakeImageSkia<CircleBadgeImageSource>(
-            gfx::Size(badge_height, badge_height), badge_background_color,
+            gfx::Size(badge_size, badge_size), badge_background_color,
             base::BindRepeating(&DownloadsImageBadge::GetBadgeText,
                                 base::Unretained(this), progress_download_count,
                                 badge_text_color))));
@@ -920,6 +922,8 @@ void DownloadToolbarUIController::CreateBubbleDialogDelegate() {
       button, views::BubbleBorder::TOP_RIGHT,
       views::BubbleBorder::DIALOG_SHADOW,
       /*autosize=*/true);
+  bubble_delegate->SetOwnedByWidget(
+      views::WidgetDelegate::OwnedByWidgetPassKey());
   bubble_delegate->SetTitle(
       l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_HEADER_LABEL));
   bubble_delegate->SetShowTitle(false);

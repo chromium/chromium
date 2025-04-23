@@ -146,16 +146,16 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
     };
   }
 
-  protected isHidden_: boolean;
-  protected isError_: boolean;
-  protected isNormalOrError_: boolean;
-  protected isDragging_: boolean;
-  protected isLoading_: boolean;
-  protected isOffline_: boolean;
-  private dialogState_ = DialogState.HIDDEN;
-  private lensErrorMessage_ = LensErrorMessage.NONE;
+  protected accessor isHidden_: boolean;
+  protected accessor isError_: boolean;
+  protected accessor isNormalOrError_: boolean;
+  protected accessor isDragging_: boolean;
+  protected accessor isLoading_: boolean;
+  protected accessor isOffline_: boolean;
+  private accessor dialogState_ = DialogState.HIDDEN;
+  private accessor lensErrorMessage_ = LensErrorMessage.NONE;
   private outsideHandlerAttached_ = false;
-  protected uploadUrl_: string = '';
+  protected accessor uploadUrl_: string = '';
   private dragCount: number = 0;
 
   override willUpdate(changedProperties: PropertyValues<this>) {

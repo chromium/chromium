@@ -60,7 +60,7 @@ bool AudioFileReader::OpenDemuxer() {
     return false;
   }
 
-  const int result = avformat_find_stream_info(format_context, NULL);
+  const int result = avformat_find_stream_info(format_context, nullptr);
   if (result < 0) {
     DLOG(WARNING)
         << "AudioFileReader::Open() : error in avformat_find_stream_info()";

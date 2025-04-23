@@ -65,7 +65,7 @@ InterpolationValue CSSFontStretchInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSFontStretchInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
   if (const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
     if (primitive_value->IsPercentage()) {

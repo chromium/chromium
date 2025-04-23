@@ -81,5 +81,3 @@ void LensTabHelper::OpenLensInputSelection(LensEntrypoint entry_point) {
       presentationCompletion:nil];
   [commands_handler_ openLensInputSelection:command];
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(LensTabHelper)

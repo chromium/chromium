@@ -382,6 +382,12 @@ Animation::Animation(ExecutionContext* execution_context,
   DCHECK(document_);
   attached_timeline->AnimationAttached(this);
   timeline_duration_ = attached_timeline->GetDuration();
+  if (trigger_) {
+    if (trigger_->GetTimelineInternal() &&
+        trigger_->GetTimelineInternal()->IsProgressBased()) {
+      trigger_->GetTimelineInternal()->AddAnimationForTriggering(this);
+    }
+  }
   probe::DidCreateAnimation(document_, sequence_number_);
 }
 
@@ -393,6 +399,11 @@ Animation::~Animation() {
 void Animation::Dispose() {
   if (timeline_)
     timeline_->AnimationDetached(this);
+  if (trigger_) {
+    if (trigger_->GetTimelineInternal()) {
+      trigger_->GetTimelineInternal()->RemoveAnimationForTriggering(this);
+    }
+  }
   DestroyCompositorAnimation();
   // If the DocumentTimeline and its Animation objects are
   // finalized by the same GC, we have to eagerly clear out
@@ -2613,6 +2624,15 @@ Animation::RangeBoundary* Animation::ToRangeBoundary(
   return MakeGarbageCollected<RangeBoundary>(timeline_range_offset);
 }
 
+Animation::RangeBoundary* Animation::ToRangeBoundary(
+    TimelineOffsetOrAuto timeline_offset_or_auto) {
+  if (timeline_offset_or_auto.IsAuto()) {
+    return MakeGarbageCollected<RangeBoundary>("auto");
+  }
+
+  return ToRangeBoundary(timeline_offset_or_auto.GetTimelineOffset());
+}
+
 void Animation::UpdateAutoAlignedStartTime() {
   DCHECK(auto_align_start_time_ || !start_time_);
 
@@ -3621,6 +3641,26 @@ bool Animation::CanBeTriggered() const {
          (trigger->type() !=
               AnimationTrigger::Type(AnimationTrigger::Type::Enum::kOnce) ||
           trigger_data_.state == AnimationTriggerState::kIdle);
+}
+
+void Animation::setTrigger(AnimationTrigger* trigger) {
+  if (trigger == trigger_) {
+    return;
+  }
+  if (trigger_) {
+    // Out with the old.
+    if (trigger_->GetTimelineInternal()) {
+      trigger_->GetTimelineInternal()->RemoveAnimationForTriggering(this);
+    }
+  }
+  trigger_ = trigger;
+  if (trigger_) {
+    // In with the new.
+    if (trigger_->GetTimelineInternal() &&
+        trigger_->GetTimelineInternal()->IsProgressBased()) {
+      trigger_->GetTimelineInternal()->AddAnimationForTriggering(this);
+    }
+  }
 }
 
 }  // namespace blink

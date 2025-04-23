@@ -19,15 +19,36 @@ import static com.google.common.truth.Truth.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.tensorflow.lite.InterpreterApi.Options.TfLiteRuntime;
 
-/** Tests of {@link org.tensorflow.lite.support.model.GpuDelegateProxy}. */
+/**
+ * Tests of {@link org.tensorflow.lite.support.model.GpuDelegateProxy}. These tests are built with
+ * the GpuDelegate class NOT linked in.
+ */
 @RunWith(RobolectricTestRunner.class)
 public final class GpuDelegateProxyTest {
 
   @Test
   public void createGpuDelegateProxyWithoutDependencyShouldReturnNull() {
-    GpuDelegateProxy proxy = GpuDelegateProxy.maybeNewInstance();
+    try (GpuDelegateProxy proxy =
+        GpuDelegateProxy.maybeNewInstance(TfLiteRuntime.PREFER_SYSTEM_OVER_APPLICATION)) {
+      assertThat(proxy).isNull();
+    }
+  }
 
-    assertThat(proxy).isNull();
+  @Test
+  public void createApplicationGpuDelegateProxyWithoutDependencyShouldReturnNull() {
+    try (GpuDelegateProxy proxy =
+        GpuDelegateProxy.maybeNewInstance(TfLiteRuntime.FROM_APPLICATION_ONLY)) {
+      assertThat(proxy).isNull();
+    }
+  }
+
+  @Test
+  public void createSystemGpuDelegateProxyWithoutDependencyShouldReturnNull() {
+    try (GpuDelegateProxy proxy =
+        GpuDelegateProxy.maybeNewInstance(TfLiteRuntime.FROM_SYSTEM_ONLY)) {
+      assertThat(proxy).isNull();
+    }
   }
 }

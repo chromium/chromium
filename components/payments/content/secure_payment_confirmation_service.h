@@ -53,8 +53,8 @@ class SecurePaymentConfirmationService
       const SecurePaymentConfirmationService&) = delete;
 
   // mojom::SecurePaymentConfirmationService:
-  void IsSecurePaymentConfirmationAvailable(
-      IsSecurePaymentConfirmationAvailableCallback callback) override;
+  void SecurePaymentConfirmationAvailability(
+      SecurePaymentConfirmationAvailabilityCallback callback) override;
 
   // mojom::SecurePaymentConfirmationService:
   void StorePaymentCredential(const std::vector<uint8_t>& credential_id,

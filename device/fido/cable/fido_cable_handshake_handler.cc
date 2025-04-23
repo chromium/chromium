@@ -64,8 +64,8 @@ ConstructHandshakeMessage(std::string_view handshake_key,
     return std::nullopt;
 
   std::array<uint8_t, kCableHandshakeMacMessageSize> client_hello_mac;
-  if (!hmac.Sign(fido_parsing_utils::ConvertToStringView(*client_hello),
-                 client_hello_mac.data(), client_hello_mac.size())) {
+  if (!hmac.Sign(base::as_string_view(*client_hello), client_hello_mac.data(),
+                 client_hello_mac.size())) {
     return std::nullopt;
   }
 
@@ -90,11 +90,10 @@ FidoCableV1HandshakeHandler::FidoCableV1HandshakeHandler(
     : cable_device_(cable_device),
       nonce_(fido_parsing_utils::Materialize(nonce)),
       session_pre_key_(fido_parsing_utils::Materialize(session_pre_key)),
-      handshake_key_(crypto::HkdfSha256(
-          fido_parsing_utils::ConvertToStringView(session_pre_key_),
-          fido_parsing_utils::ConvertToStringView(nonce_),
-          kCableHandshakeKeyInfo,
-          /*derived_key_size=*/32)) {
+      handshake_key_(crypto::HkdfSha256(base::as_string_view(session_pre_key_),
+                                        base::as_string_view(nonce_),
+                                        kCableHandshakeKeyInfo,
+                                        /*derived_key_size=*/32)) {
   crypto::RandBytes(client_session_random_);
 }
 
@@ -128,9 +127,8 @@ bool FidoCableV1HandshakeHandler::ValidateAuthenticatorHandshakeMessage(
   const auto authenticator_hello = response.first(
       kCableAuthenticatorHandshakeMessageSize - kCableHandshakeMacMessageSize);
   if (!hmac.VerifyTruncated(
-          fido_parsing_utils::ConvertToStringView(authenticator_hello),
-          fido_parsing_utils::ConvertToStringView(
-              response.subspan(authenticator_hello.size())))) {
+          base::as_string_view(authenticator_hello),
+          base::as_string_view(response.subspan(authenticator_hello.size())))) {
     return false;
   }
 

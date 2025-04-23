@@ -40,9 +40,8 @@ using tab_groups::SharingState;
   UIView* _separatorView;
   // Button used to display the menu.
   UIButton* _menuButton;
-  // The face pile view controller that displays the share button or the face
-  // pile.
-  UIViewController* _facePileViewController;
+  // The face pile view that displays the share button or the face pile.
+  UIView* _facePileView;
   // Whether the share option is available.
   BOOL _shareAvailable;
   // Sharing state of the saved tab group.
@@ -98,29 +97,20 @@ using tab_groups::SharingState;
   [self configureMenuButton];
 }
 
-- (void)setFacePileViewController:(UIViewController*)facePileViewController {
-  // TODO(crbug.com/375590170): Update the UI for the `facePileViewController's
-  // view` empty state.
-  if (!_facePileParentViewController ||
-      _facePileViewController == facePileViewController) {
+- (void)setFacePileView:(UIView*)facePileView {
+  if (_facePileView == facePileView) {
     return;
   }
 
-  if (_facePileViewController) {
-    [_facePileViewController willMoveToParentViewController:nil];
-    [_facePileViewController.view removeFromSuperview];
-    [_facePileViewController removeFromParentViewController];
+  if (_stackView == _facePileView.superview) {
+    [_facePileView removeFromSuperview];
   }
 
-  _facePileViewController = facePileViewController;
-  if (_facePileViewController) {
-    [_facePileParentViewController
-        addChildViewController:_facePileViewController];
-    UIView* facePileView = _facePileViewController.view;
-    facePileView.translatesAutoresizingMaskIntoConstraints = NO;
-    [_stackView addArrangedSubview:_facePileViewController.view];
-    [_facePileViewController
-        didMoveToParentViewController:_facePileParentViewController];
+  _facePileView = facePileView;
+
+  if (_facePileView) {
+    _facePileView.translatesAutoresizingMaskIntoConstraints = NO;
+    [_stackView addArrangedSubview:_facePileView];
   }
 }
 

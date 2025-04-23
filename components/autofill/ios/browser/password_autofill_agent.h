@@ -68,7 +68,6 @@ class PasswordAutofillAgent
                         PasswordAutofillAgentDelegate* delegate);
 
   raw_ptr<PasswordAutofillAgentDelegate> delegate_;
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 }  // namespace autofill

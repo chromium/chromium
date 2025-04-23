@@ -712,7 +712,7 @@ public class AwContents implements SmartClipProvider {
         public void shouldInterceptRequest(
                 AwWebResourceRequest request,
                 WebResponseCallback callback,
-                AsyncShouldInterceptRequestCallback asyncShouldInterceptRequestCallback) {
+                @Nullable AsyncShouldInterceptRequestCallback asyncShouldInterceptRequestCallback) {
             String url = request.getUrl();
             WebResourceResponseInfo webResourceResponseInfo;
             callback.setAwContentsClient(mContentsClient);
@@ -2363,7 +2363,7 @@ public class AwContents implements SmartClipProvider {
         return data.replace("#", "%23") + suffix;
     }
 
-    private @UrlScheme int schemeForUrl(String url) {
+    private @UrlScheme int schemeForUrl(@Nullable String url) {
         if (url == null || url.equals(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL)) {
             return UrlScheme.EMPTY;
         } else if (url.startsWith("http:")) {
@@ -2515,6 +2515,13 @@ public class AwContents implements SmartClipProvider {
 
         NavigationHandle result = mNavigationController.loadUrl(params);
         RecordHistogram.recordBooleanHistogram("Android.WebView.LoadUrl.Success", result != null);
+
+        if (result == null) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Android.WebView.LoadUrl.FailureScheme",
+                    schemeForUrl(params.getUrl()),
+                    UrlScheme.COUNT);
+        }
 
         // The behavior of WebViewClassic uses the populateVisitedLinks callback in WebKit.
         // Chromium does not use this use code path and the best emulation of this behavior to call
@@ -3807,7 +3814,7 @@ public class AwContents implements SmartClipProvider {
                     assert false;
             }
         }
-        mWebContents.setImportance(effectiveImportance);
+        mWebContents.setPrimaryMainFrameImportance(effectiveImportance);
     }
 
     @RendererPriority

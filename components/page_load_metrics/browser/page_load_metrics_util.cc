@@ -105,9 +105,6 @@ bool QueryContainsComponentHelper(std::string_view query,
   return false;
 }
 
-// The category URL param name.
-constexpr char kUrlCategoryParamName[] = "category";
-
 // Returns the category ID given a string if it matches the configured pattern.
 std::optional<uint32_t> GetCategoryId(const std::string& category) {
   auto category_prefix = features::kBeaconLeakageLoggingCategoryPrefix.Get();
@@ -354,7 +351,9 @@ PageVisitFinalStatus RecordPageVisitFinalStatusForTiming(
 
 std::optional<uint32_t> GetCategoryIdFromUrl(const GURL& url) {
   std::string category;
-  if (net::GetValueForKeyInQuery(url, kUrlCategoryParamName, &category)) {
+  if (net::GetValueForKeyInQuery(
+          url, features::kBeaconLeakageLoggingCategoryParamName.Get(),
+          &category)) {
     return GetCategoryId(category);
   }
   return std::nullopt;

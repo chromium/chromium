@@ -48,7 +48,7 @@ export class SettingsSafetyHubExtensionsModuleElement extends
     };
   }
 
-  private headerString_: string;
+  declare private headerString_: string;
 
   override async connectedCallback() {
     super.connectedCallback();

@@ -40,7 +40,6 @@ class IOSTaskTabHelper : public web::WebStateObserver,
       ios_content_record_task_id_map_;
   raw_ptr<web::WebState> web_state_ = nullptr;
   int prev_item_unique_id_ = -1;
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_COMPLEX_TASKS_MODEL_IOS_TASK_TAB_HELPER_H_

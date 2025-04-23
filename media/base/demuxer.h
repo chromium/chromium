@@ -34,7 +34,7 @@ enum class DemuxerType {
   kMockDemuxer = 1,
   kFFmpegDemuxer = 2,
   kChunkDemuxer = 3,
-  kMediaUrlDemuxer = 4,
+  // kMediaUrlDemuxer = 4,     // Deprecated
   kFrameInjectingDemuxer = 5,
   kStreamProviderDemuxer = 6,
   kManifestDemuxer = 7,
@@ -83,12 +83,6 @@ class MEDIA_EXPORT Demuxer : public MediaResource {
   // Called once the demuxer has finished enabling or disabling tracks.
   using TrackChangeCB =
       base::OnceCallback<void(const std::vector<DemuxerStream*>&)>;
-
-  enum DemuxerTypes {
-    kChunkDemuxer,
-    kFFmpegDemuxer,
-    kMediaUrlDemuxer,
-  };
 
   Demuxer();
 

@@ -502,16 +502,33 @@ class Expectations(object):
     Returns:
       A data_types.Expectation containing the same information as |line|.
     """
+    typ_expectation = self._CreateTypExpectationFromExpectationFileLine(
+        line, expectation_file)
+    wildcard_type = WildcardTypeFromTypExpectation(typ_expectation)
+    return data_types.Expectation(typ_expectation.test, typ_expectation.tags,
+                                  typ_expectation.raw_results, wildcard_type,
+                                  typ_expectation.reason)
+
+  def _CreateTypExpectationFromExpectationFileLine(
+      self, line: str,
+      expectation_file: str) -> expectations_parser.Expectation:
+    """Creates a typ expectations_parser.Expectation from |line|.
+
+    Args:
+      line: A string containing a single line from an expectation file.
+      expectation_file: A filepath pointing to an expectation file |line| came
+          from.
+
+    Returns:
+      An expectations_parser.Expectation containing the same information as
+      |line|.
+    """
     header = self._GetExpectationFileTagHeader(expectation_file)
     annotations = self._GetExpectationFileAnnotations(expectation_file)
     single_line_content = header + annotations + line
     list_parser = expectations_parser.TaggedTestListParser(single_line_content)
     assert len(list_parser.expectations) == 1
-    typ_expectation = list_parser.expectations[0]
-    wildcard_type = WildcardTypeFromTypExpectation(typ_expectation)
-    return data_types.Expectation(typ_expectation.test, typ_expectation.tags,
-                                  typ_expectation.raw_results, wildcard_type,
-                                  typ_expectation.reason)
+    return list_parser.expectations[0]
 
   def _GetExpectationFileTagHeader(self, expectation_file: str) -> str:
     """Gets the tag header used for expectation files.
@@ -789,12 +806,19 @@ class Expectations(object):
       with open(expectation_file, encoding='utf-8') as infile:
         file_contents = infile.read()
       line, _ = self._GetExpectationLine(e, file_contents, expectation_file)
+      # We grab the original expectation's trailing comment here so that we can
+      # preserve it in the new expectations.
+      original_expectation = self._CreateTypExpectationFromExpectationFileLine(
+          line, expectation_file)
+      trailing_comment = original_expectation.trailing_comments
       modified_urls |= set(e.bug.split())
       expectation_strs = []
       for new_tags in new_tag_sets:
         expectation_copy = copy.copy(e)
         expectation_copy.tags = new_tags
-        expectation_strs.append(expectation_copy.AsExpectationFileString())
+        expectation_strs.append(
+            expectation_copy.AsExpectationFileStringWithTrailingComment(
+                trailing_comment))
       expectation_strs.sort()
       replacement_lines = '\n'.join(expectation_strs)
       file_contents = file_contents.replace(line, replacement_lines)

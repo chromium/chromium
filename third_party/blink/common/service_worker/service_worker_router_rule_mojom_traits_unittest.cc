@@ -78,8 +78,9 @@ TEST(ServiceWorkerRouterRulesTest, SimpleRoundTrip) {
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = network::mojom::ServiceWorkerRouterSourceType::kRace;
-      source.race_source.emplace();
+      source.type = network::mojom::ServiceWorkerRouterSourceType::
+          kRaceNetworkAndFetchEvent;
+      source.race_network_and_fetch_event_source.emplace();
       rule.sources.push_back(source);
     }
     {
@@ -100,6 +101,25 @@ TEST(ServiceWorkerRouterRulesTest, SimpleRoundTrip) {
       blink::ServiceWorkerRouterCacheSource cache_source;
       cache_source.cache_name = "example cache name";
       source.cache_source = cache_source;
+      rule.sources.push_back(source);
+    }
+    {
+      blink::ServiceWorkerRouterSource source;
+      source.type =
+          network::mojom::ServiceWorkerRouterSourceType::kRaceNetworkAndCache;
+      source.race_network_and_cache_source.emplace();
+      blink::ServiceWorkerRouterCacheSource cache_source;
+      source.race_network_and_cache_source->cache_source = cache_source;
+      rule.sources.push_back(source);
+    }
+    {
+      blink::ServiceWorkerRouterSource source;
+      source.type =
+          network::mojom::ServiceWorkerRouterSourceType::kRaceNetworkAndCache;
+      source.race_network_and_cache_source.emplace();
+      blink::ServiceWorkerRouterCacheSource cache_source;
+      cache_source.cache_name = "example cache name";
+      source.race_network_and_cache_source->cache_source = cache_source;
       rule.sources.push_back(source);
     }
     rules.rules.push_back(rule);

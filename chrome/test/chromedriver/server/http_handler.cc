@@ -1024,6 +1024,14 @@ HttpHandler::HttpHandler(
               "RunBounceTrackingMitigations",
               base::BindRepeating(&ExecuteRunBounceTrackingMitigations))),
 
+      // Extensions for Protected Audience KAnonymity support:
+      // https://wicg.github.io/turtledove/#kanonymity-automation
+      CommandMapping(
+          kPost, "session/:sessionId/protected_audience/set_k_anonymity",
+          WrapToCommand(
+              "SetProtectedAudienceKAnonymity",
+              base::BindRepeating(&ExecuteSetProtectedAudienceKAnonymity))),
+
       // Extensions for Custom Handlers API:
       // https://html.spec.whatwg.org/multipage/system-state.html#rph-automation
       CommandMapping(

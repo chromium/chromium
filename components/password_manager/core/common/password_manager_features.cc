@@ -12,23 +12,12 @@ namespace password_manager::features {
 // NOTE: It is strongly recommended to use UpperCamelCase style for feature
 //       names, e.g. "MyGreatFeature".
 
-// Enables the overwriting of prefilled username fields if the server predicted
-// the field to contain a placeholder value.
-BASE_FEATURE(kEnableOverwritingPlaceholderUsernames,
-             "EnableOverwritingPlaceholderUsernames",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_IOS)
 // Enables password bottom sheet to be triggered on autofocus events (on iOS).
 BASE_FEATURE(kIOSPasswordBottomSheetAutofocus,
              "kIOSPasswordBottomSheetAutofocus",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // IS_IOS
-
-// Enables password reuse detection.
-BASE_FEATURE(kPasswordReuseDetectionEnabled,
-             "PasswordReuseDetectionEnabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Removes password suggestion filtering by username.
 BASE_FEATURE(kNoPasswordSuggestionFiltering,

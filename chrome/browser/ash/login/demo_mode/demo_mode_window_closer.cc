@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/demo_mode/demo_mode_window_closer.h"
 
+#include "ash/clipboard/clipboard_history.h"
+#include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/metrics/demo_session_metrics_recorder.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/shell.h"
@@ -43,6 +45,25 @@ void CloseWidgetWithInstanceId(const base::UnguessableToken& instance_id) {
           widget->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
         }
       });
+}
+
+void ClearAndCloseClipboard() {
+  // Since this function is posted on another thread, we need to make sure all
+  // the instances are not destroyed.
+  if (!ash::Shell::HasInstance()) {
+    return;
+  }
+  ash::ClipboardHistoryControllerImpl* clipboard_history_controller =
+      ash::Shell::Get()->clipboard_history_controller();
+  if (!clipboard_history_controller ||
+      !clipboard_history_controller->history()) {
+    return;
+  }
+  ash::ClipboardHistory* clipboard_history = const_cast<ash::ClipboardHistory*>(
+      clipboard_history_controller->history());
+  // Clear the clipboard. Clearing the clipboard will automatically close the
+  // clipboard because it has no contents.
+  clipboard_history->Clear();
 }
 
 }  // namespace
@@ -133,6 +154,9 @@ void DemoModeWindowCloser::StartClosingApps() {
 
   // TODO(crbug.com/379946574): Close chromevox/screen capture or any other
   // non-window/widget if open.
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&ClearAndCloseClipboard));
 }
 
 // TODO(crbug.com/302583338): Remove this function once

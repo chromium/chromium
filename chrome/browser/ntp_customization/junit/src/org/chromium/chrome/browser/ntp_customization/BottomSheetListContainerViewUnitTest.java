@@ -13,7 +13,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.DISCOVER_FEED;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.FEED;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
 
 import android.content.Context;
@@ -21,7 +21,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -58,12 +57,11 @@ public class BottomSheetListContainerViewUnitTest {
         // requires complicated setting of themes.
         doReturn(mListItemView).when(mContainerView).createListItemView();
 
-        mListContent = List.of(NTP_CARDS, DISCOVER_FEED);
+        mListContent = List.of(NTP_CARDS, FEED);
         when(mDelegate.getListItems()).thenReturn(mListContent);
     }
 
     @Test
-    @SmallTest
     public void testDelegateInRenderAllListItems() {
         mContainerView.renderAllListItems(mDelegate);
 
@@ -71,6 +69,7 @@ public class BottomSheetListContainerViewUnitTest {
         // are called on delegate.
         verify(mDelegate).getListItems();
         for (int type : mListContent) {
+            verify(mDelegate).getListItemId(eq(type));
             verify(mDelegate).getListItemTitle(eq(type), any(Context.class));
             verify(mDelegate).getListItemSubtitle(eq(type), any(Context.class));
             verify(mDelegate).getTrailingIcon(eq(type));
@@ -79,7 +78,6 @@ public class BottomSheetListContainerViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRenderAllListItems() {
         View.OnClickListener listener = view -> {};
         for (int type : mListContent) {
@@ -90,6 +88,7 @@ public class BottomSheetListContainerViewUnitTest {
 
         // Verifies that titles, subtitles, backgrounds, trailing icons are set.
         int itemListSize = mListContent.size();
+        verify(mListItemView, times(itemListSize)).setId(anyInt());
         verify(mListItemView, times(itemListSize)).setTitle(any());
         verify(mListItemView, times(itemListSize)).setSubtitle(any());
         verify(mListItemView, times(itemListSize)).setBackground(anyInt());

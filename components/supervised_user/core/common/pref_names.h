@@ -86,12 +86,12 @@ inline constexpr char kSupervisedUserExtensionsMayRequestPermissions[] =
 inline constexpr char kSkipParentApprovalToInstallExtensions[] =
     "profile.managed.skip_parent_approval_to_install_extensions";
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 // DictionaryValue that maps extension ids to the approved version of this
 // extension for a supervised user. Missing extensions are not approved.
 inline constexpr char kSupervisedUserApprovedExtensions[] =
     "profile.managed.approved_extensions";
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 // The supervised user ID.
 // TODO(b/342097235): this pref is being deprecated.
@@ -128,7 +128,7 @@ inline constexpr char kSupervisedUserSharedSettings[] =
 inline constexpr char kDefaultSupervisedUserFilteringBehavior[] =
     "profile.managed.default_filtering_behavior";
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // An integer pref that stores the current state of the local extension
 // parent approval migration when the feature
@@ -145,7 +145,7 @@ inline constexpr char kLocallyParentApprovedExtensionsMigrationState[] =
 // This is only populated on Win/Linux/Mac.
 inline constexpr char kSupervisedUserLocallyParentApprovedExtensions[] =
     "profile.managed.locally_parent_approved_extensions";
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 // A string pref that stores the family member role of the primary account
 // as per kids_management::FamilyRole or

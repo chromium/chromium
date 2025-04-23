@@ -7,8 +7,8 @@
 #include "cc/layers/layer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/media/display_type.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
+#include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/media/html_media_test_helper.h"
@@ -35,7 +35,7 @@ namespace {
 class HTMLVideoElementMockMediaPlayer : public EmptyWebMediaPlayer {
  public:
   MOCK_METHOD1(SetIsEffectivelyFullscreen, void(WebFullscreenVideoStatus));
-  MOCK_METHOD1(OnDisplayTypeChanged, void(DisplayType));
+  MOCK_METHOD1(OnDisplayTypeChanged, void(WebMediaPlayer::DisplayType));
   MOCK_CONST_METHOD0(HasAvailableVideoFrame, bool());
   MOCK_CONST_METHOD0(HasReadableVideoFrame, bool());
   MOCK_METHOD(void,
@@ -116,7 +116,7 @@ TEST_P(HTMLVideoElementTest, PictureInPictureInterstitialAndTextContainer) {
 
   // Simulate entering Picture-in-Picture.
   EXPECT_CALL(*MockWebMediaPlayer(),
-              OnDisplayTypeChanged(DisplayType::kInline));
+              OnDisplayTypeChanged(WebMediaPlayer::DisplayType::kInline));
   video()->OnEnteredPictureInPicture();
 
   // Simulate that text track are displayed again.
@@ -124,7 +124,7 @@ TEST_P(HTMLVideoElementTest, PictureInPictureInterstitialAndTextContainer) {
 
   EXPECT_EQ(3u, video()->EnsureUserAgentShadowRoot().CountChildren());
   EXPECT_CALL(*MockWebMediaPlayer(),
-              OnDisplayTypeChanged(DisplayType::kInline));
+              OnDisplayTypeChanged(WebMediaPlayer::DisplayType::kInline));
   // Reset cc::layer to avoid crashes depending on timing.
   SetFakeCcLayer(nullptr);
 }
@@ -138,14 +138,15 @@ TEST_P(HTMLVideoElementTest, PictureInPictureInterstitial_Reattach) {
   test::RunPendingTasks();
 
   EXPECT_CALL(*MockWebMediaPlayer(),
-              OnDisplayTypeChanged(DisplayType::kInline));
+              OnDisplayTypeChanged(WebMediaPlayer::DisplayType::kInline));
   EXPECT_CALL(*MockWebMediaPlayer(), HasAvailableVideoFrame())
       .WillRepeatedly(testing::Return(true));
 
   // Simulate entering Picture-in-Picture.
   video()->OnEnteredPictureInPicture();
 
-  EXPECT_CALL(*MockWebMediaPlayer(), OnDisplayTypeChanged(DisplayType::kInline))
+  EXPECT_CALL(*MockWebMediaPlayer(),
+              OnDisplayTypeChanged(WebMediaPlayer::DisplayType::kInline))
       .Times(3);
 
   // Try detaching and reattaching. This should not crash.
@@ -159,23 +160,24 @@ TEST_P(HTMLVideoElementTest, EffectivelyFullscreen_DisplayType) {
   test::RunPendingTasks();
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_EQ(DisplayType::kInline, video()->GetDisplayType());
+  EXPECT_EQ(WebMediaPlayer::DisplayType::kInline, video()->GetDisplayType());
 
   // Vector of data to use for tests. First value is to be set when calling
   // SetIsEffectivelyFullscreen(). The second one is the expected DisplayType.
   // This is testing all possible values of WebFullscreenVideoStatus and then
   // sets the value back to a value that should put the DisplayType back to
   // inline.
-  Vector<std::pair<WebFullscreenVideoStatus, DisplayType>> tests = {
-      {WebFullscreenVideoStatus::kNotEffectivelyFullscreen,
-       DisplayType::kInline},
-      {WebFullscreenVideoStatus::kFullscreenAndPictureInPictureEnabled,
-       DisplayType::kFullscreen},
-      {WebFullscreenVideoStatus::kFullscreenAndPictureInPictureDisabled,
-       DisplayType::kFullscreen},
-      {WebFullscreenVideoStatus::kNotEffectivelyFullscreen,
-       DisplayType::kInline},
-  };
+  Vector<std::pair<WebFullscreenVideoStatus, WebMediaPlayer::DisplayType>>
+      tests = {
+          {WebFullscreenVideoStatus::kNotEffectivelyFullscreen,
+           WebMediaPlayer::DisplayType::kInline},
+          {WebFullscreenVideoStatus::kFullscreenAndPictureInPictureEnabled,
+           WebMediaPlayer::DisplayType::kFullscreen},
+          {WebFullscreenVideoStatus::kFullscreenAndPictureInPictureDisabled,
+           WebMediaPlayer::DisplayType::kFullscreen},
+          {WebFullscreenVideoStatus::kNotEffectivelyFullscreen,
+           WebMediaPlayer::DisplayType::kInline},
+      };
 
   for (const auto& test : tests) {
     EXPECT_CALL(*MockWebMediaPlayer(), SetIsEffectivelyFullscreen(test.first));

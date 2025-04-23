@@ -40,12 +40,24 @@ import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
 // See documentation at `URLRequest.trusted_params`.
+//
+// For values that have a corresponding value in URLLoaderFactoryParams
+// (e.g., `isolation_info`, `client_security_state`, and `disable_secure_dns`),
+// the values in the TrustedParams are preferred, if set, unless stated
+// otherwise. `isolation_info` cannot be null, so it always takes precedence
+// when TrustedUrlRequestParams are provided.
+//
+// TODO(https://crbug.com/409959475): Make `isolation_info` and
+// `disable_secure_dns` optional, and take precedence over the corresponding
+// URLLoaderFactoryParams value when set, so they behave consistently.
 struct TrustedUrlRequestParams {
   // If non-empty, this value will be used to set the SiteForCookies and
   // NetworkIsolationKey used by the network request.
   IsolationInfo isolation_info;
 
-  // Whether secure DNS should be disabled for the request.
+  // Whether secure DNS should be disabled for the request. The effective value
+  // for the request is the logical or of this field and the corresponding
+  // values in URLLoaderFactoryParams.
   bool disable_secure_dns;
 
   // Whether a navigation is triggered with a user gesture.
@@ -593,7 +605,7 @@ struct URLRequest {
   // Whether this request is allowed to register new device bound
   // sessions or process challenges for existing device bound sessions
   // (e.g. due to an Origin Trial).
-  bool allows_device_bound_sessions;
+  bool allows_device_bound_session_registration;
 
   // Permissions Policy of the request.
   // If it's nullopt then the request's initiator didn't set the permissions

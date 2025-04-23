@@ -22,6 +22,7 @@
 #include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -659,6 +660,34 @@ TEST(PickleTest, NonCanonicalBool) {
   bool b;
   ASSERT_TRUE(iter.ReadBool(&b));
   EXPECT_TRUE(b);
+}
+
+// Tests the ReadData() overload that returns a span.
+TEST(PickleTest, ReadDataAsSpan) {
+  constexpr auto kWriteData =
+      std::to_array<uint8_t>({0x01, 0x02, 0x03, 0x61, 0x62, 0x63});
+
+  Pickle pickle;
+  pickle.WriteData(kWriteData);
+  pickle.WriteData(base::span<const uint8_t>());
+
+  PickleIterator iter(pickle);
+  EXPECT_THAT(iter.ReadData(), testing::Optional(kWriteData));
+  EXPECT_THAT(iter.ReadData(), testing::Optional(base::span<const uint8_t>()));
+  EXPECT_FALSE(iter.ReadData());
+}
+
+// Tests the ReadBytes() overload that returns a span.
+TEST(PickleTest, ReadBytesAsSpan) {
+  constexpr auto kWriteData =
+      std::to_array<uint8_t>({0x01, 0x02, 0x03, 0x61, 0x62, 0x63});
+
+  Pickle pickle;
+  pickle.WriteBytes(kWriteData);
+
+  PickleIterator iter(pickle);
+  EXPECT_THAT(iter.ReadBytes(kWriteData.size()), testing::Optional(kWriteData));
+  EXPECT_FALSE(iter.ReadBytes(kWriteData.size()));
 }
 
 }  // namespace base

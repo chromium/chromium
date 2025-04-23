@@ -91,8 +91,6 @@ void ThrottlingNetworkTransaction::Fail() {
   DCHECK(started_);
   DCHECK(!failed_);
   failed_ = true;
-  network_transaction_->SetBeforeNetworkStartCallback(
-      BeforeNetworkStartCallback());
   if (interceptor_)
     interceptor_.reset();
 }
@@ -248,11 +246,6 @@ net::LoadState ThrottlingNetworkTransaction::GetLoadState() const {
   return network_transaction_->GetLoadState();
 }
 
-void ThrottlingNetworkTransaction::SetQuicServerInfo(
-    net::QuicServerInfo* quic_server_info) {
-  network_transaction_->SetQuicServerInfo(quic_server_info);
-}
-
 bool ThrottlingNetworkTransaction::GetLoadTimingInfo(
     net::LoadTimingInfo* load_timing_info) const {
   return network_transaction_->GetLoadTimingInfo(load_timing_info);
@@ -281,11 +274,6 @@ void ThrottlingNetworkTransaction::SetPriority(net::RequestPriority priority) {
 void ThrottlingNetworkTransaction::SetWebSocketHandshakeStreamCreateHelper(
     net::WebSocketHandshakeStreamBase::CreateHelper* create_helper) {
   network_transaction_->SetWebSocketHandshakeStreamCreateHelper(create_helper);
-}
-
-void ThrottlingNetworkTransaction::SetBeforeNetworkStartCallback(
-    BeforeNetworkStartCallback callback) {
-  network_transaction_->SetBeforeNetworkStartCallback(std::move(callback));
 }
 
 void ThrottlingNetworkTransaction::SetRequestHeadersCallback(
@@ -317,12 +305,6 @@ void ThrottlingNetworkTransaction::SetIsSharedDictionaryReadAllowedCallback(
     base::RepeatingCallback<bool()> callback) {
   // This method should not be called for this class.
   NOTREACHED();
-}
-
-int ThrottlingNetworkTransaction::ResumeNetworkStart() {
-  if (CheckFailed())
-    return net::ERR_INTERNET_DISCONNECTED;
-  return network_transaction_->ResumeNetworkStart();
 }
 
 net::ConnectionAttempts ThrottlingNetworkTransaction::GetConnectionAttempts()

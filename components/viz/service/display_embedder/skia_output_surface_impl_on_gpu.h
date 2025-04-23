@@ -73,7 +73,6 @@ class SharedImageFactory;
 }  // namespace gpu
 
 namespace skgpu::graphite {
-class Context;
 class Recording;
 }  // namespace skgpu::graphite
 
@@ -347,8 +346,8 @@ class SkiaOutputSurfaceImplOnGpu
 
   GrDirectContext* gr_context() const { return context_state_->gr_context(); }
 
-  skgpu::graphite::Context* graphite_context() const {
-    return context_state_->graphite_context();
+  gpu::GraphiteSharedContext* graphite_shared_context() const {
+    return context_state_->graphite_shared_context();
   }
 
   skgpu::graphite::Recorder* graphite_recorder() const {

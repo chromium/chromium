@@ -49,6 +49,15 @@ def generate_version_map_str(bom_path, with_hash=False):
   return version_map_str
 
 
+def hash_files(files):
+  """Returns the sha256 hash of |files| contents."""
+  content_hash = hashlib.sha256()
+  for filepath in files:
+    with open(filepath, 'rb') as f:
+      content_hash.update(f.read())
+  return content_hash.hexdigest()[:_HASH_LENGTH]
+
+
 def fill_template(template_path, output_path, **kwargs):
   """Fills in a template.
 

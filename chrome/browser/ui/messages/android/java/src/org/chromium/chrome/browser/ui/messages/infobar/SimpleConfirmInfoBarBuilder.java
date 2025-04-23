@@ -11,14 +11,17 @@ import android.graphics.BitmapFactory;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 
 /**
  * Builds and shows a basic ConfirmInfoBar for code that works almost entirely in Java.
  *
- * Rather than use this class, it is highly recommended that developers create and customize their
- * own customized native InfoBarDelegate to avoid unnecessary JNI hops.
+ * <p>Rather than use this class, it is highly recommended that developers create and customize
+ * their own customized native InfoBarDelegate to avoid unnecessary JNI hops.
  */
+@NullMarked
 public class SimpleConfirmInfoBarBuilder {
     /** Listens for when users interact with an infobar. */
     public static interface Listener {
@@ -87,14 +90,14 @@ public class SimpleConfirmInfoBarBuilder {
      */
     public static void create(
             WebContents webContents,
-            Listener listener,
+            @Nullable Listener listener,
             int infobarTypeIdentifier,
-            Context context,
+            @Nullable Context context,
             int drawableId,
             String message,
-            String primaryText,
-            String secondaryText,
-            String linkText,
+            @Nullable String primaryText,
+            @Nullable String secondaryText,
+            @Nullable String linkText,
             boolean autoExpire) {
         Bitmap drawable =
                 context == null || drawableId == 0
@@ -133,12 +136,12 @@ public class SimpleConfirmInfoBarBuilder {
         void create(
                 WebContents webContents,
                 int infobarTypeIdentifier,
-                Bitmap drawable,
-                String message,
-                String primaryText,
-                String secondaryText,
-                String linkText,
+                @Nullable Bitmap drawable,
+                @Nullable String message,
+                @Nullable String primaryText,
+                @Nullable String secondaryText,
+                @Nullable String linkText,
                 boolean autoExpire,
-                Object listener);
+                @Nullable Object listener);
     }
 }

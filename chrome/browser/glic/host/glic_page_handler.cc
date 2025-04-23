@@ -18,6 +18,7 @@
 #include "base/timer/timer.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_hotkey.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/glic/host/glic_annotation_manager.h"
 #include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
+#include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/widget/browser_conditions.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/global_features.h"
@@ -288,6 +290,11 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         base::BindRepeating(&GlicWebClientHandler::OnFocusedTabChanged,
                             base::Unretained(this)));
 
+    focus_data_changed_subscription_ =
+        glic_service_->AddFocusedTabDataChangedCallback(
+            base::BindRepeating(&GlicWebClientHandler::OnFocusedTabDataChanged,
+                                base::Unretained(this)));
+
     browser_attach_observation_ = ObserveBrowserForAttachment(profile_, this);
 
     system_permission_settings_observation_ =
@@ -326,6 +333,15 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
     state->always_detached_mode = GlicWindowController::AlwaysDetached();
 
+    state->enable_act_in_focused_tab =
+        base::FeatureList::IsEnabled(features::kGlicActor);
+    state->enable_scroll_to =
+        base::FeatureList::IsEnabled(features::kGlicScrollTo);
+    state->enable_drag_to_resize_panel =
+        base::FeatureList::IsEnabled(features::kGlicUserResize);
+    state->enable_zero_state_suggestions = base::FeatureList::IsEnabled(
+        contextual_cueing::kGlicZeroStateSuggestions);
+
     local_state_pref_change_registrar_.Init(g_browser_process->local_state());
     local_state_pref_change_registrar_.Add(
         prefs::kGlicLauncherHotkey,
@@ -334,7 +350,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     state->hotkey = GetHotkeyString();
 
     std::move(callback).Run(std::move(state));
-    glic_service_->WebClientCreated();
   }
 
   void WebClientInitializeFailed() override {
@@ -342,11 +357,11 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void WebClientInitialized() override {
-    glic_service_->window_controller().SetWebClient(this);
+    glic_service_->host().SetWebClient(page_handler_, this);
     // If chrome://glic is opened in a tab for testing, send a synthetic open
     // signal.
     if (page_handler_->webui_contents() !=
-        glic_service_->window_controller().GetWebContents()) {
+        glic_service_->host().webui_contents()) {
       mojom::PanelOpeningDataPtr panel_opening_data =
           mojom::PanelOpeningData::New();
       panel_opening_data->panel_state =
@@ -652,6 +667,31 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
   }
 
+  void GetZeroStateSuggestionsForFocusedTab(
+      std::optional<bool> is_fre,
+      GetZeroStateSuggestionsForFocusedTabCallback callback) override {
+    if (!base::FeatureList::IsEnabled(
+            contextual_cueing::kGlicZeroStateSuggestions)) {
+      mojo::ReportBadMessage(
+          "Client should not call "
+          "GetZeroStateSuggestionsForFocusedTab "
+          "without the GlicZeroStateSuggestions feature enabled.");
+      return;
+    }
+    glic_service_->FetchZeroStateSuggestions(
+        is_fre.value_or(false),
+        base::BindOnce(
+            [](GetZeroStateSuggestionsForFocusedTabCallback callback,
+               base::TimeTicks start,
+               glic::mojom::ZeroStateSuggestionsPtr suggestions) {
+              base::UmaHistogramTimes(
+                  "Glic.Api.FetchZeroStateSuggestionsLatency",
+                  base::TimeTicks::Now() - start);
+              std::move(callback).Run(std::move(suggestions));
+            },
+            std::move(callback), base::TimeTicks::Now()));
+  }
+
   void OnOsPermissionSettingChanged(ContentSettingsType content_type,
                                     bool is_blocked) {
     // Ignore other content types.
@@ -663,9 +703,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
  private:
   void Uninstall() {
     SetAudioDucking(false, base::DoNothing());
-    if (glic_service_->window_controller().web_client() == this) {
-      glic_service_->window_controller().SetWebClient(nullptr);
-    }
+    // TODO(b/409332639): centralize access indicator resetting in a single
+    // class.
+    glic_service_->SetContextAccessIndicator(false);
+    glic_service_->host().SetWebClient(page_handler_, nullptr);
     pref_change_registrar_.Reset();
     local_state_pref_change_registrar_.Reset();
     glic_service_->window_controller().RemoveStateObserver(this);
@@ -697,21 +738,16 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void OnFocusedTabChanged(FocusedTabData focused_tab_data) {
-    focused_tab_data_observer_ = std::make_unique<TabDataObserver>(
-        focused_tab_data.focus(),
-        /*disconnect_on_primary_page_changed=*/true,
-        base::BindRepeating(&GlicWebClientHandler::FocusedTabDataChanged,
-                            base::Unretained(this)));
     web_client_->NotifyFocusedTabChanged(
         CreateFocusedTabData(focused_tab_data));
   }
 
-  void FocusedTabDataChanged(glic::mojom::TabDataPtr tab_data) {
+  void OnFocusedTabDataChanged(const glic::mojom::TabData* tab_data) {
     if (!tab_data) {
       return;
     }
     web_client_->NotifyFocusedTabChanged(
-        glic::mojom::FocusedTabData::NewFocusedTab(std::move(tab_data)));
+        glic::mojom::FocusedTabData::NewFocusedTab(tab_data->Clone()));
   }
 
   PrefChangeRegistrar pref_change_registrar_;
@@ -723,6 +759,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   ActiveStateCalculator active_state_calculator_;
   BrowserIsOpenCalculator browser_is_open_calculator_;
   base::CallbackListSubscription focus_changed_subscription_;
+  base::CallbackListSubscription focus_data_changed_subscription_;
   std::unique_ptr<TabDataObserver> focused_tab_data_observer_;
   mojo::Receiver<glic::mojom::WebClientHandler> receiver_;
   mojo::Remote<glic::mojom::WebClient> web_client_;
@@ -740,7 +777,7 @@ GlicPageHandler::GlicPageHandler(
       browser_context_(webui_contents->GetBrowserContext()),
       receiver_(this, std::move(receiver)),
       page_(std::move(page)) {
-  GetGlicService()->PageHandlerAdded(this);
+  GetGlicService()->host().WebUIPageHandlerAdded(this);
   subscriptions_.push_back(
       GetGlicService()->enabling().RegisterAllowedChanged(base::BindRepeating(
           &GlicPageHandler::AllowedChanged, base::Unretained(this))));
@@ -751,7 +788,7 @@ GlicPageHandler::~GlicPageHandler() {
   WebUiStateChanged(glic::mojom::WebUiState::kUninitialized);
   // `GlicWebClientHandler` holds a pointer back to us, so delete it first.
   web_client_handler_.reset();
-  GetGlicService()->PageHandlerRemoved(this);
+  GetGlicService()->host().WebUIPageHandlerRemoved(this);
 }
 
 GlicKeyedService* GlicPageHandler::GetGlicService() {
@@ -797,11 +834,11 @@ void GlicPageHandler::ClosePanel() {
 }
 
 void GlicPageHandler::SignInAndClosePanel() {
-  GetGlicService()->GetAuthController().ShowReauthForAccount(
-      base::BindOnce(&GlicWindowController::ShowAfterSignIn,
-                     // Unretained is safe because the keyed service owns the
-                     // auth controller and the window controller.
-                     base::Unretained(&GetGlicService()->window_controller())));
+  GetGlicService()->GetAuthController().ShowReauthForAccount(base::BindOnce(
+      &GlicWindowController::ShowAfterSignIn,
+      // Unretained is safe because the keyed service owns the
+      // auth controller and the window controller.
+      base::Unretained(&GetGlicService()->window_controller()), nullptr));
   GetGlicService()->window_controller().Close();
 }
 

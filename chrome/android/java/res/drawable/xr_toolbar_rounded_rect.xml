@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="UnusedResources"
+    android:width="24dp"
+    android:height="24dp"
+    android:gravity="center"
+    android:background="@color/xr_toolbar_bg"
+    android:shape="rectangle">
+    <solid android:color="?attr/colorSurface"/>
+    <corners android:radius="@dimen/hub_xr_background_rounded_corner_radius"/>
+</shape>

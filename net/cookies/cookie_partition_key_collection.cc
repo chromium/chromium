@@ -22,14 +22,9 @@ namespace net {
 CookiePartitionKeyCollection::CookiePartitionKeyCollection() = default;
 
 CookiePartitionKeyCollection::CookiePartitionKeyCollection(
-    const CookiePartitionKeyCollection& other) = default;
-
-CookiePartitionKeyCollection::CookiePartitionKeyCollection(
-    CookiePartitionKeyCollection&& other) = default;
-
-CookiePartitionKeyCollection::CookiePartitionKeyCollection(
-    const CookiePartitionKey& key)
-    : CookiePartitionKeyCollection(base::flat_set<CookiePartitionKey>({key})) {}
+    CookiePartitionKey key)
+    : CookiePartitionKeyCollection(
+          base::flat_set<CookiePartitionKey>({std::move(key)})) {}
 
 CookiePartitionKeyCollection::CookiePartitionKeyCollection(
     base::flat_set<CookiePartitionKey> keys)
@@ -38,6 +33,18 @@ CookiePartitionKeyCollection::CookiePartitionKeyCollection(
 CookiePartitionKeyCollection::CookiePartitionKeyCollection(
     bool contains_all_keys)
     : contains_all_keys_(contains_all_keys) {}
+
+CookiePartitionKeyCollection::CookiePartitionKeyCollection(
+    std::optional<CookiePartitionKey> opt_key)
+    : keys_(opt_key ? base::flat_set<CookiePartitionKey>(
+                          {std::move(opt_key).value()})
+                    : base::flat_set<CookiePartitionKey>()) {}
+
+CookiePartitionKeyCollection::CookiePartitionKeyCollection(
+    const CookiePartitionKeyCollection& other) = default;
+
+CookiePartitionKeyCollection::CookiePartitionKeyCollection(
+    CookiePartitionKeyCollection&& other) = default;
 
 CookiePartitionKeyCollection& CookiePartitionKeyCollection::operator=(
     const CookiePartitionKeyCollection& other) = default;

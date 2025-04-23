@@ -11,9 +11,9 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/tabs/split_tab_id.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
@@ -65,6 +65,10 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
     split_ = split;
   }
 
+  void set_will_be_detaching_for_testing(bool will_be_detaching) {
+    will_be_detaching_ = will_be_detaching;
+  }
+
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
   // https://crbug.com/331022416: Do not use this method. This is only used by
@@ -83,25 +87,11 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
   // context of a tab strip.
   void DestroyTabFeatures();
 
-  // Returns a pointer to the parent TabCollection. This method is specifically
-  // designed to be accessible only within the collection tree that has the
-  // kTabStripCollectionStorage flag enabled.
-  TabCollection* GetParentCollection(base::PassKey<TabCollection>) const;
-
   // Provides access to the parent_collection_ for testing purposes. This method
   // bypasses the PassKey mechanism, allowing tests to simulate scenarios and
   // inspect the state without needing to replicate complex authorization
   // mechanisms.
   TabCollection* GetParentCollectionForTesting() { return parent_collection_; }
-
-  // Updates the parent collection of the TabModel in response to structural
-  // changes such as pinning, grouping, or moving the tab between collections.
-  // This method ensures the TabModel remains correctly associated within the
-  // tab hierarchy, maintaining consistent organization.
-  void OnReparented(TabCollection* parent, base::PassKey<TabCollection>);
-
-  // Must be called whenever any of this tab's ancestors change.
-  void OnAncestorChanged(base::PassKey<TabCollection>);
 
   // Called by TabStripModel when a tab is going to be backgrounded (any
   // operation that makes the tab no longer visible, including removal from the
@@ -151,11 +141,13 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
   tabs::TabFeatures* GetTabFeatures() override;
   bool IsPinned() const override;
   bool IsSplit() const override;
-  std::optional<split_tabs::SplitTabId> GetSplit() const override;
   std::optional<tab_groups::TabGroupId> GetGroup() const override;
-  bool ShouldAcceptMouseEventsWhileWindowInactive() const override;
-  std::unique_ptr<ScopedAcceptMouseEventsWhileWindowInactive>
-  AcceptMouseEventsWhileWindowInactive() override;
+  std::optional<split_tabs::SplitTabId> GetSplit() const override;
+  TabCollection* GetParentCollection(
+      base::PassKey<TabCollection>) const override;
+  void OnReparented(TabCollection* parent,
+                    base::PassKey<TabCollection>) override;
+  void OnAncestorChanged(base::PassKey<TabCollection>) override;
   void Close() override;
 
  private:
@@ -184,19 +176,6 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
     base::WeakPtr<TabModel> tab_;
   };
 
-  // Whether the tab should accept mouse events while in the foreground, but the
-  // window is inactive.
-  class ScopedAcceptMouseEventsWhileWindowInactiveImpl
-      : public ScopedAcceptMouseEventsWhileWindowInactive {
-   public:
-    explicit ScopedAcceptMouseEventsWhileWindowInactiveImpl(TabModel* tab);
-    ~ScopedAcceptMouseEventsWhileWindowInactiveImpl() override;
-
-   private:
-    // Owns this. Some consumers may hold this beyond the lifetime of the tab.
-    base::WeakPtr<TabModel> tab_;
-  };
-
   // This must always be the first member so that it is destroyed last. This is
   // because there are some instances where a caller may want to destroy a
   // TabModel but keep the WebContents alive. There are other destructors such
@@ -210,6 +189,7 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
   // model or is in the process of being closed.
   raw_ptr<TabStripModel> owning_model_ = nullptr;
   raw_ptr<TabStripModel> soon_to_be_owning_model_ = nullptr;
+  bool will_be_detaching_ = false;
   raw_ptr<tabs::TabInterface> opener_ = nullptr;
   bool reset_opener_on_active_tab_change_ = false;
   bool pinned_ = false;
@@ -263,11 +243,6 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
 
   // Tracks whether a modal UI is showing.
   bool showing_modal_ui_ = false;
-
-  // Whether to accept input events when the tab is in the foreground and the
-  // window is inactive. This is a reference count for
-  // number of instances of ScopedAcceptMouseEventsWhileWindowInactiveImpl.
-  int accept_input_when_window_inactive_ = 0;
 
   // Features that are per-tab will be owned by this class.
   std::unique_ptr<TabFeatures> tab_features_;

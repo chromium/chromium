@@ -59,7 +59,6 @@ class BreadcrumbManagerBrowserAgent
 
  private:
   friend class BrowserUserData<BreadcrumbManagerBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit BreadcrumbManagerBrowserAgent(Browser* browser);
 

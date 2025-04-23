@@ -93,6 +93,16 @@ TEST_F(ColorProviderUtilsTest, DefaultBlinkColorProviderColorMapsValidity) {
   const auto has_valid_colors =
       [](const ui::RendererColorMap renderer_color_map) {
         for (const auto& value : renderer_color_map) {
+          // Test `kColorCssSystemActiveText` separately as it is expected to
+          // exactly equal `gfx::kPlaceholderColor`. This can be removed should
+          // this expectation ever change.
+          if (value.first ==
+              color::mojom::RendererColorId::kColorCssSystemActiveText) {
+            if (value.second == SkColorSetRGB(0xFF, 0x00, 0x00)) {
+              continue;
+            }
+          }
+
           if (value.second == gfx::kPlaceholderColor) {
             return false;
           }

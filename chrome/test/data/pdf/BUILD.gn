@@ -77,6 +77,7 @@ build_webui_tests("build") {
       "ink2_test.ts",
       "ink2_text_alignment_selector_test.ts",
       "ink2_text_bottom_toolbar_test.ts",
+      "ink2_text_box_test.ts",
       "ink2_text_side_panel_test.ts",
       "ink2_text_styles_selector_test.ts",
       "ink2_viewer_toolbar_test.ts",

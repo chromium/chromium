@@ -42,6 +42,9 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelStateProvide
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetVisualStateProvider;
+import org.chromium.chrome.browser.keyboard_accessory.KeyboardAccessoryVisualStateProvider;
+import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
+import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualState;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -64,7 +67,8 @@ public class BottomAttachedUiObserverTest {
     private static final int BOTTOM_SHEET_CYAN = Color.CYAN;
     private static final int OMNIBOX_SUGGESTIONS_COLOR = Color.MAGENTA;
     private static final int OMNIBOX_SUGGESTIONS_COLOR_2 = Color.DKGRAY;
-    private static final int ACCESSORY_SHEET_COLOR = 0xFF440044; // dark magenta
+    private static final int KEYBOARD_ACCESSORY_COLOR = 0xFF444400; // dark yellow
+    private static final int ACCESSORY_SHEET_COLOR = 0xFF440044; // purple
 
     private static final WindowInsetsCompat BOTTOM_NAV_BAR_INSETS =
             new WindowInsetsCompat.Builder()
@@ -100,6 +104,12 @@ public class BottomAttachedUiObserverTest {
 
     @Mock private OmniboxSuggestionsVisualState mOmniboxSuggestionsVisualState;
 
+    @Mock private ManualFillingComponent mManualFillingComponent;
+    @Mock private ManualFillingComponentSupplier mManualFillingComponentSupplier;
+
+    @Mock private KeyboardAccessoryVisualStateProvider mKeyboardAccessoryVisualStateProvider;
+    private final ObservableSupplierImpl<KeyboardAccessoryVisualStateProvider>
+            mKeyboardAccessoryVisualStateSupplier = new ObservableSupplierImpl<>();
     @Mock private AccessorySheetVisualStateProvider mAccessorySheetVisualStateProvider;
     private final ObservableSupplierImpl<AccessorySheetVisualStateProvider>
             mAccessorySheetVisualStateSupplier = new ObservableSupplierImpl<>();
@@ -124,7 +134,13 @@ public class BottomAttachedUiObserverTest {
         mContextualSearchManagerSupplier.set(mContextualSearchManager);
         mOverlayPanelStateProviderSupplier.set(mOverlayPanelStateProvider);
         when(mOverlayPanelStateProvider.isFullWidthSizePanel()).thenReturn(true);
+        mKeyboardAccessoryVisualStateSupplier.set(mKeyboardAccessoryVisualStateProvider);
         mAccessorySheetVisualStateSupplier.set(mAccessorySheetVisualStateProvider);
+        when(mManualFillingComponentSupplier.get()).thenReturn(mManualFillingComponent);
+        when(mManualFillingComponent.getKeyboardAccessoryVisualStateProvider())
+                .thenReturn(mKeyboardAccessoryVisualStateSupplier);
+        when(mManualFillingComponent.getAccessorySheetVisualStateProvider())
+                .thenReturn(mAccessorySheetVisualStateSupplier);
 
         mBottomAttachedUiObserver =
                 new BottomAttachedUiObserver(
@@ -134,7 +150,7 @@ public class BottomAttachedUiObserverTest {
                         mContextualSearchManagerSupplier,
                         mBottomSheetController,
                         Optional.of(mOmniboxSuggestionsVisualState),
-                        mAccessorySheetVisualStateSupplier,
+                        mManualFillingComponentSupplier,
                         mInsetObserver);
         mBottomAttachedUiObserver.onInsetChanged();
 
@@ -679,12 +695,38 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
+    public void testSetKeyboardAccessoryVisualStateObserver() {
+        verify(mKeyboardAccessoryVisualStateProvider).addObserver(eq(mBottomAttachedUiObserver));
+
+        mKeyboardAccessoryVisualStateSupplier.set(null);
+        verify(mKeyboardAccessoryVisualStateProvider).removeObserver(eq(mBottomAttachedUiObserver));
+    }
+
+    @Test
+    public void testAdaptsColorToKeyboardAccessory() {
+        mColorChangeObserver.assertState(null, false, false);
+
+        mBottomAttachedUiObserver.onKeyboardAccessoryVisualStateChanged(
+                true, KEYBOARD_ACCESSORY_COLOR);
+        mColorChangeObserver.assertState(KEYBOARD_ACCESSORY_COLOR, false, false);
+
+        mBottomAttachedUiObserver.onKeyboardAccessoryVisualStateChanged(
+                false, KEYBOARD_ACCESSORY_COLOR);
+        mColorChangeObserver.assertState(null, false, false);
+    }
+
+    @Test
     public void testColorPrioritization() {
         mColorChangeObserver.assertState(null, false, false);
 
         // Show the snackbar.
         mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ true, SNACKBAR_COLOR);
         mColorChangeObserver.assertState(SNACKBAR_COLOR, false, false);
+
+        // Show the keyboard accessory.
+        mBottomAttachedUiObserver.onKeyboardAccessoryVisualStateChanged(
+                /* visible= */ true, KEYBOARD_ACCESSORY_COLOR);
+        mColorChangeObserver.assertState(KEYBOARD_ACCESSORY_COLOR, false, false);
 
         // Show bottom controls.
         when(mBottomControlsStacker.hasVisibleLayersOtherThan(
@@ -731,8 +773,13 @@ public class BottomAttachedUiObserverTest {
                 OverlayPanel.PanelState.CLOSED, OVERLAY_PANEL_COLOR);
         mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false, false);
 
-        // Hide bottom controls - should fall back to the snackbar color.
+        // Hide bottom controls.
         mBottomAttachedUiObserver.onBottomControlsHeightChanged(0, 0);
+        mColorChangeObserver.assertState(KEYBOARD_ACCESSORY_COLOR, false, false);
+
+        // Hide keyboard accessory - should fall back to the snackbar color.
+        mBottomAttachedUiObserver.onKeyboardAccessoryVisualStateChanged(
+                /* visible= */ false, KEYBOARD_ACCESSORY_COLOR);
         mColorChangeObserver.assertState(SNACKBAR_COLOR, false, false);
     }
 

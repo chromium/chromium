@@ -344,5 +344,3 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
   // Otherwise, this is a failed HTTPS-Upgrade. Allow the response.
   std::move(callback).Run(web::WebStatePolicyDecider::PolicyDecision::Allow());
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(HttpsOnlyModeUpgradeTabHelper)

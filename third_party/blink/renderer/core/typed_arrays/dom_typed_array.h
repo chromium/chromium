@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_DOM_TYPED_ARRAY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_DOM_TYPED_ARRAY_H_
 
@@ -28,7 +23,6 @@ class DOMTypedArray final : public DOMArrayBufferView {
   static ThisType* Create(DOMArrayBufferBase* buffer,
                           size_t byte_offset,
                           size_t length) {
-    CHECK(VerifySubRange(buffer, byte_offset, length));
     return MakeGarbageCollected<ThisType>(buffer, byte_offset, length);
   }
 
@@ -74,8 +68,9 @@ class DOMTypedArray final : public DOMArrayBufferView {
   DOMTypedArray(DOMArrayBufferBase* dom_array_buffer,
                 size_t byte_offset,
                 size_t length)
-      : DOMArrayBufferView(dom_array_buffer, byte_offset),
-        raw_length_(length) {}
+      : DOMArrayBufferView(dom_array_buffer, byte_offset), raw_length_(length) {
+    CHECK(VerifySubRange(dom_array_buffer, byte_offset, length));
+  }
 
   ValueType* Data() const { return static_cast<ValueType*>(BaseAddress()); }
 
@@ -105,10 +100,7 @@ class DOMTypedArray final : public DOMArrayBufferView {
 
   // Invoked by the indexed getter. Does not perform range checks; caller
   // is responsible for doing so and returning undefined as necessary.
-  ValueType Item(size_t index) const {
-    SECURITY_DCHECK(index < length());
-    return Data()[index];
-  }
+  ValueType Item(size_t index) const { return AsSpan()[index]; }
 
   v8::Local<v8::Value> Wrap(ScriptState*) override;
 

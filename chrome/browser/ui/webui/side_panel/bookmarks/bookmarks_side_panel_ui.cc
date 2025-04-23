@@ -7,16 +7,17 @@
 #include <string>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmark_prefs.h"
 #include "chrome/browser/ui/webui/commerce/price_tracking_handler.h"
@@ -33,7 +34,6 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
-#include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/webui/shopping_service_handler.h"
@@ -54,6 +54,12 @@
 #include "ui/views/style/platform_style.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
+
+const char kSidePanelRootBookmarkID[] = "SIDE_PANEL_ROOT_BOOKMARK_ID";
+const char kSidePanelBookmarkBarID[] = "SIDE_PANEL_BOOKMARK_BAR_ID";
+const char kSidePanelOtherBookmarksID[] = "SIDE_PANEL_OTHER_BOOKMARKS_ID";
+const char kSidePanelMobileBookmarksID[] = "SIDE_PANEL_MOBILE_BOOKMARKS_ID";
+const char kSidePanelManagedBookmarksID[] = "SIDE_PANEL_MANAGED_BOOKMARKS_ID";
 
 BookmarksSidePanelUIConfig::BookmarksSidePanelUIConfig()
     : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
@@ -216,29 +222,11 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       "viewType",
       prefs->GetInteger(bookmarks_webui::prefs::kBookmarksViewType));
 
-  bookmarks::BookmarkModel* bookmark_model =
-      BookmarkModelFactory::GetForBrowserContext(profile);
-  source->AddString(
-      "bookmarksBarId",
-      base::NumberToString(bookmark_model && bookmark_model->bookmark_bar_node()
-                               ? bookmark_model->bookmark_bar_node()->id()
-                               : -1));
-  source->AddString(
-      "otherBookmarksId",
-      base::NumberToString(bookmark_model && bookmark_model->other_node()
-                               ? bookmark_model->other_node()->id()
-                               : -1));
-  source->AddString(
-      "mobileBookmarksId",
-      base::NumberToString(bookmark_model && bookmark_model->mobile_node()
-                               ? bookmark_model->mobile_node()->id()
-                               : -1));
-  bookmarks::ManagedBookmarkService* managed =
-      ManagedBookmarkServiceFactory::GetForProfile(profile);
-  source->AddString("managedBookmarksFolderId",
-                    managed && managed->managed_node()
-                        ? base::NumberToString(managed->managed_node()->id())
-                        : "");
+  source->AddString("rootBookmarkId", kSidePanelRootBookmarkID);
+  source->AddString("bookmarksBarId", kSidePanelBookmarkBarID);
+  source->AddString("otherBookmarksId", kSidePanelOtherBookmarksID);
+  source->AddString("mobileBookmarksId", kSidePanelMobileBookmarksID);
+  source->AddString("managedBookmarksFolderId", kSidePanelManagedBookmarksID);
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
@@ -313,9 +301,7 @@ void BookmarksSidePanelUI::CreateBookmarksPageHandler(
     mojo::PendingRemote<side_panel::mojom::BookmarksPage> page,
     mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver) {
   bookmarks_page_handler_ = std::make_unique<BookmarksPageHandler>(
-      std::move(receiver), std::move(page), this,
-      BookmarkMergedSurfaceServiceFactory::GetForProfile(
-          Profile::FromWebUI(web_ui())));
+      std::move(receiver), std::move(page), this, web_ui());
 }
 
 void BookmarksSidePanelUI::CreateShoppingServiceHandler(

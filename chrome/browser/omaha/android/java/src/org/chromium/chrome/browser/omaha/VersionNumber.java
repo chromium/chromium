@@ -19,7 +19,7 @@ public class VersionNumber {
      * @param str a version number of the format a.b.c.d, where each is an integer.
      * @return A VersionNumber containing the version info, or null if it couldn't be parsed.
      */
-    public static @Nullable VersionNumber fromString(String str) {
+    public static @Nullable VersionNumber fromString(@Nullable String str) {
         if (str == null) {
             return null;
         }

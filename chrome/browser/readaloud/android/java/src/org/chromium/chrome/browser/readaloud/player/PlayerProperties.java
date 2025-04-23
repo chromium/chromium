@@ -46,9 +46,10 @@ public class PlayerProperties {
             new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey RESTORABLE_PLAYBACK =
             new WritableBooleanPropertyKey();
-    public static final WritableBooleanPropertyKey PLAYBACK_MODE_SELECTION_ENABLED = new WritableBooleanPropertyKey();
+    public static final WritableIntPropertyKey PLAYBACK_MODE_SELECTION_ENABLED =
+            new WritableIntPropertyKey();
     public static final WritableIntPropertyKey PLAYBACK_MODE = new WritableIntPropertyKey();
-    
+
     public static final PropertyKey[] ALL_KEYS = {
         EXPANDED_PLAYER_VISIBILITY,
         TITLE,

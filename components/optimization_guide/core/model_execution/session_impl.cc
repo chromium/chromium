@@ -108,10 +108,6 @@ SessionImpl::SessionImpl(ModelBasedCapabilityKey feature,
 
 SessionImpl::~SessionImpl() {}
 
-on_device_model::mojom::Session& SessionImpl::GetSession() {
-  return *on_device_context_->GetOrCreateSession();
-}
-
 const TokenLimits& SessionImpl::GetTokenLimits() const {
   if (!on_device_context_) {
     static const TokenLimits null_limits{};
@@ -297,6 +293,12 @@ std::unique_ptr<OptimizationGuideModelExecutor::Session> SessionImpl::Clone() {
     session->on_device_context_ = on_device_context_->Clone();
   }
   return session;
+}
+
+void SessionImpl::SetPriority(on_device_model::mojom::Priority priority) {
+  if (on_device_context_) {
+    on_device_context_->SetPriority(priority);
+  }
 }
 
 void SessionImpl::GetSizeInTokensInternal(

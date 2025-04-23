@@ -104,6 +104,10 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 
 #pragma mark - Subclassing
 
+- (UIView*)createUnderTitleView {
+  return [self createTableView];
+}
+
 - (UITableView*)createTableView {
   _tableView = [[UITableView alloc] initWithFrame:CGRectZero
                                             style:UITableViewStylePlain];
@@ -151,7 +155,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   // minimized.
   _tableViewIsMinimized = [self rowCount] > [self initialNumberOfVisibleCells];
 
-  self.underTitleView = [self createTableView];
+  self.underTitleView = [self createUnderTitleView];
 
   // Set the properties read by the super when constructing the
   // views in `-[ConfirmationAlertViewController viewDidLoad]`.

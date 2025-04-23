@@ -286,8 +286,8 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
     }
     this.whenReady_.then(() => {
       this.$.documentInfo.init(
-          settings.previewModifiable, settings.previewIsFromArc,
-          settings.documentTitle, settings.documentHasSelection);
+          settings.previewModifiable, settings.documentTitle,
+          settings.documentHasSelection);
       this.$.model.setStickySettings(settings.serializedAppStateStr);
       this.$.model.setPolicySettings(settings.policies);
       this.measurementSystem_ = new MeasurementSystem(

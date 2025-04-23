@@ -7,9 +7,12 @@
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/clamped_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/predictors/preconnect_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "services/network/public/mojom/reconnect_event_observer.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -20,8 +23,6 @@ class WebContents;
 namespace features {
 BASE_DECLARE_FEATURE(kPreconnectFromKeyedService);
 BASE_DECLARE_FEATURE(kPreconnectToSearch);
-BASE_DECLARE_FEATURE(kPreconnectToSearchNonGoogle);
-BASE_DECLARE_FEATURE(kPreconnectToSearchWithPrivacyModeEnabled);
 }  // namespace features
 
 // Class to keep track of the current visibility. It is used to determine if the
@@ -35,8 +36,9 @@ class WebContentVisibilityManager {
   // Might be called more than once with the same |is_in_foreground| and
   // |web_contents| in case user starts a new navigation with same
   // |web_contents|.
-  void OnWebContentsVisibilityChanged(content::WebContents* web_contents,
-                                      bool is_in_foreground);
+  virtual void OnWebContentsVisibilityChanged(
+      content::WebContents* web_contents,
+      bool is_in_foreground);
 
   // Notifies |this| that the web contents tracked by |client| has destroyed.
   void OnWebContentsDestroyed(content::WebContents* web_contents);
@@ -62,10 +64,12 @@ class WebContentVisibilityManager {
 // Preconnects are made by |this| if the browser app is likely in foreground.
 class SearchEnginePreconnector : public predictors::PreconnectManager::Delegate,
                                  public WebContentVisibilityManager,
-                                 public KeyedService {
+                                 public KeyedService,
+                                 public network::mojom::ReconnectEventObserver {
  public:
   static bool ShouldBeEnabledAsKeyedService();
   static bool ShouldBeEnabledForOffTheRecord();
+  static bool SearchEnginePreconnect2Enabled();
 
   explicit SearchEnginePreconnector(content::BrowserContext* browser_context);
   ~SearchEnginePreconnector() override;
@@ -87,22 +91,64 @@ class SearchEnginePreconnector : public predictors::PreconnectManager::Delegate,
   void PreconnectFinished(
       std::unique_ptr<predictors::PreconnectStats> stats) override {}
 
+  // network::mojom::ReconnectEventObserver
+  void OnSessionClosed() override;
+  void OnNetworkEvent(net::NetworkChangeEvent event) override;
+  void OnConnectionFailed() override;
+
   // Lazily creates the PreconnectManager instance.
   predictors::PreconnectManager& GetPreconnectManager();
 
+  // WebContentVisibilityManager methods
+  // TODO(crbug.com/406022435): Update to observe the
+  // `WebContentVisibilityManager` and not override them.
+  void OnWebContentsVisibilityChanged(content::WebContents* web_contents,
+                                      bool is_in_foreground) override;
+
+  // Calculate the backoff multiplier to exponentially backoff when preconnects
+  // are consecutively failing. The returned value should be within the range
+  // of int32_t's binary digits.
+  int32_t CalculateBackoffMultiplier() const;
+
+  void SetConsecutiveFailureForTesting(int consecutive_failure) {
+    consecutive_connection_failure_ = consecutive_failure;
+  }
+
+  int GetConsecutiveConnectionFailureForTesting() {
+    return consecutive_connection_failure_;
+  }
+
+  void SetIsShortSessionForTesting(bool is_short_session) {
+    is_short_session_for_testing_ = is_short_session;
+  }
+
  private:
   // Preconnects to the default search engine synchronously. Preconnects in
-  // credentialed and uncredentialed mode.
+  // uncredentialed mode.
   void PreconnectDSE();
+
+  // Runs `PreconnectDSE` after the `delay`.
+  void StartPreconnectWithDelay(base::TimeDelta delay);
 
   // Queries template service for the current DSE URL.
   GURL GetDefaultSearchEngineOriginURL() const;
 
-  int GetPreconnectIntervalSec() const;
+  base::TimeDelta GetPreconnectInterval() const;
+
+  // Determines if the closed session was short. This is used to calculate
+  // whether we need to backoff a bit more when a session is closed to avoid
+  // back-to-back connections.
+  bool IsShortSession() const;
+
+  // Invoked when the mojo pipe to the reconnect observer is disconnected.
+  void OnReconnectObserverPipeDisconnected();
 
   base::WeakPtr<SearchEnginePreconnector> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
+
+  // Determines whether the preconnector is started or not.
+  bool preconnector_started_ = false;
 
   // Used to get keyed services.
   const raw_ptr<content::BrowserContext> browser_context_;
@@ -111,6 +157,19 @@ class SearchEnginePreconnector : public predictors::PreconnectManager::Delegate,
   base::OneShotTimer timer_;
 
   std::unique_ptr<predictors::PreconnectManager> preconnect_manager_;
+
+  std::optional<base::TimeTicks> last_preconnect_attempt_time_;
+
+  // Receives and dispatches method calls to this implementation of the
+  // `network::mojom::ReconnectEventObserver` interface.
+  mojo::Receiver<network::mojom::ReconnectEventObserver> receiver_{this};
+
+  // How many times the connection has consecutively failed. This is used for
+  // exponential backoff the preconnect retries.
+  base::ClampedNumeric<int32_t> consecutive_connection_failure_ = 0;
+
+  // Used for testing. Override the short session value.
+  std::optional<bool> is_short_session_for_testing_ = std::nullopt;
 
   base::WeakPtrFactory<SearchEnginePreconnector> weak_factory_{this};
 };
