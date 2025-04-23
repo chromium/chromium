@@ -18,6 +18,8 @@
 #include "components/user_manager/scoped_user_manager.h"
 #endif
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 class Profile;
 
 namespace base {
@@ -46,6 +48,7 @@ class TestExtensionSystem : public ExtensionSystem {
   // KeyedService implementation.
   void Shutdown() override;
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Creates an ExtensionService initialized with the testing profile and
   // returns it, and creates ExtensionPrefs if it hasn't been created yet.
   ExtensionService* CreateExtensionService(
@@ -62,6 +65,7 @@ class TestExtensionSystem : public ExtensionSystem {
       const base::FilePath& unpacked_install_directory,
       bool autoupdate_enabled,
       bool enable_extensions = true);
+#endif
 
   void CreateSocketManager();
 
@@ -69,7 +73,6 @@ class TestExtensionSystem : public ExtensionSystem {
   void CreateUserScriptManager();
 
   void InitForRegularProfile(bool extensions_enabled) override {}
-  void SetExtensionService(ExtensionService* service);
   ExtensionService* extension_service() override;
   ManagementPolicy* management_policy() override;
   ServiceWorkerManager* service_worker_manager() override;
@@ -105,6 +108,7 @@ class TestExtensionSystem : public ExtensionSystem {
   // Used by ExtensionPrefsTest to re-create the AppSorting after it has
   // re-created the ExtensionPrefs instance (this can never happen in non-test
   // code).
+  // This is a no-op if AppSorting is unsupported.
   void RecreateAppSorting();
 
   void set_content_verifier(ContentVerifier* verifier) {
@@ -119,9 +123,15 @@ class TestExtensionSystem : public ExtensionSystem {
   // This depends on store_factory_.
   std::unique_ptr<StateStore> state_store_;
   std::unique_ptr<ManagementPolicy> management_policy_;
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   std::unique_ptr<ExtensionService> extension_service_;
-  std::unique_ptr<QuotaService> quota_service_;
+
   std::unique_ptr<AppSorting> app_sorting_;
+#endif
+
+  std::unique_ptr<QuotaService> quota_service_;
+
   std::unique_ptr<UserScriptManager> user_script_manager_;
   base::OneShotEvent ready_;
 

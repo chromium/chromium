@@ -12,13 +12,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/blocklist.h"
-#include "chrome/browser/extensions/chrome_app_sorting.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/extensions/extension_error_controller.h"
 #include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -43,6 +41,11 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/chrome_app_sorting.h"
+#include "chrome/browser/extensions/extension_service.h"
 #endif
 
 using content::BrowserThread;
@@ -84,11 +87,13 @@ std::optional<CWSInfoServiceInterface::CWSInfo> FakeCWSInfoService::GetCWSInfo(
   return CWSInfoServiceInterface::CWSInfo();
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 std::unique_ptr<KeyedService> BuildFakeCWSService(
     content::BrowserContext* context) {
   return std::make_unique<FakeCWSInfoService>(
       Profile::FromBrowserContext(context));
 }
+#endif
 
 }  // namespace
 
@@ -101,8 +106,10 @@ TestExtensionSystem::TestExtensionSystem(Profile* profile)
                                                 StateStore::BackendType::RULES,
                                                 false)),
       management_policy_(std::make_unique<ManagementPolicy>()),
-      quota_service_(std::make_unique<QuotaService>()),
-      app_sorting_(std::make_unique<ChromeAppSorting>(profile_)) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      app_sorting_(std::make_unique<ChromeAppSorting>(profile_)),
+#endif
+      quota_service_(std::make_unique<QuotaService>()) {
   management_policy_->RegisterProviders(
       ExtensionManagementFactory::GetForBrowserContext(profile_)
           ->GetProviders());
@@ -111,12 +118,15 @@ TestExtensionSystem::TestExtensionSystem(Profile* profile)
 TestExtensionSystem::~TestExtensionSystem() = default;
 
 void TestExtensionSystem::Shutdown() {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   if (extension_service_) {
     extension_service_->Shutdown();
   }
+#endif
   in_process_data_decoder_.reset();
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 ExtensionService* TestExtensionSystem::CreateExtensionService(
     const base::CommandLine* command_line,
     const base::FilePath& install_directory,
@@ -160,21 +170,23 @@ ExtensionService* TestExtensionSystem::CreateExtensionService(
   ExternalProviderManager::Get(profile_)->ClearProvidersForTesting();
   return extension_service_.get();
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 void TestExtensionSystem::CreateUserScriptManager() {
   user_script_manager_ = std::make_unique<UserScriptManager>(profile_);
 }
 
 ExtensionService* TestExtensionSystem::extension_service() {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   return extension_service_.get();
+#else
+  NOTIMPLEMENTED() << "ExtensionService is not supported on desktop android.";
+  return nullptr;
+#endif
 }
 
 ManagementPolicy* TestExtensionSystem::management_policy() {
   return management_policy_.get();
-}
-
-void TestExtensionSystem::SetExtensionService(ExtensionService* service) {
-  extension_service_.reset(service);
 }
 
 ServiceWorkerManager* TestExtensionSystem::service_worker_manager() {
@@ -207,7 +219,12 @@ QuotaService* TestExtensionSystem::quota_service() {
 }
 
 AppSorting* TestExtensionSystem::app_sorting() {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   return app_sorting_.get();
+#else
+  NOTIMPLEMENTED() << "ChromeAppSorting is not supported on desktop android.";
+  return nullptr;
+#endif
 }
 
 const base::OneShotEvent& TestExtensionSystem::ready() const {
@@ -255,7 +272,11 @@ std::unique_ptr<KeyedService> TestExtensionSystem::Build(
 }
 
 void TestExtensionSystem::RecreateAppSorting() {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   app_sorting_ = std::make_unique<ChromeAppSorting>(profile_);
+#else
+  NOTIMPLEMENTED() << "ChromeAppSorting is not supported on desktop android.";
+#endif
 }
 
 }  // namespace extensions
