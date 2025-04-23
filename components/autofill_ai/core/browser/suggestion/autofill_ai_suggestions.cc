@@ -15,6 +15,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
@@ -285,14 +286,24 @@ std::vector<Suggestion> CreateFillingSuggestions(
   // Used to know whether any other entity can fill the current fill group.
   autofill::DenseSet<AttributeType> attribute_types_in_form;
   std::set<base::Uuid> entities_used_to_build_suggestions;
-  for (const autofill::EntityInstance& entity : entities) {
+
+  // Sort entities based on their frecency.
+  std::vector<const autofill::EntityInstance*> sorted_entities = base::ToVector(
+      entities, [](const autofill::EntityInstance& entity) { return &entity; });
+  autofill::EntityInstance::RankingOrder comp(base::Time::Now());
+  std::ranges::sort(sorted_entities, [&](const autofill::EntityInstance* lhs,
+                                         const autofill::EntityInstance* rhs) {
+    return comp(*lhs, *rhs);
+  });
+
+  for (const autofill::EntityInstance* entity : sorted_entities) {
     //  Only entities that match the triggering field entity should be used to
     //  generate suggestions.
-    if (entity.type() != trigger_field_attribute_type->entity_type()) {
+    if (entity->type() != trigger_field_attribute_type->entity_type()) {
       continue;
     }
     base::optional_ref<const AttributeInstance> attribute_for_triggering_field =
-        entity.attribute(*trigger_field_attribute_type);
+        entity->attribute(*trigger_field_attribute_type);
     // Do not create suggestion if the triggering field cannot be filled.
     if (!attribute_for_triggering_field ||
         attribute_for_triggering_field
@@ -340,7 +351,7 @@ std::vector<Suggestion> CreateFillingSuggestions(
 
       attribute_types_in_form.insert(*attribute_type);
       base::optional_ref<const AttributeInstance> attribute =
-          entity.attribute(*attribute_type);
+          entity->attribute(*attribute_type);
       if (!attribute) {
         continue;
       }
@@ -359,7 +370,7 @@ std::vector<Suggestion> CreateFillingSuggestions(
     // Retrieve all entity values, this will be used to generate labels.
     std::vector<std::pair<AttributeType, std::u16string>>
         attribute_type_to_value;
-    for (const AttributeInstance& attribute : entity.attributes()) {
+    for (const AttributeInstance& attribute : entity->attributes()) {
       const std::u16string full_attribute_value =
           attribute.GetCompleteInfo(app_locale);
       if (full_attribute_value.empty()) {
@@ -374,12 +385,13 @@ std::vector<Suggestion> CreateFillingSuggestions(
                        autofill_field->Type().GetStorableType(), app_locale,
                        autofill_field->format_string()),
                    SuggestionType::kFillAutofillAi);
-    suggestion.payload = Suggestion::AutofillAiPayload(entity.guid());
+    suggestion.payload = Suggestion::AutofillAiPayload(entity->guid());
     suggestion.icon =
         GetSuggestionIcon(trigger_field_attribute_type->entity_type());
     suggestions_with_metadata.emplace_back(
-        suggestion, raw_ref(entity), base::flat_map(std::move(field_to_value)));
-    entities_used_to_build_suggestions.insert(entity.guid());
+        suggestion, raw_ref(*entity),
+        base::flat_map(std::move(field_to_value)));
+    entities_used_to_build_suggestions.insert(entity->guid());
   }
 
   if (suggestions_with_metadata.empty()) {
@@ -393,20 +405,20 @@ std::vector<Suggestion> CreateFillingSuggestions(
   // generation and should be taken into account.
   std::vector<const autofill::EntityInstance*>
       other_entities_that_can_fill_form;
-  for (const autofill::EntityInstance& entity : entities) {
+  for (const autofill::EntityInstance* entity : sorted_entities) {
     // Do not add if it is already part of a suggestion
-    if (entities_used_to_build_suggestions.contains(entity.guid())) {
+    if (entities_used_to_build_suggestions.contains(entity->guid())) {
       continue;
     }
 
     // Do not add if the entity does not match the triggering field type.
-    if (entity.type() != trigger_field_attribute_type->entity_type()) {
+    if (entity->type() != trigger_field_attribute_type->entity_type()) {
       continue;
     }
     const bool can_entity_fill_any_field_in_form = std::ranges::any_of(
         attribute_types_in_form, [&](const AttributeType attribute) {
           base::optional_ref<const AttributeInstance> instance =
-              entity.attribute(attribute);
+              entity->attribute(attribute);
           // If the entity can fill any field in the form, add it.
           return instance && !instance
                                   ->GetInfo(attribute.field_type(), app_locale,
@@ -414,7 +426,7 @@ std::vector<Suggestion> CreateFillingSuggestions(
                                   .empty();
         });
     if (can_entity_fill_any_field_in_form) {
-      other_entities_that_can_fill_form.push_back(&entity);
+      other_entities_that_can_fill_form.push_back(entity);
     }
   }
 

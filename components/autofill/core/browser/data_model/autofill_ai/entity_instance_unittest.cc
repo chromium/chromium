@@ -4,7 +4,9 @@
 
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 
+#include "base/time/time.h"
 #include "base/types/optional_ref.h"
+#include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -182,6 +184,35 @@ TEST(AutofillEntityInstanceTest, GetEntityMergeability_EntitiesAreDisjoint) {
 
   EXPECT_TRUE(result.mergeable_attributes.empty());
   EXPECT_FALSE(result.is_subset);
+}
+
+TEST(AutofillEntityInstanceTest, RankingOrder_SortEntitiesByFrecency) {
+  auto pp_with_random_guid = []() {
+    return test::GetPassportEntityInstance(
+        {.guid = base::Uuid::GenerateRandomV4().AsLowercaseString()});
+  };
+  std::vector<EntityInstance> entities = {pp_with_random_guid(),
+                                          pp_with_random_guid()};
+  auto sort_entities = [&]() {
+    EntityInstance::RankingOrder comp(base::Time::Now());
+    std::ranges::sort(entities, comp);
+  };
+
+  // Set first passport as have been used once.
+  EntityInstance& top_entity = entities[0];
+  base::Uuid first_top_entity_guid = top_entity.guid();
+  top_entity.RecordEntityUsed(test::kJune2017);
+  sort_entities();
+  EXPECT_EQ(entities[0].guid(), top_entity.guid());
+
+  // Now set second passport as have been used twice. Note that the second use
+  // date is the same as the one for the first passport.
+  top_entity = entities[1];
+  base::Uuid second_top_entity_guid = top_entity.guid();
+  top_entity.RecordEntityUsed(test::kJanuary2017);
+  top_entity.RecordEntityUsed(test::kJune2017);
+  sort_entities();
+  EXPECT_EQ(entities[0].guid(), top_entity.guid());
 }
 
 }  // namespace

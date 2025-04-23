@@ -233,6 +233,16 @@ class EntityInstance final {
   // Transparent less-than relation based on the the GUID.
   struct CompareByGuid;
 
+  // Comparator that returns the entity with the higher frecency score.
+  struct RankingOrder {
+   public:
+    explicit RankingOrder(base::Time now);
+    bool operator()(const EntityInstance& lhs, const EntityInstance& rhs) const;
+
+   private:
+    const base::Time now_;
+  };
+
   // Comparator that ranks instances by their priority for import on form
   // submission.
   // `ImportOrder(x, y) == true` means `x` has higher priority than `y`.
