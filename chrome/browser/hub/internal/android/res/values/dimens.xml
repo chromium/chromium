@@ -12,4 +12,10 @@ found in the LICENSE file.
     <dimen name="hub_toolbar_action_button_padding_lr">8dp</dimen>
     <dimen name="hub_xr_background_rounded_corner_radius">32dp</dimen>
     <dimen name="hub_xr_vertical_gap_between_toolbar_and_host_pane">24dp</dimen>
+    <dimen name="hub_pane_switcher_horizontal_padding">2dp</dimen>
+    <dimen name="hub_pane_switcher_vertical_padding">4dp</dimen>
+    <dimen name="hub_pane_switcher_card_height">48dp</dimen>
+    <dimen name="hub_pane_switcher_tab_size">40dp</dimen>
+    <dimen name="hub_pane_switcher_tab_item_padding">8dp</dimen>
+    <dimen name="hub_pane_switcher_tab_item_horizontal_margin">2dp</dimen>
 </resources>

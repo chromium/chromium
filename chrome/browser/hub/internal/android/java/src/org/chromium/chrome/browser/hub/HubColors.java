@@ -85,12 +85,37 @@ public final class HubColors {
 
     /** Returns the color selected icons should use per the given color scheme. */
     public static @ColorInt int getSelectedIconColor(
+            Context context, @HubColorScheme int colorScheme, boolean isGtsUpdateEnabled) {
+        switch (colorScheme) {
+            case HubColorScheme.DEFAULT:
+                if (isGtsUpdateEnabled) {
+                    return SemanticColorUtils.getDefaultIconColor(context);
+                } else {
+                    return SemanticColorUtils.getDefaultIconColorAccent1(context);
+                }
+            case HubColorScheme.INCOGNITO:
+                if (isGtsUpdateEnabled) {
+                    return ContextCompat.getColor(context, R.color.default_icon_color_light);
+                } else {
+                    return ContextCompat.getColor(
+                            context, R.color.default_control_color_active_dark);
+                }
+
+            default:
+                assert false;
+                return Color.TRANSPARENT;
+        }
+    }
+
+    /** Returns the color selected tab item selector should use per the given color scheme. */
+    public static @ColorInt int geTabItemSelectorColor(
             Context context, @HubColorScheme int colorScheme) {
         switch (colorScheme) {
             case HubColorScheme.DEFAULT:
-                return SemanticColorUtils.getDefaultIconColorAccent1(context);
+                return SemanticColorUtils.getColorSurface(context);
             case HubColorScheme.INCOGNITO:
-                return ContextCompat.getColor(context, R.color.default_control_color_active_dark);
+                return ContextCompat.getColor(
+                        context, R.color.pane_switcher_selected_tab_incognito);
             default:
                 assert false;
                 return Color.TRANSPARENT;
@@ -157,6 +182,20 @@ public final class HubColors {
                 return SemanticColorUtils.getFilledButtonBgColor(context);
             case HubColorScheme.INCOGNITO:
                 return ContextCompat.getColor(context, R.color.filled_button_bg_color_light);
+            default:
+                assert false;
+                return Color.TRANSPARENT;
+        }
+    }
+
+    /** Returns the hub pane switcher background color as per the given color scheme. */
+    public static @ColorInt int getPaneSwitcherBackgroundColor(
+            Context context, @HubColorScheme int colorScheme) {
+        switch (colorScheme) {
+            case HubColorScheme.DEFAULT:
+                return SemanticColorUtils.getColorSurfaceContainer(context);
+            case HubColorScheme.INCOGNITO:
+                return ContextCompat.getColor(context, R.color.pane_switcher_background_incognito);
             default:
                 assert false;
                 return Color.TRANSPARENT;
