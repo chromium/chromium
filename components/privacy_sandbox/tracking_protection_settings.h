@@ -71,6 +71,9 @@ class TrackingProtectionSettings : public KeyedService {
       const GURL& first_party_url,
       content_settings::SettingInfo* info = nullptr) const;
 
+  // Returns whether IP protection is managed.
+  bool IsIpProtectionManaged();
+
  private:
   void OnEnterpriseControlForPrefsChanged();
   void MigrateUserBypassExceptions(ContentSettingsType from,

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ip_protection/ip_protection_core_host_factory.h"
 
-#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/ip_protection/ip_protection_core_host.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -55,7 +54,6 @@ IpProtectionCoreHostFactory::IpProtectionCoreHostFactory()
                                  CreateProfileSelections()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(TrackingProtectionSettingsFactory::GetInstance());
-  DependsOn(policy::ManagementServiceFactory::GetInstance());
 }
 
 IpProtectionCoreHostFactory::~IpProtectionCoreHostFactory() = default;
@@ -67,7 +65,6 @@ IpProtectionCoreHostFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<IpProtectionCoreHost>(
       IdentityManagerFactory::GetForProfile(profile),
       TrackingProtectionSettingsFactory::GetForProfile(profile),
-      policy::ManagementServiceFactory::GetForProfile(profile),
       profile->GetPrefs(), profile);
 }
 

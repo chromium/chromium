@@ -138,8 +138,7 @@ class IpProtectionCoreHostTest : public testing::Test {
             /*management_service=*/management_service_.get(),
             /*is_incognito=*/false);
     core_host_ = std::make_unique<IpProtectionCoreHost>(
-        IdentityManager(), tracking_protection_settings_.get(),
-        management_service_.get(), prefs(),
+        IdentityManager(), tracking_protection_settings_.get(), prefs(),
         /*profile=*/nullptr);
     core_host_->SetUpForTesting(test_url_loader_factory_.GetSafeWeakWrapper(),
                                 std::move(bsa));

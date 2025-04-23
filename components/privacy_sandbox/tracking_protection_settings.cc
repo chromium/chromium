@@ -148,6 +148,20 @@ bool TrackingProtectionSettings::HasTrackingProtectionException(
              info) == CONTENT_SETTING_ALLOW;
 }
 
+bool TrackingProtectionSettings::IsIpProtectionManaged() {
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS the `IsManaged()` checks work differently than on other
+  // platforms, but to accomplish disabling by default for enterprise users we
+  // use the `default_for_enterprise_users=false` option in the enterprise
+  // policy definition. Thus, check whether the preference has been set via
+  // that (or by the admins overriding this).
+  return pref_service_->IsManagedPreference(prefs::kIpProtectionEnabled);
+#else
+  return management_service_->IsManaged() ||
+         policy::PlatformManagementService::GetInstance()->IsManaged();
+#endif
+}
+
 // TODO(https://b/333527273): Delete with Mode B cleanup
 void TrackingProtectionSettings::OnEnterpriseControlForPrefsChanged() {
   if (!IsTrackingProtection3pcdEnabled()) {

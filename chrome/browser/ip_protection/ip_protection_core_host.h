@@ -20,7 +20,6 @@
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/ip_protection_token_direct_fetcher.h"
 #include "components/ip_protection/mojom/core.mojom.h"
-#include "components/policy/core/common/management/management_service.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/privacy_sandbox/tracking_protection_settings_observer.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -58,7 +57,6 @@ class IpProtectionCoreHost
   IpProtectionCoreHost(
       signin::IdentityManager* identity_manager,
       privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
-      policy::ManagementService* management_service,
       PrefService* pref_service,
       Profile* profile);
 
@@ -192,9 +190,6 @@ class IpProtectionCoreHost
   // is called, but will otherwise be non-null.
   raw_ptr<privacy_sandbox::TrackingProtectionSettings>
       tracking_protection_settings_;
-  // Used to check whether the browser is being managed. Will be set to nullptr
-  // after `Shutdown()`, but will otherwise be non-null.
-  raw_ptr<policy::ManagementService> management_service_;
   // Used to request the state of the IP Protection user setting. Will be set to
   // nullptr after `Shutdown()` is called.
   raw_ptr<PrefService> pref_service_;
