@@ -284,7 +284,9 @@ void AccountHoverButton::SetDisabledOpacity() {
   }
 
   title()->SetEnabledColor(ui::kColorLabelForegroundDisabled);
-  subtitle()->SetEnabledColor(ui::kColorLabelForegroundDisabled);
+  if (subtitle()) {
+    subtitle()->SetEnabledColor(ui::kColorLabelForegroundDisabled);
+  }
 }
 
 bool AccountHoverButton::HasDisabledOpacity() {
