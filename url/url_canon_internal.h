@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef URL_URL_CANON_INTERNAL_H_
 #define URL_URL_CANON_INTERNAL_H_
 
@@ -15,8 +10,14 @@
 // template bloat because everything is inlined when anybody calls any of our
 // functions.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 
+#include <array>
 #include <string>
 
 #include "base/component_export.h"
@@ -64,7 +65,7 @@ enum SharedCharTypes {
 // Using an unsigned char type has a small but measurable performance benefit
 // over using a 32-bit number.
 // clang-format off
-inline constexpr uint8_t kSharedCharTypeTable[0x100] = {
+inline constexpr std::array<uint8_t, 0x100> kSharedCharTypeTable = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // 0x00 - 0x0f
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // 0x10 - 0x1f
     0,                           // 0x20  ' ' (escape spaces in queries)

@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include <array>
+
 // Canonicalizers for random bits that aren't big enough for their own files.
 
 #include <string.h>
@@ -88,7 +90,7 @@ const CHAR* DoRemoveURLWhitespace(const CHAR* input,
 // (basically, lower-cased). The corresponding entry will be 0 if the letter
 // is not allowed in a scheme.
 // clang-format off
-const char kSchemeCanonical[0x80] = {
+const std::array<char, 0x80> kSchemeCanonical = {
 // 00-1f: all are invalid
      0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
      0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
@@ -252,8 +254,8 @@ bool DoPort(const CHAR* spec,
   // Convert port number back to an integer. Max port value is 5 digits, and
   // the Parsed::ExtractPort will have made sure the integer is in range.
   const int buf_size = 6;
-  char buf[buf_size];
-  WritePortInt(buf, buf_size, port_num);
+  std::array<char, buf_size> buf;
+  WritePortInt(buf.data(), buf_size, port_num);
 
   // Append the port number to the output, preceded by a colon.
   output->push_back(':');
@@ -268,7 +270,7 @@ bool DoPort(const CHAR* spec,
 // clang-format off
 //   Percent-escape all characters from the fragment percent-encode set
 //   https://url.spec.whatwg.org/#fragment-percent-encode-set
-const bool kShouldEscapeCharInFragment[0x80] = {
+const std::array<bool, 0x80> kShouldEscapeCharInFragment = {
 //  Control characters (0x00-0x1F)
     true,  true,  true,  true,  true,  true,  true,  true,
     true,  true,  true,  true,  true,  true,  true,  true,
