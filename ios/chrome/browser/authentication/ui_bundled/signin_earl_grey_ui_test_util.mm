@@ -116,8 +116,7 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
   }
   if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled] &&
       IsIdentityPossiblyManaged(fakeIdentity)) {
-    [SigninEarlGrey signInWithoutHistorySyncWithFakeIdentity:fakeIdentity];
-    [SigninEarlGrey closeManagedAccountSignInDialogIfAny:fakeIdentity];
+    [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
     [ChromeEarlGreyUI waitForAppToIdle];
     CloseHistorySyncSheet(enableHistorySync);
     [ChromeEarlGrey
@@ -127,8 +126,7 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
   // TODO(crbug.com/335592853): There's no good reason why the with-history vs
   // without-history flows should be completely different, unify them.
   if (!enableHistorySync) {
-    [SigninEarlGrey signInWithoutHistorySyncWithFakeIdentity:fakeIdentity];
-    [SigninEarlGrey closeManagedAccountSignInDialogIfAny:fakeIdentity];
+    [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
     ConditionBlock condition = ^bool {
       return [[SigninEarlGrey primaryAccountGaiaID]
           isEqualToString:fakeIdentity.gaiaID];

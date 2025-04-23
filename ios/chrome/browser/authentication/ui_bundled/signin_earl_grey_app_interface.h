@@ -82,10 +82,6 @@ enum class UserSelectableType;
 + (void)signinWithFakeManagedIdentityInPersonalProfile:
     (FakeSystemIdentity*)identity;
 
-// Signs in with `identity` without history sync consent.
-// `fakeIdentity` is added if it was not added yet.
-+ (void)signInWithoutHistorySyncWithFakeIdentity:(FakeSystemIdentity*)identity;
-
 // Triggers the reauth dialog. This is done by sending ShowSigninCommand to
 // SceneController, without any UI interaction to open the dialog.
 // TODO(crbug.com/40916763): To be consistent, this method should be renamed to

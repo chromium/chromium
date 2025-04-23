@@ -100,11 +100,6 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
 }
 
-- (void)signInWithoutHistorySyncWithFakeIdentity:(FakeSystemIdentity*)identity {
-  [SigninEarlGreyAppInterface
-      signInWithoutHistorySyncWithFakeIdentity:identity];
-}
-
 - (void)triggerReauthDialogWithFakeIdentity:(FakeSystemIdentity*)identity {
   [SigninEarlGreyAppInterface triggerReauthDialogWithFakeIdentity:identity];
 }
