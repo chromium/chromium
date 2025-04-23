@@ -61,7 +61,10 @@
 
   NSString* CVC = nil;
   if (creditCard.record_type() ==
-      autofill::CreditCard::RecordType::kVirtualCard) {
+          autofill::CreditCard::RecordType::kVirtualCard ||
+      creditCard.card_info_retrieval_enrollment_state() ==
+          autofill::CreditCard::CardInfoRetrievalEnrollmentState::
+              kRetrievalEnrolled) {
     if (creditCard.cvc().empty()) {
       // For virtual cards, if the CVC() value is empty, it means no
       // verification has been done and the `creditCard` object contains only

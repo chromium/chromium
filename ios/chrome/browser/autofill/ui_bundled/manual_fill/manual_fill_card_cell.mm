@@ -476,7 +476,7 @@ CGFloat GPayIconTopAnchorOffset() {
           l10n_util::GetNSString(
               IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_NAME_ON_CARD_LABEL_VIRTUAL_CARD_IOS)
       buttonTitles:@[ card.cardHolder ]];
-  if (card.recordType == kVirtualCard) {
+  if (card.CVC != nil && [card.CVC length] > 0) {
     [self.CVCLabeledChip
         setLabelText:
             l10n_util::GetNSString(
@@ -641,7 +641,6 @@ CGFloat GPayIconTopAnchorOffset() {
 }
 
 - (void)userDidTapCVC:(UIButton*)sender {
-  CHECK_EQ(self.card.recordType, kVirtualCard);
   base::RecordAction(
       base::UserMetricsAction([self createMetricsAction:@"SelectCvc"]));
   [self.navigationDelegate
