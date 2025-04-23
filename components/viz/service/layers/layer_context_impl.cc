@@ -25,6 +25,7 @@
 #include "cc/layers/mirror_layer_impl.h"
 #include "cc/layers/solid_color_layer_impl.h"
 #include "cc/layers/surface_layer_impl.h"
+#include "cc/layers/texture_layer_impl.h"
 #include "cc/layers/tile_display_layer_impl.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
@@ -65,13 +66,16 @@ std::unique_ptr<cc::LayerImpl> CreateLayer(LayerContextImpl& context,
     case cc::mojom::LayerType::kMirror:
       return cc::MirrorLayerImpl::Create(&tree, id);
 
+    case cc::mojom::LayerType::kPicture:
+      return std::make_unique<cc::TileDisplayLayerImpl>(context, tree, id);
+
     case cc::mojom::LayerType::kSurface:
       // The callback is triggered in the renderer side during WillDraw(),
       // and there is no need to do it in viz.
       return cc::SurfaceLayerImpl::Create(&tree, id, base::NullCallback());
 
-    case cc::mojom::LayerType::kPicture:
-      return std::make_unique<cc::TileDisplayLayerImpl>(context, tree, id);
+    case cc::mojom::LayerType::kTexture:
+      return cc::TextureLayerImpl::Create(&tree, id);
 
     default:
       // TODO(rockot): Support other layer types.
@@ -387,6 +391,17 @@ void UpdateMirrorLayerExtra(const mojom::MirrorLayerExtraPtr& extra,
   layer.SetMirroredLayerId(extra->mirrored_layer_id);
 }
 
+void UpdateTextureLayerExtra(const mojom::TextureLayerExtraPtr& extra,
+                             cc::TextureLayerImpl& layer) {
+  layer.SetPremultipliedAlpha(extra->premultiplied_alpha);
+  layer.SetBlendBackgroundColor(extra->blend_background_color);
+  layer.SetForceTextureToOpaque(extra->force_texture_to_opaque);
+  layer.SetUVTopLeft(extra->uv_top_left);
+  layer.SetUVBottomRight(extra->uv_bottom_right);
+  layer.SetTransferableResource(extra->transferable_resource, ReleaseCallback{},
+                                /*own_resource=*/false);
+}
+
 void UpdateSurfaceLayerExtra(const mojom::SurfaceLayerExtraPtr& extra,
                              cc::SurfaceLayerImpl& layer) {
   layer.SetRange(extra->surface_range, extra->deadline_in_frames);
@@ -463,6 +478,10 @@ base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
     case cc::mojom::LayerType::kSurface:
       UpdateSurfaceLayerExtra(wire.layer_extra->get_surface_layer_extra(),
                               static_cast<cc::SurfaceLayerImpl&>(layer));
+      break;
+    case cc::mojom::LayerType::kTexture:
+      UpdateTextureLayerExtra(wire.layer_extra->get_texture_layer_extra(),
+                              static_cast<cc::TextureLayerImpl&>(layer));
       break;
     default:
       // TODO(zmo): handle other types of LayerImpl.

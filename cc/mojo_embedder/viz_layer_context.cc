@@ -25,6 +25,7 @@
 #include "cc/layers/mirror_layer_impl.h"
 #include "cc/layers/picture_layer_impl.h"
 #include "cc/layers/surface_layer_impl.h"
+#include "cc/layers/texture_layer_impl.h"
 #include "cc/tiles/picture_layer_tiling.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/property_tree.h"
@@ -497,6 +498,16 @@ void SerializeMirrorLayerExtra(MirrorLayerImpl& layer,
   extra->mirrored_layer_id = layer.mirrored_layer_id();
 }
 
+void SerializeTextureLayerExtra(TextureLayerImpl& layer,
+                                viz::mojom::TextureLayerExtraPtr& extra) {
+  extra->premultiplied_alpha = layer.premultiplied_alpha();
+  extra->blend_background_color = layer.blend_background_color();
+  extra->force_texture_to_opaque = layer.force_texture_to_opaque();
+  extra->uv_top_left = layer.uv_top_left();
+  extra->uv_bottom_right = layer.uv_bottom_right();
+  extra->transferable_resource = layer.transferable_resource();
+}
+
 void SerializeSurfaceLayerExtra(SurfaceLayerImpl& layer,
                                 viz::mojom::SurfaceLayerExtraPtr& extra) {
   extra->surface_range = layer.range();
@@ -561,6 +572,14 @@ void SerializeLayer(LayerImpl& layer,
       }
       SerializePictureLayerTileUpdates(picture_layer, resource_provider,
                                        context_provider, update.tilings);
+      break;
+    }
+    case mojom::LayerType::kTexture: {
+      auto texture_layer_extra = viz::mojom::TextureLayerExtra::New();
+      SerializeTextureLayerExtra(static_cast<TextureLayerImpl&>(layer),
+                                 texture_layer_extra);
+      wire.layer_extra = viz::mojom::LayerExtra::NewTextureLayerExtra(
+          std::move(texture_layer_extra));
       break;
     }
     default:

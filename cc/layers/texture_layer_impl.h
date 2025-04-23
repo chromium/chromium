@@ -60,7 +60,8 @@ class CC_EXPORT TextureLayerImpl : public LayerImpl {
   void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata);
 
   void SetTransferableResource(const viz::TransferableResource& resource,
-                               viz::ReleaseCallback release_callback);
+                               viz::ReleaseCallback release_callback,
+                               bool own_resource = true);
   bool NeedSetTransferableResource() const;
 
   void SetInInvisibleLayerTree() override;
@@ -69,6 +70,15 @@ class CC_EXPORT TextureLayerImpl : public LayerImpl {
   // visibility change.
   static bool MayEvictResourceInBackground(
       viz::TransferableResource::ResourceSource source);
+
+  bool premultiplied_alpha() const { return premultiplied_alpha_; }
+  bool blend_background_color() const { return blend_background_color_; }
+  bool force_texture_to_opaque() const { return force_texture_to_opaque_; }
+  gfx::PointF uv_top_left() const { return uv_top_left_; }
+  gfx::PointF uv_bottom_right() const { return uv_bottom_right_; }
+  const viz::TransferableResource& transferable_resource() const {
+    return transferable_resource_;
+  }
 
  private:
   TextureLayerImpl(LayerTreeImpl* tree_impl, int id);

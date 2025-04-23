@@ -17,6 +17,7 @@ import "services/viz/public/mojom/compositing/copy_output_request.mojom";
 import "services/viz/public/mojom/compositing/filter_operations.mojom";
 import "services/viz/public/mojom/compositing/resource_id.mojom";
 import "services/viz/public/mojom/compositing/subtree_capture_id.mojom";
+import "services/viz/public/mojom/compositing/transferable_resource.mojom";
 import "services/viz/public/mojom/compositing/view_transition_element_resource_id.mojom";
 import "ui/gfx/mojom/transform.mojom";
 
@@ -59,12 +60,25 @@ struct SurfaceLayerExtra {
   bool override_child_paint_flags;
 };
 
+// Extra fields in a cc::TextureLayerImpl that has been added to a tree or
+// modified in some interesting way since a prior tree update.
+struct TextureLayerExtra {
+  bool premultiplied_alpha;
+  bool blend_background_color;
+  bool force_texture_to_opaque;
+  gfx.mojom.PointF uv_top_left;
+  gfx.mojom.PointF uv_bottom_right;
+  TransferableResource transferable_resource;
+};
+
 // Extra properties that are specific to a LayerImpl type.
 union LayerExtra {
   // Extra properties that are specific to MirrorLayerImpl.
   MirrorLayerExtra mirror_layer_extra;
   // Extra properties that are specific to SurfaceLayerImpl.
   SurfaceLayerExtra surface_layer_extra;
+  // Extra properties that are specific to TextureLayerImpl.
+  TextureLayerExtra texture_layer_extra;
 };
 
 // Details about a cc::LayerImpl that has been added to a tree or modified in
