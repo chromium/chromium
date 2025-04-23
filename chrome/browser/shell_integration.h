@@ -142,6 +142,10 @@ DefaultWebClientState IsDefaultHandlerForFileExtension(
 // is the default app for `type`. `type` must be a UTType identifier,
 // e.g., "com.adobe.pdf".
 DefaultWebClientState IsDefaultHandlerForUTType(const std::string& type);
+
+// Sets Chrome as the default app for `type` (only for the current user). `type`
+// must be a UTType identifier, e.g., "com.adobe.pdf".
+bool SetAsDefaultHandlerForUTType(const std::string& type);
 #endif  // BUILDFLAG(IS_MAC)
 
 // Is the current instance of Chrome running in App mode.
