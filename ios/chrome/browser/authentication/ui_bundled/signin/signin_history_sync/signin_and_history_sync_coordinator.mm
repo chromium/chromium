@@ -203,7 +203,7 @@ enum class SignInHistorySyncStep {
   switch (_currentStep) {
     case SignInHistorySyncStep::kFullscreenSignin: {
       // TODO(crbug.com/375605572) Sends an actual continuation.
-      SigninCoordinator<InterruptibleChromeCoordinator>* coordinator =
+      SigninCoordinator<StopAnimatedChromeCoordinator>* coordinator =
           [[FullscreenSigninCoordinator alloc]
                      initWithBaseViewController:self.baseViewController
                                         browser:self.browser

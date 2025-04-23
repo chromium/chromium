@@ -84,7 +84,7 @@ class PrefRegistrySyncable;
 
 // Returns a coordinator for fullscreen sign-in workflow.
 // `viewController` presents the sign-in.
-+ (SigninCoordinator<InterruptibleChromeCoordinator>*)
++ (SigninCoordinator<StopAnimatedChromeCoordinator>*)
     fullscreenSigninCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                               browser:(Browser*)browser

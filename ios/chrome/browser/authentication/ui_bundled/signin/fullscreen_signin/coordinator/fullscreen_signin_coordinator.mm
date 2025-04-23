@@ -75,11 +75,20 @@
                                       completion:nil];
 }
 
-- (void)stop {
-  DCHECK(!self.navigationController);
-  DCHECK(!self.childCoordinator);
-  DCHECK(!self.screenProvider);
-  [super stop];
+#pragma mark - StopAnimatedChromeCoordinator
+
+- (void)stopAnimated:(BOOL)animated {
+  // Stop the child coordinator UI first before dismissing the forced
+  // sign-in navigation controller.
+  [self stopChildCoordinator];
+  self.screenProvider = nil;
+
+  [self.navigationController.presentingViewController
+      dismissViewControllerAnimated:animated
+                         completion:nil];
+  self.navigationController = nil;
+
+  [super stopAnimated:animated];
 }
 
 #pragma mark - Private
@@ -162,19 +171,6 @@
 - (void)screenWillFinishPresenting {
   [self stopChildCoordinator];
   [self presentScreen:[self.screenProvider nextScreenType]];
-}
-
-#pragma mark - InterruptibleChromeCoordinator
-
-- (void)interruptAnimated:(BOOL)animated {
-  // Stop the child coordinator UI first before dismissing the forced
-  // sign-in navigation controller.
-  [self.childCoordinator stopAnimated:NO];
-
-  [self.navigationController.presentingViewController
-      dismissViewControllerAnimated:animated
-                         completion:nil];
-  [self finishWithResult:SigninCoordinatorResultInterrupted identity:nil];
 }
 
 #pragma mark - NSObject

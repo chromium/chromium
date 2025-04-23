@@ -80,7 +80,7 @@ using signin_metrics::PromoAction;
             continuationProvider:continuationProvider];
 }
 
-+ (SigninCoordinator<InterruptibleChromeCoordinator>*)
++ (SigninCoordinator<StopAnimatedChromeCoordinator>*)
     fullscreenSigninCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                               browser:(Browser*)browser

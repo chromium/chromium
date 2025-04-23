@@ -25,7 +25,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/ui",
     "//ios/chrome/browser/authentication/ui_bundled/identity_chooser",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
-    "//ios/chrome/browser/authentication/ui_bundled/signin:interruptible_chrome_coordinator",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/authentication/ui_bundled/signin:stop_animated_chrome_coordinator",
     "//ios/chrome/browser/authentication/ui_bundled/signin/logging",
