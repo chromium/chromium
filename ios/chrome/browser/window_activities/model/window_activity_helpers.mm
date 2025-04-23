@@ -24,6 +24,7 @@ NSString* const kReferrerPolicyKey = @"LoadParams_ReferrerPolicy";
 NSString* const kOriginKey = @"LoadParams_Origin";
 NSString* const kTabIdentifierKey = @"TabIdentifier";
 NSString* const kTabIncognitoKey = @"TabIncognito";
+NSString* const kProfileNameKey = @"ProfileName";
 
 namespace {
 
@@ -153,4 +154,17 @@ BOOL GetIncognitoFromTabMoveActivity(NSUserActivity* activity) {
     return NO;
   }
   return [activity.userInfo[kTabIncognitoKey] boolValue];
+}
+
+void AttachProfileNameToActivity(NSUserActivity* activity,
+                                 std::string_view profile_name) {
+  NSDictionary* params =
+      @{kProfileNameKey : base::SysUTF8ToNSString(profile_name)};
+  [activity addUserInfoEntriesFromDictionary:params];
+}
+
+std::string GetProfileNameFromActivity(NSUserActivity* activity) {
+  NSString* passed_profile_name =
+      base::apple::ObjCCast<NSString>(activity.userInfo[kProfileNameKey]);
+  return base::SysNSStringToUTF8(passed_profile_name);
 }

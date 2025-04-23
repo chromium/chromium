@@ -130,6 +130,7 @@
 #import "ios/chrome/browser/web/model/choose_file/choose_file_file_utils.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/webui/ui_bundled/chrome_web_ui_ios_controller_factory.h"
+#import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/app_group/app_group_field_trial_version.h"
 #import "ios/chrome/common/app_group/app_group_utils.h"
@@ -326,6 +327,7 @@ void RecordDiscardSceneStillConnected(NSSet<UISceneSession*>* scene_sessions,
 // Possible choices for which profile to use for a scene.
 enum class ProfileChoice {
   kProfileForScene,
+  kProfileFromActivity,
   kLastUsedProfile,
   kPersonalProfile,
   kNewProfile,
@@ -335,15 +337,15 @@ enum class ProfileChoice {
 base::span<const ProfileChoice> GetProfileChoices() {
   if (AreSeparateProfilesForManagedAccountsEnabled()) {
     static constexpr ProfileChoice kProfileChoicesWithSeparateAccounts[] = {
-        ProfileChoice::kProfileForScene,
-        ProfileChoice::kLastUsedProfile,
-        ProfileChoice::kPersonalProfile,
+        ProfileChoice::kProfileForScene, ProfileChoice::kProfileFromActivity,
+        ProfileChoice::kLastUsedProfile, ProfileChoice::kPersonalProfile,
         ProfileChoice::kNewProfile,
     };
     return kProfileChoicesWithSeparateAccounts;
   }
 
   static constexpr ProfileChoice kProfileChoices[] = {
+      ProfileChoice::kProfileFromActivity,
       ProfileChoice::kPersonalProfile,
       ProfileChoice::kNewProfile,
   };
@@ -353,13 +355,23 @@ base::span<const ProfileChoice> GetProfileChoices() {
 // Returns the name of the profile for `choice`. May be empty in some cases,
 // e.g. when a corresponding pref isn't set yet.
 std::string GetProfileNameForChoice(ProfileChoice choice,
-                                    std::string_view scene_id,
+                                    SceneState* scene_state,
                                     ProfileManagerIOS* manager,
                                     ProfileAttributesStorageIOS* storage,
                                     PrefService* local_state) {
   switch (choice) {
+    case ProfileChoice::kProfileFromActivity: {
+      for (NSUserActivity* activity in scene_state.connectionOptions
+               .userActivities) {
+        std::string profile_name = GetProfileNameFromActivity(activity);
+        if (!profile_name.empty()) {
+          return profile_name;
+        }
+      }
+      return std::string();
+    }
     case ProfileChoice::kProfileForScene:
-      return storage->GetProfileNameForSceneID(scene_id);
+      return storage->GetProfileNameForSceneID(scene_state.sceneSessionID);
     case ProfileChoice::kLastUsedProfile:
       return local_state->GetString(prefs::kLastUsedProfile);
     case ProfileChoice::kPersonalProfile:
@@ -1799,8 +1811,8 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   // profile, the personal profile, or as a last resort a new profile.
   std::string profileName;
   for (ProfileChoice choice : GetProfileChoices()) {
-    profileName =
-        GetProfileNameForChoice(choice, sceneID, manager, storage, localState);
+    profileName = GetProfileNameForChoice(choice, sceneState, manager, storage,
+                                          localState);
 
     // Pick the first valid profile name found.
     if (storage->HasProfileWithName(profileName)) {

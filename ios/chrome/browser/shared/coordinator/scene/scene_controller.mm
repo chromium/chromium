@@ -2477,6 +2477,11 @@ using UserFeedbackDataCallback =
       [[UISceneActivationRequestOptions alloc] init];
   options.requestingScene = self.sceneState.scene;
 
+  ProfileIOS* profile = self.sceneState.profileState.profile;
+  if (profile) {
+    AttachProfileNameToActivity(userActivity, profile->GetProfileName());
+  }
+
   if (self.mainInterface) {
     PrefService* prefs = self.mainInterface.profile->GetPrefs();
     if (IsIncognitoModeForced(prefs)) {
