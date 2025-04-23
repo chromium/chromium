@@ -13,18 +13,19 @@
 
 namespace net {
 class HttpCache;
-class HttpNetworkSession;
 class HttpTransaction;
 }  // namespace net
 
 namespace network {
 
-// NetworkTransactionFactory wraps HttpNetworkTransactions.
+// An HttpTransactionFactory that wraps another HttpTransactionFactory
+// (typically an HttpNetworkLayer) to add network throttling capabilities via
+// ThrottlingNetworkInterceptor.
 class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingNetworkTransactionFactory
     : public net::HttpTransactionFactory {
  public:
   explicit ThrottlingNetworkTransactionFactory(
-      net::HttpNetworkSession* session);
+      std::unique_ptr<net::HttpTransactionFactory> network_layer);
 
   ThrottlingNetworkTransactionFactory(
       const ThrottlingNetworkTransactionFactory&) = delete;

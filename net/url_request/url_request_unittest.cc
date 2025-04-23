@@ -8852,10 +8852,9 @@ TEST_F(URLRequestTestHTTP, SetSubsequentJobPriority) {
 // does not return an HttpTransaction.
 TEST_F(URLRequestTestHTTP, NetworkSuspendTest) {
   auto context_builder = CreateTestURLRequestContextBuilder();
-  context_builder->SetCreateHttpTransactionFactoryCallback(
-      base::BindOnce([](HttpNetworkSession* session) {
-        // Create a new HttpNetworkLayer that thinks it's suspended.
-        auto network_layer = std::make_unique<HttpNetworkLayer>(session);
+  context_builder->SetWrapHttpNetworkLayerCallback(
+      base::BindOnce([](std::unique_ptr<HttpNetworkLayer> network_layer) {
+        // Make the HttpNetworkLayer think it's suspended.
         network_layer->OnSuspend();
         std::unique_ptr<HttpTransactionFactory> factory =
             std::make_unique<HttpCache>(std::move(network_layer),
@@ -8880,8 +8879,9 @@ namespace {
 // HttpTransactionFactory that synchronously fails to create transactions.
 class FailingHttpTransactionFactory : public HttpTransactionFactory {
  public:
-  explicit FailingHttpTransactionFactory(HttpNetworkSession* network_session)
-      : network_session_(network_session) {}
+  explicit FailingHttpTransactionFactory(
+      std::unique_ptr<HttpTransactionFactory> network_layer)
+      : network_layer_(std::move(network_layer)) {}
 
   FailingHttpTransactionFactory(const FailingHttpTransactionFactory&) = delete;
   FailingHttpTransactionFactory& operator=(
@@ -8897,10 +8897,12 @@ class FailingHttpTransactionFactory : public HttpTransactionFactory {
 
   HttpCache* GetCache() override { return nullptr; }
 
-  HttpNetworkSession* GetSession() override { return network_session_; }
+  HttpNetworkSession* GetSession() override {
+    return network_layer_->GetSession();
+  }
 
  private:
-  raw_ptr<HttpNetworkSession> network_session_;
+  std::unique_ptr<HttpTransactionFactory> network_layer_;
 };
 
 }  // namespace
@@ -8914,10 +8916,11 @@ class FailingHttpTransactionFactory : public HttpTransactionFactory {
 // behaviors.
 TEST_F(URLRequestTestHTTP, NetworkCancelAfterCreateTransactionFailsTest) {
   auto context_builder = CreateTestURLRequestContextBuilder();
-  context_builder->SetCreateHttpTransactionFactoryCallback(
-      base::BindOnce([](HttpNetworkSession* session) {
+  context_builder->SetWrapHttpNetworkLayerCallback(
+      base::BindOnce([](std::unique_ptr<HttpNetworkLayer> network_layer) {
         std::unique_ptr<HttpTransactionFactory> factory =
-            std::make_unique<FailingHttpTransactionFactory>(session);
+            std::make_unique<FailingHttpTransactionFactory>(
+                std::move(network_layer));
         return factory;
       }));
   auto& network_delegate = *context_builder->set_network_delegate(

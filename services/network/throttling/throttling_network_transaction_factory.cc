@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "net/base/net_errors.h"
-#include "net/http/http_network_layer.h"
 #include "net/http/http_network_transaction.h"
 #include "services/network/throttling/throttling_controller.h"
 #include "services/network/throttling/throttling_network_transaction.h"
@@ -18,8 +17,8 @@
 namespace network {
 
 ThrottlingNetworkTransactionFactory::ThrottlingNetworkTransactionFactory(
-    net::HttpNetworkSession* session)
-    : network_layer_(new net::HttpNetworkLayer(session)) {}
+    std::unique_ptr<net::HttpTransactionFactory> network_layer)
+    : network_layer_(std::move(network_layer)) {}
 
 ThrottlingNetworkTransactionFactory::~ThrottlingNetworkTransactionFactory() {}
 

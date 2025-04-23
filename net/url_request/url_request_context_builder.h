@@ -23,6 +23,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -54,6 +55,7 @@ class CertVerifier;
 class ClientSocketFactory;
 class CookieStore;
 class HttpAuthHandlerFactory;
+class HttpNetworkLayer;
 class HttpTransactionFactory;
 class HttpUserAgentSettings;
 class HttpServerProperties;
@@ -91,11 +93,11 @@ class SessionService;
 // Builder may be used to create only a single URLRequestContext.
 class NET_EXPORT URLRequestContextBuilder {
  public:
-  // Creates an HttpNetworkTransactionFactory given an HttpNetworkSession. Does
-  // not take ownership of the session.
-  using CreateHttpTransactionFactoryCallback =
+  // Callback that takes ownership of the default HttpNetworkLayer and returns
+  // an HttpTransactionFactory, potentially wrapping the provided layer.
+  using WrapHttpNetworkLayerCallback =
       base::OnceCallback<std::unique_ptr<HttpTransactionFactory>(
-          HttpNetworkSession* session)>;
+          std::unique_ptr<HttpNetworkLayer> network_layer)>;
 
   struct NET_EXPORT HttpCacheParams {
     enum Type {
@@ -340,19 +342,30 @@ class NET_EXPORT URLRequestContextBuilder {
   void SetHttpServerProperties(
       std::unique_ptr<HttpServerProperties> http_server_properties);
 
-  // Sets a callback that will be used to create the
-  // HttpNetworkTransactionFactory. If a cache is enabled, the cache's
-  // HttpTransactionFactory will wrap the one this creates.
-  // TODO(mmenke): Get rid of this. See https://crbug.com/721408
-  void SetCreateHttpTransactionFactoryCallback(
-      CreateHttpTransactionFactoryCallback
-          create_http_network_transaction_factory);
+  // Sets a callback that will be invoked with the default HttpNetworkLayer
+  // during context creation. The callback takes ownership of the layer and
+  // returns the HttpTransactionFactory to be used (which may be the layer
+  // itself, or a wrapper).
+  //
+  // If HTTP caching is enabled, the cache's HttpTransactionFactory will wrap
+  // the factory returned by this callback (or the default HttpNetworkLayer if
+  // no callback is set).
+  //
+  // This cannot be called if SetHttpTransactionFactoryForTesting() has been
+  // called.
+  void SetWrapHttpNetworkLayerCallback(
+      WrapHttpNetworkLayerCallback wrap_http_network_layer_callback);
 
+  // Sets a specific HttpTransactionFactory for testing purposes. This bypasses
+  // the default HttpNetworkLayer creation and the WrapHttpNetworkLayerCallback.
+  //
+  // This cannot be called if  SetWrapHttpNetworkLayerCallback() has been
+  // called.
   template <typename T>
   T* SetHttpTransactionFactoryForTesting(std::unique_ptr<T> factory) {
-    create_http_network_transaction_factory_.Reset();
-    http_transaction_factory_ = std::move(factory);
-    return static_cast<T*>(http_transaction_factory_.get());
+    CHECK(!wrap_http_network_layer_callback_);
+    http_transaction_factory_for_testing_ = std::move(factory);
+    return static_cast<T*>(http_transaction_factory_for_testing_.get());
   }
 
   // Sets a ClientSocketFactory so a test can mock out sockets. This must
@@ -474,8 +487,8 @@ class NET_EXPORT URLRequestContextBuilder {
 
   HttpCacheParams http_cache_params_;
   HttpNetworkSessionParams http_network_session_params_;
-  CreateHttpTransactionFactoryCallback create_http_network_transaction_factory_;
-  std::unique_ptr<HttpTransactionFactory> http_transaction_factory_;
+  WrapHttpNetworkLayerCallback wrap_http_network_layer_callback_;
+  std::unique_ptr<HttpTransactionFactory> http_transaction_factory_for_testing_;
   base::FilePath transport_security_persister_file_path_;
   std::vector<std::string> hsts_policy_bypass_list_;
   raw_ptr<NetLog> net_log_ = nullptr;
