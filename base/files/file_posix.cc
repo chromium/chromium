@@ -103,7 +103,10 @@ int CallFutimes(PlatformFile file, const struct timeval times[2]) {
 
   return futimens(file, ts_times);
 #else
+#pragma clang diagnostic push  // Can be removed once Cronet's min-sdk is >= 26.
+#pragma clang diagnostic ignored "-Wunguarded-availability"
   return futimes(file, times);
+#pragma clang diagnostic pop
 #endif
 }
 

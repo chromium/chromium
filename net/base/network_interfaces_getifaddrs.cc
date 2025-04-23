@@ -235,8 +235,7 @@ namespace internal {
 bool GetNetworkListUsingGetifaddrs(NetworkInterfaceList* networks,
                                    int policy,
                                    bool use_alternative_getifaddrs) {
-  DCHECK_GE(base::android::android_info::sdk_int(),
-            base::android::android_info::SDK_VERSION_NOUGAT);
+  DCHECK_GE(base::android::android_info::sdk_int(), GETIFADDRS_MIN_API);
   DCHECK(getifaddrs);
   DCHECK(freeifaddrs);
 #else

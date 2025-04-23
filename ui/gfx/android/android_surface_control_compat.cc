@@ -372,19 +372,19 @@ bool SetDataSpaceStandard(const gfx::ColorSpace& color_space,
                           ADataSpace& dataspace) {
   switch (color_space.GetPrimaryID()) {
     case gfx::ColorSpace::PrimaryID::BT709:
-      dataspace |= STANDARD_BT709;
+      dataspace |= ADATASPACE_STANDARD_BT709;
       return true;
     case gfx::ColorSpace::PrimaryID::BT470BG:
-      dataspace |= STANDARD_BT601_625;
+      dataspace |= ADATASPACE_STANDARD_BT601_625;
       return true;
     case gfx::ColorSpace::PrimaryID::SMPTE170M:
-      dataspace |= STANDARD_BT601_525;
+      dataspace |= ADATASPACE_STANDARD_BT601_525;
       return true;
     case gfx::ColorSpace::PrimaryID::BT2020:
-      dataspace |= STANDARD_BT2020;
+      dataspace |= ADATASPACE_STANDARD_BT2020;
       return true;
     case gfx::ColorSpace::PrimaryID::P3:
-      dataspace |= STANDARD_DCI_P3;
+      dataspace |= ADATASPACE_STANDARD_DCI_P3;
       return true;
     default:
       return false;
@@ -397,24 +397,24 @@ bool SetDataSpaceTransfer(const gfx::ColorSpace& color_space,
   extended_range_brightness_ratio = 1.f;
   switch (color_space.GetTransferID()) {
     case gfx::ColorSpace::TransferID::SMPTE170M:
-      dataspace |= TRANSFER_SMPTE_170M;
+      dataspace |= ADATASPACE_TRANSFER_SMPTE_170M;
       return true;
     case gfx::ColorSpace::TransferID::LINEAR_HDR:
-      dataspace |= TRANSFER_LINEAR;
+      dataspace |= ADATASPACE_TRANSFER_LINEAR;
       return true;
     case gfx::ColorSpace::TransferID::PQ:
-      dataspace |= TRANSFER_ST2084;
+      dataspace |= ADATASPACE_TRANSFER_ST2084;
       return true;
     case gfx::ColorSpace::TransferID::HLG:
-      dataspace |= TRANSFER_HLG;
+      dataspace |= ADATASPACE_TRANSFER_HLG;
       return true;
     case gfx::ColorSpace::TransferID::SRGB:
-      dataspace |= TRANSFER_SRGB;
+      dataspace |= ADATASPACE_TRANSFER_SRGB;
       return true;
     case gfx::ColorSpace::TransferID::BT709:
       // We use SRGB for BT709. See |ColorSpace::GetTransferFunction()| for
       // details.
-      dataspace |= TRANSFER_SRGB;
+      dataspace |= ADATASPACE_TRANSFER_SRGB;
       return true;
     default: {
       skcms_TransferFunction trfn;
@@ -422,12 +422,12 @@ bool SetDataSpaceTransfer(const gfx::ColorSpace& color_space,
       if (color_space.GetTransferFunction(&trfn)) {
         if (skia::IsScaledTransferFunction(SkNamedTransferFn::kSRGB, trfn,
                                            &extended_range_brightness_ratio)) {
-          dataspace |= TRANSFER_SRGB;
+          dataspace |= ADATASPACE_TRANSFER_SRGB;
           return true;
         }
         if (skia::IsScaledTransferFunction(SkNamedTransferFn::kLinear, trfn,
                                            &extended_range_brightness_ratio)) {
-          dataspace |= TRANSFER_LINEAR;
+          dataspace |= ADATASPACE_TRANSFER_LINEAR;
           return true;
         }
       }
@@ -444,13 +444,13 @@ bool SetDataSpaceRange(const gfx::ColorSpace& color_space,
     case gfx::ColorSpace::RangeID::FULL:
       if (extended_range_brightness_ratio > 1.f ||
           desired_brightness_ratio > 1.f) {
-        dataspace |= RANGE_EXTENDED;
+        dataspace |= ADATASPACE_RANGE_EXTENDED;
       } else {
-        dataspace |= RANGE_FULL;
+        dataspace |= ADATASPACE_RANGE_FULL;
       }
       return true;
     case gfx::ColorSpace::RangeID::LIMITED:
-      dataspace |= RANGE_LIMITED;
+      dataspace |= ADATASPACE_RANGE_LIMITED;
       return true;
     default:
       return false;
@@ -581,7 +581,8 @@ bool SurfaceControl::ColorSpaceToADataSpace(
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
       base::android::SDK_VERSION_S) {
     if (color_space == gfx::ColorSpace::CreateExtendedSRGB()) {
-      out_dataspace = STANDARD_BT709 | TRANSFER_SRGB | RANGE_EXTENDED;
+      out_dataspace = ADATASPACE_STANDARD_BT709 | ADATASPACE_TRANSFER_SRGB |
+                      ADATASPACE_RANGE_EXTENDED;
       return true;
     }
 
@@ -888,7 +889,8 @@ void SurfaceControl::Transaction::SetColorSpace(
   SurfaceControlMethods::Get().ASurfaceTransaction_setBufferDataSpaceFn(
       transaction_, surface.surface(), data_space);
 
-  const bool extended_range = (data_space & RANGE_MASK) == RANGE_EXTENDED;
+  const bool extended_range =
+      (data_space & ADATASPACE_RANGE_MASK) == ADATASPACE_RANGE_EXTENDED;
 
   // Set the HDR metadata for not extended SRGB case.
   if (metadata && !extended_range) {

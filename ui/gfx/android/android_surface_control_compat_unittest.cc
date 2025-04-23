@@ -212,7 +212,8 @@ TEST(SurfaceControl, ColorSpaceToADataSpace) {
     float extended_range_brightness_ratio = 0.f;
     EXPECT_TRUE(SurfaceControl::ColorSpaceToADataSpace(
         rec2020, 1.f, dataspace, extended_range_brightness_ratio));
-    EXPECT_EQ(dataspace, STANDARD_BT2020 | TRANSFER_SRGB | RANGE_FULL);
+    EXPECT_EQ(dataspace, ADATASPACE_STANDARD_BT2020 | ADATASPACE_TRANSFER_SRGB |
+                             ADATASPACE_RANGE_FULL);
     EXPECT_EQ(extended_range_brightness_ratio, 1.f);
   }
 
@@ -224,7 +225,8 @@ TEST(SurfaceControl, ColorSpaceToADataSpace) {
     EXPECT_TRUE(SurfaceControl::ColorSpaceToADataSpace(
         gfx::ColorSpace::CreateSRGB(), 4.f, dataspace,
         extended_range_brightness_ratio));
-    EXPECT_EQ(dataspace, STANDARD_BT709 | TRANSFER_SRGB | RANGE_EXTENDED);
+    EXPECT_EQ(dataspace, ADATASPACE_STANDARD_BT709 | ADATASPACE_TRANSFER_SRGB |
+                             ADATASPACE_RANGE_EXTENDED);
     EXPECT_EQ(extended_range_brightness_ratio, 1.f);
   }
 
@@ -240,7 +242,8 @@ TEST(SurfaceControl, ColorSpaceToADataSpace) {
     float extended_range_brightness_ratio = 0.f;
     EXPECT_TRUE(SurfaceControl::ColorSpaceToADataSpace(
         p3_scaled, 1.f, dataspace, extended_range_brightness_ratio));
-    EXPECT_EQ(dataspace, STANDARD_DCI_P3 | TRANSFER_SRGB | RANGE_EXTENDED);
+    EXPECT_EQ(dataspace, ADATASPACE_STANDARD_DCI_P3 | ADATASPACE_TRANSFER_SRGB |
+                             ADATASPACE_RANGE_EXTENDED);
     EXPECT_NEAR(extended_range_brightness_ratio, 2.f, 0.0001f);
   }
 }

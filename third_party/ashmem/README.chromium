@@ -19,3 +19,6 @@ Patches:
   0004-Fixup-ashmem_get_prot_region-for-memfd.patch:
      mmap with MAP_PRIVATE is meant to succeed even on write-protected
      memfd's as it will just copy-on-write.
+  0005-Fix-ashmem-availability-check.patch:
+     Use builtin_available instead of a weak reference as weak references
+     seem to still trigger SDK level checks in new NDK (r28).

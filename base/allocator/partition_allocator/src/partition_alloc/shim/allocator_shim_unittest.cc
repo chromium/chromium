@@ -492,8 +492,11 @@ TEST_F(AllocatorShimTest, InterceptLibcSymbols) {
   // TODO(crbug.com/407932921) Support Apple platforms.
 #if !BUILDFLAG(IS_APPLE)
   // See above, it is a weak symbol.
+#pragma clang diagnostic push  // Can be removed once our min-sdk is >= 28.
+#pragma clang diagnostic ignored "-Wunguarded-availability"
   if (aligned_alloc) {
     void* aligned_alloc_ptr = aligned_alloc(128, 32);
+#pragma clang diagnostic pop
     ASSERT_NE(nullptr, aligned_alloc_ptr);
     ASSERT_EQ(0u, reinterpret_cast<uintptr_t>(aligned_alloc_ptr) % 128);
     ASSERT_GE(allocs_intercepted_by_alignment[128], 1u);
