@@ -10,6 +10,9 @@ namespace input::features {
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kInputOnViz, "InputOnViz", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUseAndroidBufferedInputDispatch,
+             "UseAndroidBufferedInputDispatch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kLogBubblingTouchscreenGesturesForDebug,

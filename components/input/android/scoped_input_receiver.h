@@ -9,10 +9,6 @@
 #include "base/memory/raw_ptr_exclusion.h"
 
 struct AInputReceiver;
-struct ALooper;
-struct AInputTransferToken;
-struct ASurfaceControl;
-struct AInputReceiverCallbacks;
 
 namespace input {
 
@@ -25,10 +21,7 @@ namespace input {
 
 class COMPONENT_EXPORT(INPUT) ScopedInputReceiver {
  public:
-  ScopedInputReceiver(ALooper* looper,
-                      AInputTransferToken* input_token,
-                      ASurfaceControl* surface_control,
-                      AInputReceiverCallbacks* callbacks);
+  explicit ScopedInputReceiver(AInputReceiver* a_input_receiver);
   ~ScopedInputReceiver();
 
   ScopedInputReceiver(ScopedInputReceiver&& other);

@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "cc/layers/layer.h"
 #include "cc/slim/layer.h"
+#include "components/input/features.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
 #include "content/browser/android/content_ui_event_handler.h"
 #include "content/browser/android/drop_data_android.h"
@@ -77,7 +78,9 @@ bool ShouldRequestUnbufferedDispatch() {
   static bool should_request_unbuffered_dispatch =
       base::android::BuildInfo::GetInstance()->sdk_int() >=
           base::android::SDK_VERSION_LOLLIPOP &&
-      !GetContentClient()->UsingSynchronousCompositing();
+      !GetContentClient()->UsingSynchronousCompositing() &&
+      !base::FeatureList::IsEnabled(
+          input::features::kUseAndroidBufferedInputDispatch);
   return should_request_unbuffered_dispatch;
 }
 

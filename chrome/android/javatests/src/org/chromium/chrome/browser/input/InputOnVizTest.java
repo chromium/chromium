@@ -20,6 +20,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -104,7 +106,19 @@ public class InputOnVizTest {
     }
 
     @Test
-    public void scrollIsHandledOnViz() {
+    @DisableFeatures({"UseAndroidBufferedInputDispatch"})
+    public void scrollIsHandledOnViz_unbufferedInput() {
+        checkScrollIsHandledOnViz();
+    }
+
+    @Test
+    @DisabledTest(message = "https://crbug.com/409346743")
+    @EnableFeatures({"UseAndroidBufferedInputDispatch"})
+    public void scrollIsHandledOnViz_bufferedInput() {
+        checkScrollIsHandledOnViz();
+    }
+
+    private void checkScrollIsHandledOnViz() {
         UiAutomatorUtils.getInstance().swipeUpVertically(0.3f);
         // Wait for the scroll offset to have changed as a result of scroll.
         CriteriaHelper.pollInstrumentationThread(

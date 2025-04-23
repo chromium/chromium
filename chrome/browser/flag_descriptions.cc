@@ -4050,6 +4050,14 @@ const char kUseSearchClickForRightClickDescription[] =
     "webpages and apps to consume alt+click. When disabled the legacy "
     "behavior of remapping alt+click to right click will remain unchanged.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kUseAndroidBufferedInputDispatchName[] =
+    "Use Android buffered input dispatch";
+const char kUseAndroidBufferedInputDispatchDescription[] =
+    "Enables using Android's buffered input dispatch, which will generally "
+    "deliver batched resampled input events to Chrome once per VSync.";
+#endif
+
 const char kVcBackgroundReplaceName[] = "Enable vc background replacement";
 const char kVcBackgroundReplaceDescription[] =
     "Enables background replacement feature for video conferencing on "

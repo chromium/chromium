@@ -49,6 +49,10 @@ AndroidInputReceiverCompat::AndroidInputReceiverCompat() {
       dlsym(main_dl_handle, "AInputReceiverCallbacks_setMotionEventCallback");
   DCHECK(AInputReceiverCallbacks_setMotionEventCallbackFn);
 
+  *reinterpret_cast<void**>(&AInputReceiver_createBatchedInputReceiverFn) =
+      dlsym(main_dl_handle, "AInputReceiver_createBatchedInputReceiver");
+  DCHECK(AInputReceiver_createBatchedInputReceiverFn);
+
   *reinterpret_cast<void**>(&AInputReceiver_createUnbatchedInputReceiverFn) =
       dlsym(main_dl_handle, "AInputReceiver_createUnbatchedInputReceiver");
   DCHECK(AInputReceiver_createUnbatchedInputReceiverFn);

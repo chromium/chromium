@@ -12281,6 +12281,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBlockCrossPartitionBlobUrlFetchingDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kBlockCrossPartitionBlobUrlFetching)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"use-android-buffered-input-dispatch",
+     flag_descriptions::kUseAndroidBufferedInputDispatchName,
+     flag_descriptions::kUseAndroidBufferedInputDispatchDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(input::features::kUseAndroidBufferedInputDispatch)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

@@ -5,19 +5,11 @@
 #include "components/input/android/scoped_input_receiver.h"
 
 #include "base/android/android_input_receiver_compat.h"
-#include "base/check.h"
 
 namespace input {
 
-ScopedInputReceiver::ScopedInputReceiver(ALooper* looper,
-                                         AInputTransferToken* input_token,
-                                         ASurfaceControl* surface_control,
-                                         AInputReceiverCallbacks* callbacks) {
-  CHECK(base::AndroidInputReceiverCompat::IsSupportAvailable());
-  a_input_receiver_ = base::AndroidInputReceiverCompat::GetInstance()
-                          .AInputReceiver_createUnbatchedInputReceiverFn(
-                              looper, input_token, surface_control, callbacks);
-}
+ScopedInputReceiver::ScopedInputReceiver(AInputReceiver* a_input_receiver)
+    : a_input_receiver_(a_input_receiver) {}
 
 ScopedInputReceiver::~ScopedInputReceiver() {
   DestroyIfNeeded();
