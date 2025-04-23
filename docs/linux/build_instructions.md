@@ -243,13 +243,6 @@ Reach out to
 [build@chromium.org](https://groups.google.com/a/chromium.org/g/build)
 if you have any questions about remote execution usage.
 
-#### Disable NaCl
-
-By default, the build includes support for
-[Native Client (NaCl)](https://developer.chrome.com/native-client), but
-most of the time you won't need it. You can set the GN argument
-`enable_nacl=false` and it won't be built.
-
 #### Include fewer debug symbols
 
 By default GN produces a build with all of the debug assertions enabled
