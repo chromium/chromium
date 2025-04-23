@@ -111,6 +111,9 @@ public interface LocationBar {
      */
     default void setShowOriginOnly(boolean showOriginOnly) {}
 
+    /** Toggle the url bar's text size to be small or normal sized. */
+    default void setUrlBarUsesSmallText(boolean useSmallText) {}
+
     /** Destroys the LocationBar. */
     void destroy();
 }

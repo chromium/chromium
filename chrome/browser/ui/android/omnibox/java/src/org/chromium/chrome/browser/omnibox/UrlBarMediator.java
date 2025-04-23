@@ -432,4 +432,8 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
         mShowOriginOnly = showOriginOnly;
         pushTextToModel();
     }
+
+    void setUseSmallText(boolean useSmallText) {
+        mModel.set(UrlBarProperties.USE_SMALL_TEXT, useSmallText);
+    }
 }

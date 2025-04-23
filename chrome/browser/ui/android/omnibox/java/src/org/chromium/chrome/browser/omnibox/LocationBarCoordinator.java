@@ -536,6 +536,11 @@ public class LocationBarCoordinator
         mUrlCoordinator.setShowOriginOnly(showOriginOnly);
     }
 
+    @Override
+    public void setUrlBarUsesSmallText(boolean useSmallText) {
+        mUrlCoordinator.setUseSmallText(useSmallText);
+    }
+
     // AutocompleteDelegate implementation.
     @Override
     public void onUrlTextChanged() {

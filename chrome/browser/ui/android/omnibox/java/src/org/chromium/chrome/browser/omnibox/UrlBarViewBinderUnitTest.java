@@ -37,6 +37,7 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.UrlBarViewBinderUnitTest.ShadowOmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -78,6 +79,7 @@ public class UrlBarViewBinderUnitTest {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
 
         mModel = new PropertyModel(UrlBarProperties.ALL_KEYS);
+        mModel.set(UrlBarProperties.USE_SMALL_TEXT, false);
         mMediator =
                 new UrlBarMediator(
                         ContextUtils.getApplicationContext(), mModel, mFocusChangeCallback);
@@ -201,5 +203,17 @@ public class UrlBarViewBinderUnitTest {
         Assert.assertFalse(mUrlBar.getIsInCctForTesting());
         mModel.set(IS_IN_CCT, true);
         Assert.assertTrue(mUrlBar.getIsInCctForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void testTextSize() {
+        float normalTextSize =
+                mActivity.getResources().getDimension(R.dimen.location_bar_url_text_size);
+        float smallTextSize = mActivity.getResources().getDimension(R.dimen.text_size_small);
+        Assert.assertEquals(normalTextSize, mUrlBar.getTextSize(), MathUtils.EPSILON);
+
+        mModel.set(UrlBarProperties.USE_SMALL_TEXT, true);
+        Assert.assertEquals(smallTextSize, mUrlBar.getTextSize(), MathUtils.EPSILON);
     }
 }

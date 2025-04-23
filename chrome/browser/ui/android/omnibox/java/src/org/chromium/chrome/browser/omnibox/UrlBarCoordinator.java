@@ -88,6 +88,7 @@ public class UrlBarCoordinator
                         .with(UrlBarProperties.DELEGATE, delegate)
                         .with(UrlBarProperties.INCOGNITO_COLORS_ENABLED, isIncognitoBranded)
                         .with(UrlBarProperties.LONG_CLICK_LISTENER, onLongClickListener)
+                        .with(UrlBarProperties.USE_SMALL_TEXT, false)
                         .build();
         PropertyModelChangeProcessor.create(model, urlBar, UrlBarViewBinder::bind);
 
@@ -278,6 +279,11 @@ public class UrlBarCoordinator
      */
     public void setShowOriginOnly(boolean showOriginOnly) {
         mMediator.setShowOriginOnly(showOriginOnly);
+    }
+
+    /** Toggle the url bar's text size to be small or normal sized. */
+    public void setUseSmallText(boolean useSmallText) {
+        mMediator.setUseSmallText(useSmallText);
     }
 
     /**

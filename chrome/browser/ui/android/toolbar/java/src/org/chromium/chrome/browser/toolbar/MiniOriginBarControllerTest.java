@@ -70,9 +70,11 @@ public class MiniOriginBarControllerTest {
         doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsSizer).getControlsPosition();
         mMiniOriginBarController.onControlsPositionChanged(ControlsPosition.BOTTOM);
         verify(mLocationBar).setShowOriginOnly(true);
+        verify(mLocationBar).setUrlBarUsesSmallText(true);
 
         mKeyboardVisibilityDelegate.setVisibilityForTests(false);
         verify(mLocationBar).setShowOriginOnly(false);
+        verify(mLocationBar).setUrlBarUsesSmallText(false);
     }
 
     @Test
