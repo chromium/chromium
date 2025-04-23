@@ -586,6 +586,41 @@ TEST_F(BluetoothAdapterAndroidTest, AclDisconnectedWithDualTransport) {
   EXPECT_FALSE(observer.last_device()->IsConnected());
 }
 
+TEST_F(BluetoothAdapterAndroidTest, AclDisconnectedOnAdapterOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kBluetoothRfcommAndroid);
+
+  InitWithFakeAdapter();
+
+  SimulatePairedClassicDevice(1);
+
+  BluetoothDevice* device = adapter_->GetDevice(kTestDeviceAddress1);
+  std::optional<std::string> device_name = device->GetName();
+  int device_type = device->GetType();
+  BluetoothDevice::UUIDSet uuids = device->GetUUIDs();
+  uint32_t bluetooth_class = device->GetBluetoothClass();
+
+  EXPECT_NE(bluetooth_class, 0x1F00u);
+
+  SimulateAclConnectStateChange(device, BLUETOOTH_TRANSPORT_CLASSIC,
+                                /*connected=*/true);
+  SimulateAclConnectStateChange(device, BLUETOOTH_TRANSPORT_LE,
+                                /*connected=*/true);
+
+  TestBluetoothAdapterObserver observer(adapter_.get());
+
+  adapter_->SetPowered(false, GetCallback(Call::EXPECTED),
+                       GetCallback(Call::NOT_EXPECTED));
+  task_environment_.FastForwardUntilNoTasksRemain();
+
+  ASSERT_EQ(observer.device_changed_count(), 1);
+  EXPECT_EQ(observer.last_device()->GetName(), device_name);
+  EXPECT_EQ(observer.last_device()->GetType(), device_type);
+  EXPECT_EQ(observer.last_device()->GetUUIDs(), uuids);
+  EXPECT_EQ(observer.last_device()->GetBluetoothClass(), bluetooth_class);
+  EXPECT_TRUE(observer.last_device()->IsPaired());
+}
+
 // The transport extra of ACL connected/disconnected broadcasts was added in API
 // level 33 (Android 13/T). On devices where the extra was not provided, we
 // use BluetoothDevice#TRANSPORT_AUTO (0) as the default value, and later

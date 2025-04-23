@@ -180,6 +180,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterAndroid final
       const base::android::JavaParamRef<jobject>&
           bluetooth_device_wrapper);  // Java Type: BluetoothDeviceWrapper
 
+  // Update device connection states due to adapter turning off because Android
+  // doesn't notify ACL connected state broadcast receivers on adapter turning
+  // off.
+  void UpdateDeviceConnectStatesOnAdapterOff();
+
   scoped_refptr<BluetoothSocketThread> socket_thread_;
 
   FRIEND_TEST_ALL_PREFIXES(BluetoothAdapterAndroidTest, ScanFilterTest);

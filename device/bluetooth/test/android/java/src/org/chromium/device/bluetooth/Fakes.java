@@ -207,7 +207,8 @@ class Fakes {
                                                 "01:00:00:90:1E:BE",
                                                 "FakeBluetoothDevice",
                                                 BluetoothDevice.DEVICE_TYPE_LE,
-                                                /* uuid= */ null),
+                                                /* uuid= */ null,
+                                                BluetoothDeviceWrapper.DEVICE_CLASS_UNSPECIFIED),
                                         "FakeBluetoothDevice",
                                         TestRSSI.LOWEST,
                                         4,
@@ -242,7 +243,8 @@ class Fakes {
                                                 "01:00:00:90:1E:BE",
                                                 "FakeBluetoothDevice",
                                                 BluetoothDevice.DEVICE_TYPE_LE,
-                                                /* uuid= */ null),
+                                                /* uuid= */ null,
+                                                BluetoothDeviceWrapper.DEVICE_CLASS_UNSPECIFIED),
                                         "Local Device Name",
                                         TestRSSI.LOWER,
                                         5,
@@ -263,7 +265,8 @@ class Fakes {
                                                 "01:00:00:90:1E:BE",
                                                 "",
                                                 BluetoothDevice.DEVICE_TYPE_LE,
-                                                /* uuid= */ null),
+                                                /* uuid= */ null,
+                                                BluetoothDeviceWrapper.DEVICE_CLASS_UNSPECIFIED),
                                         "Local Device Name",
                                         TestRSSI.LOW,
                                         -1,
@@ -285,7 +288,8 @@ class Fakes {
                                                 "02:00:00:8B:74:63",
                                                 "",
                                                 BluetoothDevice.DEVICE_TYPE_LE,
-                                                /* uuid= */ null),
+                                                /* uuid= */ null,
+                                                BluetoothDeviceWrapper.DEVICE_CLASS_UNSPECIFIED),
                                         "Local Device Name",
                                         TestRSSI.MEDIUM,
                                         -1,
@@ -307,7 +311,8 @@ class Fakes {
                                                 "01:00:00:90:1E:BE",
                                                 null,
                                                 BluetoothDevice.DEVICE_TYPE_LE,
-                                                /* uuid= */ null),
+                                                /* uuid= */ null,
+                                                BluetoothDeviceWrapper.DEVICE_CLASS_UNSPECIFIED),
                                         "Local Device Name",
                                         TestRSSI.HIGH,
                                         -1,
@@ -328,7 +333,8 @@ class Fakes {
                                                 "02:00:00:8B:74:63",
                                                 null,
                                                 BluetoothDevice.DEVICE_TYPE_DUAL,
-                                                /* uuid= */ null),
+                                                /* uuid= */ null,
+                                                BluetoothDeviceWrapper.DEVICE_CLASS_UNSPECIFIED),
                                         "Local Device Name",
                                         TestRSSI.LOWEST,
                                         -1,
@@ -356,7 +362,8 @@ class Fakes {
                                                 "01:00:00:90:1E:BE",
                                                 "U2F FakeDevice",
                                                 BluetoothDevice.DEVICE_TYPE_LE,
-                                                /* uuid= */ null),
+                                                /* uuid= */ null,
+                                                BluetoothDeviceWrapper.DEVICE_CLASS_UNSPECIFIED),
                                         "Local Device Name",
                                         TestRSSI.LOWEST,
                                         -1,
@@ -381,7 +388,8 @@ class Fakes {
                                     "03:00:00:17:C0:57",
                                     "FakeBluetoothDevice",
                                     BluetoothDevice.DEVICE_TYPE_CLASSIC,
-                                    /* uuid= */ null);
+                                    /* uuid= */ null,
+                                    BluetoothDeviceWrapper.DEVICE_CLASS_UNSPECIFIED);
                     break;
                 case 1:
                     device =
@@ -390,7 +398,8 @@ class Fakes {
                                     "01:00:00:90:1E:BE",
                                     "Fake classic device 1",
                                     BluetoothDevice.DEVICE_TYPE_CLASSIC,
-                                    "00001101-0000-1000-8000-00805F9B34FB");
+                                    "00001101-0000-1000-8000-00805F9B34FB",
+                                    /* bluetoothClass= (desktop) */ 0x104);
                     break;
                 case 2:
                     device =
@@ -399,7 +408,8 @@ class Fakes {
                                     "02:00:00:8B:74:63",
                                     "Fake classic device 2",
                                     BluetoothDevice.DEVICE_TYPE_CLASSIC,
-                                    "00001101-0000-1000-8000-00805F9B34FB");
+                                    "00001101-0000-1000-8000-00805F9B34FB",
+                                    /* bluetoothClass= (cellular phone) */ 0x204);
                     break;
                 default:
                     throw new IllegalArgumentException();
@@ -735,6 +745,7 @@ class Fakes {
         private final String mName;
         private final int mType;
         private final String mUuid;
+        private final int mBluetoothClass;
         final FakeBluetoothGatt mGatt;
         private BluetoothGattCallbackWrapper mGattCallback;
         private String mNextExceptionMessageOnServiceConnection;
@@ -742,13 +753,19 @@ class Fakes {
         static FakeBluetoothDevice sRememberedDevice;
 
         public FakeBluetoothDevice(
-                FakeBluetoothAdapter adapter, String address, String name, int type, String uuid) {
+                FakeBluetoothAdapter adapter,
+                String address,
+                String name,
+                int type,
+                String uuid,
+                int bluetoothClass) {
             super(null);
             mAdapter = adapter;
             mAddress = address;
             mName = name;
             mType = type;
             mUuid = uuid;
+            mBluetoothClass = bluetoothClass;
             mGatt = new FakeBluetoothGatt(this);
         }
 
@@ -847,7 +864,7 @@ class Fakes {
 
         @Override
         public int getBluetoothClass_getDeviceClass() {
-            return DEVICE_CLASS_UNSPECIFIED;
+            return mAdapter.isEnabled() ? mBluetoothClass : DEVICE_CLASS_UNSPECIFIED;
         }
 
         @Override
@@ -860,17 +877,17 @@ class Fakes {
 
         @Override
         public String getName() {
-            return mName;
+            return mAdapter.isEnabled() ? mName : null;
         }
 
         @Override
         public int getType() {
-            return mType;
+            return mAdapter.isEnabled() ? mType : BluetoothDevice.DEVICE_TYPE_UNKNOWN;
         }
 
         @Override
         public ParcelUuid[] getUuids() {
-            if (mUuid == null) {
+            if (!mAdapter.isEnabled() || mUuid == null) {
                 return null;
             }
 

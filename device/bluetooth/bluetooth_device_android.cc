@@ -49,6 +49,8 @@ std::unique_ptr<BluetoothDeviceAndroid> BluetoothDeviceAndroid::Create(
       AttachCurrentThread(), reinterpret_cast<intptr_t>(device.get()),
       bluetooth_device_wrapper));
 
+  device->LoadInitialCachedMetadata();
+
   return device;
 }
 
@@ -62,16 +64,33 @@ BluetoothDeviceAndroid::GetJavaObject() {
   return base::android::ScopedJavaLocalRef<jobject>(j_device_);
 }
 
+void BluetoothDeviceAndroid::LoadInitialCachedMetadata() {
+  CHECK(adapter_->IsPowered());
+
+  // We call a few getters in which cached metadata are updated.
+  GetName();
+  GetAddress();
+  GetUUIDs();
+  GetBluetoothClass();
+  IsPaired();
+}
+
 uint32_t BluetoothDeviceAndroid::GetBluetoothClass() const {
-  return Java_ChromeBluetoothDevice_getBluetoothClass(AttachCurrentThread(),
-                                                      j_device_);
+  if (adapter_->IsPowered()) {
+    cached_class_ = Java_ChromeBluetoothDevice_getBluetoothClass(
+        AttachCurrentThread(), j_device_);
+  }
+  return cached_class_;
 }
 
 BluetoothTransport BluetoothDeviceAndroid::GetType() const {
-  // Device types in Android BluetoothDevice share the same value as
-  // BluetoothTransport.
-  return static_cast<BluetoothTransport>(
-      Java_ChromeBluetoothDevice_getType(AttachCurrentThread(), j_device_));
+  if (adapter_->IsPowered()) {
+    // Device types in Android BluetoothDevice share the same value as
+    // BluetoothTransport.
+    cached_type_ = static_cast<BluetoothTransport>(
+        Java_ChromeBluetoothDevice_getType(AttachCurrentThread(), j_device_));
+  }
+  return cached_type_;
 }
 
 std::string BluetoothDeviceAndroid::GetAddress() const {
@@ -113,19 +132,28 @@ uint16_t BluetoothDeviceAndroid::GetAppearance() const {
 }
 
 std::optional<std::string> BluetoothDeviceAndroid::GetName() const {
-  auto name =
-      Java_ChromeBluetoothDevice_getName(AttachCurrentThread(), j_device_);
-  if (name.is_null())
-    return std::nullopt;
-  return ConvertJavaStringToUTF8(name);
+  if (adapter_->IsPowered()) {
+    auto name =
+        Java_ChromeBluetoothDevice_getName(AttachCurrentThread(), j_device_);
+    if (name.is_null()) {
+      cached_name_.reset();
+    } else {
+      cached_name_ = ConvertJavaStringToUTF8(name);
+    }
+  }
+  return cached_name_;
 }
 
 bool BluetoothDeviceAndroid::IsPaired() const {
-  return Java_ChromeBluetoothDevice_isPaired(AttachCurrentThread(), j_device_);
+  if (adapter_->IsPowered()) {
+    cached_paired_ =
+        Java_ChromeBluetoothDevice_isPaired(AttachCurrentThread(), j_device_);
+  }
+  return cached_paired_;
 }
 
 bool BluetoothDeviceAndroid::IsConnected() const {
-  return IsGattConnected() || connected_transport_;
+  return IsGattConnected() || (connected_transport_ && adapter_->IsPowered());
 }
 
 bool BluetoothDeviceAndroid::IsGattConnected() const {
@@ -153,24 +181,25 @@ BluetoothDevice::UUIDSet BluetoothDeviceAndroid::GetUUIDs() const {
     return BluetoothDevice::GetUUIDs();
   }
 
-  // Java type: String[]
-  base::android::ScopedJavaLocalRef<jobjectArray> sdp_uuids =
-      Java_ChromeBluetoothDevice_getUuids(AttachCurrentThread(), j_device_);
-  std::vector<std::string> sdp_uuid_strings;
-  base::android::AppendJavaStringArrayToStringVector(
-      AttachCurrentThread(), sdp_uuids, &sdp_uuid_strings);
-  BluetoothDevice::UUIDSet sdp_bluetooth_uuids;
-  for (std::string& uuid : sdp_uuid_strings) {
-    sdp_bluetooth_uuids.insert(BluetoothUUID(std::move(uuid)));
+  if (adapter_->IsPowered()) {
+    // Java type: String[]
+    base::android::ScopedJavaLocalRef<jobjectArray> sdp_uuids =
+        Java_ChromeBluetoothDevice_getUuids(AttachCurrentThread(), j_device_);
+    std::vector<std::string> sdp_uuid_strings;
+    base::android::AppendJavaStringArrayToStringVector(
+        AttachCurrentThread(), sdp_uuids, &sdp_uuid_strings);
+    for (std::string& uuid : sdp_uuid_strings) {
+      cached_sdp_uuids_.insert(BluetoothUUID(std::move(uuid)));
+    }
   }
 
   if (device_type == BLUETOOTH_TRANSPORT_CLASSIC) {
-    return sdp_bluetooth_uuids;
+    return cached_sdp_uuids_;
   }
 
   // Dual transport device
   return base::STLSetUnion<BluetoothDevice::UUIDSet>(
-      sdp_bluetooth_uuids, BluetoothDevice::GetUUIDs());
+      cached_sdp_uuids_, BluetoothDevice::GetUUIDs());
 }
 
 bool BluetoothDeviceAndroid::ExpectingPinCode() const {
