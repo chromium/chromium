@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
+
 struct TemplateURLData;
 
 namespace sync_preferences {
@@ -34,5 +36,30 @@ void SetExtensionDefaultSearchInPrefs(
 // |prefs|.
 void RemoveExtensionDefaultSearchFromPrefs(
     sync_preferences::TestingPrefServiceSyncable* prefs);
+
+class FakeSearchEngineChoiceServiceClient
+    : public search_engines::SearchEngineChoiceService::Client {
+ public:
+  explicit FakeSearchEngineChoiceServiceClient(
+      country_codes::CountryId variations_country = country_codes::CountryId(),
+      bool is_profile_eligible_for_dse_guest_propagation = false);
+  ~FakeSearchEngineChoiceServiceClient() override;
+
+  country_codes::CountryId GetVariationsCountry() override;
+
+  bool IsProfileEligibleForDseGuestPropagation() override;
+
+  void set_is_profile_eligible_for_dse_guest_propagation(bool eligible) {
+    is_profile_eligible_for_dse_guest_propagation_ = eligible;
+  }
+
+  void set_variations_country(country_codes::CountryId variations_country) {
+    variations_country_ = variations_country;
+  }
+
+ private:
+  country_codes::CountryId variations_country_;
+  bool is_profile_eligible_for_dse_guest_propagation_ = false;
+};
 
 #endif  // COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINES_TEST_UTIL_H_

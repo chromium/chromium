@@ -106,7 +106,7 @@ DefaultSearchManager::DefaultSearchManager(
                             base::Unretained(this)));
   }
   LoadPrepopulatedFallbackSearch();
-  if (search_engine_choice_service->IsProfileEligibleForDseGuestPropagation()) {
+  if (search_engine_choice_service->IsDsePropagationAllowedForGuest()) {
     // Observe the SearchEngineChoiceService because the saved DSE can change
     // during a Guest session and we need to restore it for the next session.
     // TODO(crbug.com: 369959287): This is not needed if we destroy the guest

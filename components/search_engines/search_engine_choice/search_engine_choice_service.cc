@@ -14,6 +14,7 @@
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
@@ -217,7 +218,14 @@ bool ShouldRepromptFromFeatureParams(
   return false;
 }
 
-CountryId GetVariationsCountryId(
+}  // namespace
+
+// -- SearchEngineChoiceService::Client ---------------------------------------
+
+SearchEngineChoiceService::Client::~Client() = default;
+
+// static
+CountryId SearchEngineChoiceService::Client::GetVariationsLatestCountry(
     variations::VariationsService* variations_service) {
 #if BUILDFLAG(IS_FUCHSIA)
   // We can't add a dependency from Fuchsia to
@@ -230,45 +238,22 @@ CountryId GetVariationsCountryId(
 #endif
 }
 
-}  // namespace
+// -- SearchEngineChoiceService -----------------------------------------------
 
 SearchEngineChoiceService::SearchEngineChoiceService(
+    std::unique_ptr<Client> client,
     PrefService& profile_prefs,
     PrefService* local_state,
     regional_capabilities::RegionalCapabilitiesService& regional_capabilities,
-    TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver,
-    bool is_profile_eligbile_for_dse_guest_propagation,
-    CountryId variations_country_id)
-    : profile_prefs_(profile_prefs),
+    TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver)
+    : client_(std::move(client)),
+      profile_prefs_(profile_prefs),
       local_state_(local_state),
       regional_capabilities_service_(regional_capabilities),
-      prepopulate_data_resolver_(prepopulate_data_resolver),
-      variations_country_id_(variations_country_id) {
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-  // No guest mode on IOS or Android.
-  CHECK(!is_profile_eligible_for_dse_guest_propagation_);
-#endif
-  is_profile_eligible_for_dse_guest_propagation_ =
-      is_profile_eligbile_for_dse_guest_propagation &&
-      regional_capabilities_service_->IsInEeaCountry();
-
+      prepopulate_data_resolver_(prepopulate_data_resolver) {
   ProcessPendingChoiceScreenDisplayState();
   PreprocessPrefsForReprompt();
 }
-
-SearchEngineChoiceService::SearchEngineChoiceService(
-    PrefService& profile_prefs,
-    PrefService* local_state,
-    regional_capabilities::RegionalCapabilitiesService& regional_capabilities,
-    TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver,
-    bool is_profile_eligible_for_dse_guest_propagation,
-    variations::VariationsService* variations_service)
-    : SearchEngineChoiceService(profile_prefs,
-                                local_state,
-                                regional_capabilities,
-                                prepopulate_data_resolver,
-                                is_profile_eligible_for_dse_guest_propagation,
-                                GetVariationsCountryId(variations_service)) {}
 
 SearchEngineChoiceService::~SearchEngineChoiceService() = default;
 
@@ -495,7 +480,7 @@ void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
         display_state.selected_engine_index.value());
   }
 
-  if (display_state.country_id != variations_country_id_) {
+  if (display_state.country_id != client_->GetVariationsCountry()) {
     // Not recording if adding position data, which can be used as a proxy for
     // the profile country, would add new hard to control location info to a
     // logs session.
@@ -631,14 +616,16 @@ void SearchEngineChoiceService::ClearCountryIdCacheForTesting() {
   regional_capabilities_service_->ClearCountryIdCacheForTesting();  // IN-TEST
 }
 
-bool SearchEngineChoiceService::IsProfileEligibleForDseGuestPropagation()
-    const {
-  return is_profile_eligible_for_dse_guest_propagation_;
+bool SearchEngineChoiceService::IsDsePropagationAllowedForGuest() const {
+  if (client_->IsProfileEligibleForDseGuestPropagation()) {
+    return regional_capabilities_service_->IsInEeaCountry();
+  }
+  return false;
 }
 
 std::optional<int>
 SearchEngineChoiceService::GetSavedSearchEngineBetweenGuestSessions() const {
-  if (!IsProfileEligibleForDseGuestPropagation()) {
+  if (!IsDsePropagationAllowedForGuest()) {
     return std::nullopt;
   }
   if (local_state_->HasPrefPath(
@@ -656,7 +643,7 @@ void SearchEngineChoiceService::SetSavedSearchEngineBetweenGuestSessions(
         (prepopulated_id > 0 &&
          prepopulated_id <=
              TemplateURLPrepopulateData::kMaxPrepopulatedEngineID));
-  CHECK(IsProfileEligibleForDseGuestPropagation());
+  CHECK(IsDsePropagationAllowedForGuest());
 
   if (prepopulated_id == GetSavedSearchEngineBetweenGuestSessions()) {
     return;

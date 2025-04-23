@@ -8,6 +8,8 @@ import("//rlz/buildflags/buildflags.gni")
 
 source_set("model") {
   sources = [
+    "ios_search_engine_choice_service_client.h",
+    "ios_search_engine_choice_service_client.mm",
     "search_engine_choice_service_factory.h",
     "search_engine_choice_service_factory.mm",
     "search_engine_java_script_feature.h",

@@ -8,8 +8,8 @@
 
 #import "base/check_deref.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
-#import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
+#import "ios/chrome/browser/search_engines/model/ios_search_engine_choice_service_client.h"
 #import "ios/chrome/browser/search_engines/model/template_url_prepopulate_data_resolver_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -46,14 +46,13 @@ SearchEngineChoiceServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<search_engines::SearchEngineChoiceService>(
+      std::make_unique<IOSSearchEngineChoiceServiceClient>(),
       CHECK_DEREF(profile->GetPrefs()),
       GetApplicationContext()->GetLocalState(),
       CHECK_DEREF(
           ios::RegionalCapabilitiesServiceFactory::GetForProfile(profile)),
       CHECK_DEREF(ios::TemplateURLPrepopulateDataResolverFactory::GetForProfile(
-          profile)),
-      /*is_profile_elibile_for_dse_guest_propagation=*/false,
-      GetApplicationContext()->GetVariationsService());
+          profile)));
 }
 
 }  // namespace ios

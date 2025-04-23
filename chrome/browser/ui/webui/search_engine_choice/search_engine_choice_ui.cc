@@ -129,7 +129,7 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
           &profile_.get());
   source->AddBoolean(
       "showGuestCheckbox",
-      search_engine_choice_service->IsProfileEligibleForDseGuestPropagation());
+      search_engine_choice_service->IsDsePropagationAllowedForGuest());
 
   webui::SetupWebUIDataSource(
       source, kSearchEngineChoiceResources,

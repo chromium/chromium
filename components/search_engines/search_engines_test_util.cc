@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
+#include "components/country_codes/country_codes.h"
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
@@ -68,4 +69,24 @@ void RemoveExtensionDefaultSearchFromPrefs(
     sync_preferences::TestingPrefServiceSyncable* prefs) {
   prefs->RemoveExtensionPref(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName);
+}
+
+FakeSearchEngineChoiceServiceClient::FakeSearchEngineChoiceServiceClient(
+    country_codes::CountryId variations_country,
+    bool is_profile_eligible_for_dse_guest_propagation)
+    : variations_country_(variations_country),
+      is_profile_eligible_for_dse_guest_propagation_(
+          is_profile_eligible_for_dse_guest_propagation) {}
+
+FakeSearchEngineChoiceServiceClient::~FakeSearchEngineChoiceServiceClient() =
+    default;
+
+country_codes::CountryId
+FakeSearchEngineChoiceServiceClient::GetVariationsCountry() {
+  return variations_country_;
+}
+
+bool FakeSearchEngineChoiceServiceClient::
+    IsProfileEligibleForDseGuestPropagation() {
+  return is_profile_eligible_for_dse_guest_propagation_;
 }

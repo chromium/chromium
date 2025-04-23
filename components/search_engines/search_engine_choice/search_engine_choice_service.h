@@ -45,22 +45,34 @@ class SearchEngineChoiceService : public KeyedService {
     virtual void OnSavedGuestSearchChanged() = 0;
   };
 
-  // This constructor should only be used in tests.
+  // Interface allowing SearchEngineChoiceService to have access to
+  // dependencies from higher level layers or that's can't be passed in
+  // at construction time, for example due to incompatible lifecycles.
+  class Client {
+   public:
+    virtual ~Client();
+
+    // Returns the Variations (Finch) country ID for this current run, or an
+    // invalid country ID if it's not available.
+    virtual country_codes::CountryId GetVariationsCountry() = 0;
+
+    // Returns whether this profile type is compatible with the
+    // Guest-specific default search engine propagation.
+    virtual bool IsProfileEligibleForDseGuestPropagation() = 0;
+
+   protected:
+    // Helper for subclass to have the possibility to share some of the
+    // implementation of `GetVariationsCountry()`.
+    static country_codes::CountryId GetVariationsLatestCountry(
+        variations::VariationsService* variations_service);
+  };
+
   SearchEngineChoiceService(
+      std::unique_ptr<Client> client,
       PrefService& profile_prefs,
       PrefService* local_state,
       regional_capabilities::RegionalCapabilitiesService& regional_capabilities,
-      TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver,
-      bool is_profile_eligible_for_dse_guest_propagation,
-      country_codes::CountryId variations_country_id =
-          country_codes::CountryId());
-  SearchEngineChoiceService(
-      PrefService& profile_prefs,
-      PrefService* local_state,
-      regional_capabilities::RegionalCapabilitiesService& regional_capabilities,
-      TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver,
-      bool is_profile_eligible_for_dse_guest_propagation,
-      variations::VariationsService* variations_service);
+      TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver);
   ~SearchEngineChoiceService() override;
 
   // Returns the choice screen eligibility condition most relevant for the
@@ -119,7 +131,7 @@ class SearchEngineChoiceService : public KeyedService {
 
   // Returns whether the profile is eligible for the default search engine to be
   // used across all guest sessions.
-  bool IsProfileEligibleForDseGuestPropagation() const;
+  bool IsDsePropagationAllowedForGuest() const;
 
   // Returns the previously chosen default search engine configured to be
   // propagated to new guest sessions. Returns nullopt if the profile is
@@ -138,10 +150,6 @@ class SearchEngineChoiceService : public KeyedService {
   // Register Local state preferences in `registry`.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
-  void SetIsProfileEligibleForDseGuestPropagationForTesting(bool eligible) {
-    is_profile_eligible_for_dse_guest_propagation_ = eligible;
-  }
-
  private:
   // Checks if the search engine choice should be prompted again, based on
   // experiment parameters. If a reprompt is needed, some preferences related to
@@ -150,15 +158,14 @@ class SearchEngineChoiceService : public KeyedService {
 
   void ProcessPendingChoiceScreenDisplayState();
 
+  std::unique_ptr<Client> client_;
   const raw_ref<PrefService> profile_prefs_;
   const raw_ptr<PrefService> local_state_;
   const raw_ref<regional_capabilities::RegionalCapabilitiesService>
       regional_capabilities_service_;
   const raw_ref<TemplateURLPrepopulateData::Resolver>
       prepopulate_data_resolver_;
-  bool is_profile_eligible_for_dse_guest_propagation_ = false;
   base::ObserverList<Observer> observers_;
-  const country_codes::CountryId variations_country_id_;
 
   // Used to ensure that the value returned from `GetCountryId` never changes
   // in runtime (different runs can still return different values, though).

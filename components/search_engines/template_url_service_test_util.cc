@@ -17,6 +17,7 @@
 #include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/keyword_table.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
+#include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_prepopulate_data_resolver.h"
@@ -92,10 +93,9 @@ void TemplateURLServiceUnitTestBase::SetUp() {
 
   search_engine_choice_service_ =
       std::make_unique<search_engines::SearchEngineChoiceService>(
+          std::make_unique<FakeSearchEngineChoiceServiceClient>(),
           pref_service_, &local_state_, *regional_capabilities_service_,
-          *prepopulate_data_resolver_,
-          /*is_profile_eligible_for_dse_guest_propagation=*/false,
-          country_codes::CountryId());
+          *prepopulate_data_resolver_);
 
   template_url_service_ = CreateService();
 }
