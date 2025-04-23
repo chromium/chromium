@@ -19,13 +19,14 @@ TEST(StreamParserFactoryTest, HlsProbeParserTest) {
             nullptr);
 
   // These are feature gated!
-  EXPECT_EQ(StreamParserFactory::CreateRelaxedParser(
+  EXPECT_NE(StreamParserFactory::CreateRelaxedParser(
                 RelaxedParserSupportedType::kMP4),
             nullptr);
 
   {
-    base::test::ScopedFeatureList enable_mp4{kBuiltInHlsMP4};
-    EXPECT_NE(StreamParserFactory::CreateRelaxedParser(
+    base::test::ScopedFeatureList disable_mp4;
+    disable_mp4.InitAndDisableFeature(kBuiltInHlsMP4);
+    EXPECT_EQ(StreamParserFactory::CreateRelaxedParser(
                   RelaxedParserSupportedType::kMP4),
               nullptr);
   }

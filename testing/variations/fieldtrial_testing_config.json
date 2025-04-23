@@ -3741,22 +3741,6 @@
             ]
         }
     ],
-    "BuiltInHlsMP4": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BuiltInHlsMP4"
-                    ]
-                }
-            ]
-        }
-    ],
     "BusyLoopOnMainThread": [
         {
             "platforms": [
