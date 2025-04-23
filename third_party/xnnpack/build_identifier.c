@@ -25,7 +25,6 @@
 // - external/xnnpack+/src/f16-f32-vcvt/gen/f16-f32-vcvt-avx-int16-u16.c
 // - external/xnnpack+/src/f16-f32-vcvt/gen/f16-f32-vcvt-avx512skx-u16.c
 // - external/xnnpack+/src/f16-f32-vcvt/gen/f16-f32-vcvt-f16c-u16.c
-// - external/xnnpack+/src/f16-f32-vcvt/gen/f16-f32-vcvt-scalar-u1.c
 // - external/xnnpack+/src/f16-f32-vcvt/gen/f16-f32-vcvt-scalar-u4.c
 // - external/xnnpack+/src/f16-f32-vcvt/gen/f16-f32-vcvt-sse2-int16-u32.c
 // - external/xnnpack+/src/f16-f32-vcvt/gen/f16-f32-vcvt-sse41-int16-u16.c
@@ -163,7 +162,6 @@
 // - external/xnnpack+/src/f32-f16-vcvt/gen/f32-f16-vcvt-avx-u24.c
 // - external/xnnpack+/src/f32-f16-vcvt/gen/f32-f16-vcvt-avx512skx-u16.c
 // - external/xnnpack+/src/f32-f16-vcvt/gen/f32-f16-vcvt-f16c-u16.c
-// - external/xnnpack+/src/f32-f16-vcvt/gen/f32-f16-vcvt-scalar-bitcast-u4.c
 // - external/xnnpack+/src/f32-f16-vcvt/gen/f32-f16-vcvt-scalar-fabsf-u2.c
 // - external/xnnpack+/src/f32-f16-vcvt/gen/f32-f16-vcvt-sse2-u16.c
 // - external/xnnpack+/src/f32-f16-vcvt/gen/f32-f16-vcvt-sse41-u8.c
@@ -651,8 +649,6 @@
 // - external/xnnpack+/src/qs8-f32-vcvt/gen/qs8-f32-vcvt-scalar-u4.c
 // - external/xnnpack+/src/qs8-f32-vcvt/gen/qs8-f32-vcvt-sse2-u32.c
 // - external/xnnpack+/src/qs8-f32-vcvt/gen/qs8-f32-vcvt-sse41-u16.c
-// - external/xnnpack+/src/qs8-packw/gen/qs8-packw-x128c4-gemm-gio-scalar.c
-// - external/xnnpack+/src/qs8-packw/gen/qs8-packw-x128c4-gemm-goi-scalar.c
 // - external/xnnpack+/src/qs8-packw/gen/qs8-packw-x16c8-gemm-goi-avx256vnni-prfm.c
 // - external/xnnpack+/src/qs8-packw/gen/qs8-packw-x16c8-gemm-goi-scalar.c
 // - external/xnnpack+/src/qs8-packw/gen/qs8-packw-x64c4-gemm-goi-avx256vnni-prfm.c
@@ -984,10 +980,10 @@
 #include <string.h>
 
 static const uint8_t xnn_build_identifier[] = {
-   66, 140, 193, 209, 115,  46, 254,  12,
-   13,   7, 249,  26,  25, 239, 198, 124,
-  103, 135,  74, 223, 216,  76,  58,  72,
-  183,   8, 248,  66, 148, 193, 124, 145
+  152, 203, 212, 119,  39, 118, 123, 250,
+   96, 236, 185, 225, 120, 205,  27, 206,
+    0, 107,  22,  62, 120, 197,  87, 163,
+   49, 152,  23, 241, 154, 219, 192,   9
 };
 
 size_t xnn_experimental_get_build_identifier_size() {

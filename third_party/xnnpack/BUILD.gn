@@ -2099,7 +2099,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f16-f32-vcvt/gen/f16-f32-vcvt-scalar-u1.c",
       "src/src/f16-f32-vcvt/gen/f16-f32-vcvt-scalar-u4.c",
     ]
 
@@ -2123,7 +2122,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f16-f32-vcvt/gen/f16-f32-vcvt-scalar-u1.c",
       "src/src/f16-f32-vcvt/gen/f16-f32-vcvt-scalar-u4.c",
     ]
 
@@ -5438,7 +5436,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-f16-vcvt/gen/f32-f16-vcvt-scalar-bitcast-u4.c",
       "src/src/f32-f16-vcvt/gen/f32-f16-vcvt-scalar-fabsf-u2.c",
     ]
 
@@ -5462,7 +5459,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-f16-vcvt/gen/f32-f16-vcvt-scalar-bitcast-u4.c",
       "src/src/f32-f16-vcvt/gen/f32-f16-vcvt-scalar-fabsf-u2.c",
     ]
 
@@ -14293,7 +14289,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       "src/src/operators/resize-bilinear-nchw.c",
       "src/src/operators/resize-bilinear-nhwc.c",
       "src/src/operators/rope-nthc.c",
-      "src/src/operators/scaled-dot-product-attention-nhtc.c",
       "src/src/operators/slice-nd.c",
       "src/src/operators/softmax-nc.c",
       "src/src/operators/transpose-nd.c",
@@ -14337,7 +14332,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       "src/src/operators/resize-bilinear-nchw.c",
       "src/src/operators/resize-bilinear-nhwc.c",
       "src/src/operators/rope-nthc.c",
-      "src/src/operators/scaled-dot-product-attention-nhtc.c",
       "src/src/operators/slice-nd.c",
       "src/src/operators/softmax-nc.c",
       "src/src/operators/transpose-nd.c",
@@ -18286,8 +18280,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/qs8-packw/gen/qs8-packw-x128c4-gemm-gio-scalar.c",
-      "src/src/qs8-packw/gen/qs8-packw-x128c4-gemm-goi-scalar.c",
       "src/src/qs8-packw/gen/qs8-packw-x16c8-gemm-goi-scalar.c",
     ]
 
@@ -18311,8 +18303,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/qs8-packw/gen/qs8-packw-x128c4-gemm-gio-scalar.c",
-      "src/src/qs8-packw/gen/qs8-packw-x128c4-gemm-goi-scalar.c",
       "src/src/qs8-packw/gen/qs8-packw-x16c8-gemm-goi-scalar.c",
     ]
 
@@ -26884,7 +26874,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       "src/src/subgraph/pack-lh.c",
       "src/src/subgraph/reshape-helpers.c",
       "src/src/subgraph/rope.c",
-      "src/src/subgraph/scaled-dot-product-attention.c",
       "src/src/subgraph/softmax.c",
       "src/src/subgraph/space-to-depth-2d.c",
       "src/src/subgraph/static-constant-pad.c",
@@ -26935,7 +26924,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       "src/src/subgraph/pack-lh.c",
       "src/src/subgraph/reshape-helpers.c",
       "src/src/subgraph/rope.c",
-      "src/src/subgraph/scaled-dot-product-attention.c",
       "src/src/subgraph/softmax.c",
       "src/src/subgraph/space-to-depth-2d.c",
       "src/src/subgraph/static-constant-pad.c",
@@ -30073,7 +30061,6 @@ if (current_cpu == "arm64") {
       "src/include/xnnpack.h",
       "src/src/f16-f32-vcvt/gen/f16-f32-vcvt-neon-int16-u16.c",
       "src/src/f16-f32-vcvt/gen/f16-f32-vcvt-neonfp16-u16.c",
-      "src/src/f16-f32-vcvt/gen/f16-f32-vcvt-scalar-u1.c",
       "src/src/f16-f32-vcvt/gen/f16-f32-vcvt-scalar-u4.c",
     ]
 
@@ -30099,7 +30086,6 @@ if (current_cpu == "arm64") {
       "src/include/xnnpack.h",
       "src/src/f16-f32-vcvt/gen/f16-f32-vcvt-neon-int16-u16.c",
       "src/src/f16-f32-vcvt/gen/f16-f32-vcvt-neonfp16-u16.c",
-      "src/src/f16-f32-vcvt/gen/f16-f32-vcvt-scalar-u1.c",
       "src/src/f16-f32-vcvt/gen/f16-f32-vcvt-scalar-u4.c",
     ]
 
@@ -32617,7 +32603,6 @@ if (current_cpu == "arm64") {
       "src/include/xnnpack.h",
       "src/src/f32-f16-vcvt/gen/f32-f16-vcvt-neon-u8.c",
       "src/src/f32-f16-vcvt/gen/f32-f16-vcvt-neonfp16-u16.c",
-      "src/src/f32-f16-vcvt/gen/f32-f16-vcvt-scalar-bitcast-u4.c",
       "src/src/f32-f16-vcvt/gen/f32-f16-vcvt-scalar-fabsf-u2.c",
     ]
 
@@ -32643,7 +32628,6 @@ if (current_cpu == "arm64") {
       "src/include/xnnpack.h",
       "src/src/f32-f16-vcvt/gen/f32-f16-vcvt-neon-u8.c",
       "src/src/f32-f16-vcvt/gen/f32-f16-vcvt-neonfp16-u16.c",
-      "src/src/f32-f16-vcvt/gen/f32-f16-vcvt-scalar-bitcast-u4.c",
       "src/src/f32-f16-vcvt/gen/f32-f16-vcvt-scalar-fabsf-u2.c",
     ]
 
@@ -35009,7 +34993,6 @@ if (current_cpu == "arm64") {
       "src/src/operators/resize-bilinear-nchw.c",
       "src/src/operators/resize-bilinear-nhwc.c",
       "src/src/operators/rope-nthc.c",
-      "src/src/operators/scaled-dot-product-attention-nhtc.c",
       "src/src/operators/slice-nd.c",
       "src/src/operators/softmax-nc.c",
       "src/src/operators/transpose-nd.c",
@@ -35053,7 +35036,6 @@ if (current_cpu == "arm64") {
       "src/src/operators/resize-bilinear-nchw.c",
       "src/src/operators/resize-bilinear-nhwc.c",
       "src/src/operators/rope-nthc.c",
-      "src/src/operators/scaled-dot-product-attention-nhtc.c",
       "src/src/operators/slice-nd.c",
       "src/src/operators/softmax-nc.c",
       "src/src/operators/transpose-nd.c",
@@ -37043,8 +37025,6 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/qs8-packw/gen/qs8-packw-x128c4-gemm-gio-scalar.c",
-      "src/src/qs8-packw/gen/qs8-packw-x128c4-gemm-goi-scalar.c",
       "src/src/qs8-packw/gen/qs8-packw-x16c8-gemm-goi-scalar.c",
     ]
 
@@ -37068,8 +37048,6 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/qs8-packw/gen/qs8-packw-x128c4-gemm-gio-scalar.c",
-      "src/src/qs8-packw/gen/qs8-packw-x128c4-gemm-goi-scalar.c",
       "src/src/qs8-packw/gen/qs8-packw-x16c8-gemm-goi-scalar.c",
     ]
 
@@ -39409,7 +39387,6 @@ if (current_cpu == "arm64") {
       "src/src/subgraph/pack-lh.c",
       "src/src/subgraph/reshape-helpers.c",
       "src/src/subgraph/rope.c",
-      "src/src/subgraph/scaled-dot-product-attention.c",
       "src/src/subgraph/softmax.c",
       "src/src/subgraph/space-to-depth-2d.c",
       "src/src/subgraph/static-constant-pad.c",
@@ -39460,7 +39437,6 @@ if (current_cpu == "arm64") {
       "src/src/subgraph/pack-lh.c",
       "src/src/subgraph/reshape-helpers.c",
       "src/src/subgraph/rope.c",
-      "src/src/subgraph/scaled-dot-product-attention.c",
       "src/src/subgraph/softmax.c",
       "src/src/subgraph/space-to-depth-2d.c",
       "src/src/subgraph/static-constant-pad.c",
