@@ -1369,6 +1369,33 @@ TEST_F(TabGroupSyncServiceTest, OnTabSelected) {
       "TabGroups.Sync.TabGroup.TabSelected.GroupCreateOrigin", 1u);
 }
 
+TEST_F(TabGroupSyncServiceTest,
+       TabGroupUpdateFromSyncWillUpdateLastSeenTimestampOfFocusedTab) {
+  // Initialize a shared tab group with one tab. The tab doesn't have last seen
+  // timestamp set.
+  MakeTabGroupShared(local_group_id_1_, kCollaborationId);
+  const SavedTabGroup* group = model_->Get(local_group_id_1_);
+  CHECK(group);
+  base::Uuid shared_group_id = group->saved_guid();
+  const SavedTabGroupTab* tab = group->GetTab(local_tab_id_1_);
+  EXPECT_FALSE(tab->last_seen_time_windows_epoch_micros().has_value());
+
+  // Fake that the tab is selected.
+  EXPECT_CALL(*coordinator_, GetSelectedTabs())
+      .WillRepeatedly(Return(std::set<LocalTabID>({local_tab_id_1_})));
+
+  // Update the group from sync. Since the tab is selected, it should
+  // result in updating the last seen timestamp.
+  TabGroupVisualData visual_data = test::CreateTabGroupVisualData();
+  EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(shared_group_id),
+                                            Eq(TriggerSource::REMOTE)))
+      .Times(1);
+  model_->UpdatedVisualDataFromSync(shared_group_id, &visual_data);
+  WaitForPostedTasks();
+
+  EXPECT_TRUE(tab->last_seen_time_windows_epoch_micros().has_value());
+}
+
 TEST_F(TabGroupSyncServiceTest, OnTabSelectedForNonExistingTab) {
   auto local_tab_group_id_2 = test::GenerateRandomTabGroupID();
   auto local_tab_id_2 = test::GenerateRandomTabID();

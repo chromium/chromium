@@ -1243,12 +1243,35 @@ void TabGroupSyncServiceImpl::HandleTabGroupUpdated(
     return;
   }
 
+  UpdateLastSeenTimeForAnyFocusedTabForRemoteUpdates(saved_tab_group, source);
+
   // Post task is used here to avoid reentrancy. See crbug.com/373500807 for
   // details.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&TabGroupSyncServiceImpl::NotifyTabGroupUpdated,
                      weak_ptr_factory_.GetWeakPtr(), group_guid, source));
+}
+
+void TabGroupSyncServiceImpl::
+    UpdateLastSeenTimeForAnyFocusedTabForRemoteUpdates(
+        const SavedTabGroup* group,
+        TriggerSource source) {
+  if (source != TriggerSource::REMOTE) {
+    return;
+  }
+
+  if (!group->is_shared_tab_group()) {
+    return;
+  }
+
+  for (const LocalTabID& local_tab_id : GetSelectedTabs()) {
+    const SavedTabGroupTab* tab = group->GetTab(local_tab_id);
+    if (tab) {
+      model_->UpdateTabLastSeenTime(group->saved_guid(), tab->saved_tab_guid(),
+                                    base::Time::Now(), TriggerSource::LOCAL);
+    }
+  }
 }
 
 void TabGroupSyncServiceImpl::NotifyTabGroupAdded(const base::Uuid& guid,

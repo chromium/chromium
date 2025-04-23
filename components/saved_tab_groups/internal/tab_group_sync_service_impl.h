@@ -352,6 +352,11 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   std::optional<SavedTabGroup> FindGroupWithCollaborationId(
       const syncer::CollaborationId& collaboration_id);
 
+  // Updates the last seen time for any focused thab in the given tab group.
+  void UpdateLastSeenTimeForAnyFocusedTabForRemoteUpdates(
+      const SavedTabGroup* group,
+      TriggerSource source);
+
   // The in-memory model representing the currently present saved tab groups.
   std::unique_ptr<SavedTabGroupModel> model_;
 
