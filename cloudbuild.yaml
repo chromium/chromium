@@ -2,8 +2,8 @@
 timeout: 43200s
 
 options:
-  machineType: 'E2_HIGHCPU_32'
-  diskSizeGb: 200
+  pool:
+    name: 'projects/protected-app-builds/locations/us-east4/workerPools/e2-standard-32-private-pool'
   logging: 'CLOUD_LOGGING_ONLY'
 
 steps:
