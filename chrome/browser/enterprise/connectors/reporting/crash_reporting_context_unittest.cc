@@ -22,7 +22,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Channel override is not supported on Android platform
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/scoped_channel_override.h"
 #endif
 
@@ -51,7 +52,7 @@ void CreateCrashReport(crashpad::CrashReportDatabase* database,
             crashpad::CrashReportDatabase::kNoError);
 }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_ANDROID)
 // Duplicating the definition of these variables here to ensure that changes to
 // those values in the source file are deliberate and caught by tests otherwise.
 constexpr char kCrashpadPollingIntervalFlag[] = "crashpad-polling-interval";
@@ -98,7 +99,7 @@ TEST_F(CrashReportingContextTest, GetAndSetLatestCrashReportingTime) {
 TEST_F(CrashReportingContextTest, UploadToReportingServer) {
   TestingPrefServiceSimple pref_service;
   pref_service.registry()->RegisterInt64Pref(kLatestCrashReportCreationTime, 0);
-  EXPECT_EQ(0u, GetLatestCrashReportTime(&pref_service));
+  EXPECT_EQ(static_cast<long>(0u), GetLatestCrashReportTime(&pref_service));
 
   time_t timestamp = base::Time::Now().ToTimeT();
   std::vector<crashpad::CrashReportDatabase::Report> reports;
@@ -132,7 +133,7 @@ TEST_F(CrashReportingContextTest, UploadToReportingServer) {
   EXPECT_EQ(timestamp, GetLatestCrashReportTime(&pref_service));
 }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_ANDROID)
 
 struct PollingIntervalParams {
   PollingIntervalParams(chrome::ScopedChannelOverride::Channel channel,
@@ -173,7 +174,7 @@ INSTANTIATE_TEST_SUITE_P(
                               "10",
                               kDefaultCrashpadPollingIntervalSeconds)));
 
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_ANDROID)
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
