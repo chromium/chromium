@@ -133,7 +133,12 @@ BASE_FEATURE(kDigitalCredentialsHybridLinking,
 // Default enabled in M136. Remove in or after M139.
 BASE_FEATURE(kWebAuthnPasskeyUpgrade,
              "WebAuthenticationPasskeyUpgrade",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 // Disabled by default.
 BASE_FEATURE(kWebAuthnEnclaveAttestation,
