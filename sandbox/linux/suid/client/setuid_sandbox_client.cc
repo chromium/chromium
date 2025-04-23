@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/string_number_conversions.h"
 #include "sandbox/linux/suid/common/sandbox.h"
 
@@ -45,7 +46,7 @@ int GetHelperApi(base::Environment* env) {
 
 // Convert |var_name| from the environment |env| to an int.
 // Return -1 if the variable does not exist or the value cannot be converted.
-int EnvToInt(base::Environment* env, const char* var_name) {
+int EnvToInt(base::Environment* env, base::cstring_view var_name) {
   std::string var_string = env->GetVar(var_name).value_or(std::string());
   int var_value = -1;
   if (!var_string.empty() && !base::StringToInt(var_string, &var_value)) {
