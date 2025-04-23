@@ -297,8 +297,8 @@ crbug.com/1462226 wpt_internal/prerender/restriction-web-auth.https.html [ Crash
 crbug.com/1461952 [ Win10.20h2 ] external/wpt/html/browsers/browsing-the-web/back-forward-cache/eligibility/broadcast-channel.html [ Pass Timeout ]
 
 # Tests flaky on many platforms and bots
-crbug.com/374891025 external/wpt/speculation-rules/prerender/csp-script-src-self.html?target_hint=_self [ Failure Pass ]
-crbug.com/374891025 external/wpt/speculation-rules/prerender/csp-script-src-self.html?target_hint=_blank [ Failure Pass ]
+crbug.com/374891025 external/wpt/speculation-rules/prerender/csp-script-src-self.https.html?target_hint=_self [ Failure Pass ]
+crbug.com/374891025 external/wpt/speculation-rules/prerender/csp-script-src-self.https.html?target_hint=_blank [ Failure Pass ]
 
 # These tests are flaky with BFCache, which is enabled by default.
 crbug.com/1311546 http/tests/test-runner/back-forward.html [ Failure Pass ]
@@ -2563,7 +2563,7 @@ crbug.com/626703 [ Linux ] external/wpt/web-bundle/subresource-loading/reuse-web
 crbug.com/626703 [ Mac ] external/wpt/web-bundle/subresource-loading/reuse-web-bundle-resource.https.tentative.html [ Failure ]
 crbug.com/626703 external/wpt/service-workers/service-worker/navigation-timing-extended.https.html [ Failure ]
 crbug.com/626703 external/wpt/preload/preload-resource-match.https.html [ Failure ]
-crbug.com/1359555 external/wpt/speculation-rules/prerender/workers.html [ Failure Timeout ]
+crbug.com/1359555 external/wpt/speculation-rules/prerender/workers.https.html [ Failure Timeout ]
 crbug.com/324447993 external/wpt/web-locks/clientids.https.html [ Failure ]
 crbug.com/343770003 external/wpt/trusted-types/WorkerGlobalScope-eval.html [ Failure ]
 crbug.com/355428699 external/wpt/scroll-to-text-fragment/find-range-from-text-directive.html [ Failure Pass Timeout ]
@@ -2718,7 +2718,7 @@ crbug.com/396813145 virtual/threaded/external/wpt/css/css-view-transitions/anima
 crbug.com/396813145 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/animation-name-ua-prefix.html [ Failure ]
 crbug.com/396813145 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/animation-name-ua-prefix.html [ Failure ]
 crbug.com/396460424 [ Mac14 ] external/wpt/html/semantics/the-button-element/command-and-commandfor/button-event-dispatch.tentative.html [ Crash Failure ]
-crbug.com/395921918 [ Mac12 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/restriction-focus.html [ Crash Failure ]
+crbug.com/395921918 [ Mac12 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/restriction-focus.https.html [ Crash Failure ]
 crbug.com/395482243 external/wpt/webdriver/tests/bidi/browsing_context/context_created/context_created.py [ Timeout ]
 crbug.com/395482243 external/wpt/webdriver/tests/bidi/browsing_context/context_destroyed/original_opener.py [ Timeout ]
 crbug.com/395482243 external/wpt/webdriver/tests/bidi/browsing_context/get_tree/original_opener.py [ Timeout ]
@@ -2867,8 +2867,8 @@ crbug.com/383814059 [ Win11-arm64 ] external/wpt/css/css-paint-api/geometry-back
 [ Mac14 ] external/wpt/webrtc/protocol/video-codecs.https.html [ Timeout ]
 crbug.com/383609766 [ Mac15 ] external/wpt/webrtc/receiver-track-live.https.html [ Timeout ]
 crbug.com/383595852 [ Mac15 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/service-workers.https.html [ Skip Timeout ]
-crbug.com/383369477 [ Mac13 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/activation-start.html [ Skip Timeout ]
-crbug.com/383369477 [ Mac14 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/activation-start.html [ Skip Timeout ]
+crbug.com/383369477 [ Mac13 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/activation-start.https.html [ Skip Timeout ]
+crbug.com/383369477 [ Mac14 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/activation-start.https.html [ Skip Timeout ]
 crbug.com/383369477 [ Mac13 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/service-workers.https.html [ Skip Timeout ]
 crbug.com/383369477 [ Mac14 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/service-workers.https.html [ Skip Timeout ]
 crbug.com/40288240 [ Mac14 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/protocol-handler-register.https.html [ Pass Timeout ] # Flaky only on Mac14
@@ -3730,8 +3730,8 @@ crbug.com/1520703 wpt_internal/prerender/unload-on-prerender-same-origin-subfram
 # TODO(crbug.com/1315625): Re-enable this test
 crbug.com/626703 external/wpt/webrtc-encoded-transform/sframe-keys.https.html [ Crash Failure Pass Timeout ]
 crbug.com/331556923 external/wpt/geolocation-API/getCurrentPosition_permission_allow.https.html [ Timeout ]
-crbug.com/626703 [ Mac ] external/wpt/speculation-rules/prerender/media-autoplay.html [ Skip Timeout ]
-crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/media-autoplay.html [ Skip Timeout ]
+crbug.com/626703 [ Mac ] external/wpt/speculation-rules/prerender/media-autoplay.https.html [ Skip Timeout ]
+crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/media-autoplay.https.html [ Skip Timeout ]
 crbug.com/331556923 external/wpt/geolocation-API/idlharness.https.window.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/webrtc/RTCConfiguration-iceTransportPolicy.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/selection/textcontrols/onselectionchange-content-attribute.html [ Timeout ]
@@ -3873,9 +3873,10 @@ crbug.com/1500354 external/wpt/pointerevents/pointerevent_after_target_removed_i
 crbug.com/1500354 external/wpt/pointerevents/pointerevent_after_target_removed_interleaved.tentative.html?touch [ Failure ]
 
 ### external/wpt/speculation-rules/prerender
-crbug.com/1126305 external/wpt/speculation-rules/prerender/restrictions.html [ Skip Timeout ]
+crbug.com/1126305 external/wpt/speculation-rules/prerender/restrictions.https.html [ Skip Timeout ]
 # Failures for other reasons.
 crbug.com/343754418 virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/no-vary-search-hint.https.html?17-17 [ Failure ]
+crbug.com/383653154 virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/restriction-speech-synthesis.https.html [ Skip Timeout ]
 
 ### See crbug.com/891427 comment near the top of this file:
 crbug.com/367760 external/wpt/svg/pservers/reftests/meshgradient-basic-004.svg [ Failure ]
@@ -7192,7 +7193,7 @@ crbug.com/1446039 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.
 [ Debug Mac13 ] http/tests/devtools/elements/styles-4/styles-update-links-1.js [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?10-10 [ Failure ]
 [ Debug Mac13 ] http/tests/devtools/console/console-tests.js [ Skip Timeout ]
-[ Debug Mac13 ] external/wpt/speculation-rules/prerender/response-code-successful.html?code=202 [ Failure ]
+[ Debug Mac13 ] external/wpt/speculation-rules/prerender/response-code-successful.https.html?code=202 [ Failure ]
 [ Debug Mac13 ] virtual/threaded/animations/stability/zero-duration-large-start-delay.html [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/content-security-policy/resource-hints/prefetch-generate-directives.html [ Skip Timeout ]
 [ Debug Mac13 ] fast/forms/number/number-appearance-vertical.html [ Failure ]
@@ -7620,7 +7621,7 @@ crbug.com/1521140 [ Mac ] inspector-protocol/timeline/render-blocking-style.js [
 crbug.com/323699772 [ Win ] external/wpt/fedcm/fedcm-domainhint.https.html [ Pass Timeout ]
 crbug.com/323699772 [ Win ] external/wpt/fedcm/fedcm-error-basic.https.html [ Pass Timeout ]
 crbug.com/41496645 [ Linux ] external/wpt/css/css-contain/content-visibility/content-visibility-with-top-layer-008.html [ Failure Pass ]
-crbug.com/41490297 virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/prerender-while-prerender.html [ Failure Pass ]
+crbug.com/41490297 virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/prerender-while-prerender.https.html [ Failure Pass ]
 
 # Gardener 2024-02-08
 crbug.com/324436866 external/wpt/webdriver/tests/bidi/browsing_context/context_destroyed/context_destroyed.py [ Failure Timeout ]
@@ -7894,8 +7895,8 @@ crbug.com/374090995 [ Mac14-arm64 ] fast/webgl/offscreenCanvas-transferToImageBi
 [ Debug Mac14 ] virtual/prefer_compositing_to_lcd_text/scrollbars/custom-scrollbar-thumb-inactive-pseudo.html [ Failure Pass ]
 [ Debug Mac14 ] scrollbars/custom-scrollbar-thumb-focus-iframe-inactive-pseudo.html [ Failure Pass ]
 [ Debug Mac14 ] virtual/shared-storage-fenced-frame-mparch/http/tests/inspector-protocol/shared-storage/shared-storage.js [ Failure Pass ]
-[ Debug Mac14 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/response-code-successful.html?code=201 [ Failure Pass ]
-[ Debug Mac14 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/response-code-successful.html?code=203 [ Failure Pass ]
+[ Debug Mac14 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/response-code-successful.https.html?code=201 [ Failure Pass ]
+[ Debug Mac14 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/response-code-successful.https.html?code=203 [ Failure Pass ]
 [ Debug Mac14-arm64 ] accessibility/notification-listeners.html [ Failure ]
 [ Debug Mac14-arm64 ] external/wpt/webxr/xrSession_requestReferenceSpace_features.https.html [ Failure ]
 [ Debug Mac14-arm64 ] media/controls/doubletap-to-jump-backwards.html [ Failure Pass Timeout ]
