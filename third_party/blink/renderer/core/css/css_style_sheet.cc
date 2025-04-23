@@ -346,8 +346,8 @@ void CSSStyleSheet::RemovedAdoptedFromTreeScope(TreeScope& tree_scope) {
   }
 }
 
-bool CSSStyleSheet::IsAdoptedByTreeScope(TreeScope& tree_scope) {
-  return adopted_tree_scopes_.Contains(&tree_scope);
+bool CSSStyleSheet::IsAdoptedByTreeScope(const TreeScope& tree_scope) {
+  return adopted_tree_scopes_.Contains(const_cast<TreeScope*>(&tree_scope));
 }
 
 bool CSSStyleSheet::HasViewportDependentMediaQueries() const {

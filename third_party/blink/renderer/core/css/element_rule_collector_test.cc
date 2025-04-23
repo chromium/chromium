@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/test/trace_event_analyzer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
@@ -13,6 +14,7 @@
 #include "third_party/blink/renderer/core/css/resolver/element_resolve_context.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/selector_filter.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -21,8 +23,10 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
+#include "third_party/blink/renderer/core/inspector/invalidation_set_to_selector_map.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
@@ -720,6 +724,87 @@ TEST_F(ElementRuleCollectorTest, HighlightsUseCounted) {
       GetDocument().IsUseCounted(WebFeature::kSpellingErrorPseudoElement));
   EXPECT_TRUE(
       GetDocument().IsUseCounted(WebFeature::kGrammarErrorPseudoElement));
+}
+
+CORE_EXPORT const CSSStyleSheet* FindStyleSheet(
+    const TreeScope* tree_scope_containing_rule,
+    const Document& document,
+    const StyleRule* rule);
+
+TEST_F(ElementRuleCollectorTest, FindStyleSheetWithCacheEnabled) {
+  ScopedUseStyleRuleMapForSelectorStatsForTest scoped_feature_for_test(true);
+  trace_analyzer::Start(
+      TRACE_DISABLED_BY_DEFAULT("devtools.timeline.invalidationTracking"));
+  InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(
+      GetDocument(), GetDocument().GetStyleEngine());
+  EXPECT_TRUE(InvalidationSetToSelectorMap::IsTracking());
+
+  SetBodyInnerHTML(R"HTML(
+    <style id=target>
+      .a .b { color: red; }
+    </style>
+  )HTML");
+
+  const CSSStyleSheet* author_sheet =
+      To<HTMLStyleElement>(GetElementById("target"))->sheet();
+  const StyleRule* author_rule =
+      To<StyleRule>(author_sheet->Contents()->ChildRules()[0].Get());
+  EXPECT_EQ(FindStyleSheet(&GetDocument(), GetDocument(), author_rule),
+            author_sheet);
+
+  StyleSheetContents* user_contents = MakeGarbageCollected<StyleSheetContents>(
+      MakeGarbageCollected<CSSParserContext>(GetDocument()));
+  user_contents->ParseString(".c .d { color: green; }");
+  StyleSheetKey user_key("user");
+  GetDocument().GetStyleEngine().InjectSheet(user_key, user_contents,
+                                             WebCssOrigin::kUser);
+  UpdateAllLifecyclePhasesForTest();
+  const StyleRule* user_rule =
+      To<StyleRule>(user_contents->ChildRules()[0].Get());
+  EXPECT_EQ(FindStyleSheet(nullptr, GetDocument(), user_rule)->Contents(),
+            user_contents);
+
+  const StyleRule* rule_not_in_sheet = To<StyleRule>(
+      css_test_helpers::ParseRule(GetDocument(), ".e .f { color: blue; }"));
+  EXPECT_EQ(FindStyleSheet(nullptr, GetDocument(), rule_not_in_sheet), nullptr);
+
+  trace_analyzer::Stop();
+  InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(
+      GetDocument(), GetDocument().GetStyleEngine());
+  EXPECT_FALSE(InvalidationSetToSelectorMap::IsTracking());
+}
+
+TEST_F(ElementRuleCollectorTest, FindStyleSheetWithCacheDisabled) {
+  ScopedUseStyleRuleMapForSelectorStatsForTest scoped_feature_for_test(false);
+
+  SetBodyInnerHTML(R"HTML(
+    <style id=target>
+      .a .b { color: red; }
+    </style>
+  )HTML");
+
+  const CSSStyleSheet* author_sheet =
+      To<HTMLStyleElement>(GetElementById("target"))->sheet();
+  const StyleRule* author_rule =
+      To<StyleRule>(author_sheet->Contents()->ChildRules()[0].Get());
+  EXPECT_EQ(FindStyleSheet(&GetDocument(), GetDocument(), author_rule),
+            author_sheet);
+
+  StyleSheetContents* user_contents = MakeGarbageCollected<StyleSheetContents>(
+      MakeGarbageCollected<CSSParserContext>(GetDocument()));
+  user_contents->ParseString(".c .d { color: green; }");
+  StyleSheetKey user_key("user");
+  GetDocument().GetStyleEngine().InjectSheet(user_key, user_contents,
+                                             WebCssOrigin::kUser);
+  UpdateAllLifecyclePhasesForTest();
+  const StyleRule* user_rule =
+      To<StyleRule>(user_contents->ChildRules()[0].Get());
+  EXPECT_EQ(FindStyleSheet(nullptr, GetDocument(), user_rule)->Contents(),
+            user_contents);
+
+  const StyleRule* rule_not_in_sheet = To<StyleRule>(
+      css_test_helpers::ParseRule(GetDocument(), ".e .f { color: blue; }"));
+  EXPECT_EQ(FindStyleSheet(nullptr, GetDocument(), rule_not_in_sheet), nullptr);
 }
 
 }  // namespace blink

@@ -61,7 +61,13 @@ class CORE_EXPORT InvalidationSetToSelectorMap final
   // appropriate configuration has started, or deletes an existing mapping if
   // tracing is no longer enabled.
   static void StartOrStopTrackingIfNeeded(const TreeScope& tree_scope,
-                                          StyleEngine& style_engine);
+                                          const StyleEngine& style_engine);
+
+  // Returns true if a mapping is active and tracking invalidations.
+  // This is primarily intended for tests. Product code generally should not
+  // need to call this; the other static entry points will check this state and
+  // immediately return if tracking is not active.
+  static bool IsTracking();
 
   // Call at the start and end of indexing rules within a StyleSheetContents.
   static void BeginStyleSheetContents(const StyleSheetContents* contents);
@@ -116,6 +122,10 @@ class CORE_EXPORT InvalidationSetToSelectorMap final
       SelectorFeatureType type,
       const AtomicString& value);
 
+  // Given a StyleRule, attempt to look up the containing StyleSheetContents.
+  static const StyleSheetContents* LookupStyleSheetContentsForRule(
+      const StyleRule* style_rule);
+
   InvalidationSetToSelectorMap();
   void Trace(Visitor*) const;
 
@@ -125,8 +135,8 @@ class CORE_EXPORT InvalidationSetToSelectorMap final
 
   void RevisitActiveStyleSheets(
       const ActiveStyleSheetVector& active_style_sheets,
-      StyleEngine& style_engine);
-  void RevisitStylesheetOnce(StyleEngine* style_engine,
+      const StyleEngine& style_engine);
+  void RevisitStylesheetOnce(const StyleEngine* style_engine,
                              StyleSheetContents* contents,
                              const RuleFeatureSet* features);
 

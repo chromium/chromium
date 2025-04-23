@@ -624,9 +624,9 @@ Document* StyleSheetContents::SingleOwnerDocument() const {
 }
 
 CSSStyleSheet* StyleSheetContents::ClientInTreeScope(
-    TreeScope& tree_scope) const {
+    const TreeScope& tree_scope) const {
   auto is_in_tree_scope = [&](CSSStyleSheet* sheet,
-                              TreeScope& tree_scope) -> bool {
+                              const TreeScope& tree_scope) -> bool {
     return sheet->IsAdoptedByTreeScope(tree_scope) ||
            sheet->ownerNode()->GetTreeScope() == tree_scope;
   };

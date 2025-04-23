@@ -56,14 +56,18 @@
 #include "third_party/blink/renderer/core/css/seeker.h"
 #include "third_party/blink/renderer/core/css/selector_checker-inl.h"
 #include "third_party/blink/renderer/core/css/selector_statistics.h"
+#include "third_party/blink/renderer/core/css/selector_statistics_flag.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_rule_nested_declarations.h"
+#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
+#include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
+#include "third_party/blink/renderer/core/inspector/invalidation_set_to_selector_map.h"
 #include "third_party/blink/renderer/core/page/scrolling/fragment_anchor.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -137,11 +141,10 @@ template <class CSSRuleCollection>
 static CSSRule* FindStyleRule(CSSRuleCollection* css_rules,
                               const StyleRule* style_rule);
 
-namespace {
-
-const CSSStyleSheet* FindStyleSheet(const TreeScope* tree_scope_containing_rule,
-                                    const StyleEngine& style_engine,
-                                    const StyleRule* rule) {
+const CSSStyleSheet* SlowFindStyleSheet(
+    const TreeScope* tree_scope_containing_rule,
+    const StyleEngine& style_engine,
+    const StyleRule* rule) {
   if (tree_scope_containing_rule) {
     for (const auto& [sheet, rule_set] :
          tree_scope_containing_rule->GetScopedStyleResolver()
@@ -159,6 +162,51 @@ const CSSStyleSheet* FindStyleSheet(const TreeScope* tree_scope_containing_rule,
 
   return nullptr;  // Not found (e.g., the rule is from an UA style sheet).
 }
+
+CORE_EXPORT const CSSStyleSheet* FindStyleSheet(
+    const TreeScope* tree_scope_containing_rule,
+    const Document& document,
+    const StyleRule* rule) {
+  const StyleEngine& style_engine = document.GetStyleEngine();
+  if (RuntimeEnabledFeatures::UseStyleRuleMapForSelectorStatsEnabled()) {
+    const CSSStyleSheet* result = nullptr;
+    InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(
+        (tree_scope_containing_rule != nullptr) ? *tree_scope_containing_rule
+                                                : document,
+        style_engine);
+    const StyleSheetContents* contents =
+        InvalidationSetToSelectorMap::LookupStyleSheetContentsForRule(rule);
+    if (contents != nullptr) {
+      if (tree_scope_containing_rule != nullptr) {
+        result = contents->ClientInTreeScope(*tree_scope_containing_rule);
+      } else {
+        for (const auto& [sheet, rule_set] :
+             style_engine.ActiveUserStyleSheets()) {
+          if (sheet->Contents() == contents) {
+            result = sheet.Get();
+            break;
+          }
+        }
+      }
+#if EXPENSIVE_DCHECKS_ARE_ON()
+      DCHECK_EQ(result, SlowFindStyleSheet(tree_scope_containing_rule,
+                                           style_engine, rule));
+#endif
+    } else {
+      result =
+          SlowFindStyleSheet(tree_scope_containing_rule, style_engine, rule);
+    }
+    TRACE_EVENT_INSTANT2(
+        TRACE_DISABLED_BY_DEFAULT("devtools.timeline.invalidationTracking"),
+        "UseStyleRuleMapForSelectorStats", TRACE_EVENT_SCOPE_THREAD, "Sheet",
+        ToHexString(result), "CacheHit", contents != nullptr);
+    return result;
+  }
+
+  return SlowFindStyleSheet(tree_scope_containing_rule, style_engine, rule);
+}
+
+namespace {
 
 unsigned AdjustLinkMatchType(EInsideLink inside_link,
                              unsigned link_match_type) {
@@ -303,12 +351,12 @@ SelectorStatisticsRuleMap& GetSelectorStatisticsRuleMap() {
 
 void AggregateRulePerfData(
     const TreeScope* tree_scope_containing_rule,
-    const StyleEngine& style_engine,
+    const Document& document,
     const HeapVector<RulePerfDataPerRequest>& rules_statistics) {
   SelectorStatisticsRuleMap& map = GetSelectorStatisticsRuleMap();
   for (const auto& rule_stats : rules_statistics) {
     const CSSStyleSheet* style_sheet = FindStyleSheet(
-        tree_scope_containing_rule, style_engine, rule_stats.style_rule);
+        tree_scope_containing_rule, document, rule_stats.style_rule);
     CumulativeRulePerfKey key{
         rule_stats.selector_text,
         IdentifiersFactory::IdForCSSStyleSheet(style_sheet)};
@@ -331,14 +379,6 @@ void AggregateRulePerfData(
   }
 }
 
-// This global caches a pointer to the trace-enabled state for selector
-// statistics gathering. This state is global to the process and comes from the
-// tracing subsystem. For performance reasons, we only grab the pointer once -
-// the value will be updated as tracing is enabled/disabled, which we read by
-// dereferencing this global variable. See comment in the definition of
-// `TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED` for more details.
-static const unsigned char* g_selector_stats_tracing_enabled = nullptr;
-
 }  // namespace
 
 ElementRuleCollector::ElementRuleCollector(
@@ -360,13 +400,7 @@ ElementRuleCollector::ElementRuleCollector(
       matching_ua_rules_(false),
       suppress_visited_(false),
       inside_link_(inside_link),
-      result_(result) {
-  if (!g_selector_stats_tracing_enabled) {
-    g_selector_stats_tracing_enabled =
-        TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
-            TRACE_DISABLED_BY_DEFAULT("blink.debug"));
-  }
-}
+      result_(result) {}
 
 ElementRuleCollector::~ElementRuleCollector() = default;
 
@@ -656,7 +690,7 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
     DCHECK_EQ(mode_, SelectorChecker::kResolvingStyle);
     selector_statistics_collector.EndCollectionForCurrentRule();
     AggregateRulePerfData(current_matching_tree_scope_,
-                          context_.GetElement().GetDocument().GetStyleEngine(),
+                          context_.GetElement().GetDocument(),
                           selector_statistics_collector.PerRuleStatistics());
   }
 
@@ -693,7 +727,7 @@ bool ElementRuleCollector::CollectMatchingRulesForList(
   // To reduce branching overhead for the common case, we use a template
   // parameter to eliminate branching in CollectMatchingRulesForListInternal
   // when tracing is not enabled.
-  if (!*g_selector_stats_tracing_enabled) {
+  if (!SelectorStatisticsFlag::IsEnabled()) {
     return CollectMatchingRulesForListInternal<stop_at_first_match, false>(
         rules, match_request, rule_set, style_sheet_index, checker, context);
   } else {
@@ -1390,11 +1424,9 @@ void ElementRuleCollector::AddMatchedRulesToTracker(
     StyleRuleUsageTracker* tracker) const {
   for (auto matched_rule : matched_rules_) {
     const StyleRule* rule = matched_rule.Rule();
-    tracker->Track(
-        FindStyleSheet(current_matching_tree_scope_,
-                       context_.GetElement().GetDocument().GetStyleEngine(),
-                       rule),
-        rule);
+    tracker->Track(FindStyleSheet(current_matching_tree_scope_,
+                                  context_.GetElement().GetDocument(), rule),
+                   rule);
   }
 }
 

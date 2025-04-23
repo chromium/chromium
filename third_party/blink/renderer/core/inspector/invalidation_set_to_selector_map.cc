@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_tracing_flag.h"
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
+#include "third_party/blink/renderer/core/css/selector_statistics_flag.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/inspector/style_rule_to_style_sheet_contents_map.h"
@@ -48,9 +49,12 @@ InvalidationSetToSelectorMap::IndexedSelector::GetStyleSheetContents() const {
 // static
 void InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(
     const TreeScope& tree_scope,
-    StyleEngine& style_engine) {
+    const StyleEngine& style_engine) {
   Persistent<InvalidationSetToSelectorMap>& instance = GetInstanceReference();
-  const bool is_tracing_enabled = InvalidationTracingFlag::IsEnabled();
+  const bool is_tracing_enabled =
+      InvalidationTracingFlag::IsEnabled() ||
+      (SelectorStatisticsFlag::IsEnabled() &&
+       RuntimeEnabledFeatures::UseStyleRuleMapForSelectorStatsEnabled());
   if (is_tracing_enabled) [[unlikely]] {
     if (instance == nullptr) {
       instance = MakeGarbageCollected<InvalidationSetToSelectorMap>();
@@ -61,8 +65,8 @@ void InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(
           /*call_for_each_stylesheet=*/true,
           WTF::BindRepeating(
               [](InvalidationSetToSelectorMap* instance,
-                 StyleEngine* style_engine, const RuleFeatureSet& features,
-                 StyleSheetContents* contents) {
+                 const StyleEngine* style_engine,
+                 const RuleFeatureSet& features, StyleSheetContents* contents) {
                 if (contents) {
                   instance->RevisitStylesheetOnce(style_engine, contents,
                                                   &features);
@@ -81,9 +85,14 @@ void InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(
   }
 }
 
+// static
+bool InvalidationSetToSelectorMap::IsTracking() {
+  return GetInstanceReference().Get() != nullptr;
+}
+
 void InvalidationSetToSelectorMap::RevisitActiveStyleSheets(
     const ActiveStyleSheetVector& active_style_sheets,
-    StyleEngine& style_engine) {
+    const StyleEngine& style_engine) {
   for (const ActiveStyleSheet& sheet : active_style_sheets) {
     StyleSheetContents* contents = sheet.first->Contents();
     const RuleFeatureSet* features =
@@ -93,7 +102,7 @@ void InvalidationSetToSelectorMap::RevisitActiveStyleSheets(
 }
 
 void InvalidationSetToSelectorMap::RevisitStylesheetOnce(
-    StyleEngine* style_engine,
+    const StyleEngine* style_engine,
     StyleSheetContents* contents,
     const RuleFeatureSet* features) {
   if (!revisited_style_sheets_.Contains(contents)) {
@@ -287,6 +296,19 @@ InvalidationSetToSelectorMap::Lookup(const InvalidationSet* invalidation_set,
     }
   }
 
+  return nullptr;
+}
+
+// static
+const StyleSheetContents*
+InvalidationSetToSelectorMap::LookupStyleSheetContentsForRule(
+    const StyleRule* style_rule) {
+  const InvalidationSetToSelectorMap* instance = GetInstanceReference().Get();
+  if (instance != nullptr) {
+    const StyleRuleToStyleSheetContentsMap* map =
+        instance->style_rule_to_sheet_map_;
+    return map->Lookup(style_rule);
+  }
   return nullptr;
 }
 

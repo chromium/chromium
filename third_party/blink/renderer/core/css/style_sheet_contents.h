@@ -97,7 +97,7 @@ class CORE_EXPORT StyleSheetContents final
   bool HasSingleOwnerDocument() const { return has_single_owner_document_; }
 
   // Gets a client in the given TreeScope.
-  CSSStyleSheet* ClientInTreeScope(TreeScope& tree_scope) const;
+  CSSStyleSheet* ClientInTreeScope(const TreeScope& tree_scope) const;
 
   // Gets the first owner document in the list of registered clients, or nullptr
   // if there are none.
