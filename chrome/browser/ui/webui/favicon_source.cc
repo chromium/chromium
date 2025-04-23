@@ -38,6 +38,9 @@
 
 namespace {
 
+// Name of histogram to track whether the default response was returned.
+const char kDefaultResponseHistogramName[] = "Favicons.DefaultResponse";
+
 // Generous cap to guard against out-of-memory issues.
 constexpr int kMaxDesiredSizeInPixel = 2048;
 
@@ -135,6 +138,7 @@ void FaviconSource::StartDataRequest(
   if (parsed.page_url.empty()) {
     // Request by icon url.
 
+    base::UmaHistogramBoolean(kDefaultResponseHistogramName, false);
     // TODO(michaelbai): Change GetRawFavicon to support combination of
     // IconType.
     favicon_service->GetRawFavicon(
@@ -150,6 +154,7 @@ void FaviconSource::StartDataRequest(
     if (top_sites) {
       for (const auto& prepopulated_page : top_sites->GetPrepopulatedPages()) {
         if (page_url == prepopulated_page.most_visited.url) {
+          base::UmaHistogramBoolean(kDefaultResponseHistogramName, false);
           ui::ResourceScaleFactor resource_scale_factor =
               ui::GetSupportedResourceScaleFactor(parsed.device_scale_factor);
           std::move(callback).Run(
@@ -163,6 +168,7 @@ void FaviconSource::StartDataRequest(
 
     if (!(parsed.allow_favicon_server_fallback &&
           IsOriginAllowedServerFallback(GetUnsafeRequestOrigin(wc_getter)))) {
+      base::UmaHistogramBoolean(kDefaultResponseHistogramName, false);
       // Request from local storage only.
       const bool fallback_to_host = true;
       favicon_service->GetRawFaviconForPageURL(
@@ -185,6 +191,7 @@ void FaviconSource::StartDataRequest(
       SendDefaultResponse(std::move(callback), parsed, wc_getter);
       return;
     }
+    base::UmaHistogramBoolean(kDefaultResponseHistogramName, false);
     history_ui_favicon_request_handler->GetRawFaviconForPageURL(
         page_url, desired_size_in_pixel, parsed.fallback_to_host,
         base::BindOnce(&FaviconSource::OnFaviconDataAvailable,
@@ -282,6 +289,7 @@ void FaviconSource::SendDefaultResponse(
     int size_in_dip,
     float scale_factor,
     bool dark_mode) {
+  base::UmaHistogramBoolean(kDefaultResponseHistogramName, true);
   int resource_id;
   switch (size_in_dip) {
     case 64:
