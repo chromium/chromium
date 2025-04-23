@@ -54,9 +54,10 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
     double end_width = 0;
   };
 
-  MultiContentsView(BrowserView* browser_view,
-                    WebContentsFocusedCallback inactive_view_focused_callback,
-                    WebContentsResizeCallback split_tab_resize_callback);
+  MultiContentsView(
+      BrowserView* browser_view,
+      WebContentsFocusedCallback inactive_contents_focused_callback,
+      WebContentsResizeCallback contents_resize_callback);
   MultiContentsView(const MultiContentsView&) = delete;
   MultiContentsView& operator=(const MultiContentsView&) = delete;
   ~MultiContentsView() override;
@@ -157,10 +158,10 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   int active_index_ = 0;
 
   // Callback to be executed when the user focuses the inactive contents view.
-  WebContentsFocusedCallback inactive_view_focused_callback_;
+  WebContentsFocusedCallback inactive_contents_focused_callback_;
 
   // Callback to be executed when the user resizes the contents.
-  WebContentsResizeCallback split_tab_resize_callback_;
+  WebContentsResizeCallback contents_resize_callback_;
 
   // Current ratio of |contents_views_|'s first ContentsContainerView's width /
   // overall contents view width.

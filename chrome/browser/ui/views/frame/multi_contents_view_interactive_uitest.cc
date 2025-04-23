@@ -77,6 +77,14 @@ class MultiContentsViewUiTest
     return CheckResult([this]() { return tab_strip_model()->active_index(); },
                        index);
   }
+
+  auto CheckActiveContentsHasFocus() {
+    return CheckView(
+        MultiContentsView::kMultiContentsViewElementId,
+        [](MultiContentsView* multi_contents_view) -> bool {
+          return multi_contents_view->GetActiveContentsView()->HasFocus();
+        });
+  }
 };
 
 // Check that MultiContentsView exists when the side by side flag is enabled
@@ -99,7 +107,8 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, EnterAndExitSplitViews) {
 IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
                        ActivatesInactiveViewUsingMouseClick) {
   RunTestSequence(CreateTabsAndEnterSplitView(), CheckTabIsActive(0),
-                  FocusInactiveTabInSplit(), CheckTabIsActive(1));
+                  FocusInactiveTabInSplit(), CheckTabIsActive(1),
+                  CheckActiveContentsHasFocus());
 }
 
 // Check that MultiContentsView changes its active view when inactive view is
@@ -115,7 +124,18 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
       SendKeyPress(
           MultiContentsResizeHandle::kMultiContentsResizeHandleElementId,
           ui::VKEY_TAB),
-      CheckTabIsActive(1));
+      CheckTabIsActive(1), CheckActiveContentsHasFocus());
+}
+
+// Check focus for the MultiContentView when in split view
+IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, ActiveContentsViewHasFocus) {
+  RunTestSequence(
+      AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUISettingsURL), 1),
+      FocusWebContents(kNewTab),
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUISettingsURL), 2),
+      FocusWebContents(kSecondTab),
+      CheckResult([this]() { return tab_strip_model()->count(); }, 3u),
+      EnterSplitView(2, 0), CheckTabIsActive(2), CheckActiveContentsHasFocus());
 }
 
 // TODO(crbug.com/399212996): Flaky on linux_chromium_asan_rel_ng and

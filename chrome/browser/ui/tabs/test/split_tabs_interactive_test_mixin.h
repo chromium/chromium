@@ -55,9 +55,9 @@ class SplitTabsInteractiveTestMixin : public T {
                                         kResizeLoadObserver);
 
     auto result = T::Steps(
-        T::SelectTab(kTabStripElementId, active_tab), T::Do([&]() {
+        T::SelectTab(kTabStripElementId, active_tab), T::Do([&, other_tab]() {
           T::browser()->tab_strip_model()->AddToNewSplit(
-              {1}, split_tabs::SplitTabLayout::kHorizontal);
+              {other_tab}, split_tabs::SplitTabLayout::kHorizontal);
         }),
         T::PollView(kResizeLoadObserver,
                     MultiContentsResizeArea::kMultiContentsResizeAreaElementId,

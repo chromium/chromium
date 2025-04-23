@@ -2938,11 +2938,7 @@ void BrowserView::RotatePaneFocus(bool forwards) {
 }
 
 void BrowserView::FocusWebContentsPane() {
-  if (multi_contents_view_) {
-    multi_contents_view_->RequestFocus();
-  } else {
-    contents_web_view_->RequestFocus();
-  }
+  GetContentsView()->RequestFocus();
 }
 
 bool BrowserView::ActivateFirstInactiveBubbleForAccessibility() {
@@ -3432,12 +3428,8 @@ ShowTranslateBubbleResult BrowserView::ShowTranslateBubble(
     const std::string& target_language,
     translate::TranslateErrors error_type,
     bool is_user_gesture) {
-  views::View* contents_view;
-  if (multi_contents_view_) {
-    contents_view = multi_contents_view_;
-  } else {
-    contents_view = contents_web_view_;
-  }
+  views::View* contents_view = GetContentsView();
+
   if (contents_view->HasFocus() && !GetLocationBarView()->IsMouseHovered() &&
       web_contents->IsFocusedElementEditable()) {
     return ShowTranslateBubbleResult::EDITABLE_FIELD_IS_ACTIVE;

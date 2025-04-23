@@ -36,11 +36,11 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MultiContentsView,
 
 MultiContentsView::MultiContentsView(
     BrowserView* browser_view,
-    WebContentsFocusedCallback inactive_view_focused_callback,
-    WebContentsResizeCallback split_tab_resize_callback)
+    WebContentsFocusedCallback inactive_contents_focused_callback,
+    WebContentsResizeCallback contents_resize_callback)
     : browser_view_(browser_view),
-      inactive_view_focused_callback_(inactive_view_focused_callback),
-      split_tab_resize_callback_(split_tab_resize_callback) {
+      inactive_contents_focused_callback_(inactive_contents_focused_callback),
+      contents_resize_callback_(contents_resize_callback) {
   contents_container_views_.push_back(
       AddChildView(std::make_unique<ContentsContainerView>(
           std::make_unique<ContentsWebView>(browser_view_->GetProfile()))));
@@ -125,7 +125,11 @@ void MultiContentsView::SetActiveIndex(int index) {
   active_index_ = index;
   GetActiveContentsView()->set_is_primary_web_contents_for_window(true);
   GetInactiveContentsView()->set_is_primary_web_contents_for_window(false);
-
+  // If inactive contents view currently has focus, then request focus for the
+  // active contents view.
+  if (GetInactiveContentsView()->HasFocus()) {
+    GetActiveContentsView()->RequestFocus();
+  }
   UpdateContentsBorder();
 }
 
@@ -155,7 +159,7 @@ void MultiContentsView::OnResize(int resize_amount, bool done_resizing) {
   double start_ratio =
       (initial_start_width_on_resize_.value() + resize_amount) / total_width;
 
-  split_tab_resize_callback_.Run(start_ratio);
+  contents_resize_callback_.Run(start_ratio);
 
   if (done_resizing) {
     initial_start_width_on_resize_ = std::nullopt;
@@ -206,7 +210,7 @@ void MultiContentsView::OnPaint(gfx::Canvas* canvas) {
 void MultiContentsView::OnWebContentsFocused(views::WebView* web_view) {
   if (IsInSplitView()) {
     if (GetInactiveContentsView()->web_contents() == web_view->web_contents()) {
-      inactive_view_focused_callback_.Run(web_view->web_contents());
+      inactive_contents_focused_callback_.Run(web_view->web_contents());
     }
   }
 }
