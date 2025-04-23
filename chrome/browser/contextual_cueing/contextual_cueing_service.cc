@@ -59,17 +59,6 @@ bool IsGlicTabContextEnabled(PrefService* pref_service) {
 }
 #endif
 
-void DeleteZeroStateSuggestionsPageData(
-    base::WeakPtr<content::WebContents> web_contents) {
-  if (!web_contents) {
-    return;
-  }
-  if (ZeroStateSuggestionsPageData::GetForPage(
-          web_contents->GetPrimaryPage())) {
-    ZeroStateSuggestionsPageData::DeleteForPage(web_contents->GetPrimaryPage());
-  }
-}
-
 }  // namespace
 
 ContextualCueingService::ContextualCueingService(
@@ -309,9 +298,7 @@ void ContextualCueingService::GetContextualGlicZeroStateSuggestions(
   ZeroStateSuggestionsPageData* page_data =
       ZeroStateSuggestionsPageData::GetOrCreateForPage(
           web_contents->GetPrimaryPage());
-  page_data->FetchSuggestions(
-      is_fre, base::BindOnce(&ContextualCueingService::OnSuggestionsReceived,
-                             GetWeakPtr(), web_contents, std::move(callback)));
+  page_data->FetchSuggestions(is_fre, std::move(callback));
 #else
   std::move(callback).Run(std::nullopt);
 #endif
@@ -324,12 +311,6 @@ void ContextualCueingService::OnSuggestionsReceived(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::move(callback).Run(suggestions);
-
-  // Delete zero state suggestions at end. It is possible for multiple callbacks
-  // to be run, so do not delete page data until all of those have been run.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&DeleteZeroStateSuggestionsPageData,
-                                web_contents->GetWeakPtr()));
 }
 
 void ContextualCueingService::OnPageContentExtracted(

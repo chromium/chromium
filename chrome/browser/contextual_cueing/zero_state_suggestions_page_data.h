@@ -77,15 +77,14 @@ class ZeroStateSuggestionsPageData
   bool annotated_page_content_done_ = false;
   std::optional<optimization_guide::AIPageContentResult>
       annotated_page_content_;
-  GlicSuggestionsCallbackList suggestions_callbacks_;
 
   // Tracks the state for a request.
   base::TimeTicks begin_time_;
   std::optional<optimization_guide::proto::ZeroStateSuggestionsRequest>
       suggestions_request_;
-  GlicSuggestionsCallback suggestions_callback_;
+  GlicSuggestionsCallbackList suggestions_callbacks_;
 
-  // TODO(409551389): rework caching logic; caching currently not working
+  std::optional<std::vector<std::string>> cached_suggestions_;
 
   // Not owned and guaranteed to outlive `this`.
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_ =

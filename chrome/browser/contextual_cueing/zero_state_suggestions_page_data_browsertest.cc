@@ -403,6 +403,159 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
   EXPECT_EQ("suggestion 3", future.Get().value()[2]);
 }
 
-// TODO(409551389): redo caching tests once caching is fixed.
+IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest, CacheBehavior) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/optimization_guide/zss_page.html")));
+
+  // Set up initial flow.
+  {
+    base::test::TestFuture<std::optional<std::vector<std::string>>> future;
+
+    SetUpSuccessfulModelExecution();
+
+    auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
+        web_contents->GetPrimaryPage());
+    page_data->FetchSuggestions(/*is_fre=*/false, future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+    EXPECT_EQ(3u, future.Get().value().size());
+    EXPECT_EQ("suggestion 1", future.Get().value()[0]);
+    EXPECT_EQ("suggestion 2", future.Get().value()[1]);
+    EXPECT_EQ("suggestion 3", future.Get().value()[2]);
+  }
+
+  testing::Mock::VerifyAndClearExpectations(
+      &mock_optimization_guide_keyed_service());
+
+  // Make sure model execution not called.
+  {
+    EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel).Times(0);
+
+    base::test::TestFuture<std::optional<std::vector<std::string>>> future;
+
+    auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
+        web_contents->GetPrimaryPage());
+    page_data->FetchSuggestions(/*is_fre=*/false, future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+    EXPECT_EQ(3u, future.Get().value().size());
+    EXPECT_EQ("suggestion 1", future.Get().value()[0]);
+    EXPECT_EQ("suggestion 2", future.Get().value()[1]);
+    EXPECT_EQ("suggestion 3", future.Get().value()[2]);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
+                       CacheBehaviorNonTransientError) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/optimization_guide/zss_page.html")));
+
+  // Set up initial flow.
+  {
+    base::test::TestFuture<std::optional<std::vector<std::string>>> future;
+
+    EXPECT_CALL(mock_optimization_guide_keyed_service(),
+                ExecuteModel(_, _, _, _))
+        .WillOnce(WithArgs<1, 3>(
+            [&](const google::protobuf::MessageLite& request_metadata,
+                optimization_guide::
+                    OptimizationGuideModelExecutionResultCallback callback) {
+              optimization_guide::proto::ErrorResponse error_response;
+              error_response.set_error_state(
+                  optimization_guide::proto::ErrorState::
+                      ERROR_STATE_INTERNAL_SERVER_ERROR_NO_RETRY);
+              optimization_guide::OptimizationGuideModelExecutionResult result;
+              result.response = base::unexpected(
+                  optimization_guide::OptimizationGuideModelExecutionError::
+                      FromModelExecutionServerError(error_response));
+              std::move(callback).Run(std::move(result), nullptr);
+            }));
+
+    auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
+        web_contents->GetPrimaryPage());
+    page_data->FetchSuggestions(/*is_fre=*/false, future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+    EXPECT_FALSE(future.Get().has_value());
+  }
+
+  testing::Mock::VerifyAndClearExpectations(
+      &mock_optimization_guide_keyed_service());
+
+  // Make sure model execution not called.
+  {
+    EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel).Times(0);
+
+    base::test::TestFuture<std::optional<std::vector<std::string>>> future;
+
+    auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
+        web_contents->GetPrimaryPage());
+    page_data->FetchSuggestions(/*is_fre=*/false, future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+    EXPECT_FALSE(future.Get().has_value());
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
+                       CacheBehaviorTransientError) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/optimization_guide/zss_page.html")));
+
+  // Set up initial flow.
+  {
+    base::test::TestFuture<std::optional<std::vector<std::string>>> future;
+
+    EXPECT_CALL(mock_optimization_guide_keyed_service(),
+                ExecuteModel(_, _, _, _))
+        .WillOnce(WithArgs<1, 3>(
+            [&](const google::protobuf::MessageLite& request_metadata,
+                optimization_guide::
+                    OptimizationGuideModelExecutionResultCallback callback) {
+              optimization_guide::proto::ErrorResponse error_response;
+              error_response.set_error_state(
+                  optimization_guide::proto::ErrorState::
+                      ERROR_STATE_INTERNAL_SERVER_ERROR_RETRY);
+              optimization_guide::OptimizationGuideModelExecutionResult result;
+              result.response = base::unexpected(
+                  optimization_guide::OptimizationGuideModelExecutionError::
+                      FromModelExecutionServerError(error_response));
+              std::move(callback).Run(std::move(result), nullptr);
+            }));
+
+    auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
+        web_contents->GetPrimaryPage());
+    page_data->FetchSuggestions(/*is_fre=*/false, future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+    EXPECT_FALSE(future.Get().has_value());
+  }
+
+  testing::Mock::VerifyAndClearExpectations(
+      &mock_optimization_guide_keyed_service());
+
+  // Make sure model execution called after a transient error.
+  {
+    SetUpSuccessfulModelExecution();
+
+    base::test::TestFuture<std::optional<std::vector<std::string>>> future;
+
+    auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
+        web_contents->GetPrimaryPage());
+    page_data->FetchSuggestions(/*is_fre=*/false, future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+    EXPECT_EQ(3u, future.Get().value().size());
+    EXPECT_EQ("suggestion 1", future.Get().value()[0]);
+    EXPECT_EQ("suggestion 2", future.Get().value()[1]);
+    EXPECT_EQ("suggestion 3", future.Get().value()[2]);
+  }
+}
 
 }  // namespace contextual_cueing

@@ -11,6 +11,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_page_data.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
+#include "chrome/browser/contextual_cueing/zero_state_suggestions_page_data.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -79,15 +80,21 @@ ContextualCueingHelper::ContextualCueingHelper(
       content::WebContentsUserData<ContextualCueingHelper>(*web_contents),
       optimization_guide_keyed_service_(ogks),
       contextual_cueing_service_(ccs) {
-  // LINT.IfChange(OptType)
-  optimization_guide_keyed_service_->RegisterOptimizationTypes(
-      {optimization_guide::proto::GLIC_CONTEXTUAL_CUEING});
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_cueing/histograms.xml:OptType)
+  if (base::FeatureList::IsEnabled(kContextualCueing)) {
+    // LINT.IfChange(OptType)
+    optimization_guide_keyed_service_->RegisterOptimizationTypes(
+        {optimization_guide::proto::GLIC_CONTEXTUAL_CUEING});
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_cueing/histograms.xml:OptType)
+  }
 }
 
 ContextualCueingHelper::~ContextualCueingHelper() = default;
 
 tabs::GlicNudgeController* ContextualCueingHelper::GetGlicNudgeController() {
+  if (!base::FeatureList::IsEnabled(kContextualCueing)) {
+    return nullptr;
+  }
+
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
   if (!browser) {
     return nullptr;
@@ -106,6 +113,16 @@ void ContextualCueingHelper::DidStartNavigation(
     return;
   }
 
+  // TODO: b/412468816 - See what we should do about fragments.
+
+  // Clear zero state suggestions if needed.
+  if (base::FeatureList::IsEnabled(kGlicZeroStateSuggestions) &&
+      ZeroStateSuggestionsPageData::GetForPage(
+          web_contents()->GetPrimaryPage())) {
+    ZeroStateSuggestionsPageData::DeleteForPage(
+        web_contents()->GetPrimaryPage());
+  }
+
   // Make sure we always clear the nudge label anyway despite operating on
   // pages.
   auto* glic_nudge_controller = GetGlicNudgeController();
@@ -118,6 +135,10 @@ void ContextualCueingHelper::DidStartNavigation(
 
 void ContextualCueingHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (!base::FeatureList::IsEnabled(kContextualCueing)) {
+    return;
+  }
+
   // Ignore sub-frame navigations.
   if (!navigation_handle->IsInMainFrame()) {
     return;
@@ -143,6 +164,10 @@ void ContextualCueingHelper::DidFinishNavigation(
 }
 
 void ContextualCueingHelper::PrimaryMainDocumentElementAvailable() {
+  if (!base::FeatureList::IsEnabled(kContextualCueing)) {
+    return;
+  }
+
   // We have already initiated nudging sequence for the page. Do not see if we
   // should nudge.
   if (ContextualCueingPageData::GetForPage(web_contents()->GetPrimaryPage())) {
@@ -275,7 +300,9 @@ void ContextualCueingHelper::OnCueingDecision(
 // static
 void ContextualCueingHelper::MaybeCreateForWebContents(
     content::WebContents* web_contents) {
-  if (!base::FeatureList::IsEnabled(contextual_cueing::kContextualCueing)) {
+  if (!base::FeatureList::IsEnabled(contextual_cueing::kContextualCueing) &&
+      !base::FeatureList::IsEnabled(
+          contextual_cueing::kGlicZeroStateSuggestions)) {
     return;
   }
 

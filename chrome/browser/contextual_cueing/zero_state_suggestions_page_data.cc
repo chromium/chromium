@@ -69,6 +69,13 @@ ZeroStateSuggestionsPageData::~ZeroStateSuggestionsPageData() = default;
 void ZeroStateSuggestionsPageData::FetchSuggestions(
     bool is_fre,
     GlicSuggestionsCallback callback) {
+  if (cached_suggestions_) {
+    std::move(callback).Run(cached_suggestions_->empty()
+                                ? std::nullopt
+                                : std::make_optional(*cached_suggestions_));
+    return;
+  }
+
   begin_time_ = base::TimeTicks::Now();
 
   // Request for page already in flight - just notify when it comes back.
@@ -124,6 +131,7 @@ void ZeroStateSuggestionsPageData::RequestSuggestionsIfComplete() {
       suggestions_metadata &&
       !suggestions_metadata->contextual_suggestions_eligible()) {
     suggestions_callbacks_.Notify(std::nullopt);
+    cached_suggestions_ = std::make_optional(std::vector<std::string>({}));
     return;
   }
 
@@ -133,11 +141,13 @@ void ZeroStateSuggestionsPageData::RequestSuggestionsIfComplete() {
         suggestions_metadata->contextual_suggestions().begin(),
         suggestions_metadata->contextual_suggestions().end());
     suggestions_callbacks_.Notify(suggestions);
+    cached_suggestions_ = suggestions;
     return;
   }
 
   if (!has_page_context) {
     suggestions_callbacks_.Notify(std::nullopt);
+    cached_suggestions_ = std::make_optional(std::vector<std::string>({}));
     return;
   }
 
@@ -183,6 +193,12 @@ void ZeroStateSuggestionsPageData::OnModelExecutionResponse(
                            suggestions_duration.InMilliseconds(),
                            static_cast<int>(result.response.error().error())));
     suggestions_callbacks_.Notify(std::nullopt);
+
+    if (!result.response.error().transient()) {
+      // Cache empty suggestions if error is not transient.
+      cached_suggestions_ = std::make_optional(std::vector<std::string>({}));
+    }
+
     return;
   }
 
@@ -199,6 +215,8 @@ void ZeroStateSuggestionsPageData::OnModelExecutionResponse(
           result.response.value());
   if (!response) {
     suggestions_callbacks_.Notify(std::nullopt);
+    // Treat this as a transient error that server returned bad data
+    // momentarily.
     return;
   }
 
@@ -212,6 +230,8 @@ void ZeroStateSuggestionsPageData::OnModelExecutionResponse(
                            i + 1, response->suggestions(i).label()));
   }
   suggestions_callbacks_.Notify(suggestions);
+
+  cached_suggestions_ = suggestions;
 }
 
 PAGE_USER_DATA_KEY_IMPL(ZeroStateSuggestionsPageData);
