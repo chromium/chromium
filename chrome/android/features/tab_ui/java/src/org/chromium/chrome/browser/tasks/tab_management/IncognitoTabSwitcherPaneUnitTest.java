@@ -85,7 +85,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
     @Mock private DoubleConsumer mOnAlphaChange;
     @Mock private UserEducationHelper mUserEducationHelper;
     @Mock private Profile mProfile;
-    @Mock private TabGroupCreationUiFlow mUiFlow;
+    @Mock private TabGroupCreationUiDelegate mUiFlow;
 
     @Captor private ArgumentCaptor<IncognitoTabModelObserver> mIncognitoTabModelObserverCaptor;
     @Captor private ArgumentCaptor<IncognitoReauthCallback> mIncognitoReauthCallbackCaptor;

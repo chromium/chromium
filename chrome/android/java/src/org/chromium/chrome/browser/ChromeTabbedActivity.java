@@ -244,7 +244,7 @@ import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.CloseAllTabsDialog;
 import org.chromium.chrome.browser.tasks.tab_management.CloseAllTabsHelper;
-import org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationUiFlow;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationUiDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupMenuActionHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupVisualDataManager;
@@ -995,7 +995,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
     private Pane createTabSwitcherPane(boolean isIncognito) {
         TabManagementDelegate delegate = TabManagementDelegateProvider.getDelegate();
-        TabGroupCreationUiFlow tabGroupCreationUiFlow =
+        TabGroupCreationUiDelegate tabGroupCreationUiDelegate =
                 delegate.createTabGroupCreationUiFlow(
                         this,
                         getModalDialogManager(),
@@ -1029,7 +1029,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                         getCompositorViewHolderSupplier(),
                         getShareDelegateSupplier(),
                         mTabBookmarkerSupplier,
-                        tabGroupCreationUiFlow,
+                        tabGroupCreationUiDelegate,
                         mUndoBarPopupController);
         if (didFinishNativeInitialization()) {
             result.first.initWithNative();

@@ -155,7 +155,7 @@ public class TabSwitcherPaneUnitTest {
     @Mock private Runnable mRunnable;
     @Mock private Tab mTab;
     @Mock private SavedTabGroup mSavedTabGroup;
-    @Mock private TabGroupCreationUiFlow mUiFlow;
+    @Mock private TabGroupCreationUiDelegate mUiFlow;
     @Mock private Tracker mTracker;
 
     @Captor private ArgumentCaptor<ObservableSupplier<Boolean>> mIsAnimatingSupplierCaptor;

@@ -93,8 +93,8 @@ public class TabGroupsPane implements Pane {
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mEdgeToEdgeSupplier = edgeToEdgeSupplier;
         if (ChromeFeatureList.sTabGroupEntryPointsAndroid.isEnabled()) {
-            TabGroupCreationUiFlow flow =
-                    new TabGroupCreationUiFlow(
+            TabGroupCreationUiDelegate flow =
+                    new TabGroupCreationUiDelegate(
                             context,
                             modalDialogManagerSupplier,
                             paneManagerSupplier,

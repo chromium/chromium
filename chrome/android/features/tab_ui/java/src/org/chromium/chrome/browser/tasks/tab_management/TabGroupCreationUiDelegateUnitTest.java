@@ -37,10 +37,10 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-/** Unit tests for {@link TabGroupCreationUiFlow}. */
+/** Unit tests for {@link TabGroupCreationUiDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class TabGroupCreationUiFlowUnitTest {
+public class TabGroupCreationUiDelegateUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -59,7 +59,7 @@ public class TabGroupCreationUiFlowUnitTest {
     private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private Supplier<PaneManager> mPaneManagerSupplier;
     private Supplier<TabGroupModelFilter> mFilterSupplier;
-    private TabGroupCreationUiFlow mTabGroupCreationUiFlow;
+    private TabGroupCreationUiDelegate mTabGroupCreationUiDelegate;
     private Token mToken;
     private Activity mActivity;
 
@@ -72,12 +72,13 @@ public class TabGroupCreationUiFlowUnitTest {
 
         when(mFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
+        when(mTabModel.isIncognitoBranded()).thenReturn(false);
         mToken = Token.createRandom();
         when(mTab.getTabGroupId()).thenReturn(mToken);
         when(mTab.getId()).thenReturn(1);
 
-        mTabGroupCreationUiFlow =
-                new TabGroupCreationUiFlow(
+        mTabGroupCreationUiDelegate =
+                new TabGroupCreationUiDelegate(
                         mActivity,
                         mModalDialogManagerSupplier,
                         mPaneManagerSupplier,
@@ -89,14 +90,14 @@ public class TabGroupCreationUiFlowUnitTest {
 
     @Test
     public void testNewTabGroupFlow() {
-        mTabGroupCreationUiFlow.newTabGroupFlow();
+        mTabGroupCreationUiDelegate.newTabGroupFlow();
         verify(mTabGroupCreationDialogManager).showDialog(mToken, mFilter);
     }
 
     @Test
     public void testNewTabGroupFlow_tabCreationFails() {
         when(mTabCreator.createNewTab(any(), anyInt(), any())).thenReturn(null);
-        mTabGroupCreationUiFlow.newTabGroupFlow();
+        mTabGroupCreationUiDelegate.newTabGroupFlow();
         verify(mTabGroupCreationDialogManager, never()).showDialog(mToken, mFilter);
     }
 
@@ -106,8 +107,8 @@ public class TabGroupCreationUiFlowUnitTest {
         when(mPaneManager.getPaneForId(PaneId.TAB_SWITCHER)).thenReturn(mTabSwitcherPane);
 
         AtomicReference<Runnable> openTabGroupUiContainer = new AtomicReference<>(() -> {});
-        mTabGroupCreationUiFlow =
-                new TabGroupCreationUiFlow(
+        mTabGroupCreationUiDelegate =
+                new TabGroupCreationUiDelegate(
                         mActivity,
                         mModalDialogManagerSupplier,
                         mPaneManagerSupplier,
@@ -116,7 +117,29 @@ public class TabGroupCreationUiFlowUnitTest {
                             openTabGroupUiContainer.set(openTabGroupUi);
                             return mTabGroupCreationDialogManager;
                         });
-        mTabGroupCreationUiFlow.newTabGroupFlow();
+        mTabGroupCreationUiDelegate.newTabGroupFlow();
+        openTabGroupUiContainer.get().run();
+        verify(mTabSwitcherPane).requestOpenTabGroupDialog(mTab.getId());
+    }
+
+    @Test
+    public void testOpenTabGroupUi_Incognito() {
+        when(mTabModel.isIncognitoBranded()).thenReturn(true);
+        when(mPaneManager.focusPane(PaneId.INCOGNITO_TAB_SWITCHER)).thenReturn(true);
+        when(mPaneManager.getPaneForId(PaneId.INCOGNITO_TAB_SWITCHER)).thenReturn(mTabSwitcherPane);
+
+        AtomicReference<Runnable> openTabGroupUiContainer = new AtomicReference<>(() -> {});
+        mTabGroupCreationUiDelegate =
+                new TabGroupCreationUiDelegate(
+                        mActivity,
+                        mModalDialogManagerSupplier,
+                        mPaneManagerSupplier,
+                        mFilterSupplier,
+                        (a, b, openTabGroupUi) -> {
+                            openTabGroupUiContainer.set(openTabGroupUi);
+                            return mTabGroupCreationDialogManager;
+                        });
+        mTabGroupCreationUiDelegate.newTabGroupFlow();
         openTabGroupUiContainer.get().run();
         verify(mTabSwitcherPane).requestOpenTabGroupDialog(mTab.getId());
     }
@@ -127,8 +150,8 @@ public class TabGroupCreationUiFlowUnitTest {
         when(mPaneManager.getPaneForId(PaneId.TAB_SWITCHER)).thenReturn(null);
 
         AtomicReference<Runnable> openTabGroupUiContainer = new AtomicReference<>(() -> {});
-        mTabGroupCreationUiFlow =
-                new TabGroupCreationUiFlow(
+        mTabGroupCreationUiDelegate =
+                new TabGroupCreationUiDelegate(
                         mActivity,
                         mModalDialogManagerSupplier,
                         mPaneManagerSupplier,
@@ -137,7 +160,7 @@ public class TabGroupCreationUiFlowUnitTest {
                             openTabGroupUiContainer.set(openTabGroupUi);
                             return mTabGroupCreationDialogManager;
                         });
-        mTabGroupCreationUiFlow.newTabGroupFlow();
+        mTabGroupCreationUiDelegate.newTabGroupFlow();
         openTabGroupUiContainer.get().run();
 
         verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);

@@ -120,7 +120,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
             @NonNull ObservableSupplier<ShareDelegate> shareDelegateSupplier,
             @NonNull ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
-            @NonNull TabGroupCreationUiFlow tabGroupCreationUiFlow,
+            @NonNull TabGroupCreationUiDelegate tabGroupCreationUiDelegate,
             UndoBarThrottle undoBarThrottle) {
         // TODO(crbug.com/40946413): Consider making this an activity scoped singleton and possibly
         // hosting it in CTA/HubProvider.
@@ -169,7 +169,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                                 userEducationHelper,
                                 edgeToEdgeSupplier,
                                 compositorViewHolderSupplier,
-                                tabGroupCreationUiFlow)
+                                tabGroupCreationUiDelegate)
                         : new TabSwitcherPane(
                                 activity,
                                 ContextUtils.getAppSharedPreferences(),
@@ -185,7 +185,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                                 userEducationHelper,
                                 edgeToEdgeSupplier,
                                 compositorViewHolderSupplier,
-                                tabGroupCreationUiFlow);
+                                tabGroupCreationUiDelegate);
         return Pair.create(pane, pane);
     }
 
@@ -217,7 +217,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
     }
 
     @Override
-    public TabGroupCreationUiFlow createTabGroupCreationUiFlow(
+    public TabGroupCreationUiDelegate createTabGroupCreationUiFlow(
             @NonNull Context context,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull OneshotSupplier<HubManager> hubManagerSupplier,
@@ -225,7 +225,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
         ObservableSupplierImpl<PaneManager> paneManagerSupplier = new ObservableSupplierImpl<>();
         hubManagerSupplier.onAvailable(
                 hubManager -> paneManagerSupplier.set(hubManager.getPaneManager()));
-        return new TabGroupCreationUiFlow(
+        return new TabGroupCreationUiDelegate(
                 context,
                 () -> modalDialogManager,
                 paneManagerSupplier,

@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationDialogManager.TabGroupCreationDialogManagerFactory;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -23,7 +24,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** Handles the flow of creating a new tab group through the UI. */
 @NullMarked
-public class TabGroupCreationUiFlow {
+public class TabGroupCreationUiDelegate {
     private final Context mContext;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final Supplier<PaneManager> mPaneManagerSupplier;
@@ -37,7 +38,7 @@ public class TabGroupCreationUiFlow {
      * @param filterSupplier Supplies the filter used to create tab groups.
      * @param factory Used to create an instance of {@link TabGroupCreationDialogManager}
      */
-    public TabGroupCreationUiFlow(
+    public TabGroupCreationUiDelegate(
             Context context,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Supplier<PaneManager> paneManagerSupplier,
@@ -86,9 +87,15 @@ public class TabGroupCreationUiFlow {
     private void openTabGroupUi(Tab tab) {
         @Nullable PaneManager paneManager = mPaneManagerSupplier.get();
         @Nullable Token groupId = tab.getTabGroupId();
-        if (paneManager != null && groupId != null && paneManager.focusPane(PaneId.TAB_SWITCHER)) {
+
+        TabModel tabModel = mFilterSupplier.get().getTabModel();
+        @PaneId
+        int tabSwitcher =
+                tabModel.isIncognitoBranded() ? PaneId.INCOGNITO_TAB_SWITCHER : PaneId.TAB_SWITCHER;
+
+        if (paneManager != null && groupId != null && paneManager.focusPane(tabSwitcher)) {
             @Nullable TabSwitcherPaneBase tabSwitcherPaneBase =
-                    (TabSwitcherPaneBase) paneManager.getPaneForId(PaneId.TAB_SWITCHER);
+                    (TabSwitcherPaneBase) paneManager.getPaneForId(tabSwitcher);
             if (tabSwitcherPaneBase != null) {
                 tabSwitcherPaneBase.requestOpenTabGroupDialog(tab.getId());
             }
