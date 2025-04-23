@@ -851,3 +851,7 @@
 -PrerenderTargetHintEnabledBrowserTest.BackgroundedPage_ActivateOnLinkClick_TargetBlank_WithTargetHintBlank
 -PrerenderTargetHintEnabledBrowserTest.SessionStorage_TargetBlank_WithTargetHintBlank
 -PrerenderTargetHintOriginTrialBrowserTest.Prerender2InNewTabOriginTrial
+
+# These tests have been failing since https://crrev.com/c/6459930.
+-Default/MediaTest.HLSSingleWithoutExtension/0
+-Default/MediaTest.HLSSingleWithoutExtension/1
