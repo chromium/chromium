@@ -1,7 +1,0 @@
-haraken@chromium.org
-keishi@chromium.org
-lizeb@chromium.org
-tasak@google.com
-
-per-file pointers/raw_ptr*=file://base/memory/MIRACLE_PTR_OWNERS
-per-file pointers/raw_ref*=file://base/memory/MIRACLE_PTR_OWNERS

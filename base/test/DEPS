@@ -1,5 +1,0 @@
-include_rules = [
-  "+third_party/libxml/chromium",
-  "+third_party/protobuf/src/google/protobuf",
-  "+third_party/fuzztest",
-]

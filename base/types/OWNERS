@@ -1,6 +1,0 @@
-# lukasza@ created `id_type.h` long time ago (in r368502) and might still
-# remember why certain things are the way they are.
-per-file id_type*=lukasza@chromium.org
-per-file strong_alias*=lukasza@chromium.org
-
-# Please ask //base/OWNERS to review changes in other files.
