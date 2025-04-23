@@ -15720,7 +15720,7 @@ should be able to be added at any place in this file.
 
 <action name="IOSBookmarksEditorClosedWithSwipeDown">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user closes bookmark editor by swiping down. iOS-only.
   </description>
@@ -15728,7 +15728,7 @@ should be able to be added at any place in this file.
 
 <action name="IOSBookmarksFolderChooserClosedWithSwipeDown">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user closes bookmark folder chooser by swiping down.
     iOS-only.
@@ -15737,7 +15737,7 @@ should be able to be added at any place in this file.
 
 <action name="IOSBookmarksFolderEditorClosedWithSwipeDown">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user closes bookmark folder editor by swiping down.
     iOS-only.
@@ -22470,7 +22470,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileBookmarkManagerAddedBookmarkUndone">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>The user undid added bookmark on iOS only.</description>
 </action>
 
@@ -22494,7 +22494,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileBookmarkManagerDeletedEntryUndone">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>The user undid bookmark deletion on iOS only.</description>
 </action>
 
@@ -22600,7 +22600,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileBookmarkManagerMoveToFolderUndone">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>The user undid bookmark move on iOS only.</description>
 </action>
 
@@ -22632,7 +22632,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileBookmarkManagerOpenedBookmarkEditorFromSnackbar">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     The user opened the bookmark editor using the snackbar.
   </description>
@@ -22692,13 +22692,13 @@ should be able to be added at any place in this file.
 
 <action name="MobileBookmarkManagerUpdatedBookmarkUndone">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>The user undid bookmark update on iOS only.</description>
 </action>
 
 <action name="MobileBookmarksEditorCanceled">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     The user canceled the bookmark editor view. iOS-only.
   </description>
@@ -22706,7 +22706,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileBookmarksEditorDeletedBookmark">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     The user deleted the bookmark in the bookmark editor view. iOS-only.
   </description>
@@ -22714,7 +22714,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileBookmarksEditorOpenedFolderChooser">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     The user opened the folder chooser in the bookmark editor view. iOS-only.
   </description>
@@ -22722,13 +22722,13 @@ should be able to be added at any place in this file.
 
 <action name="MobileBookmarksEditorSaved">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>The user saved the bookmark editor view. iOS-only.</description>
 </action>
 
 <action name="MobileBookmarksFolderChooserCanceled">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     The user canceled the bookmark folder chooser view. iOS-only.
   </description>
@@ -22744,7 +22744,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileBookmarksFolderChooserDone">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     The user confirmed the bookmark folder chooser view. iOS-only.
   </description>
@@ -22769,7 +22769,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileBookmarksFolderEditorCanceled">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     The user canceled the bookmark folder editor view. iOS-only.
   </description>
@@ -22777,7 +22777,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileBookmarksFolderEditorDeletedFolder">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     The user deleted the folder while in the bookmark folder editor view.
     iOS-only.
@@ -22786,7 +22786,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileBookmarksFolderEditorOpenedFolderChooser">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     The user opened the folder chooser in the bookmark folder editor view.
     iOS-only.
@@ -22795,7 +22795,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileBookmarksFolderEditorSaved">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     The user confirmed the bookmark folder editor view. iOS-only.
   </description>
@@ -23486,7 +23486,7 @@ should be able to be added at any place in this file.
 <action name="MobileFreUMALinkTapped">
   <owner>arthurmilchior@chromium.org</owner>
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     User tapped on the UMA link on the first run welcome view. This metric is
     only recorded if and after the TOS are accepted. This metric is specific to
@@ -25598,7 +25598,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileReadingListAccessibilityClose">
   <owner>myuu@google.com</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when a user closes Reading List on iOS by performing a VoiceOver
     dismiss action.
@@ -26380,7 +26380,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileTabGridAddedMultipleNewBookmarks">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     User added multiple new bookmarks base on the selected tabs, in the iOS tab
     grid. It is possible to have one tab selected.
@@ -26601,7 +26601,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileTabGridOpenedBookmarkEditorForExistingBookmark">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     User edited an existing bookmark, in the iOS tab grid.
   </description>
@@ -26609,7 +26609,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileTabGridOpenedBookmarkEditorForNewBookmark">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>User adds one new bookmark, in the iOS tab grid.</description>
 </action>
 
@@ -38430,7 +38430,7 @@ should be able to be added at any place in this file.
 <action name="Signin_Abort_Signin_UINotAvailable">
   <owner>jlebel@chromium.org</owner>
   <owner>arthurmilchior@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the sign-in process is aborted as the user started it when the
     UI was not available to present the sign-in screen. Logged only on iOS.
@@ -38441,7 +38441,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AccountMenu_AddAccount">
   <owner>arthurmilchior@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user taps on &quot;Add account…&quot; from the account
     menu. iOS only.
@@ -38450,7 +38450,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AccountMenu_Close">
   <owner>arthurmilchior@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user taps on the Close button in the account menu. iOS
     only.
@@ -38459,7 +38459,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AccountMenu_Dismissed_By_User">
   <owner>arthurmilchior@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user dismissed by swipe-down or tapping out of the account
     menu. iOS only.
@@ -38468,7 +38468,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AccountMenu_EditAccountList">
   <owner>arthurmilchior@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user taps on &quot;Edit Account List&quot; menu entry in
     the account menu. iOS only.
@@ -38477,7 +38477,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AccountMenu_ErrorButton_MDM">
   <owner>arthurmilchior@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user taps on &quot;Error&quot; (MDM error) button in the
     account menu. iOS only.
@@ -38486,7 +38486,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AccountMenu_ErrorButton_Passphrase">
   <owner>arthurmilchior@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user taps on &quot;Error&quot; (missing passphrase) button
     in the account menu. iOS only.
@@ -38495,7 +38495,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AccountMenu_ErrorButton_Reauth">
   <owner>arthurmilchior@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user taps on &quot;Error&quot; (Reauth needed) button in
     the account menu. iOS only.
@@ -38504,7 +38504,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AccountMenu_ErrorButton_TrustedVaultDegradedForEverything">
   <owner>arthurmilchior@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user taps on &quot;Error&quot; (degraded trusted vault for
     everything) button in the account menu. iOS only.
@@ -38513,7 +38513,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AccountMenu_ErrorButton_TrustedVaultDegradedForPasswords">
   <owner>arthurmilchior@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user taps on &quot;Error&quot; (degraded trusted vault for
     passwords) button in the account menu. iOS only.
@@ -38522,7 +38522,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AccountMenu_ErrorButton_TrustedVaultForEverything">
   <owner>arthurmilchior@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user taps on &quot;Error&quot; (trusted vault for
     everything) button in the account menu. iOS only.
@@ -38531,7 +38531,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AccountMenu_ErrorButton_TrustedVaultForPasswords">
   <owner>arthurmilchior@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user taps on &quot;Error&quot; (trusted vault for
     passwords) button in the account menu. iOS only.
@@ -38540,7 +38540,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AccountMenu_ManageAccount">
   <owner>arthurmilchior@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user tap to manage the account from the account menu. iOS
     only.
@@ -38549,7 +38549,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AccountMenu_SelectAccount">
   <owner>arthurmilchior@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user selects an account in the account menu. iOS only.
   </description>
@@ -38557,7 +38557,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AccountMenu_Signout">
   <owner>arthurmilchior@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user signes out from the account menu. iOS only.
   </description>
@@ -38565,7 +38565,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AccountPicker_Close">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user closes the account picker. Only on iOS.
   </description>
@@ -38573,7 +38573,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AccountPicker_Open">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user opens the account picker. Only on iOS.
   </description>
@@ -38608,7 +38608,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AccountsTableView_AccountDetail">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user opens the detail alert dialog (to choose between
     MyAccount UI or remove the identity) in the accounts table view. iOS only.
@@ -38617,7 +38617,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AccountsTableView_AccountDetail_Cancel">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user cancels the account detail alert dialog in the
     accounts table view. iOS only.
@@ -38626,7 +38626,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AccountsTableView_AccountDetail_OpenMyGoogleUI">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user opens MyGoogleUI from the accounts table view. iOS
     only.
@@ -38635,7 +38635,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AccountsTableView_AccountDetail_RemoveAccount">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user asks to remove an identity in the accounts table
     view. iOS only.
@@ -38645,7 +38645,7 @@ should be able to be added at any place in this file.
 <action
     name="Signin_AccountsTableView_AccountDetail_RemoveAccount_ConfirmationCancelled">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user cancels the account removal action in the accounts
     table view. iOS only.
@@ -38654,7 +38654,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AccountsTableView_AccountDetail_RemoveAccount_Confirmed">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user confirms the account removal action in the accounts
     table view. iOS only.
@@ -38663,7 +38663,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AccountsTableView_AddAccount">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user taps on &quot;Add Account…&quot; button in the
     accounts table view. iOS only.
@@ -38672,7 +38672,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AccountsTableView_Close">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user closes the accounts table view. iOS only.
   </description>
@@ -38680,7 +38680,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AccountsTableView_ErrorButton">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user taps on &quot;Error&quot; button in the accounts
     table view. iOS only.
@@ -38689,7 +38689,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AccountsTableView_Open">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user opens the account table view. iOS only.
   </description>
@@ -38697,7 +38697,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AccountsTableView_SignOut">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user taps on &quot;Sign-out&quot; button in the accounts
     table view. iOS only.
@@ -38711,7 +38711,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AddAccountToDevice_DismissedWithError">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the add account view is dismissed with an error. Recorded for
     iOS only.
@@ -38720,7 +38720,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AddAccountToDevice_DismissedWithNewAccount">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the add account view is dismissed with adding a new account.
     Recorded for iOS only.
@@ -38729,7 +38729,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AddAccountToDevice_DismissedWithoutNewAccount">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the add account view is dismissed without adding a new
     account. Recorded for iOS only.
@@ -38755,7 +38755,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AuthenticationFlowPerformer_ErrorDialog_Confirmed">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     This user action is triggered when the error dialog from
     AuthenticationFlowPerformer is confirmed by the user.
@@ -38764,7 +38764,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AuthenticationFlowPerformer_ErrorDialog_Presented">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     This user action is triggered when the error dialog is presented. This user
     action will help to understand crbug.com/1482623 using breadcrumbs.
@@ -38775,7 +38775,7 @@ should be able to be added at any place in this file.
 <action
     name="Signin_AuthenticationFlowPerformer_ManagedConfirmationDialog_Canceled">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     This user action is triggered when the managed confirmation dialog from
     AuthenticationFlowPerformer is canceled by the user.
@@ -38785,7 +38785,7 @@ should be able to be added at any place in this file.
 <action
     name="Signin_AuthenticationFlowPerformer_ManagedConfirmationDialog_Confirmed">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     This user action is triggered when the managed confirmation dialog from
     AuthenticationFlowPerformer is confirmed by the user.
@@ -38795,7 +38795,7 @@ should be able to be added at any place in this file.
 <action
     name="Signin_AuthenticationFlowPerformer_ManagedConfirmationDialog_Presented">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     This user action is triggered when the managed confirmation dialog is
     presented. This user action will help to understand crbug.com/1482623 using
@@ -38806,7 +38806,7 @@ should be able to be added at any place in this file.
 <action name="Signin_AuthenticationFlowPerformer_SwitchDialog_Canceled">
   <obsolete>Removed 04/2024.</obsolete>
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     This user action is triggered when the switch account dialog from
     AuthenticationFlowPerformer is canceled by the user.
@@ -38816,7 +38816,7 @@ should be able to be added at any place in this file.
 <action name="Signin_AuthenticationFlowPerformer_SwitchDialog_Confirmed">
   <obsolete>Removed 04/2024.</obsolete>
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     This user action is triggered when the switch account dialog from
     AuthenticationFlowPerformer is confirmed by the user.
@@ -38826,7 +38826,7 @@ should be able to be added at any place in this file.
 <action name="Signin_AuthenticationFlowPerformer_SwitchDialog_Presented">
   <obsolete>Removed 04/2024.</obsolete>
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     This user action is triggered when the switch account dialog is presented.
     This user action will help to understand crbug.com/1482623 using
@@ -38836,7 +38836,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_BottomSheet_ClosedByCancel">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the sign-in bottom sheet is canceled. Recorded for iOS only.
   </description>
@@ -38844,7 +38844,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_BottomSheet_ClosedByInterrupt">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the sign-in bottom sheet is interrupted by a Chrome action.
     Recorded for iOS only.
@@ -38864,7 +38864,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_BottomSheet_ClosedBySignIn">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the sign-in bottom sheet closes after the user is signed in.
     Recorded for iOS only.
@@ -38873,7 +38873,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_BottomSheet_IdentityChooser_Closed">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the identity chooser dialog from the bottom sheet is closed by
     the user. Recorded for iOS only.
@@ -38882,7 +38882,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_BottomSheet_IdentityChooser_Opened">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the identity chooser dialog from the bottom sheet is opened by
     the user. Recorded for iOS only.
@@ -38891,7 +38891,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_BottomSheet_Opened">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the bottom sheet is opened. Recorded for iOS only.
   </description>
@@ -38899,7 +38899,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_BulkUpload_Close">
   <owner>arthurmilchior@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the Bulk Upload Settings is dismissed. iOS only.
   </description>
@@ -38907,7 +38907,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_BulkUpload_FaceID_CannotBeStarted">
   <owner>arthurmilchior@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the face id auth cannot be started in the Bulk Upload
     Settings. iOS only.
@@ -38916,7 +38916,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_BulkUpload_FaceID_Failed">
   <owner>arthurmilchior@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the face id auth fails in the Bulk Upload Settings. iOS only.
   </description>
@@ -38924,7 +38924,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_BulkUpload_FaceID_Success">
   <owner>arthurmilchior@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the face id auth is successful in the Bulk Upload Settings.
     iOS only.
@@ -38933,7 +38933,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_BulkUpload_Open">
   <owner>arthurmilchior@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the Bulk Upload Settings is opened. iOS only.
   </description>
@@ -38941,7 +38941,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_BulkUpload_Save">
   <owner>arthurmilchior@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user presses the save button in the Bulk Upload Settings.
     iOS only.
@@ -38975,7 +38975,7 @@ should be able to be added at any place in this file.
 <action name="Signin_HistorySync">
   <owner>myuu@google.com</owner>
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when user takes an action on the History Sync Opt-In screen.
     Recorded on iOS only.
@@ -39573,7 +39573,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_MyGoogleUI_AccountDetails">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user opens MyGoogleUI account details.
   </description>
@@ -39581,7 +39581,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_MyGoogleUI_ActivityControls">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user opens MyGoogleUI activity controls.
   </description>
@@ -39597,7 +39597,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_Promo_Close">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user closes the sign-in promo. iOS only.
   </description>
@@ -41284,7 +41284,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_TwoScreens_SwipeDismiss">
   <owner>scottyoder@google.com</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user swipes to dismiss the signin or sync screen during
     the &quot;TwoScreensSignin&quot; UI flow. Recorded for iOS only.
