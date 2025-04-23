@@ -270,8 +270,8 @@ GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks(
   };
 
   const auto& available_size = ChildAvailableSize();
-  GridSizingTrackCollection track_collection(
-      BuildRanges(), /*must_create_baselines=*/false, grid_axis_direction);
+  GridSizingTrackCollection track_collection(BuildRanges(),
+                                             grid_axis_direction);
   track_collection.BuildSets(style, available_size);
 
   if (track_collection.HasNonDefiniteTrack()) {

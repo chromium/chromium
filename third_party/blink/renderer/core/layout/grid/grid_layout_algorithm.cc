@@ -470,8 +470,8 @@ void GridLayoutAlgorithm::BuildGridSizingSubtree(
     }
 
     layout_data.SetTrackCollection(std::make_unique<GridSizingTrackCollection>(
-        range_builder.FinalizeRanges(), must_create_baselines,
-        track_direction));
+        range_builder.FinalizeRanges(), track_direction,
+        must_create_baselines));
   };
 
   const bool has_standalone_columns = subgrid_area.columns.IsIndefinite();

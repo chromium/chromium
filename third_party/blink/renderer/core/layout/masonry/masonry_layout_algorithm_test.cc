@@ -23,13 +23,15 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
 
   void ComputeGeometry(const MasonryLayoutAlgorithm& algorithm) {
     wtf_size_t start_offset;
-    const GridLineResolver line_resolver(algorithm.Style(),
-                                         /*auto_repetitions=*/0);
+    const auto& style = algorithm.Style();
+    const GridLineResolver line_resolver(style, /*auto_repetitions=*/0);
 
     grid_axis_tracks_ = algorithm.BuildGridAxisTracks(
         line_resolver, SizingConstraint::kLayout, start_offset);
 
     const auto grid_axis_direction = grid_axis_tracks_->Direction();
+    ASSERT_EQ(grid_axis_direction, style.MasonryTrackSizingDirection());
+
     for (const auto& masonry_item :
          algorithm.BuildVirtualMasonryItems(line_resolver, start_offset)) {
       MasonryItemCachedData item_data;
@@ -469,6 +471,37 @@ TEST_F(MasonryLayoutAlgorithmTest, ExpandFlexibleTracks) {
 
   EXPECT_EQ(TrackSizes(), Vector<LayoutUnit>({LayoutUnit(10), LayoutUnit(50),
                                               LayoutUnit(30), LayoutUnit(10)}));
+}
+
+TEST_F(MasonryLayoutAlgorithmTest, BuildRowSizes) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #masonry {
+      height: 100px;
+      display: masonry;
+      masonry-direction: row;
+      grid-template-rows: 20px 1fr 30%;
+    }
+    </style>
+    <div id="masonry"></div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("masonry"));
+
+  const auto space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(100), LayoutUnit(100)),
+      /*stretch_inline_size_if_auto=*/true,
+      /*is_new_formatting_context=*/true);
+
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+
+  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  ComputeGeometry(algorithm);
+
+  EXPECT_EQ(TrackSizes(), Vector<LayoutUnit>({LayoutUnit(20), LayoutUnit(50),
+                                              LayoutUnit(30)}));
 }
 
 TEST_F(MasonryLayoutAlgorithmTest, UpdateRunningPositionsForSpan) {

@@ -837,8 +837,8 @@ bool GridLayoutTrackCollection::HasIndefiniteSet() const {
 
 GridSizingTrackCollection::GridSizingTrackCollection(
     GridRangeVector&& ranges,
-    bool must_create_baselines,
-    GridTrackSizingDirection track_direction)
+    GridTrackSizingDirection track_direction,
+    bool must_create_baselines)
     : GridLayoutTrackCollection(track_direction) {
   ranges_ = std::move(ranges);
 
