@@ -732,6 +732,13 @@ void WASAPIAudioInputStream::Start(AudioInputCallback* callback) {
                    ErrorToString(hr).c_str());
   }
 
+  if (SUCCEEDED(hr) && audio_render_client_for_loopback_.Get()) {
+    hr = audio_render_client_for_loopback_->Start();
+    if (FAILED(hr))
+      SendLogMessage("%s => (ERROR: IAudioClient::Start=[%s] (loopback))",
+                     __func__, ErrorToString(hr).c_str());
+  }
+
   started_ = SUCCEEDED(hr);
 }
 
@@ -1513,13 +1520,14 @@ HRESULT WASAPIAudioInputStream::InitializeAudioEngine() {
   DCHECK_EQ(OPEN_RESULT_OK, open_result_);
   SendLogMessage("%s()", __func__);
 
-  // Use event-driven mode for regular input devices and for loopback.
-  DWORD flags =
-      AUDCLNT_STREAMFLAGS_EVENTCALLBACK | AUDCLNT_STREAMFLAGS_NOPERSIST;
+  DWORD flags;
+  // Use event-driven mode only for regular input devices. For loopback the
+  // EVENTCALLBACK flag is specified when initializing
+  // |audio_render_client_for_loopback_|.
   if (AudioDeviceDescription::IsLoopbackDevice(device_id_)) {
-    // Create a loopback stream that captures what the system is playing
-    // instead of the microphone input.
-    flags |= AUDCLNT_STREAMFLAGS_LOOPBACK;
+    flags = AUDCLNT_STREAMFLAGS_LOOPBACK | AUDCLNT_STREAMFLAGS_NOPERSIST;
+  } else {
+    flags = AUDCLNT_STREAMFLAGS_EVENTCALLBACK | AUDCLNT_STREAMFLAGS_NOPERSIST;
   }
 
   // Initialize the audio stream between the client and the device.
@@ -1591,7 +1599,46 @@ HRESULT WASAPIAudioInputStream::InitializeAudioEngine() {
 
   // Set the event handle that the audio engine will signal each time a buffer
   // becomes ready to be processed by the client.
-  hr = audio_client_->SetEventHandle(audio_samples_ready_event_.Get());
+  //
+  // In loopback case the capture device doesn't receive any events, so we
+  // need to create a separate playback client to get notifications. According
+  // to MSDN:
+  //
+  //   A pull-mode capture client does not receive any events when a stream is
+  //   initialized with event-driven buffering and is loopback-enabled. To
+  //   work around this, initialize a render stream in event-driven mode. Each
+  //   time the client receives an event for the render stream, it must signal
+  //   the capture client to run the capture thread that reads the next set of
+  //   samples from the capture endpoint buffer.
+  //
+  // http://msdn.microsoft.com/en-us/library/windows/desktop/dd316551(v=vs.85).aspx
+  if (AudioDeviceDescription::IsLoopbackDevice(device_id_)) {
+    SendLogMessage("%s => (WARNING: loopback mode is selected)", __func__);
+    hr = endpoint_device_->Activate(__uuidof(IAudioClient), CLSCTX_ALL, nullptr,
+                                    &audio_render_client_for_loopback_);
+    if (FAILED(hr)) {
+      open_result_ = OPEN_RESULT_LOOPBACK_ACTIVATE_FAILED;
+      return hr;
+    }
+
+    hr = audio_render_client_for_loopback_->Initialize(
+        AUDCLNT_SHAREMODE_SHARED,
+        AUDCLNT_STREAMFLAGS_EVENTCALLBACK | AUDCLNT_STREAMFLAGS_NOPERSIST, 0, 0,
+        reinterpret_cast<const WAVEFORMATEX*>(&input_format_),
+        AudioDeviceDescription::IsCommunicationsDevice(device_id_)
+            ? &kCommunicationsSessionId
+            : nullptr);
+    if (FAILED(hr)) {
+      open_result_ = OPEN_RESULT_LOOPBACK_INIT_FAILED;
+      return hr;
+    }
+
+    hr = audio_render_client_for_loopback_->SetEventHandle(
+        audio_samples_ready_event_.Get());
+  } else {
+    hr = audio_client_->SetEventHandle(audio_samples_ready_event_.Get());
+  }
+
   if (FAILED(hr)) {
     open_result_ = OPEN_RESULT_SET_EVENT_HANDLE;
     return hr;
