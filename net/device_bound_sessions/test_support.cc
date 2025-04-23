@@ -52,6 +52,14 @@ std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
             .Set("session_identifier", "session_id")
             .Set("refresh_url",
                  base_url.Resolve("/dbsc_refresh_session").spec())
+            .Set("scope", base::Value::Dict()
+                              .Set("include_site", true)
+                              .Set("scope_specification",
+                                   base::Value::List().Append(
+                                       base::Value::Dict()
+                                           .Set("type", "exclude")
+                                           .Set("domain", base_url.host())
+                                           .Set("path", "/favicon.ico"))))
             .Set("credentials",
                  base::Value::List().Append(base::Value::Dict()
                                                 .Set("type", "cookie")
