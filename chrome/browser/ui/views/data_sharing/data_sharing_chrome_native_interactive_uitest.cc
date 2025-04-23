@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/test/tab_strip_interactive_test_mixin.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -45,7 +46,8 @@
 
 namespace tab_groups {
 
-class DataSharingChromeNativeUiTest : public InteractiveBrowserTest {
+class DataSharingChromeNativeUiTest
+    : public TabStripInteractiveTestMixin<InteractiveBrowserTest> {
  protected:
   DataSharingChromeNativeUiTest() = default;
   ~DataSharingChromeNativeUiTest() override = default;
@@ -59,44 +61,11 @@ class DataSharingChromeNativeUiTest : public InteractiveBrowserTest {
     InProcessBrowserTest::SetUp();
   }
 
-  MultiStep FinishTabstripAnimations() {
-    return Steps(WaitForShow(kTabStripElementId),
-                 WithView(kTabStripElementId, [](TabStrip* tab_strip) {
-                   tab_strip->StopAnimating(true);
-                 }).SetDescription("FinishTabstripAnimation"));
-  }
-
   MultiStep ShowBookmarksBar() {
     return Steps(PressButton(kToolbarAppMenuButtonElementId),
                  SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
                  SelectMenuItem(BookmarkSubMenuModel::kShowBookmarkBarMenuItem),
                  WaitForShow(kBookmarkBarElementId));
-  }
-
-  MultiStep HoverTabAt(int index) {
-    const char kTabToHover[] = "Tab to hover";
-    return Steps(NameDescendantViewByType<Tab>(kBrowserViewElementId,
-                                               kTabToHover, index),
-                 MoveMouseTo(kTabToHover));
-  }
-
-  MultiStep HoverTabGroupHeader(tab_groups::TabGroupId group_id) {
-    const char kTabGroupHeaderToHover[] = "Tab group header to hover";
-    return Steps(
-        FinishTabstripAnimations(),
-        NameDescendantView(
-            kBrowserViewElementId, kTabGroupHeaderToHover,
-            base::BindRepeating(
-                [](tab_groups::TabGroupId group_id, const views::View* view) {
-                  const TabGroupHeader* header =
-                      views::AsViewClass<TabGroupHeader>(view);
-                  if (!header) {
-                    return false;
-                  }
-                  return header->group().value() == group_id;
-                },
-                group_id)),
-        MoveMouseTo(kTabGroupHeaderToHover));
   }
 
   MultiStep SaveGroupLeaveEditorBubbleOpen(tab_groups::TabGroupId group_id) {
