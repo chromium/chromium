@@ -1,4 +1,0 @@
-source_set("fnmatch_test") {
-}
-source_set("stderr_log_sink_test") {
-}

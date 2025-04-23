@@ -1,6 +1,0 @@
-{
-  "content": {
-    "version": "@MAJOR@.@MINOR@.@BUILD@.@PATCH@"
-  },
-  "metadata_version": 1
-}

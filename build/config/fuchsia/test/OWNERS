@@ -1,7 +1,0 @@
-file://build/fuchsia/OWNERS
-
-per-file *.test-cml=set noparent
-per-file *.test-cml=ddorwin@chromium.org
-per-file *.test-cml=wez@chromium.org
-# Please prefer the above when possible.
-per-file *.test-cml=file://build/fuchsia/SECURITY_OWNERS

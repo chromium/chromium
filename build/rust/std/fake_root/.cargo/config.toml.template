@@ -1,5 +1,0 @@
-[source.crates-io]
-replace-with = 'vendored-sources'
-
-[source.vendored-sources]
-directory = '../../../../RUST_SRC_ROOT/library/vendor'
