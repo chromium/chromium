@@ -42,6 +42,10 @@
 #include "extensions/browser/pref_names.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_pref_names.h"
+#endif
+
 namespace browser_sync {
 namespace {
 // Not an enum class to ease cast to int.
@@ -388,6 +392,7 @@ enum {
   kTabSearchMigrationComplete = 100325,
   kReadAloudPlaybackMode = 100326,
   kPinSplitTabButton = 100327,
+  kGlicRolloutEligibility = 100328,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -1670,6 +1675,12 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kPrivacySandboxFakeNoticePromptShownTimeSync,
       syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
+#if BUILDFLAG(ENABLE_GLIC)
+      {glic::prefs::kGlicRolloutEligibility,
+       {syncable_prefs_ids::kGlicRolloutEligibility, syncer::PRIORITY_PREFERENCES,
+        sync_preferences::PrefSensitivity::kNone,
+        sync_preferences::MergeBehavior::kNone}},
+#endif  // BUILDFLAG(ENABLE_GLIC)
 });
 
 }  // namespace
