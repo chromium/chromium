@@ -207,6 +207,7 @@ void PaintLayerScrollableArea::DisposeImpl() {
 
   if (LocalFrameView* frame_view = GetLayoutBox()->GetFrameView()) {
     frame_view->RemoveScrollableArea(*this);
+    frame_view->RemovePendingStickyUpdate(this);
     probe::UpdateScrollableFlag(GetLayoutBox()->GetNode(), false);
   }
 

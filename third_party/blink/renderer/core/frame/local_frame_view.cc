@@ -5081,6 +5081,13 @@ void LocalFrameView::AddPendingStickyUpdate(PaintLayerScrollableArea* object) {
   pending_sticky_updates_->insert(object);
 }
 
+void LocalFrameView::RemovePendingStickyUpdate(
+    PaintLayerScrollableArea* object) {
+  if (pending_sticky_updates_) {
+    pending_sticky_updates_->erase(object);
+  }
+}
+
 bool LocalFrameView::HasPendingStickyUpdate(
     PaintLayerScrollableArea* object) const {
   if (pending_sticky_updates_) {
