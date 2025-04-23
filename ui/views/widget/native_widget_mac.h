@@ -177,6 +177,7 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
             const gfx::Rect& restore_bounds) override;
   void Hide() override;
   bool IsVisible() const override;
+  bool IsVisibleOnScreen() const override;
   void Activate() override;
   void Deactivate() override;
   bool IsActive() const override;

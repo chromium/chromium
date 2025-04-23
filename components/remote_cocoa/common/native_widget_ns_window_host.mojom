@@ -43,6 +43,9 @@ interface NativeWidgetNSWindowHost {
   // Update the views::Widget, ui::Compositor and ui::Layer's visibility.
   OnVisibilityChanged(bool visible);
 
+  // Called when -[NSWindow isOnActiveSpace] changes.
+  OnSpaceActivationChanged(bool is_space_active);
+
   // Called when the window's native theme changes.
   OnWindowNativeThemeChanged();
 

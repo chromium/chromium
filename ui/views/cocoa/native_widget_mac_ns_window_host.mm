@@ -78,6 +78,7 @@ class BridgedNativeWidgetHostDummy
 
  private:
   void OnVisibilityChanged(bool visible) override {}
+  void OnSpaceActivationChanged(bool is_space_active) override {}
   void OnWindowNativeThemeChanged() override {}
   void OnViewSizeChanged(const gfx::Size& new_size) override {}
   void SetKeyboardAccessible(bool enabled) override {}
@@ -1060,6 +1061,11 @@ void NativeWidgetMacNSWindowHost::OnVisibilityChanged(bool window_visible) {
   if (Widget* widget = GetWidget()) {
     widget->OnNativeWidgetVisibilityChanged(window_visible);
   }
+}
+
+void NativeWidgetMacNSWindowHost::OnSpaceActivationChanged(
+    bool is_on_active_space) {
+  is_on_active_space_ = is_on_active_space;
 }
 
 void NativeWidgetMacNSWindowHost::OnWindowNativeThemeChanged() {

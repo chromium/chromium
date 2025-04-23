@@ -964,6 +964,11 @@ bool DesktopNativeWidgetAura::IsVisible() const {
          desktop_window_tree_host_ && desktop_window_tree_host_->IsVisible();
 }
 
+bool DesktopNativeWidgetAura::IsVisibleOnScreen() const {
+  // TODO(crbug.com/410938804): implement this.
+  return IsVisible();
+}
+
 void DesktopNativeWidgetAura::Activate() {
   if (desktop_window_tree_host_ && content_window_) {
     bool was_tree_active = desktop_window_tree_host_->IsActive();

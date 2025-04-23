@@ -799,6 +799,11 @@ bool NativeWidgetAura::IsVisible() const {
   return window_ && window_->IsVisible();
 }
 
+bool NativeWidgetAura::IsVisibleOnScreen() const {
+  // TODO(crbug.com/410938804): implement this.
+  return IsVisible();
+}
+
 void NativeWidgetAura::Activate() {
   if (!window_) {
     return;

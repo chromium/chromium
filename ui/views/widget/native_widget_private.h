@@ -196,6 +196,7 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
                     const gfx::Rect& restore_bounds) = 0;
   virtual void Hide() = 0;
   virtual bool IsVisible() const = 0;
+  virtual bool IsVisibleOnScreen() const = 0;
   virtual void Activate() = 0;
   virtual void Deactivate() = 0;
   virtual bool IsActive() const = 0;

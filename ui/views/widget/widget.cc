@@ -1232,6 +1232,10 @@ bool Widget::IsVisible() const {
   return native_widget_ ? native_widget_->IsVisible() : false;
 }
 
+bool Widget::IsVisibleOnScreen() const {
+  return native_widget_ ? native_widget_->IsVisibleOnScreen() : false;
+}
+
 const ui::ThemeProvider* Widget::GetThemeProvider() const {
   // The theme provider is provided by the very top widget in the ownership
   // chain, which may include parenting, anchoring, etc. Use

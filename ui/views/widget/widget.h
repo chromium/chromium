@@ -1005,8 +1005,18 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   }
   bool is_secondary_widget() const { return is_secondary_widget_; }
 
-  // Returns whether the Widget is visible to the user.
+  // Returns whether the Widget is mapped by the window server. It doesn't
+  // necessarily mean the window's pixels are currently visible on a physical
+  // display to the user.
+  // Example: a mapped Widget on a hidden virtual desktop returns true for
+  // IsVisible(), but is not physically visible to the user.
   bool IsVisible() const;
+
+  // Returns true if the Widget is physically visible to the user on any screen.
+  // This is implemented only on macOS. On other platforms this is equivalent
+  // to IsVisible().
+  // TODO(crbug.com/410938804): implement this on Windows.
+  bool IsVisibleOnScreen() const;
 
   // Returns the ThemeProvider that provides theme resources for this Widget.
   virtual const ui::ThemeProvider* GetThemeProvider() const;
