@@ -78,8 +78,8 @@ public class WebappActionsNotificationTest {
     @Test
     @SmallTest
     @Feature({"Webapps"})
+    @DisabledTest(message = "https://crbug.com/411465437")
     public void testNotification_openInChrome() throws Exception {
-        waitWebappNotificationCount(1);
         Notification notification = getWebappNotification();
 
         Assert.assertNotNull(notification);
@@ -101,7 +101,7 @@ public class WebappActionsNotificationTest {
                 () -> {
                     return InstrumentationRegistry.getInstrumentation().checkMonitorHit(monitor, 1);
                 });
-        waitWebappNotificationCount(0);
+
         Assert.assertNull("Notification should no longer be shown", getWebappNotification());
     }
 
@@ -128,23 +128,17 @@ public class WebappActionsNotificationTest {
                 });
     }
 
-    private NotificationManager getNotificationManager() {
-        return (NotificationManager)
-                mActivityTestRule.getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
-    }
-
     private @Nullable Notification getWebappNotification() {
-        NotificationManager nm = getNotificationManager();
+        NotificationManager nm =
+                (NotificationManager)
+                        mActivityTestRule
+                                .getActivity()
+                                .getSystemService(Context.NOTIFICATION_SERVICE);
         for (StatusBarNotification sbn : nm.getActiveNotifications()) {
             if (sbn.getId() == NotificationConstants.NOTIFICATION_ID_WEBAPP_ACTIONS) {
                 return sbn.getNotification();
             }
         }
         return null;
-    }
-
-    private void waitWebappNotificationCount(int count) {
-        NotificationManager nm = getNotificationManager();
-        CriteriaHelper.pollInstrumentationThread(() -> nm.getActiveNotifications().length == count);
     }
 }

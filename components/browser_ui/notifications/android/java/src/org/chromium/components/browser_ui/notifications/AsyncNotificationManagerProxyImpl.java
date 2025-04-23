@@ -32,28 +32,18 @@ import java.util.function.Function;
 @NullMarked
 /* package */ class AsyncNotificationManagerProxyImpl implements BaseNotificationManagerProxy {
     private static final String TAG = "AsyncNotifManager";
+    private final NotificationManagerCompat mNotificationManager;
+    private static @Nullable BaseNotificationManagerProxy sInstance;
 
-    // This object is initialized and used on a background thread, and it should always be non
-    // null when used.
-    @SuppressWarnings("NullAway.Init")
-    private NotificationManagerCompat mNotificationManager;
-
-    private static @Nullable AsyncNotificationManagerProxyImpl sInstance;
-
-    public static AsyncNotificationManagerProxyImpl getInstance() {
+    public static BaseNotificationManagerProxy getInstance() {
         if (sInstance == null) {
-            sInstance = new AsyncNotificationManagerProxyImpl();
+            sInstance = new NotificationManagerProxyImpl();
         }
         return sInstance;
     }
 
     private AsyncNotificationManagerProxyImpl() {
-        runAsync(
-                "AsyncNotificationManagerProxyImpl()",
-                () -> {
-                    mNotificationManager =
-                            NotificationManagerCompat.from(ContextUtils.getApplicationContext());
-                });
+        mNotificationManager = NotificationManagerCompat.from(ContextUtils.getApplicationContext());
     }
 
     @Override
