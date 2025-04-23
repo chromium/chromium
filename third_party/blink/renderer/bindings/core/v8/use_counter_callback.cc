@@ -452,7 +452,7 @@ void UseCounterCallback(v8::Isolate* isolate,
       webdx_feature = WebDXFeature::kWeakReferences;
       break;
     case v8::Isolate::kErrorIsError:
-      webdx_feature = WebDXFeature::kDRAFT_ErrorIsError;
+      webdx_feature = WebDXFeature::kIsError;
       break;
     case v8::Isolate::kRegExpEscape:
       webdx_feature = WebDXFeature::kRegexpEscape;
