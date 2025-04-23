@@ -904,17 +904,9 @@
             this.#browsingContextStorage = browsingContextStorage;
         }
         async setGeolocationOverride(params) {
-            if ((params.coordinates?.altitude ?? null) !== null) {
-                throw new UnsupportedOperationException('Geolocation altitude emulation is not supported');
-            }
-            if ((params.coordinates?.heading ?? null) !== null) {
-                throw new UnsupportedOperationException('Geolocation heading emulation is not supported');
-            }
-            if ((params.coordinates?.altitudeAccuracy ?? null) !== null) {
-                throw new UnsupportedOperationException('Geolocation altitudeAccuracy emulation is not supported');
-            }
-            if ((params.coordinates?.speed ?? null) !== null) {
-                throw new UnsupportedOperationException('Geolocation speed emulation is not supported');
+            if ((params.coordinates?.altitude ?? null) === null &&
+                (params.coordinates?.altitudeAccuracy ?? null) !== null) {
+                throw new InvalidArgumentException('Geolocation altitudeAccuracy can be set only with altitude');
             }
             const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(params.contexts, params.userContexts);
             for (const userContextId of params.userContexts ?? []) {
@@ -4029,12 +4021,21 @@
             switch (capabilityValue) {
                 case 'accept':
                 case 'accept and notify':
-                    return { default: "accept"  };
+                    return {
+                        default: "accept" ,
+                        beforeUnload: "accept" ,
+                    };
                 case 'dismiss':
                 case 'dismiss and notify':
-                    return { default: "dismiss"  };
+                    return {
+                        default: "dismiss" ,
+                        beforeUnload: "accept" ,
+                    };
                 case 'ignore':
-                    return { default: "ignore"  };
+                    return {
+                        default: "ignore" ,
+                        beforeUnload: "accept" ,
+                    };
                 default:
                     throw new InvalidArgumentException(`Unexpected 'unhandledPromptBehavior' value: ${capabilityValue}`);
             }
@@ -6086,6 +6087,9 @@
                 });
             });
             this.#cdpTarget.cdpClient.on('Page.javascriptDialogClosed', (params) => {
+                if (this.cdpTarget === this.parent?.cdpTarget) {
+                    return;
+                }
                 const accepted = params.result;
                 if (this.#lastUserPromptType === undefined) {
                     this.#logger?.(LogType.debugError, 'Unexpectedly no opening prompt event before closing one');
@@ -6104,6 +6108,9 @@
                 this.#lastUserPromptType = undefined;
             });
             this.#cdpTarget.cdpClient.on('Page.javascriptDialogOpening', (params) => {
+                if (this.cdpTarget === this.parent?.cdpTarget) {
+                    return;
+                }
                 const promptType = _a$5.#getPromptType(params.type);
                 this.#lastUserPromptType = promptType;
                 const promptHandler = this.#getPromptHandler(promptType);
@@ -7647,6 +7654,10 @@
                     latitude: coordinates.latitude,
                     longitude: coordinates.longitude,
                     accuracy: coordinates.accuracy ?? 1,
+                    altitude: coordinates.altitude ?? undefined,
+                    altitudeAccuracy: coordinates.altitudeAccuracy ?? undefined,
+                    heading: coordinates.heading ?? undefined,
+                    speed: coordinates.speed ?? undefined,
                 });
             }
         }
