@@ -838,6 +838,9 @@ extern const char kTabResumptionImagesDescription[];
 extern const char kUpdatedFRESequenceName[];
 extern const char kUpdatedFRESequenceDescription[];
 
+extern const char kUseFeedEligibilityServiceName[];
+extern const char kUseFeedEligibilityServiceDescription[];
+
 extern const char kWaitThresholdMillisecondsForCapabilitiesApiName[];
 extern const char kWaitThresholdMillisecondsForCapabilitiesApiDescription[];
 

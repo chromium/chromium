@@ -2733,6 +2733,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kBestOfAppFRE,
                                     kBestOfAppFREVariations,
                                     "BestOfAppFRE")},
+    {"use-new-feed-eligibility-service",
+     flag_descriptions::kUseFeedEligibilityServiceName,
+     flag_descriptions::kUseFeedEligibilityServiceDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kUseFeedEligibilityService)},
 
 };
 

@@ -64,6 +64,10 @@ BASE_FEATURE(kFeedSwipeInProductHelp,
              "FeedSwipeInProductHelp",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUseFeedEligibilityService,
+             "UseFeedEligibilityService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #pragma mark - Feature parameters
 
 const char kDiscoverFeedSRSReconstructedTemplatesEnabled[] =
@@ -181,4 +185,8 @@ FeedSwipeIPHVariation GetFeedSwipeIPHVariation() {
             static_cast<int>(FeedSwipeIPHVariation::kStaticAfterFRE)));
   }
   return FeedSwipeIPHVariation::kDisabled;
+}
+
+bool UseFeedEligibilityService() {
+  return base::FeatureList::IsEnabled(kUseFeedEligibilityService);
 }

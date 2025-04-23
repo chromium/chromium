@@ -1420,6 +1420,12 @@ const char kUpdatedFRESequenceDescription[] =
     "Updates the sequence of the FRE screens to show the DB promo first, "
     "remove the Sin-In & Sync screens, or both.";
 
+const char kUseFeedEligibilityServiceName[] =
+    "[iOS] Use the new feed eligibility service";
+const char kUseFeedEligibilityServiceDescription[] =
+    "Use the new eligibility service to handle whether the Discover "
+    "feed is displayed on NTP";
+
 const char kWaitThresholdMillisecondsForCapabilitiesApiName[] =
     "Maximum wait time (in seconds) for a response from the Account "
     "Capabilities API";

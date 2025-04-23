@@ -9507,6 +9507,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "use-new-feed-eligibility-service",
+    "owners": [ "ginnyhuang@chromium.org" ],
+    "expiry_milestone": 142
+  },
+  {
     "name": "use-out-of-process-video-decoding",
     "owners": [ "pmolinalopez@chromium.org", "andrescj@chromium.org" ],
     "expiry_milestone": 128
