@@ -250,6 +250,7 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 #include "ui/accessibility/ax_mode.h"
@@ -490,11 +491,10 @@ void EnqueueAutofocus(Element& element) {
     window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kSecurity,
         mojom::ConsoleMessageLevel::kError,
-        String::Format(
-            "Blocked autofocusing on a <%s> element because the element's "
-            "frame "
-            "is sandboxed and the 'allow-scripts' permission is not set.",
-            element.TagQName().ToString().Ascii().c_str())));
+        WTF::StrCat({"Blocked autofocusing on a <",
+                     element.TagQName().ToString(),
+                     "> element because the element's frame is sandboxed and "
+                     "the 'allow-scripts' permission is not set."})));
     return;
   }
 
@@ -508,9 +508,9 @@ void EnqueueAutofocus(Element& element) {
     window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kSecurity,
         mojom::ConsoleMessageLevel::kError,
-        String::Format("Blocked autofocusing on a <%s> element in a "
-                       "cross-origin subframe.",
-                       element.TagQName().ToString().Ascii().c_str())));
+        WTF::StrCat({"Blocked autofocusing on a <",
+                     element.TagQName().ToString(),
+                     "> element in a cross-origin subframe."})));
     return;
   }
 
@@ -7930,8 +7930,8 @@ void Element::setOuterHTML(const String& html,
   if (!parent) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNoModificationAllowedError,
-        "This element's parent is of type '" + p->nodeName() +
-            "', which is not an element node.");
+        WTF::StrCat({"This element's parent is of type '", p->nodeName(),
+                     "', which is not an element node."}));
     return;
   }
 
@@ -8003,9 +8003,9 @@ Node* Element::InsertAdjacent(const String& where,
 
   exception_state.ThrowDOMException(
       DOMExceptionCode::kSyntaxError,
-      "The value provided ('" + where +
-          "') is not one of 'beforeBegin', 'afterBegin', "
-          "'beforeEnd', or 'afterEnd'.");
+      WTF::StrCat({"The value provided ('", where,
+                   "') is not one of 'beforeBegin', 'afterBegin', "
+                   "'beforeEnd', or 'afterEnd'."}));
   return nullptr;
 }
 
@@ -8138,9 +8138,9 @@ static Node* ContextNodeForInsertion(const String& where,
   }
   exception_state.ThrowDOMException(
       DOMExceptionCode::kSyntaxError,
-      "The value provided ('" + where +
-          "') is not one of 'beforeBegin', 'afterBegin', "
-          "'beforeEnd', or 'afterEnd'.");
+      WTF::StrCat({"The value provided ('", where,
+                   "') is not one of 'beforeBegin', 'afterBegin', "
+                   "'beforeEnd', or 'afterEnd'."}));
   return nullptr;
 }
 

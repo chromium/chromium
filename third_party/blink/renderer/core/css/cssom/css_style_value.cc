@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -39,9 +40,9 @@ CSSStyleValueVector ParseCSSStyleValue(
       property_id, custom_property_name, value,
       MakeGarbageCollected<CSSParserContext>(*execution_context));
   if (style_values.empty()) {
-    exception_state.ThrowTypeError("The value provided ('" + value +
-                                   "') could not be parsed as a '" +
-                                   property_name + "'.");
+    exception_state.ThrowTypeError(
+        WTF::StrCat({"The value provided ('", value,
+                     "') could not be parsed as a '", property_name, "'."}));
     return CSSStyleValueVector();
   }
 
