@@ -545,9 +545,6 @@ LoadState HttpNetworkTransaction::GetLoadState() const {
   }
 }
 
-void HttpNetworkTransaction::SetQuicServerInfo(
-    QuicServerInfo* quic_server_info) {}
-
 bool HttpNetworkTransaction::GetLoadTimingInfo(
     LoadTimingInfo* load_timing_info) const {
   if (!stream_ || !stream_->GetLoadTimingInfo(load_timing_info))

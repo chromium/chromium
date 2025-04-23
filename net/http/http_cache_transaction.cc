@@ -529,9 +529,6 @@ LoadState HttpCache::Transaction::GetLoadState() const {
   return LOAD_STATE_IDLE;
 }
 
-void HttpCache::Transaction::SetQuicServerInfo(
-    QuicServerInfo* quic_server_info) {}
-
 bool HttpCache::Transaction::GetLoadTimingInfo(
     LoadTimingInfo* load_timing_info) const {
   const HttpTransaction* transaction = GetOwnedOrMovedNetworkTransaction();

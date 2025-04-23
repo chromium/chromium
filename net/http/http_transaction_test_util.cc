@@ -463,10 +463,6 @@ LoadState MockNetworkTransaction::GetLoadState() const {
   return LOAD_STATE_IDLE;
 }
 
-void MockNetworkTransaction::SetQuicServerInfo(
-    QuicServerInfo* quic_server_info) {
-}
-
 bool MockNetworkTransaction::GetLoadTimingInfo(
     LoadTimingInfo* load_timing_info) const {
   if (socket_log_id_ != NetLogSource::kInvalidId) {

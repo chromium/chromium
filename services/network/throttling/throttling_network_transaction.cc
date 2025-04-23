@@ -248,11 +248,6 @@ net::LoadState ThrottlingNetworkTransaction::GetLoadState() const {
   return network_transaction_->GetLoadState();
 }
 
-void ThrottlingNetworkTransaction::SetQuicServerInfo(
-    net::QuicServerInfo* quic_server_info) {
-  network_transaction_->SetQuicServerInfo(quic_server_info);
-}
-
 bool ThrottlingNetworkTransaction::GetLoadTimingInfo(
     net::LoadTimingInfo* load_timing_info) const {
   return network_transaction_->GetLoadTimingInfo(load_timing_info);

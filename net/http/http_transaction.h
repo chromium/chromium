@@ -29,7 +29,6 @@ struct TransportInfo;
 struct LoadTimingInfo;
 struct LoadTimingInternalInfo;
 class NetLogWithSource;
-class QuicServerInfo;
 class SSLPrivateKey;
 class X509Certificate;
 
@@ -164,10 +163,6 @@ class NET_EXPORT_PRIVATE HttpTransaction {
 
   // Returns the load state for this transaction.
   virtual LoadState GetLoadState() const = 0;
-
-  // SetQuicServerInfo sets a object which reads and writes public information
-  // about a QUIC server.
-  virtual void SetQuicServerInfo(QuicServerInfo* quic_server_info) = 0;
 
   // Populates all of load timing, except for request start times and receive
   // headers time.

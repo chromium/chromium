@@ -223,8 +223,6 @@ class MockNetworkTransaction final : public HttpTransaction {
 
   LoadState GetLoadState() const override;
 
-  void SetQuicServerInfo(QuicServerInfo* quic_server_info) override;
-
   bool GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const override;
 
   void PopulateLoadTimingInternalInfo(

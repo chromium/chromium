@@ -423,11 +423,6 @@ LoadState SharedDictionaryNetworkTransaction::GetLoadState() const {
   return network_transaction_->GetLoadState();
 }
 
-void SharedDictionaryNetworkTransaction::SetQuicServerInfo(
-    QuicServerInfo* quic_server_info) {
-  network_transaction_->SetQuicServerInfo(quic_server_info);
-}
-
 bool SharedDictionaryNetworkTransaction::GetLoadTimingInfo(
     LoadTimingInfo* load_timing_info) const {
   return network_transaction_->GetLoadTimingInfo(load_timing_info);
