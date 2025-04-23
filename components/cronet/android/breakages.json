@@ -58,6 +58,7 @@
     },
     {
       "bad_change_id": "I18c238cf073938fc1bd8bf2f9ee752d79a291e15",
+      "good_change_id": "Ic335c4142fb5d9fbf0ecf4989ef22b94fa3ee0bf",
       "bugs": ["b/410846554"],
       "comment": "JniAndroid class not found when app is already crashing."
     }
