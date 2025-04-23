@@ -275,11 +275,21 @@ void PlatformNotificationServiceImpl::DisplayNotification(
       ContentSettingsType::NOTIFICATIONS, profile_, nullptr,
       notification.origin_url());
 
-    auto* service =
-        NotificationsEngagementServiceFactory::GetForProfile(profile_);
-    // This service might be missing for incognito profiles and in tests.
-    if (service)
-      service->RecordNotificationDisplayed(notification.origin_url());
+  auto* service =
+      NotificationsEngagementServiceFactory::GetForProfile(profile_);
+  // This service might be missing for incognito profiles and in tests.
+  if (service) {
+    service->RecordNotificationDisplayed(notification.origin_url());
+  }
+
+  // Logs metrics for proposed disruptive notification revocation when
+  // displaying a non persistent notification. Disruptive are notifications
+  // with high notification volume and low site engagement score.
+  ukm::SourceId source_id = ukm::UkmRecorder::GetSourceIdForNotificationEvent(
+      base::PassKey<PlatformNotificationServiceImpl>(),
+      notification.origin_url());
+  DisruptiveNotificationPermissionsManager::LogMetrics(
+      profile_, notification.origin_url(), source_id);
 }
 
 void PlatformNotificationServiceImpl::DisplayPersistentNotification(
