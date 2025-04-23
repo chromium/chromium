@@ -2609,8 +2609,8 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 crbug.com/410400550 [ Win ] external/wpt/css/motion/animation/offset-path-interpolation-008.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/service-workers/cache-storage/cache-add.https.any.* [ Pass Failure ]
-external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-requestclose-4-crash.html [ Crash ]
+external/wpt/service-workers/cache-storage/cache-add.https.any.* [ Failure Pass ]
+crbug.com/413085779 external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-requestclose-4-crash.html [ Crash ]
 crbug.com/412326639 [ Mac13 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/view-transition-types-mutable-no-document-element-crashtest.html [ Crash ]
 [ Mac12-arm64 ] wpt_internal/fedcm/fedcm-cache-manifest.https.html [ Crash Pass ]
 [ Win ] external/wpt/clear-site-data/clear-cache-partitioning.tentative.https.html [ Crash Failure Pass Timeout ]
