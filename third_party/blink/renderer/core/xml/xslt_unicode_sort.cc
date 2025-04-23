@@ -26,6 +26,11 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/xml/xslt_unicode_sort.h"
 
 #include <libxslt/templates.h>
@@ -33,11 +38,7 @@
 
 #include <array>
 #include <memory>
-#include <optional>
 
-#include "base/check.h"
-#include "base/containers/span.h"
-#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
 #include "third_party/icu/source/i18n/unicode/ucol.h"
@@ -68,7 +69,7 @@ inline const xmlChar* ToXMLChar(const char* string) {
 // Based on default implementation from libxslt 1.1.22 and xsltICUSort.c
 // example.
 void XsltUnicodeSortFunction(xsltTransformContextPtr ctxt,
-                             xmlNodePtr* sorts_ptr,
+                             xmlNodePtr* sorts,
                              int nbsorts) {
 #ifdef XSLT_REFACTORED
   xsltStyleItemSortPtr comp;
@@ -76,19 +77,14 @@ void XsltUnicodeSortFunction(xsltTransformContextPtr ctxt,
   xsltStylePreCompPtr comp;
 #endif
   std::array<xmlXPathObjectPtr*, XSLT_MAX_SORT> results_tab;
+  xmlXPathObjectPtr* results = nullptr;
   xmlNodeSetPtr list = nullptr;
   int depth;
   xmlNodePtr node;
   std::array<int, XSLT_MAX_SORT> tempstype, temporder;
 
-  if (!ctxt || !sorts_ptr || nbsorts <= 0 || nbsorts >= XSLT_MAX_SORT) {
+  if (!ctxt || !sorts || nbsorts <= 0 || nbsorts >= XSLT_MAX_SORT)
     return;
-  }
-
-  // SAFETY: sorts_ptr points to nbsorts elements.
-  auto sorts =
-      UNSAFE_BUFFERS(base::span(sorts_ptr, static_cast<size_t>(nbsorts)));
-
   if (!sorts[0])
     return;
   comp = static_cast<xsltStylePreComp*>(sorts[0]->psvi);
@@ -140,23 +136,19 @@ void XsltUnicodeSortFunction(xsltTransformContextPtr ctxt,
     }
   }
 
-  size_t len = list->nodeNr;
+  int len = list->nodeNr;
 
   results_tab[0] = xsltComputeSortResult(ctxt, sorts[0]);
   for (int i = 1; i < XSLT_MAX_SORT; ++i)
     results_tab[i] = nullptr;
 
-  if (!results_tab[0]) {
-    return;
-  }
-
-  // SAFETY: xsltComputeSortResult() returns a list of buffers that
-  // have the same length as it's input - `list->nodeNr` (aka `len`).
-  auto results = UNSAFE_BUFFERS(base::span(results_tab[0], len));
+  results = results_tab[0];
 
   comp = static_cast<xsltStylePreComp*>(sorts[0]->psvi);
   int descending = comp->descending;
   int number = comp->number;
+  if (!results)
+    return;
 
   // We are passing a language identifier to a function that expects a locale
   // identifier. The implementation of Collator should be lenient, and accept
@@ -172,20 +164,20 @@ void XsltUnicodeSortFunction(xsltTransformContextPtr ctxt,
   ucol_getFunctionalEquivalent(equivalent_locale, ULOC_FULLNAME_CAPACITY,
                                "collation", lang, &is_available, &status);
   if (U_FAILURE(status)) {
-    base::span(equivalent_locale)
-        .copy_prefix_from(base::span_with_nul_from_cstring("root"));
+    strcpy(equivalent_locale, "root");
     status = U_ZERO_ERROR;
   }
 
   DEFINE_STATIC_LOCAL(std::unique_ptr<UCollatorHolder>, cached_collator, ());
   std::unique_ptr<UCollatorHolder> collator;
   if (cached_collator &&
-      base::span(cached_collator->equivalent_locale) == equivalent_locale &&
+      !strcmp(cached_collator->equivalent_locale, equivalent_locale) &&
       cached_collator->lower_first == comp->lower_first) {
     collator = std::move(cached_collator);
   } else {
     collator = std::make_unique<UCollatorHolder>();
-    base::span(collator->equivalent_locale).copy_from(equivalent_locale);
+    strncpy(collator->equivalent_locale, equivalent_locale,
+            ULOC_FULLNAME_CAPACITY);
     collator->lower_first = comp->lower_first;
 
     collator->collator.reset(ucol_open(lang, &status));
@@ -203,8 +195,8 @@ void XsltUnicodeSortFunction(xsltTransformContextPtr ctxt,
   }
 
   // Shell's sort of node-set.
-  for (size_t incr = len / 2; incr > 0; incr /= 2) {
-    for (size_t i = incr; i < len; ++i) {
+  for (int incr = len / 2; incr > 0; incr /= 2) {
+    for (int i = incr; i < len; ++i) {
       int j = i - incr;
       if (!results[i])
         continue;
@@ -262,13 +254,9 @@ void XsltUnicodeSortFunction(xsltTransformContextPtr ctxt,
             // set, this might be optimized ... or not
             if (!results_tab[depth])
               results_tab[depth] = xsltComputeSortResult(ctxt, sorts[depth]);
-            xmlXPathObjectPtr* res_ptr = results_tab[depth];
-            if (!res_ptr) {
+            xmlXPathObjectPtr* res = results_tab[depth];
+            if (!res)
               break;
-            }
-
-            // SAFETY: should points to len elements.
-            auto res = UNSAFE_BUFFERS(base::span(res_ptr, len));
             if (!res[j]) {
               if (res[j + incr])
                 tst = 1;
@@ -320,14 +308,9 @@ void XsltUnicodeSortFunction(xsltTransformContextPtr ctxt,
           xmlXPathObjectPtr tmp = results[j];
           results[j] = results[j + incr];
           results[j + incr] = tmp;
-
-          CHECK_LT(j + incr, base::checked_cast<size_t>(list->nodeNr));
-          // SAFETY: Safe as long as the CHECK condition above met.
-          UNSAFE_BUFFERS({
-            node = list->nodeTab[j];
-            list->nodeTab[j] = list->nodeTab[j + incr];
-            list->nodeTab[j + incr] = node;
-          });
+          node = list->nodeTab[j];
+          list->nodeTab[j] = list->nodeTab[j + incr];
+          list->nodeTab[j + incr] = node;
           depth = 1;
           while (depth < nbsorts) {
             if (!sorts[depth])
@@ -335,13 +318,9 @@ void XsltUnicodeSortFunction(xsltTransformContextPtr ctxt,
             if (!results_tab[depth])
               break;
             xmlXPathObjectPtr* res = results_tab[depth];
-
-            // SAFETY: Safe because j + incr is always less than len.
-            UNSAFE_BUFFERS({
-              tmp = res[j];
-              res[j] = res[j + incr];
-              res[j + incr] = tmp;
-            });
+            tmp = res[j];
+            res[j] = res[j + incr];
+            res[j + incr] = tmp;
             depth++;
           }
           j -= incr;
@@ -365,13 +344,8 @@ void XsltUnicodeSortFunction(xsltTransformContextPtr ctxt,
       comp->order = nullptr;
     }
     if (results_tab[j]) {
-      for (size_t i = 0; i < len; ++i) {
-        // SAFETY: We are safe because j is less than nbsorts which less than
-        // XSLT_MAX_SORT(results_tab is a std::array of size XSLT_MAX_SORT),
-        // i is less than len(xsltComputeSortResult returns a pointer that
-        // points to len elements).
-        xmlXPathFreeObject(UNSAFE_BUFFERS(results_tab[j][i]));
-      }
+      for (int i = 0; i < len; ++i)
+        xmlXPathFreeObject(results_tab[j][i]);
       xmlFree(results_tab[j]);
     }
   }
