@@ -100,7 +100,7 @@ public interface WebContents extends Parcelable {
             String productVersion,
             ViewAndroidDelegate viewDelegate,
             ViewEventSink.InternalAccessDelegate accessDelegate,
-            WindowAndroid windowAndroid,
+            @Nullable WindowAndroid windowAndroid,
             InternalsHolder internalsHolder);
 
     /**

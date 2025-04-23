@@ -224,7 +224,7 @@ public class WebContentsImpl
             String productVersion,
             ViewAndroidDelegate viewDelegate,
             InternalAccessDelegate accessDelegate,
-            WindowAndroid windowAndroid,
+            @Nullable WindowAndroid windowAndroid,
             InternalsHolder internalsHolder) {
         assert internalsHolder != null;
 
