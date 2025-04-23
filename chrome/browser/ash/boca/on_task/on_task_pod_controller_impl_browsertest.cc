@@ -921,5 +921,51 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
             1);
 }
 
+IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
+                       FocusShouldEscapePod) {
+  // Launch OnTask SWA.
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+
+  // Set up window tracker to track the app window. This is when the OnTask pod
+  // is set up.
+  const SessionID window_id = boca_app_browser->session_id();
+  ASSERT_TRUE(window_id.is_valid());
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*observers=*/{});
+  ASSERT_THAT(on_task_pod_controller(), NotNull());
+  views::Widget* const on_task_pod_widget =
+      on_task_pod_controller()->GetPodWidgetForTesting();
+  OnTaskPodView* const on_task_pod_view =
+      static_cast<OnTaskPodView*>(on_task_pod_widget->GetContentsView());
+  views::FocusManager* const focus_manager =
+      on_task_pod_widget->GetFocusManager();
+
+  // Set focus to the last focusable element, focus should move outside the pod
+  // widget when advancing focus.
+  focus_manager->SetFocusedView(
+      on_task_pod_view->reload_tab_button_for_testing());
+  ASSERT_EQ(on_task_pod_view->reload_tab_button_for_testing(),
+            focus_manager->GetFocusedView());
+  focus_manager->AdvanceFocus(/*reverse=*/false);
+  EXPECT_NE(on_task_pod_view->dock_left_button_for_testing(),
+            focus_manager->GetFocusedView());
+
+  // Set focus to the first focusable element, focus should move outside the pod
+  // widget when reverse advancing focus.
+  focus_manager->SetFocusedView(
+      on_task_pod_view->dock_left_button_for_testing());
+  ASSERT_EQ(on_task_pod_view->dock_left_button_for_testing(),
+            focus_manager->GetFocusedView());
+  focus_manager->AdvanceFocus(/*reverse=*/true);
+  EXPECT_NE(on_task_pod_view->reload_tab_button_for_testing(),
+            focus_manager->GetFocusedView());
+}
+
 }  // namespace
 }  // namespace ash

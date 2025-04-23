@@ -67,6 +67,8 @@ OnTaskPodControllerImpl::OnTaskPodControllerImpl(Browser* browser)
       l10n_util::GetStringUTF16(IDS_ON_TASK_POD_ACCESSIBLE_NAME));
   pod_widget_->SetBounds(CalculateWidgetBounds());
   OnPageNavigationContextChanged();
+  pod_widget_->SetFocusTraversableParentView(
+      BrowserView::GetBrowserViewForBrowser(browser_.get()));
   pod_widget_->Show();
 
   browser_window->AddObserver(this);
