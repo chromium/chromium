@@ -273,6 +273,10 @@ BASE_FEATURE(kOnDeviceNotificationContentDetectionModel,
              "OnDeviceNotificationContentDetectionModel",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kNotificationTelemetry,
+             "NotificationTelemetry",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 constexpr base::FeatureParam<int>
     kOnDeviceNotificationContentDetectionModelAllowlistSamplingRate{
         &kOnDeviceNotificationContentDetectionModel,

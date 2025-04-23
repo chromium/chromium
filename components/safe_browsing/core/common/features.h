@@ -266,6 +266,10 @@ BASE_DECLARE_FEATURE(kOnDeviceNotificationContentDetectionModel);
 extern const base::FeatureParam<int>
     kOnDeviceNotificationContentDetectionModelAllowlistSamplingRate;
 
+// Enable the collection of Notification Telemetry to track potentially abusive
+// notifications.
+BASE_DECLARE_FEATURE(kNotificationTelemetry);
+
 // Enable movement of password leak toggle out of standard protection and into
 // its own section.
 BASE_DECLARE_FEATURE(kPasswordLeakToggleMove);
