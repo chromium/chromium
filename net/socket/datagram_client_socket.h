@@ -5,7 +5,6 @@
 #ifndef NET_SOCKET_DATAGRAM_CLIENT_SOCKET_H_
 #define NET_SOCKET_DATAGRAM_CLIENT_SOCKET_H_
 
-#include "net/base/datagram_buffer.h"
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
 #include "net/socket/datagram_socket.h"
