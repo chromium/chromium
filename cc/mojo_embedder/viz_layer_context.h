@@ -74,6 +74,10 @@ class CC_MOJO_EMBEDDER_EXPORT VizLayerContext
   // animation IDs.
   std::map<int32_t, std::set<int32_t>> pushed_animation_timelines_;
 
+  // A newly created layer context requires a full sync. This is required
+  // to handle context loss and recreation of the layer context.
+  bool needs_full_sync_ = true;
+
   PropertyTrees last_committed_property_trees_{*host_impl_};
 };
 

@@ -472,6 +472,8 @@ void SerializePictureLayerTileUpdates(
     viz::ClientResourceProvider& resource_provider,
     viz::RasterContextProvider& context_provider,
     std::vector<viz::mojom::TilingPtr>& tilings) {
+  // TODO(vmiura): If needs_full_sync_ is set, all tiles should be
+  // synced, not only updated tiles.
   auto updates = layer.TakeUpdatedTiles();
   for (const auto& [scale_key, tile_indices] : updates) {
     if (const auto* tiling =
@@ -905,7 +907,7 @@ void VizLayerContext::UpdateDisplayTreeFrom(
   // active tree during activation, implying that at least one layer addition or
   // removal happened since our last update. In this case only, we push the full
   // ordered list of layer IDs.
-  if (tree.needs_full_tree_sync()) {
+  if (tree.needs_full_tree_sync() || needs_full_sync_) {
     update->layer_order.emplace();
     update->layer_order->reserve(tree.NumLayers());
     for (LayerImpl* layer : tree) {
@@ -913,8 +915,14 @@ void VizLayerContext::UpdateDisplayTreeFrom(
     }
   }
 
-  for (LayerImpl* layer : tree.LayersThatShouldPushProperties()) {
-    SerializeLayer(*layer, resource_provider, context_provider, *update);
+  if (needs_full_sync_) {
+    for (LayerImpl* layer : tree) {
+      SerializeLayer(*layer, resource_provider, context_provider, *update);
+    }
+  } else {
+    for (LayerImpl* layer : tree.LayersThatShouldPushProperties()) {
+      SerializeLayer(*layer, resource_provider, context_provider, *update);
+    }
   }
 
   // TODO(rockot): Granular change tracking for property trees, so we aren't
@@ -936,7 +944,7 @@ void VizLayerContext::UpdateDisplayTreeFrom(
 
   last_committed_property_trees_ = property_trees;
 
-  if (tree.needs_surface_ranges_sync()) {
+  if (tree.needs_surface_ranges_sync() || needs_full_sync_) {
     update->surface_ranges.emplace();
     update->surface_ranges->reserve(tree.SurfaceRanges().size());
     for (const auto& surface_range : tree.SurfaceRanges()) {
@@ -959,6 +967,8 @@ void VizLayerContext::UpdateDisplayTreeFrom(
     SerializeAnimationUpdates(tree, *update);
   }
   service_->UpdateDisplayTree(std::move(update));
+
+  needs_full_sync_ = false;
 }
 
 void VizLayerContext::UpdateDisplayTile(
