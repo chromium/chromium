@@ -251,6 +251,10 @@ def add_configuration_options_group(parser: argparse.ArgumentParser,
             help=
             ('CI only parameter. Use tests and tools from upstream WPT GitHub repo. '
              'Used to create wpt reports for uploading to wpt.fyi.'))
+        group.add_argument('--stable',
+                           action='store_true',
+                           help=('Run stable release of the target product. '
+                                 'Used together with --use-upstream-wpt'))
 
 
 def add_results_options_group(parser: argparse.ArgumentParser,
