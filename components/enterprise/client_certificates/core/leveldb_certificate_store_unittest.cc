@@ -16,6 +16,7 @@
 #include "base/pickle.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
@@ -39,6 +40,8 @@
 namespace client_certificates {
 
 namespace {
+
+using base::test::EqualsProto;
 
 constexpr char kTestIdentityName[] = "identity_name";
 constexpr char kOtherTestIdentityName[] = "other_identity_name";
@@ -66,10 +69,6 @@ void PersistCertificate(client_certificates_pb::ClientIdentity& identity,
   certificate->Persist(&pickle);
   *identity.mutable_certificate() =
       std::string(pickle.data_as_char(), pickle.size());
-}
-
-MATCHER_P(EqualsProto, expected, "") {
-  return arg.SerializeAsString() == expected.SerializeAsString();
 }
 
 }  // namespace
