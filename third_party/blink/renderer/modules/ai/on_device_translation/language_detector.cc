@@ -39,41 +39,40 @@ static constexpr auto kSupportedLanguages =
         "zh-Latn", "zu",
     });
 
-template <typename T>
-class RejectOnDestructionHelper {
+// Runs `callback` on destruction unless `Reset` is called.
+class RunOnDestruction {
  public:
-  explicit RejectOnDestructionHelper(ScriptPromiseResolver<T>* resolver)
-      : resolver_(resolver) {
-    CHECK(resolver);
-  }
+  explicit RunOnDestruction(base::OnceClosure callback)
+      : callback_(std::move(callback)) {}
 
-  RejectOnDestructionHelper(const RejectOnDestructionHelper&) = delete;
-  RejectOnDestructionHelper& operator=(const RejectOnDestructionHelper&) =
-      delete;
+  RunOnDestruction(const RunOnDestruction&) = delete;
+  RunOnDestruction& operator=(const RunOnDestruction&) = delete;
 
-  RejectOnDestructionHelper(RejectOnDestructionHelper&& other) = default;
-  RejectOnDestructionHelper& operator=(RejectOnDestructionHelper&& other) =
-      default;
+  RunOnDestruction(RunOnDestruction&& other) = default;
+  RunOnDestruction& operator=(RunOnDestruction&& other) = default;
 
-  void Reset() { resolver_ = nullptr; }
+  void Reset() { callback_.Reset(); }
 
-  ~RejectOnDestructionHelper() {
-    if (resolver_) {
-      resolver_->Reject();
+  ~RunOnDestruction() {
+    if (!callback_.is_null()) {
+      std::move(callback_).Run();
     }
   }
 
  private:
-  Persistent<ScriptPromiseResolver<T>> resolver_;
+  base::OnceClosure callback_;
 };
 
+// Rejects if the OnceClosure is destroyed before it is ran.
 template <typename T>
 base::OnceClosure RejectOnDestruction(ScriptPromiseResolver<T>* resolver) {
+  RunOnDestruction run_on_destruction(WTF::BindOnce(
+      [](ScriptPromiseResolver<T>* resolver) { resolver->Reject(); },
+      WrapPersistent(resolver)));
+
   return WTF::BindOnce(
-      [](RejectOnDestructionHelper<T> resolver_holder) {
-        resolver_holder.Reset();
-      },
-      RejectOnDestructionHelper(resolver));
+      [](RunOnDestruction resolver_holder) { resolver_holder.Reset(); },
+      std::move(run_on_destruction));
 }
 
 class LanguageDetectorCreateTask
@@ -90,7 +89,6 @@ class LanguageDetectorCreateTask
                           resolver,
                           options->getSignalOr(nullptr)),
         task_runner_(AIInterfaceProxy::GetTaskRunner(GetExecutionContext())),
-        resolver_(resolver),
         options_(options) {
     if (options->hasMonitor()) {
       monitor_ = MakeGarbageCollected<AICreateMonitor>(GetExecutionContext(),
@@ -114,14 +112,17 @@ class LanguageDetectorCreateTask
   void Trace(Visitor* visitor) const override {
     ExecutionContextClient::Trace(visitor);
     AIContextObserver::Trace(visitor);
-    visitor->Trace(resolver_);
     visitor->Trace(monitor_);
     visitor->Trace(options_);
   }
 
   void OnModelLoaded(base::expected<LanguageDetectionModel*,
                                     DetectLanguageError> maybe_model) {
-    if (!resolver_) {
+    // Call `Cleanup` when this function returns.
+    RunOnDestruction run_on_destruction(WTF::BindOnce(
+        &LanguageDetectorCreateTask::Cleanup, WrapWeakPersistent(this)));
+
+    if (!GetResolver()) {
       return;
     }
 
@@ -130,9 +131,8 @@ class LanguageDetectorCreateTask
       expected_input_languages = GetBestFitLanguages(
           kSupportedLanguages, options_->expectedInputLanguages());
       if (!expected_input_languages.has_value()) {
-        resolver_->Reject(MakeGarbageCollected<DOMException>(
+        GetResolver()->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kUnknownError, "Language not available"));
-        Cleanup();
         return;
       }
     }
@@ -140,11 +140,10 @@ class LanguageDetectorCreateTask
     if (!maybe_model.has_value()) {
       switch (maybe_model.error()) {
         case DetectLanguageError::kUnavailable:
-          resolver_->Reject(MakeGarbageCollected<DOMException>(
+          GetResolver()->Reject(MakeGarbageCollected<DOMException>(
               DOMExceptionCode::kUnknownError, "Model not available"));
           break;
       }
-      Cleanup();
       return;
     }
     if (monitor_) {
@@ -152,7 +151,7 @@ class LanguageDetectorCreateTask
       monitor_->OnDownloadProgressUpdate(0, kNormalizedDownloadProgressMax);
 
       // Abort may have been triggered by `OnDownloadProgressUpdate`.
-      if (!resolver_) {
+      if (!GetResolver()) {
         return;
       }
 
@@ -161,23 +160,21 @@ class LanguageDetectorCreateTask
                                          kNormalizedDownloadProgressMax);
 
       // Abort may have been triggered by `OnDownloadProgressUpdate`.
-      if (!resolver_) {
+      if (!GetResolver()) {
         return;
       }
     }
-    resolver_->Resolve(MakeGarbageCollected<LanguageDetector>(
+    GetResolver()->Resolve(MakeGarbageCollected<LanguageDetector>(
         GetScriptState(), maybe_model.value(), GetAbortSignal(),
         std::move(expected_input_languages), task_runner_));
-    Cleanup();
   }
 
  private:
-  void ResetReceiver() override { resolver_ = nullptr; }
+  void ResetReceiver() override {}
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   Member<AICreateMonitor> monitor_;
-  Member<ScriptPromiseResolver<LanguageDetector>> resolver_;
   Member<LanguageDetectorCreateOptions> options_;
 };
 
