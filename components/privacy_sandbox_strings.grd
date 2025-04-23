@@ -304,13 +304,13 @@
         Change protections
       </message>
       <!-- User Bypass -->
-      <message name="IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE" desc="The subtitle label for the third-party cookies item in User Bypass when 3PC are allowed." translateable="false">
+      <message name="IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE" desc="The subtitle label for the third-party cookies item in User Bypass when 3PC are allowed.">
         Allowed
       </message>
-      <message name="IDS_TRACKING_PROTECTION_BUBBLE_3PC_BLOCKED_SUBTITLE" desc="The subtitle label for the third-party cookies item in User Bypass when 3PC are blocked." translateable="false">
+      <message name="IDS_TRACKING_PROTECTION_BUBBLE_3PC_BLOCKED_SUBTITLE" desc="The subtitle label for the third-party cookies item in User Bypass when 3PC are blocked.">
         Blocked
       </message>
-      <message name="IDS_TRACKING_PROTECTION_BUBBLE_3PC_LIMITED_SUBTITLE" desc="The subtitle label for the third-party cookies item in User Bypass when 3PC are limited (i.e. blocked with mitigations)." translateable="false">
+      <message name="IDS_TRACKING_PROTECTION_BUBBLE_3PC_LIMITED_SUBTITLE" desc="The subtitle label for the third-party cookies item in User Bypass when 3PC are limited (i.e. blocked with mitigations).">
         Limited
       </message>
       <message name="IDS_TRACKING_PROTECTION_BUBBLE_MANAGED_PROTECTIONS_LABEL" desc="The title label for the section in User Bypass containing managed Tracking Protection features." translateable="false">
