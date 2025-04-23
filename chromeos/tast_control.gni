@@ -108,11 +108,6 @@ tast_disabled_tests_from_chrome_all = [
   # b/409349162
   "inputs.PhysicalKeyboardKoreanTyping@jacuzzi",
 
-  # b/412475160
-  "assistant.Hotkey.search_plus_a",
-  "assistant.StartupInSignedOutMode",
-  "assistant.VolumeQueries",
-
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
