@@ -675,7 +675,13 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                             mActivityTabProvider,
                             getTopUiThemeColorProvider(),
                             intentDataProvider,
-                            (tab) -> {});
+                            (tab) -> {
+                                Intent fullHistoryIntent = new Intent(Intent.ACTION_MAIN);
+                                fullHistoryIntent.setClass(mActivity, ChromeLauncherActivity.class);
+                                fullHistoryIntent.putExtra(IntentHandler.EXTRA_OPEN_HISTORY, true);
+                                IntentUtils.addTrustedIntentExtras(fullHistoryIntent);
+                                mActivity.startActivity(fullHistoryIntent);
+                            });
         }
     }
 
