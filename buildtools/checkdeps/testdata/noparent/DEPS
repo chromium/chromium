@@ -1,3 +1,0 @@
-# Removes the rules inherited from ../DEPS. In particular,
-# checkdeps/testdata/allowed is no longer allowed.
-noparent = True

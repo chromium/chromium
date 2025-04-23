@@ -1,8 +1,0 @@
-include_rules = [
-  "-buildtools/checkdeps/testdata/disallowed",
-  "+buildtools/checkdeps/testdata/allowed",
-  "-third_party/explicitly_disallowed",
-]
-skip_child_includes = [
-  "checkdeps_test",
-]
