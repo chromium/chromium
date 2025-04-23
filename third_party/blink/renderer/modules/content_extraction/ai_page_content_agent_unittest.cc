@@ -3483,6 +3483,38 @@ TEST_F(AIPageContentAgentTest, SVGWithNoText) {
   EXPECT_FALSE(svg.content_attributes->svg_data->inner_text);
 }
 
+TEST_F(AIPageContentAgentTest, Canvas) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <style>"
+      "    canvas {"
+      "      width: 200px;"
+      "      height: 300px;"
+      "    }"
+      "  </style>"
+      "  <canvas id='myCanvas' width='100' height='200'></canvas>"
+      "  <script>"
+      "    const canvas = document.getElementById('myCanvas');"
+      "    const ctx = canvas.getContext('2d');"
+      "    ctx.fillStyle = 'pink';"
+      "    ctx.fillRect(0, 0, 100, 200);"
+      "  </script>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& canvas = *content->root_node->children_nodes[0];
+  EXPECT_EQ(canvas.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kCanvas);
+  ASSERT_TRUE(canvas.content_attributes->canvas_data);
+  EXPECT_EQ(canvas.content_attributes->canvas_data->layout_size,
+            gfx::Size(200, 300));
+}
+
 TEST_F(AIPageContentAgentTest, AriaLabelledBy) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),

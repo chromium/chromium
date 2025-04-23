@@ -52,6 +52,8 @@ optimization_guide::proto::ContentAttributeType ConvertAttributeType(
       return optimization_guide::proto::CONTENT_ATTRIBUTE_IMAGE;
     case blink::mojom::AIPageContentAttributeType::kSVG:
       return optimization_guide::proto::CONTENT_ATTRIBUTE_SVG;
+    case blink::mojom::AIPageContentAttributeType::kCanvas:
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_CANVAS;
     case blink::mojom::AIPageContentAttributeType::kForm:
       return optimization_guide::proto::CONTENT_ATTRIBUTE_FORM;
     case blink::mojom::AIPageContentAttributeType::kFormControl:
@@ -261,6 +263,13 @@ void ConvertSVGData(const blink::mojom::AIPageContentSVGData& mojom_svg_data,
   }
 }
 
+void ConvertCanvasData(
+    const blink::mojom::AIPageContentCanvasData& mojom_canvas_data,
+    optimization_guide::proto::CanvasData* proto_canvas_data) {
+  proto_canvas_data->set_layout_width(mojom_canvas_data.layout_size.width());
+  proto_canvas_data->set_layout_height(mojom_canvas_data.layout_size.height());
+}
+
 optimization_guide::proto::AnchorRel ConvertAnchorRel(
     blink::mojom::AIPageContentAnchorRel rel) {
   switch (rel) {
@@ -465,6 +474,13 @@ bool ConvertAttributes(
     }
     ConvertSVGData(*mojom_attributes.svg_data,
                    proto_attributes->mutable_svg_data());
+  } else if (mojom_attributes.canvas_data) {
+    if (mojom_attributes.attribute_type !=
+        blink::mojom::AIPageContentAttributeType::kCanvas) {
+      return false;
+    }
+    ConvertCanvasData(*mojom_attributes.canvas_data,
+                      proto_attributes->mutable_canvas_data());
   } else if (mojom_attributes.anchor_data) {
     if (mojom_attributes.attribute_type !=
         blink::mojom::AIPageContentAttributeType::kAnchor) {

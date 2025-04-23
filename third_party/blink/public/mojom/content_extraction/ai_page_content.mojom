@@ -32,6 +32,7 @@ enum AIPageContentAttributeType {
   // Image chunks.
   kImage,
   kSVG,
+  kCanvas,
 
   // Structured chunks.
   kForm,
@@ -204,6 +205,12 @@ struct AIPageContentSVGData {
   string? inner_text;
 };
 
+struct AIPageContentCanvasData {
+  // The layout size of the canvas element. This is the total size of the
+  // element irrespective of clipping or transforms.
+  gfx.mojom.Size layout_size;
+};
+
 // Represents meta tags on the page.
 struct AIPageContentMeta {
   string name;
@@ -336,6 +343,9 @@ struct AIPageContentAttributes {
 
   // Only set if attribute_type is kSVG.
   AIPageContentSVGData? svg_data;
+
+  // Only set if attribute_type is kCanvas.
+  AIPageContentCanvasData? canvas_data;
 
   // Only set if attribute_type is kAnchor.
   AIPageContentAnchorData? anchor_data;

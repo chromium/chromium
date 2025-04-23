@@ -351,6 +351,17 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, SVG) {
             "Hello SVG Text!");
 }
 
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, Canvas) {
+  LoadPage(https_server()->GetURL("/canvas.html"));
+
+  EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);
+
+  const auto& canvas = page_content().root_node().children_nodes().at(0);
+  ASSERT_TRUE(canvas.content_attributes().has_canvas_data());
+  EXPECT_EQ(canvas.content_attributes().canvas_data().layout_width(), 200);
+  EXPECT_EQ(canvas.content_attributes().canvas_data().layout_height(), 300);
+}
+
 namespace {
 
 std::string GetFilePathWithHostAndPortReplacement(

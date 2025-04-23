@@ -209,10 +209,6 @@ bool ShouldSkipSubtree(const LayoutObject& object) {
     return true;
   }
 
-  if (DynamicTo<LayoutHTMLCanvas>(object)) {
-    return true;
-  }
-
   return false;
 }
 
@@ -268,6 +264,16 @@ void ProcessSVGNode(const LayoutSVGRoot& layout_svg,
   auto svg_data = mojom::blink::AIPageContentSVGData::New();
   svg_data->inner_text = element->innerText();
   attributes.svg_data = std::move(svg_data);
+}
+
+void ProcessCanvasNode(const LayoutHTMLCanvas& layout_canvas,
+                       mojom::blink::AIPageContentAttributes& attributes) {
+  attributes.attribute_type = mojom::blink::AIPageContentAttributeType::kCanvas;
+  CHECK(IsVisible(layout_canvas));
+
+  auto canvas_data = mojom::blink::AIPageContentCanvasData::New();
+  canvas_data->layout_size = ToRoundedSize(layout_canvas.Size());
+  attributes.canvas_data = std::move(canvas_data);
 }
 
 void ProcessAnchorNode(const HTMLAnchorElement& anchor_element,
@@ -788,7 +794,11 @@ bool AIPageContentAgent::ContentBuilder::WalkChildren(
          // We don't capture the SVG layout internally so there's no need to
          // walk their tree.
          child_content_node->content_attributes->attribute_type ==
-             mojom::blink::AIPageContentAttributeType::kSVG)) {
+             mojom::blink::AIPageContentAttributeType::kSVG ||
+         // There's no layout nodes under a canvas, the content is just the
+         // canvas buffer.
+         child_content_node->content_attributes->attribute_type ==
+             mojom::blink::AIPageContentAttributeType::kCanvas)) {
     } else {
       if (child_content_node) {
         stack_depth_++;
@@ -910,6 +920,12 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
       return nullptr;
     }
     ProcessSVGNode(To<LayoutSVGRoot>(object), attributes);
+  } else if (object.IsCanvas()) {
+    // No content will be rendered if the canvas is hidden.
+    if (!IsVisible(object)) {
+      return nullptr;
+    }
+    ProcessCanvasNode(To<LayoutHTMLCanvas>(object), attributes);
   } else if (const auto* anchor_element =
                  DynamicTo<HTMLAnchorElement>(object.GetNode())) {
     ProcessAnchorNode(*anchor_element, attributes);
