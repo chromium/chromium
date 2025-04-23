@@ -29,6 +29,10 @@ NSString* kDateTimeTemplate = @"dd/MM/yyyy HH:mm";
 // ```
 constexpr std::string kCalendarEventDescriptionTemplate = "{}\n\n{} {}\n{} {}";
 
+// The string template to use for the calendar event title. This can include an
+// optional prefix.
+constexpr std::string kCalendarEventTitleTemplate = "{}{}";
+
 }  // namespace
 
 @implementation EnhancedCalendarMediator {
@@ -146,9 +150,19 @@ constexpr std::string kCalendarEventDescriptionTemplate = "{}\n\n{} {}\n{} {}";
     _enhancedCalendarConfig.calendarEventConfig.endDateTime = endDateTime;
   }
 
-  // Set the title.
+  // Add an optional `BOOKED` prefix before the title of the event.
+  BOOL isEventBooked = enhancedCalendarResponse.is_event_booked();
+
+  std::string prefix =
+      isEventBooked ? l10n_util::GetStringUTF8(
+                          IDS_IOS_ENHANCED_CALENDAR_EVENT_TITLE_BOOKED_PREFIX) +
+                          " "
+                    : "";
+
   _enhancedCalendarConfig.calendarEventConfig.eventTitle =
-      base::SysUTF8ToNSString(enhancedCalendarResponse.event_title());
+      base::SysUTF8ToNSString(
+          std::format(kCalendarEventTitleTemplate, prefix,
+                      enhancedCalendarResponse.event_title()));
 
   // Set the templated description.
   _enhancedCalendarConfig.calendarEventConfig.eventDescription =

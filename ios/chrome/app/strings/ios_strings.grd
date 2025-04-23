@@ -2196,6 +2196,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_ENHANCED_CALENDAR_EVENT_DESCRIPTION_URL" translateable="false" desc="Prefix added before the URL string in the description of the calendar event in the add-to-calendar UI.">
         URL:
       </message>
+      <message name="IDS_IOS_ENHANCED_CALENDAR_EVENT_TITLE_BOOKED_PREFIX" translateable="false" desc="Prefix added before the title of the event in the add-to-calendar UI, that informs that the event has been booked.">
+        [BOOKED]:
+      </message>
       <message name="IDS_IOS_ENHANCED_SAFE_BROWSING_PROMO_INSTRUCTIONS_STEP2" desc="Step 2 of instructions telling the user how to enable Enhanced Safe Browsing.">
         Tap "Privacy and Security" and then "Safe Browsing"
       </message>
