@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './side_panel_ghost_loader.js';
+import './side_panel_error_page.js';
 import '/strings.m.js';
 import '/lens/shared/searchbox_ghost_loader.js';
 import '/lens/shared/searchbox_shared_style.css.js';
@@ -29,6 +30,7 @@ import {handleEscapeSearchbox} from '../searchbox_utils.js';
 import {getTemplate} from './side_panel_app.html.js';
 import {SidePanelBrowserProxyImpl} from './side_panel_browser_proxy.js';
 import type {SidePanelBrowserProxy} from './side_panel_browser_proxy.js';
+import type {SidePanelErrorPageElement} from './side_panel_error_page.js';
 import type {SidePanelGhostLoaderElement} from './side_panel_ghost_loader.js';
 
 // The url query parameter keys for the viewport size.
@@ -41,7 +43,7 @@ export interface LensSidePanelAppElement {
     feedbackToast: CrToastElement,
     ghostLoader: SidePanelGhostLoaderElement,
     messageToast: CrToastElement,
-    networkErrorPage: HTMLElement,
+    errorPage: SidePanelErrorPageElement,
     results: HTMLIFrameElement,
     searchbox: SearchboxElement,
     searchboxContainer: HTMLElement,

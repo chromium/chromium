@@ -38,34 +38,34 @@ suite('ErrorPage', () => {
   });
 
   test('ErrorPageIsNotVisibleByDefault', () => {
-    assertFalse(isVisible(lensSidePanelElement.$.networkErrorPage));
+    assertFalse(isVisible(lensSidePanelElement.$.errorPage));
   });
 
   test('ErrorPageIsVisibleAndHiddenAfterCallback', async () => {
     callbackRouterRemote.setShowErrorPage(true);
     await waitAfterNextRender(lensSidePanelElement);
-    assertTrue(isVisible(lensSidePanelElement.$.networkErrorPage));
+    assertTrue(isVisible(lensSidePanelElement.$.errorPage));
 
     callbackRouterRemote.setShowErrorPage(false);
     await waitAfterNextRender(lensSidePanelElement);
-    assertFalse(isVisible(lensSidePanelElement.$.networkErrorPage));
+    assertFalse(isVisible(lensSidePanelElement.$.errorPage));
   });
 
   test('ErrorPageIsNotAffectedByLoadingState', async () => {
     callbackRouterRemote.setIsLoadingResults(true);
     callbackRouterRemote.setShowErrorPage(true);
     await waitAfterNextRender(lensSidePanelElement);
-    assertTrue(isVisible(lensSidePanelElement.$.networkErrorPage));
+    assertTrue(isVisible(lensSidePanelElement.$.errorPage));
 
     callbackRouterRemote.setShowErrorPage(false);
     await waitAfterNextRender(lensSidePanelElement);
-    assertFalse(isVisible(lensSidePanelElement.$.networkErrorPage));
+    assertFalse(isVisible(lensSidePanelElement.$.errorPage));
   });
 
   test('ErrorPageHiddenWhenDisabled', async () => {
     loadTimeData.overrideValues({'enableErrorPage': false});
     callbackRouterRemote.setShowErrorPage(true);
     await waitAfterNextRender(lensSidePanelElement);
-    assertFalse(isVisible(lensSidePanelElement.$.networkErrorPage));
+    assertFalse(isVisible(lensSidePanelElement.$.errorPage));
   });
 });
