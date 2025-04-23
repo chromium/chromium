@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_DEVELOPER_PRIVATE_EVENT_ROUTER_DESKTOP_H_
 #define CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_DEVELOPER_PRIVATE_EVENT_ROUTER_DESKTOP_H_
 
-#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/account_extension_tracker.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_event_router_shared.h"

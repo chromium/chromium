@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_PROMO_CARDS_PASSWORD_CHECKUP_PROMO_H_
 #define CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_PROMO_CARDS_PASSWORD_CHECKUP_PROMO_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/password_manager/promo_card.h"
 
 namespace extensions {

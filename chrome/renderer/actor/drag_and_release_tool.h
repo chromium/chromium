@@ -8,7 +8,6 @@
 #include <cstdint>
 
 #include "base/memory/raw_ref.h"
-#include "base/memory/weak_ptr.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/renderer/actor/tool_base.h"
 #include "third_party/blink/public/common/input/web_input_event.h"

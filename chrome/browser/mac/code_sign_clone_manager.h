@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "content/public/common/main_function_params.h"
 

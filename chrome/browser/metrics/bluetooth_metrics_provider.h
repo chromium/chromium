@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_METRICS_BLUETOOTH_METRICS_PROVIDER_H_
 #define CHROME_BROWSER_METRICS_BLUETOOTH_METRICS_PROVIDER_H_
 
-#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_provider.h"
 

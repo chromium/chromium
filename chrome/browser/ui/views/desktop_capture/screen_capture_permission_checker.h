@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_SCREEN_CAPTURE_PERMISSION_CHECKER_H_
 
 #include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
 
 class ScreenCapturePermissionChecker {
  public:

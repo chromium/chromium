@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/split_tab_data.h"
 #include "chrome/browser/ui/tabs/tab_collection.h"
 #include "components/tab_groups/tab_group_id.h"

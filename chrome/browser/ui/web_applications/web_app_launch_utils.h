@@ -13,7 +13,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/stack_allocated.h"
-#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ON_DEVICE_INTERNALS_ON_DEVICE_INTERNALS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_ON_DEVICE_INTERNALS_ON_DEVICE_INTERNALS_UI_H_
 
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/on_device_internals/on_device_internals_page.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/internal_webui_config.h"

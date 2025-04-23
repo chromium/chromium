@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_WEBID_IDENTITY_PROVIDER_PERMISSION_REQUEST_H_
 #define CHROME_BROWSER_WEBID_IDENTITY_PROVIDER_PERMISSION_REQUEST_H_
 
-#include "base/memory/weak_ptr.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/permission_request.h"
 #include "url/origin.h"
