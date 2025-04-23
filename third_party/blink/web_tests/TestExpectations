@@ -9100,3 +9100,7 @@ crbug.com/411529366 [ Mac ] external/wpt/nav-tracking-mitigations/stateless-clie
 
 # Gardener 2025-04-21
 crbug.com/412321937 [ Mac ] media/controls/closed-captions-switch-track.html [ Crash Failure Pass Timeout ]
+
+# Gardener 2025-04-23
+crbug.com/412431600 [ Win10.20h2 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/subgraph.https.any.html?cpu [ Failure Pass ]
+crbug.com/412431600 [ Win10.20h2 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/subgraph.https.any.sharedworker.html?cpu [ Failure Pass ]
