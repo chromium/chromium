@@ -159,8 +159,8 @@ void BookmarkEventRouter::BookmarkNodeRemoved(
   // This will require some changes to the BookmarkModel implementation.
   remove_info.index = static_cast<int>(index);
 
-  bookmarks_helpers::PopulateBookmarkTreeNode(model_, managed_, node, true,
-                                              false, &remove_info.node);
+  bookmarks_helpers::PopulateBookmarkTreeNode(
+      model_, managed_, node, true, false, std::nullopt, &remove_info.node);
 
   DispatchEvent(events::BOOKMARKS_ON_REMOVED,
                 api::bookmarks::OnRemoved::kEventName,
