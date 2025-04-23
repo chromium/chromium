@@ -92,13 +92,16 @@ std::optional<FormData> ExtractFormData(
 // strip unnecessary data (e.g. query params and HTTP credentials).
 GURL GetCanonicalActionForForm(const blink::WebFormElement& form);
 
-// Returns true if |element| is a textarea element.
+// Returns true if `element` is a textarea element.
 bool IsTextAreaElement(const blink::WebFormControlElement& element);
 
 // Returns true if `element` is a textarea element or a text input element.
 bool IsTextAreaElementOrTextInput(const blink::WebFormControlElement& element);
 
-// Returns true if |element| is one of the element types that can be autofilled.
+// Returns true if `element` is connected and not in a user-agent tree.
+bool IsAccessible(const blink::WebNode& node);
+
+// Returns true if `element` is one of the element types that can be autofilled.
 // {Text, Radiobutton, Checkbox, Select, TextArea}.
 // TODO(crbug.com/40100455): IsAutofillableElement() are currently used
 // inconsistently. Investigate where these checks are necessary.

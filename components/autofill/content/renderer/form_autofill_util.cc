@@ -1218,7 +1218,7 @@ bool ShouldSkipFillField(const FormFieldData::FillData& field,
   constexpr char kSkipReasonHistogram[] = "Autofill.RendererFillSkipReason";
   // Skip all checkable or non-modifiable elements, except select fields because
   // some synthetic select element use a hidden select element.
-  if (!element.IsConnected() || !IsAutofillableElement(element) ||
+  if (!IsAccessible(element) || !IsAutofillableElement(element) ||
       !element.IsEnabled() || element.IsReadOnly() ||
       IsCheckableElement(element) ||
       (!element.IsFocusable() && !IsSelectElement(element))) {
@@ -1867,7 +1867,7 @@ std::vector<WebFormControlElement> GetOwnedFormControls(
       return e.OwnerShadowHost() && HasFormAncestor(e);
     });
   }
-  std::erase_if(form_controls, std::not_fn(&WebNode::IsConnected));
+  std::erase_if(form_controls, std::not_fn(&IsAccessible));
   return form_controls;
 }
 
@@ -1885,7 +1885,7 @@ void WebFormControlElementToFormField(
   DCHECK(field);
   DCHECK(element);
   DCHECK(element.GetDocument().GetFrame());
-  DCHECK(element.IsConnected());
+  DCHECK(IsAccessible(element));
   DCHECK(IsAutofillableElement(element));
 
   const FieldRendererId renderer_id = GetFieldRendererId(element);
@@ -2057,7 +2057,7 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     const FieldDataManager& field_data_manager,
     ButtonTitlesCache* button_titles_cache,
     DenseSet<ExtractOption> extract_options) {
-  if (form_element && !form_element.IsConnected()) {
+  if (form_element && !IsAccessible(form_element)) {
     return std::nullopt;
   }
 
@@ -2104,7 +2104,7 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
   child_frames.resize(iframe_elements.size());
   size_t next_iframe = 0;
   for (const WebFormControlElement& control_element : control_elements) {
-    DCHECK(control_element.IsConnected());
+    DCHECK(IsAccessible(control_element));
     DCHECK(IsAutofillableElement(control_element));
 
     fields.emplace_back();
@@ -2277,6 +2277,10 @@ bool IsTextAreaElementOrTextInput(const WebFormControlElement& element) {
   return IsTextAreaElement(element) || IsTextInput(element);
 }
 
+bool IsAccessible(const blink::WebNode& node) {
+  return node.IsConnected() && !node.IsInUserAgentShadowRoot();  // nocheck
+}
+
 bool IsAutofillableElement(const WebFormControlElement& element) {
   return GetAutofillFormControlType(element).has_value();
 }
@@ -2414,7 +2418,7 @@ FindFormAndFieldForFormControlElement(
     const SynchronousFormCache& form_cache) {
   DCHECK(element);
 
-  if (!element.IsConnected() || !IsAutofillableElement(element)) {
+  if (!IsAccessible(element) || !IsAutofillableElement(element)) {
     return std::nullopt;
   }
 
@@ -2522,7 +2526,7 @@ std::optional<FormData> FindFormForContentEditable(
       content_editable.DynamicTo<WebFormControlElement>() ||
       !content_editable.IsContentEditable() ||
       content_editable != content_editable.RootEditableElement() ||
-      !content_editable.IsConnected()) {
+      !IsAccessible(content_editable)) {
     return std::nullopt;
   }
 
@@ -2756,7 +2760,7 @@ WebFormElement GetFormByRendererId(FormRendererId form_renderer_id) {
   }
   WebNode node = WebNode::FromDomNodeId(form_renderer_id.value());
   WebFormElement form = node.DynamicTo<WebFormElement>();
-  return form && form.IsConnected() && form.GetDocument().GetFrame()
+  return form && IsAccessible(form) && form.GetDocument().GetFrame()
              ? form
              : WebFormElement();
 }
@@ -2768,7 +2772,7 @@ WebFormControlElement GetFormControlByRendererId(
   }
   WebNode node = WebNode::FromDomNodeId(queried_form_control.value());
   WebFormControlElement form_control = node.DynamicTo<WebFormControlElement>();
-  return form_control && form_control.IsConnected() &&
+  return form_control && IsAccessible(form_control) &&
                  form_control.GetDocument().GetFrame()
              ? form_control
              : WebFormControlElement();

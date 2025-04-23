@@ -18,13 +18,15 @@ def CheckNoBannedFunctions(input_api, output_api):
         and f.LocalPath().endswith(('.h', '.cc'))
     )
     banned_functions = [
-        (r'\bFormControlType\(\)',
+        (r'\bFormControlType\b',
          'Consider FormControlTypeForAutofill() instead.'),
-        (r'\bForm\(\)',
+        (r'\bIsConnected\b',
+         'Consider IsAccessible() instead.'),
+        (r'\bForm\b',
          'Consider GetOwningFormForAutofill() instead.'),
-        (r'\bGetFormControlElements\(\)',
+        (r'\bGetFormControlElements\b',
          'Consider GetOwnedFormControls() instead.'),
-        (r'\bUnassociatedFormControls\(\)',
+        (r'\bUnassociatedFormControls\b',
          'Consider GetOwnedFormControls() instead.'),
     ]
     for f in input_api.AffectedSourceFiles(file_filter):
@@ -38,7 +40,8 @@ def CheckNoBannedFunctions(input_api, output_api):
                     errors.append(
                         output_api.PresubmitError(
                             f'{f.LocalPath()}:{line_num}: {match.group(0)}: '
-                            f'{explanation} '
+                            f'{explanation} (see '
+                            f'//components/autofill/content/renderer/README.md)'
                             f'Or append // nocheck if you have to.'
                         )
                     )
