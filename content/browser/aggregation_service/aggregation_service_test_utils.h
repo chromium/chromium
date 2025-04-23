@@ -87,6 +87,11 @@ testing::AssertionResult SharedInfoEqual(
     const AggregatableReportSharedInfo& expected,
     const AggregatableReportSharedInfo& actual);
 
+// Returns a gtest matcher for `AggregatableReportRequest`. The returned matcher
+// owns a clone of `expected`.
+testing::Matcher<AggregatableReportRequest> ReportRequestIs(
+    const AggregatableReportRequest& expected);
+
 // Returns an example report request, using the given parameters.
 AggregatableReportRequest CreateExampleRequest(
     blink::mojom::AggregationServiceMode aggregation_mode =

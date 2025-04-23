@@ -7,11 +7,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <concepts>
 #include <optional>
 #include <ostream>
 #include <string>
 #include <string_view>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include "base/base64.h"
@@ -22,14 +24,17 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/strings/strcat.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
+#include "content/browser/aggregation_service/aggregation_service_observer.h"
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_storage_sql.h"
 #include "content/browser/aggregation_service/public_key.h"
@@ -256,6 +261,46 @@ testing::AssertionResult SharedInfoEqual(
   }
 
   return testing::AssertionSuccess();
+}
+
+namespace {
+class ReportRequestMatcher {
+ public:
+  using is_gtest_matcher = void;
+
+  explicit ReportRequestMatcher(const AggregatableReportRequest& expected)
+      : expected_(CloneReportRequest(expected)) {}
+
+  bool MatchAndExplain(const AggregatableReportRequest& actual,
+                       std::ostream* os) const {
+    const testing::AssertionResult result =
+        ReportRequestsEqual(expected_, actual);
+    if (os != nullptr) {
+      *os << result;
+    }
+    return result;
+  }
+
+  void DescribeTo(std::ostream* os) const {
+    *os << "AggregatableReportRequest is equal to the expected request";
+  }
+
+  void DescribeNegationTo(std::ostream* os) const {
+    *os << "AggregatableReportRequest is not equal to the expected request";
+  }
+
+ private:
+  AggregatableReportRequest expected_;
+
+  // If `AggregatableReportRequest` ever becomes copyable, consider replacing
+  // this class with a call to `MATCHER_P`.
+  static_assert(!std::copy_constructible<AggregatableReportRequest>);
+};
+}  // namespace
+
+testing::Matcher<AggregatableReportRequest> ReportRequestIs(
+    const AggregatableReportRequest& expected) {
+  return ReportRequestMatcher(expected);
 }
 
 AggregatableReportRequest CreateExampleRequest(
