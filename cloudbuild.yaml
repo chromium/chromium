@@ -74,7 +74,7 @@ steps:
         - |
             set -e
             cd /workspace/hopium
-            /workspace/depot_tools/gclient sync -v -r $TAG_NAME
+            /workspace/depot_tools/gclient sync -j 8 -v -r $TAG_NAME
     volumes:
       - name: ssh
         path: "/root/.ssh"
