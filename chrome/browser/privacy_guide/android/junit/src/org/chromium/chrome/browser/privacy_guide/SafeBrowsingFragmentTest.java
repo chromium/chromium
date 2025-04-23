@@ -30,10 +30,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridgeJni;
@@ -174,18 +171,7 @@ public class SafeBrowsingFragmentTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.ESB_AI_STRING_UPDATE)
-    public void testOriginalDescriptionEnhancedProtection() {
-        initFragmentWithSBState(SafeBrowsingState.ENHANCED_PROTECTION);
-        assertEquals(
-                ContextUtils.getApplicationContext()
-                        .getString(R.string.safe_browsing_enhanced_protection_summary),
-                mEnhancedProtectionButton.getDescriptionText());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ESB_AI_STRING_UPDATE)
-    public void testAiDescriptionEnhancedProtection() {
+    public void testDescriptionEnhancedProtection() {
         initFragmentWithSBState(SafeBrowsingState.ENHANCED_PROTECTION);
         assertEquals(
                 ContextUtils.getApplicationContext()
