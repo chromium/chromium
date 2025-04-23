@@ -766,7 +766,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.Startup.TimeToFirstCommitNavigation2.{suffix}"
-    units="ms" expires_after="2025-09-07">
+    units="ms" expires_after="2026-04-17">
   <owner>mthiesse@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -798,8 +798,40 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="CustomTabs.Startup.TimeToFirstContentfulPaint.{suffix}"
+    units="ms" expires_after="2026-04-17">
+  <owner>mthiesse@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Startup time for a Custom Tab from the earliest point in startup to the
+    First Contentful Paint on the first navigation. Split by varying degrees of
+    warmness, from cold to fully pre-loaded through mayLaunchUrl.
+
+    It is recommended to limit analysis of data to Android P+ because on prior
+    versions the cold start detection is less robust.
+
+    NOTE: This metric is broken before October 2024 on Pixel 6+ on Android 14+
+    due to an issue with the recording of BrowserProcessCreationReason affecting
+    ColdStartTracker downstream.
+
+    {suffix}.
+  </summary>
+  <token key="suffix">
+    <variant name="Cold" summary="Measures from process creation to LCP"/>
+    <variant name="Speculated"
+        summary="Measures from intent received to LCP when the mayLaunchUrl
+                 speculation is used"/>
+    <variant name="Warm"
+        summary="Measures from intent received to LCP when
+                 CustomTabsConnection#warmUp is not used"/>
+    <variant name="WarmedUp"
+        summary="Measures from intent received to LCP when
+                 CustomTabsConnection#warmUp is used"/>
+  </token>
+</histogram>
+
 <histogram name="CustomTabs.Startup.TimeToLargestContentfulPaint2.{suffix}"
-    units="ms" expires_after="2025-09-07">
+    units="ms" expires_after="2026-04-17">
   <owner>mthiesse@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>

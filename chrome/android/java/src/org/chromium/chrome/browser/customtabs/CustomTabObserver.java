@@ -81,6 +81,15 @@ public class CustomTabObserver extends EmptyTabObserver {
 
     private class LargestContentfulPaintObserver implements PageLoadMetrics.Observer {
         @Override
+        public void onFirstContentfulPaint(
+                WebContents webContents,
+                long navigationId,
+                long navigationStartMicros,
+                long firstContentfulPaintMs) {
+            recordFirstContentfulPaint(navigationStartMicros / 1000 + firstContentfulPaintMs);
+        }
+
+        @Override
         public void onLargestContentfulPaint(
                 WebContents webContents,
                 long navigationId,
@@ -311,29 +320,37 @@ public class CustomTabObserver extends EmptyTabObserver {
         }
     }
 
+    private void recordFirstContentfulPaint(long fcpUptimeMillis) {
+        recordPaint(fcpUptimeMillis, "TimeToFirstContentfulPaint");
+    }
+
     private void recordLargestContentfulPaint(long lcpUptimeMillis) {
+        recordPaint(lcpUptimeMillis, "TimeToLargestContentfulPaint2");
+    }
+
+    private void recordPaint(long paintUptimeMillis, String paintMetricName) {
         if (mCustomTabsConnection == null) return;
         String histogram = null;
         long duration = 0;
         // Note that this will exclude Webapp launches in all cases due to either
         // mUsedHiddenTabSpeculation being null, or mIntentReceivedTimestamp being 0.
         if (mUsedHiddenTabSpeculation != null && mUsedHiddenTabSpeculation) {
-            duration = lcpUptimeMillis - mLaunchedForSpeculationUptimeMillis;
-            histogram = "CustomTabs.Startup.TimeToLargestContentfulPaint2.Speculated";
+            duration = paintUptimeMillis - mLaunchedForSpeculationUptimeMillis;
+            histogram = "CustomTabs.Startup." + paintMetricName + ".Speculated";
         } else if (mIntentReceivedRealtimeMillis > 0) {
             // When the process is already warm the earliest measurable point in startup is when the
             // intent is received so we measure from there. In the cold start case we measure from
             // when the process was started as the best comparison against the warm case.
             if (wasWarmedUp()) {
-                duration = lcpUptimeMillis - mIntentReceivedUptimeMillis;
-                histogram = "CustomTabs.Startup.TimeToLargestContentfulPaint2.WarmedUp";
+                duration = paintUptimeMillis - mIntentReceivedUptimeMillis;
+                histogram = "CustomTabs.Startup." + paintMetricName + ".WarmedUp";
             } else if (ColdStartTracker.wasColdOnFirstActivityCreationOrNow()
                     && SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) {
-                duration = lcpUptimeMillis - Process.getStartUptimeMillis();
-                histogram = "CustomTabs.Startup.TimeToLargestContentfulPaint2.Cold";
+                duration = paintUptimeMillis - Process.getStartUptimeMillis();
+                histogram = "CustomTabs.Startup." + paintMetricName + ".Cold";
             } else {
-                duration = lcpUptimeMillis - mIntentReceivedUptimeMillis;
-                histogram = "CustomTabs.Startup.TimeToLargestContentfulPaint2.Warm";
+                duration = paintUptimeMillis - mIntentReceivedUptimeMillis;
+                histogram = "CustomTabs.Startup." + paintMetricName + ".Warm";
             }
         }
         if (histogram != null) {
