@@ -10,7 +10,7 @@ overrides: {
     monorail: {
       component: "Enterprise>Connectors"
     }
-    team_email: "dpr-eng@google.com"
+    team_email: "cbe-cep-eng@google.com"
     buganizer: {
       component_id: 1208119
     }

@@ -594,7 +594,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Enterprise.DataProtection.NavigationFinished.URLVerdictSource"
     enum="DataProtectionURLVerdictSource" expires_after="2025-03-18">
   <owner>alshawwa@chromium.org</owner>
-  <owner>dpr-eng@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Records where the realtime url lookup verdict is read from in the data
     protection navigation observer. It is logged once per navigation.
@@ -2975,7 +2975,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2025-10-12">
   <owner>nancylanxiao@google.com</owner>
   <owner>domfc@chromium.org</owner>
-  <owner>dpr-eng@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Records the duration of a {ResumableRequestCheckType} check part of a
     broader {ContentAnalysisRequestType} Resumable request. It is logged once
@@ -3727,7 +3727,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2025-09-07">
   <owner>nancylanxiao@google.com</owner>
   <owner>domfc@chromium.org</owner>
-  <owner>dpr-eng@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Records the duration of scanning requests, parametrized by the protocol used
     and the type of content that's uploaded. It is logged once per user action
@@ -3743,7 +3743,7 @@ chromium-metrics-reviews@google.com.
     enum="SafeBrowsingBinaryUploadResult" expires_after="2025-09-14">
   <owner>nancylanxiao@google.com</owner>
   <owner>domfc@chromium.org</owner>
-  <owner>dpr-eng@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Records the result of scanning requests, parametrized by the protocol used
     and the type of content that's uploaded. It is logged once per user action
