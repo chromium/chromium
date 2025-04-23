@@ -77,7 +77,7 @@ gfx::Insets GetRestoredFrameBorderInsetsLinux(
     bool showing_shadow,
     const gfx::Insets& default_border,
     const gfx::ShadowValues& shadow_values,
-    int resize_border) {
+    const gfx::Insets& resize_border) {
   if (!showing_shadow) {
     auto no_shadow_border = default_border;
     no_shadow_border.set_top(0);

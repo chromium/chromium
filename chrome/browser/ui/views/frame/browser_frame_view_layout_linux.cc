@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/frame/browser_frame_view_paint_utils_linux.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view_layout.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/geometry/insets.h"
 
 namespace {
 
@@ -64,7 +65,7 @@ gfx::Insets BrowserFrameViewLayoutLinux::RestoredFrameBorderInsets() const {
   return GetRestoredFrameBorderInsetsLinux(
       delegate_->ShouldDrawRestoredFrameShadow(),
       OpaqueBrowserFrameViewLayout::RestoredFrameBorderInsets(), shadow_values,
-      kResizeBorder);
+      gfx::Insets(kResizeBorder));
 }
 
 gfx::Insets BrowserFrameViewLayoutLinux::RestoredFrameEdgeInsets() const {

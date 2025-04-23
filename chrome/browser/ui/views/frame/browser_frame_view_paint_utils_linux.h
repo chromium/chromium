@@ -39,6 +39,6 @@ gfx::Insets GetRestoredFrameBorderInsetsLinux(
     bool showing_shadow,
     const gfx::Insets& default_border,
     const gfx::ShadowValues& shadow_values,
-    int resize_border);
+    const gfx::Insets& resize_border);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_PAINT_UTILS_LINUX_H_
