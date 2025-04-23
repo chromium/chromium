@@ -14,6 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/bookmarks/test_bookmark_navigation_wrapper.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -57,7 +59,9 @@ using content::WebContents;
 
 class BookmarkContextMenuTest : public testing::Test {
  public:
-  BookmarkContextMenuTest() : model_(nullptr) {}
+  BookmarkContextMenuTest() : model_(nullptr) {
+    feature_list_.InitWithFeatures({features::kSideBySide}, {});
+  }
 
   void SetUp() override {
     TestingProfile::Builder profile_builder;
@@ -92,6 +96,7 @@ class BookmarkContextMenuTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<BookmarkModel> model_;
   TestingBookmarkNavigationWrapper wrapper_;
+  base::test::ScopedFeatureList feature_list_;
 
  private:
   // Creates the following structure:
@@ -166,6 +171,7 @@ TEST_F(BookmarkContextMenuTest, SingleURL) {
   EXPECT_TRUE(
       controller.IsCommandEnabled(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW));
   EXPECT_TRUE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO));
+  EXPECT_TRUE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW));
   EXPECT_TRUE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_REMOVE));
   EXPECT_TRUE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_ADD_NEW_BOOKMARK));
   EXPECT_TRUE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_NEW_FOLDER));
@@ -202,6 +208,7 @@ TEST_F(BookmarkContextMenuTest, SingleFolder) {
       controller.IsCommandEnabled(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW));
   EXPECT_FALSE(
       controller.IsCommandEnabled(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO));
+  EXPECT_FALSE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW));
   EXPECT_TRUE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_REMOVE));
   EXPECT_TRUE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_ADD_NEW_BOOKMARK));
   EXPECT_TRUE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_NEW_FOLDER));

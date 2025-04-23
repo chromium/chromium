@@ -522,7 +522,7 @@ void BookmarksPageHandler::OpenBookmark(
       click_modifiers->shift_key);
   chrome::OpenAllIfAllowed(
       browser_window_interface_->GetBrowserForMigrationOnly(), {bookmark_node},
-      open_location, false);
+      open_location);
   if (source == side_panel::mojom::ActionSource::kPriceTracking) {
     return;
   }

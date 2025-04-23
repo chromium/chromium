@@ -421,8 +421,7 @@ void BookmarkMenuDelegate::ExecuteCommand(int id, int mouse_event_flags) {
       menu_id_to_node_map_.find(id)->second.GetUnderlyingNodes(
           GetBookmarkMergedSurfaceService());
   chrome::OpenAllIfAllowed(browser_, selection,
-                           ui::DispositionFromEventFlags(mouse_event_flags),
-                           false);
+                           ui::DispositionFromEventFlags(mouse_event_flags));
 }
 
 bool BookmarkMenuDelegate::ShouldExecuteCommandWithoutClosingMenu(

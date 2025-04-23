@@ -264,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(
 
   chrome::OpenAllIfAllowed(incognito_browser, {incognito_folder},
                            WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                           /* add_to_group =*/true);
+                           chrome::OpenAllBookmarksContext::kInGroup);
 
   EXPECT_EQ(incognito_tabs,
             incognito_browser->tab_strip_model()->GetTabCount());
@@ -299,8 +299,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllBookmarks) {
       close_all_tabs_except_first(regular_browser);
       close_all_tabs_except_first(incognito_browser);
       chrome::OpenAllIfAllowed(regular_browser, {bbar},
-                               WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                               false);
+                               WindowOpenDisposition::NEW_BACKGROUND_TAB);
       int num_tabs_regular = regular_browser->tab_strip_model()->GetTabCount();
       int num_tabs_incognito =
           incognito_browser->tab_strip_model()->GetTabCount();
@@ -313,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllBookmarks) {
       close_all_tabs_except_first(regular_browser);
       close_all_tabs_except_first(incognito_browser);
       chrome::OpenAllIfAllowed(regular_browser, {bbar},
-                               WindowOpenDisposition::NEW_WINDOW, false);
+                               WindowOpenDisposition::NEW_WINDOW);
       Browser* regular_browser2 = nullptr;
       for (Browser* browser_instance : *BrowserList::GetInstance()) {
         if (browser_instance != incognito_browser &&
@@ -336,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllBookmarks) {
       close_all_tabs_except_first(regular_browser);
       close_all_tabs_except_first(incognito_browser);
       chrome::OpenAllIfAllowed(regular_browser, {bbar},
-                               WindowOpenDisposition::OFF_THE_RECORD, false);
+                               WindowOpenDisposition::OFF_THE_RECORD);
       int num_tabs_incognito =
           incognito_browser->tab_strip_model()->GetTabCount();
       EXPECT_EQ(num_tabs_incognito, 3);
@@ -352,8 +351,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllBookmarks) {
       close_all_tabs_except_first(regular_browser);
       close_all_tabs_except_first(incognito_browser);
       chrome::OpenAllIfAllowed(incognito_browser, {incognito_bbar},
-                               WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                               false);
+                               WindowOpenDisposition::NEW_BACKGROUND_TAB);
       int num_tabs_regular = regular_browser->tab_strip_model()->GetTabCount();
       int num_tabs_incognito =
           incognito_browser->tab_strip_model()->GetTabCount();
@@ -366,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllBookmarks) {
       close_all_tabs_except_first(regular_browser);
       close_all_tabs_except_first(incognito_browser);
       chrome::OpenAllIfAllowed(incognito_browser, {incognito_bbar},
-                               WindowOpenDisposition::NEW_WINDOW, false);
+                               WindowOpenDisposition::NEW_WINDOW);
       Browser* incognito_browser2 = nullptr;
       for (Browser* browser_instance : *BrowserList::GetInstance()) {
         if (browser_instance != incognito_browser &&
