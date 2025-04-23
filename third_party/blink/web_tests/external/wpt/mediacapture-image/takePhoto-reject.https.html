@@ -14,7 +14,7 @@ context.fillRect(0, 0, 10, 10);
 
 // This test verifies that ImageCapture.takePhoto() rejects if any passed
 // option is unsupported or outside its allowed range.
-function makePromiseTest(getOption) {
+function makePromiseTest(getOption, name) {
   image_capture_test(async (t, imageCaptureTest) => {
     imageCaptureTest.mockImageCapture().state().redEyeReduction = 0;
 
@@ -29,7 +29,7 @@ function makePromiseTest(getOption) {
     } catch (error) {
       assert_equals(error.name, 'NotSupportedError');
     }
-  });
+  }, name);
 }
 
 const optionsGenerators = [
@@ -41,11 +41,9 @@ const optionsGenerators = [
   capabilities => ({ fillLightMode: 'off' }),
 ];
 
-for (key in optionsGenerators) {
-  generate_tests(
-      makePromiseTest,
-      [[ 'ImageCapture.takePhoto(options) rejects with bad options, #' + key,
-         optionsGenerators[key] ]]);
-}
-
+optionsGenerators.forEach((optionsGenerator, key) => {
+  makePromiseTest(
+      optionsGenerator,
+      `ImageCapture.takePhoto(options) rejects with bad options, #${key}`);
+});
 </script>
