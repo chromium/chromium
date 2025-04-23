@@ -3662,8 +3662,6 @@ static_library("ui") {
   if (toolkit_views) {
     sources += [
       "bubble_anchor_util.h",
-      "dialogs/outdated_upgrade_bubble.cc",
-      "dialogs/outdated_upgrade_bubble.h",
       "plus_addresses/plus_address_creation_controller_desktop.h",
       "plus_addresses/plus_address_error_dialog.cc",
       "plus_addresses/plus_address_error_dialog.h",
@@ -4996,6 +4994,8 @@ static_library("ui") {
       "//chrome/browser/ui/autofill/payments",
       "//chrome/browser/ui/commerce",
       "//chrome/browser/ui/commerce:impl",
+      "//chrome/browser/ui/dialogs",
+      "//chrome/browser/ui/dialogs:impl",
       "//chrome/browser/ui/promos:utils",
       "//chrome/browser/ui/qrcode_generator",
       "//chrome/browser/ui/qrcode_generator:impl",
@@ -5059,6 +5059,7 @@ static_library("ui") {
     # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
     allow_circular_includes_from += [
       "//chrome/browser/ui/qrcode_generator:impl",
+      "//chrome/browser/ui/dialogs:impl",
       "//chrome/browser/ui/views",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/commerce:impl",

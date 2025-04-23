@@ -4318,6 +4318,7 @@ static_library("browser") {
       "//chrome/browser/ui/commerce",
       "//chrome/browser/ui/commerce:impl",
       "//chrome/browser/ui/content_settings:impl",
+      "//chrome/browser/ui/dialogs:impl",
       "//chrome/browser/ui/download",
       "//chrome/browser/ui/download:impl",
       "//chrome/browser/ui/exclusive_access",
@@ -4488,6 +4489,10 @@ static_library("browser") {
       # TODO(crbug.com/369794212): Remove this circular dependency when //c/b/signin/identity_manager_factory.h
       # gets modularized.
       "//chrome/browser/ui/toolbar/cast:impl",
+
+      # TODO(crbug.com/412608397): Remove this circular dependency when //c/b/upgrade_detector/
+      # gets modularized.
+      "//chrome/browser/ui/dialogs:impl",
 
       "//chrome/browser/ui/browser_window:impl",
       "//chrome/browser/ui/exclusive_access",
