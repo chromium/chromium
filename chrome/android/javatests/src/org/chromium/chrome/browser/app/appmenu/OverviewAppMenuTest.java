@@ -4,12 +4,18 @@
 
 package org.chromium.chrome.browser.app.appmenu;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
 import androidx.test.filters.LargeTest;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -18,6 +24,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteMetricsDelegate;
@@ -30,6 +37,7 @@ import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.TabSwitcherAppMenuFacility;
 import org.chromium.chrome.test.transit.quick_delete.QuickDeleteDialogFacility;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.List;
@@ -49,10 +57,17 @@ public class OverviewAppMenuTest {
                             ChromeTabbedActivityEntryPoints.startOnBlankPage(rule)
                                     .openRegularTabSwitcher());
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock Tracker mTracker;
+
     public RegularTabSwitcherStation mTabSwitcher;
 
     @Before
     public void setUp() {
+        // Disable IPHs from interfering with tests.
+        when(mTracker.shouldTriggerHelpUi(anyString())).thenReturn(false);
+        TrackerFactory.setTrackerForTests(mTracker);
+
         mTabSwitcher = mCtaTestRule.start();
     }
 
