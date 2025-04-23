@@ -582,6 +582,23 @@ TEST_F(CloudPolicyInvalidatorWithListenerTest, DisconnectCoreThenInitialize) {
 }
 
 TEST_F(CloudPolicyInvalidatorWithListenerTest,
+       DisconnectCoreThenIgnoreInvalidations) {
+  StartInvalidator();
+  StorePolicy();
+
+  // Disconnect core, change invalidations state and fire invalidation. The
+  // invalidations should be enabled but ignored.
+  DisconnectCore();
+  DisableInvalidationService();
+  EnableInvalidationService();
+  FireInvalidation(kTopicA, V(1), "test");
+
+  EXPECT_TRUE(IsInvalidatorRegistered());
+  EXPECT_TRUE(CheckPolicyNotRefreshed());
+  EXPECT_EQ(0, GetHighestHandledInvalidationVersion());
+}
+
+TEST_F(CloudPolicyInvalidatorWithListenerTest,
        InitializeThenStartRefreshScheduler) {
   // Make sure registration occurs and invalidations are processed when
   // Initialize is called before starting the refresh scheduler.

@@ -177,6 +177,10 @@ class CloudPolicyInvalidator
       return highest_handled_invalidation_version_;
     }
 
+    bool IsCoreConnected() const {
+      return core_->client() && core_->refresh_scheduler() && core_->store();
+    }
+
    private:
     void set_max_fetch_delay(int delay);
 

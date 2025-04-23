@@ -366,7 +366,6 @@ void CloudPolicyInvalidator::OnStoreError(CloudPolicyStore* store) {}
 
 void CloudPolicyInvalidator::OnExpectationChanged(
     invalidation::InvalidationsExpected expected) {
-  CHECK(state_ == State::STARTED);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   are_invalidations_expected_ = expected;
@@ -377,10 +376,14 @@ void CloudPolicyInvalidator::OnExpectationChanged(
 
 void CloudPolicyInvalidator::OnInvalidationReceived(
     const invalidation::DirectInvalidation& invalidation) {
-  CHECK(state_ == State::STARTED);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   LOG(WARNING) << "Received incoming invalidation: " << invalidation.version();
+  if (!policy_invalidation_handler_.IsCoreConnected()) {
+    LOG(WARNING) << "Core is disconnected, ignoring invalidation.";
+    return;
+  }
+
   policy_invalidation_handler_.HandleInvalidation(invalidation);
 }
 
