@@ -7,6 +7,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
@@ -16,6 +17,8 @@
 class Profile;
 
 namespace ash {
+
+class SchedulerConfigurationManager;
 
 namespace full_restore {
 class ArcGhostWindowHandler;
@@ -48,7 +51,11 @@ class AppRestoreArcTaskHandler : public KeyedService,
                                  public ArcAppListPrefs::Observer,
                                  public arc::ArcSessionManagerObserver {
  public:
-  explicit AppRestoreArcTaskHandler(Profile* profile);
+  // `scheduler_configuration_manager` should be non-null and must outlive
+  // `this`. In tests, it may be null.
+  AppRestoreArcTaskHandler(
+      Profile* profile,
+      SchedulerConfigurationManager* scheduler_configuration_manager);
   AppRestoreArcTaskHandler(const AppRestoreArcTaskHandler&) = delete;
   AppRestoreArcTaskHandler& operator=(const AppRestoreArcTaskHandler&) = delete;
   ~AppRestoreArcTaskHandler() override;
@@ -112,6 +119,8 @@ class AppRestoreArcTaskHandler : public KeyedService,
 
   ArcAppSingleRestoreHandler* CreateOrGetArcAppSingleRestoreHandler(
       LauncherTag launcher_tag);
+
+  const raw_ptr<SchedulerConfigurationManager> scheduler_configuration_manager_;
 
   base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
       arc_prefs_observer_{this};

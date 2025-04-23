@@ -29,8 +29,6 @@ include_rules = [
   "+chrome/browser/ash/policy/scheduled_task_handler",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/system_web_apps",
-  "+chrome/browser/browser_process.h",
-  "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/chromeos/full_restore",
   "+chrome/browser/first_run",
   "+chrome/browser/lifetime",
@@ -61,3 +59,13 @@ include_rules = [
   "+chrome/test/base",
   "+chrome/test/views",
 ]
+
+specific_include_rules = {
+  "app_restore_arc_task_handler_factory\\.cc": [
+    "+chrome/browser/browser_process.h",
+    "+chrome/browser/browser_process_platform_part.h",
+  ],
+  ".*browsertest\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ],
+}
