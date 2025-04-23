@@ -801,11 +801,6 @@ need to be translated for each locale.-->
         </message>
       </if>
 
-      <!-- Accelerator format -->
-      <message name="IDS_APP_ACCELERATOR_WITH_MODIFIER" desc="Accelerator with a modifier key">
-        <ph name="KEY_MODIFIER_NAME">$1<ex>Ctrl</ex></ph>+<ph name="KEY_COMBO_NAME">$2<ex>C</ex></ph>
-      </message>
-
       <!-- Byte size units -->
       <message name="IDS_APP_BYTES" desc="Units tag indicating a quantity of bytes">
         <ph name="QUANTITY">$1<ex>42</ex></ph> B

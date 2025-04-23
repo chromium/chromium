@@ -105,16 +105,14 @@ class AcceleratorTestMac : public testing::Test {
   AcceleratorTestMac() = default;
   ~AcceleratorTestMac() override = default;
 
-  // Returns a "short" string representation of the modifier flags in
+  // Returns a "short" vector representation of the modifier flags in
   // |modifier_mask|.
-  std::u16string ShortFormStringForModifiers(int modifier_flags) {
+  std::vector<std::u16string> ShortFormStringForModifiers(int modifier_flags) {
     ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_F,
                            modifier_flags);
     Accelerator accelerator(key_event);
 
-    // Passing the empty string causes the method to return just the string
-    // representation of the modifier flags.
-    return accelerator.ApplyShortFormModifiers(std::u16string());
+    return accelerator.GetShortFormModifiers();
   }
 };
 
