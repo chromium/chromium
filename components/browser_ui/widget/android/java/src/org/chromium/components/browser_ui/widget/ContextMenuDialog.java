@@ -225,7 +225,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
                             mPopupWindow.setAnimateFromAnchor(true);
                             // Set popup focusable so the screen reader can announce the popup
                             // properly.
-                            if (AccessibilityState.isScreenReaderEnabled()) {
+                            if (AccessibilityState.isKnownScreenReaderEnabled()) {
                                 mPopupWindow.setFocusable(true);
                             }
                             // If the popup is dismissed, dismiss this dialog as well. This is

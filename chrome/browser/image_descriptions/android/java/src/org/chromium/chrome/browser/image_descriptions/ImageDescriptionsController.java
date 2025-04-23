@@ -177,7 +177,7 @@ public class ImageDescriptionsController {
     }
 
     public boolean shouldShowImageDescriptionsMenuItem() {
-        return AccessibilityState.isScreenReaderEnabled();
+        return AccessibilityState.isKnownScreenReaderEnabled();
     }
 
     public boolean imageDescriptionsEnabled(Profile profile) {

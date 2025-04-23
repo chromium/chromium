@@ -70,7 +70,9 @@ public class AccessibilityState {
     public static final String AUTOFILL_COMPAT_ACCESSIBILITY_SERVICE_ID =
             "android/com.android.server.autofill.AutofillCompatAccessibilityService";
 
-    public static final String TALKBACK_SERVICE_ID =
+    // Known screen reader service IDs, currently set only to TalkBack but can be expanded to a list
+    // if more screen readers appear in the ecosystem.
+    public static final String KNOWN_SCREEN_READER_SERVICE_IDS =
             "com.google.android.marvin.talkback/.TalkBackService";
 
     // Constant value to multiply animation timeouts by for pre-Q Android versions.
@@ -144,6 +146,9 @@ public class AccessibilityState {
         // from running accessibility services. False otherwise.
         public final boolean isOnlyPasswordManagersEnabled;
 
+        // True when a known screen reader is enabled, based on service IDs. False otherwise.
+        public final boolean isKnownScreenReaderEnabled;
+
         public State(
                 boolean isScreenReaderEnabled,
                 boolean isTouchExplorationEnabled,
@@ -152,7 +157,8 @@ public class AccessibilityState {
                 boolean isAccessibilityToolPresent,
                 boolean isTextShowPasswordEnabled,
                 boolean isOnlyAutofillRunning,
-                boolean isOnlyPasswordManagersEnabled) {
+                boolean isOnlyPasswordManagersEnabled,
+                boolean isKnownScreenReaderEnabled) {
             this.isScreenReaderEnabled = isScreenReaderEnabled;
             this.isTouchExplorationEnabled = isTouchExplorationEnabled;
             this.isPerformGesturesEnabled = isPerformGesturesEnabled;
@@ -161,6 +167,7 @@ public class AccessibilityState {
             this.isTextShowPasswordEnabled = isTextShowPasswordEnabled;
             this.isOnlyAutofillRunning = isOnlyAutofillRunning;
             this.isOnlyPasswordManagersEnabled = isOnlyPasswordManagersEnabled;
+            this.isKnownScreenReaderEnabled = isKnownScreenReaderEnabled;
         }
 
         @Override
@@ -182,6 +189,8 @@ public class AccessibilityState {
                     + isOnlyAutofillRunning
                     + ", isOnlyPasswordManagersEnabled="
                     + isOnlyPasswordManagersEnabled
+                    + ", isKnownScreenReaderEnabled="
+                    + isKnownScreenReaderEnabled
                     + '}';
         }
     }
@@ -372,6 +381,11 @@ public class AccessibilityState {
     public static boolean isOnlyPasswordManagersEnabled() {
         if (!sInitialized) updateAccessibilityServices();
         return assumeNonNull(sState).isOnlyPasswordManagersEnabled;
+    }
+
+    public static boolean isKnownScreenReaderEnabled() {
+        if (!sInitialized) updateAccessibilityServices();
+        return assumeNonNull(sState).isKnownScreenReaderEnabled;
     }
 
     public static boolean isDisplayInversionEnabled() {
@@ -597,7 +611,7 @@ public class AccessibilityState {
     protected static void updateAccessibilityServices() {
         long now = SystemClock.elapsedRealtimeNanos() / 1000;
         if (!sInitialized) {
-            sState = new State(false, false, false, false, false, false, false, false);
+            sState = new State(false, false, false, false, false, false, false, false, false);
             fetchAccessibilityManager();
         }
         sInitialized = true;
@@ -717,6 +731,7 @@ public class AccessibilityState {
         // Calculate heuristic state value derivations.
         boolean isScreenReaderEnabled =
                 (0 != (sEventTypeMaskHeuristic & SCREEN_READER_EVENT_TYPE_MASK));
+        boolean isKnownScreenReaderEnabled = sServiceIds.contains(KNOWN_SCREEN_READER_SERVICE_IDS);
 
         boolean isOnlyAutofillRunning = false;
         try {
@@ -788,7 +803,8 @@ public class AccessibilityState {
                         isAccessibilityToolPresent,
                         isTextShowPasswordEnabled,
                         isOnlyAutofillRunning,
-                        isOnlyPasswordManagersEnabled));
+                        isOnlyPasswordManagersEnabled,
+                        isKnownScreenReaderEnabled));
     }
 
     private static void updateAndNotifyStateChange(State newState) {
@@ -831,22 +847,11 @@ public class AccessibilityState {
             return new Pair<Boolean, Boolean>(false, false);
         }
 
-        boolean isTalkBackEnabled = sServiceIds.contains(TALKBACK_SERVICE_ID);
+        boolean isTalkBackEnabled = sServiceIds.contains(KNOWN_SCREEN_READER_SERVICE_IDS);
         boolean isOnlyOneServiceEnabled = sServiceIds.size() == 1;
 
         return new Pair<Boolean, Boolean>(
                 isTalkBackEnabled, isTalkBackEnabled && isOnlyOneServiceEnabled);
-    }
-
-    /**
-     * Checks whether or not a known screen reader is running, i.e. TalkBack. This differs from the
-     * isScreenReaderEnabled method in that this method is based on a running Bundle ID, and the
-     * other method is based on a heuristic that identifies screen-reader-like services.
-     *
-     * @return True when a known screen reader is running (e.g. TalkBack).
-     */
-    public static boolean isScreenReaderRunning() {
-        return getTalkBackEnabledState().first;
     }
 
     /**
@@ -1109,7 +1114,8 @@ public class AccessibilityState {
                         oldState.isAccessibilityToolPresent,
                         oldState.isTextShowPasswordEnabled,
                         oldState.isOnlyAutofillRunning,
-                        oldState.isOnlyPasswordManagersEnabled);
+                        oldState.isOnlyPasswordManagersEnabled,
+                        oldState.isKnownScreenReaderEnabled);
 
         updateAndNotifyStateChange(newState);
     }
@@ -1127,7 +1133,8 @@ public class AccessibilityState {
                         oldState.isAccessibilityToolPresent,
                         oldState.isTextShowPasswordEnabled,
                         oldState.isOnlyAutofillRunning,
-                        oldState.isOnlyPasswordManagersEnabled);
+                        oldState.isOnlyPasswordManagersEnabled,
+                        oldState.isKnownScreenReaderEnabled);
 
         updateAndNotifyStateChange(newState);
     }
@@ -1145,7 +1152,8 @@ public class AccessibilityState {
                         oldState.isAccessibilityToolPresent,
                         oldState.isTextShowPasswordEnabled,
                         oldState.isOnlyAutofillRunning,
-                        oldState.isOnlyPasswordManagersEnabled);
+                        oldState.isOnlyPasswordManagersEnabled,
+                        oldState.isKnownScreenReaderEnabled);
 
         updateAndNotifyStateChange(newState);
     }
@@ -1163,7 +1171,8 @@ public class AccessibilityState {
                         oldState.isAccessibilityToolPresent,
                         oldState.isTextShowPasswordEnabled,
                         oldState.isOnlyAutofillRunning,
-                        oldState.isOnlyPasswordManagersEnabled);
+                        oldState.isOnlyPasswordManagersEnabled,
+                        oldState.isKnownScreenReaderEnabled);
 
         updateAndNotifyStateChange(newState);
     }
@@ -1181,7 +1190,8 @@ public class AccessibilityState {
                         enabled,
                         oldState.isTextShowPasswordEnabled,
                         oldState.isOnlyAutofillRunning,
-                        oldState.isOnlyPasswordManagersEnabled);
+                        oldState.isOnlyPasswordManagersEnabled,
+                        oldState.isKnownScreenReaderEnabled);
 
         updateAndNotifyStateChange(newState);
     }
@@ -1199,7 +1209,8 @@ public class AccessibilityState {
                         oldState.isAccessibilityToolPresent,
                         enabled,
                         oldState.isOnlyAutofillRunning,
-                        oldState.isOnlyPasswordManagersEnabled);
+                        oldState.isOnlyPasswordManagersEnabled,
+                        oldState.isKnownScreenReaderEnabled);
 
         updateAndNotifyStateChange(newState);
     }
@@ -1217,7 +1228,8 @@ public class AccessibilityState {
                         oldState.isAccessibilityToolPresent,
                         oldState.isTextShowPasswordEnabled,
                         enabled,
-                        oldState.isOnlyPasswordManagersEnabled);
+                        oldState.isOnlyPasswordManagersEnabled,
+                        oldState.isKnownScreenReaderEnabled);
 
         updateAndNotifyStateChange(newState);
     }
@@ -1235,6 +1247,26 @@ public class AccessibilityState {
                         oldState.isAccessibilityToolPresent,
                         oldState.isTextShowPasswordEnabled,
                         oldState.isOnlyAutofillRunning,
+                        enabled,
+                        oldState.isKnownScreenReaderEnabled);
+
+        updateAndNotifyStateChange(newState);
+    }
+
+    public static void setIsKnownScreenReaderEnabledForTesting(boolean enabled) {
+        if (!sInitialized) initializeForTesting();
+        State oldState = assumeNonNull(sState);
+
+        State newState =
+                new State(
+                        oldState.isScreenReaderEnabled,
+                        oldState.isTouchExplorationEnabled,
+                        oldState.isPerformGesturesEnabled,
+                        oldState.isAnyAccessibilityServiceEnabled,
+                        oldState.isAccessibilityToolPresent,
+                        oldState.isTextShowPasswordEnabled,
+                        oldState.isOnlyAutofillRunning,
+                        oldState.isOnlyPasswordManagersEnabled,
                         enabled);
 
         updateAndNotifyStateChange(newState);
@@ -1287,7 +1319,7 @@ public class AccessibilityState {
     }
 
     private static void initializeForTesting() {
-        sState = new State(false, false, false, false, false, false, false, false);
+        sState = new State(false, false, false, false, false, false, false, false, false);
         fetchAccessibilityManager();
         sInitialized = true;
         sIsInTestingMode = true;

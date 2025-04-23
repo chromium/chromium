@@ -807,7 +807,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                             mNativeObj,
                             AccessibilityState.isScreenReaderEnabled(),
                             AccessibilityState.isOnlyPasswordManagersEnabled(),
-                            AccessibilityState.isScreenReaderRunning(),
+                            AccessibilityState.isKnownScreenReaderEnabled(),
                             AccessibilityState.getTalkBackEnabledState().second);
 
             // Update the state of enabling/disabling the image descriptions feature. To enable the
@@ -816,7 +816,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                     .setAllowImageDescriptions(
                             mNativeObj,
                             mIsImageDescriptionsCandidate
-                                    && AccessibilityState.isScreenReaderEnabled());
+                                    && AccessibilityState.isKnownScreenReaderEnabled());
 
             // Update the list of events we dispatch to enabled services.
             mEventDispatcher.updateRelevantEventTypes(

@@ -920,7 +920,7 @@ public class KeyboardShortcuts {
         int semanticMeaning = getKeyboardSemanticMeaning(keyCodeAndMeta);
 
         RecordHistogram.recordEnumeratedHistogram(
-                AccessibilityState.isScreenReaderEnabled()
+                AccessibilityState.isKnownScreenReaderEnabled()
                         ? "Accessibility.Android.KeyboardShortcut.ScreenReaderRunning2"
                         : "Accessibility.Android.KeyboardShortcut.NoScreenReader2",
                 semanticMeaning,

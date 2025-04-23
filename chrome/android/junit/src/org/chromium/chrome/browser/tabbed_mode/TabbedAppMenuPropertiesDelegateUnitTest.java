@@ -313,7 +313,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @After
     public void tearDown() {
-        AccessibilityState.setIsScreenReaderEnabledForTesting(false);
+        AccessibilityState.setIsKnownScreenReaderEnabledForTesting(false);
     }
 
     private void assertMenuItemsAreEqual(Menu menu, Integer... expectedItems) {
@@ -828,7 +828,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         // Test specific setup
         ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
-        AccessibilityState.setIsScreenReaderEnabledForTesting(true);
+        AccessibilityState.setIsKnownScreenReaderEnabledForTesting(true);
 
         Menu menu = createTestMenu();
         mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
@@ -1589,7 +1589,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     private void testReadAloudMenuItemUpdates(boolean initiallyReadable, boolean laterReadable) {
-        AccessibilityState.setIsScreenReaderEnabledForTesting(false);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mReadAloudController.isReadable(mTab)).thenReturn(initiallyReadable);
         setUpMocksForPageMenu();

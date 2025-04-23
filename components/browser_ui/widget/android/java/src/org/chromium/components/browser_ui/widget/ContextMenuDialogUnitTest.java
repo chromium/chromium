@@ -97,7 +97,7 @@ public class ContextMenuDialogUnitTest {
 
     @After
     public void tearDown() {
-        AccessibilityState.setIsScreenReaderEnabledForTesting(false);
+        AccessibilityState.setIsKnownScreenReaderEnabledForTesting(false);
         UiWidgetFactory.setInstance(null);
         mActivity.finish();
     }
@@ -217,7 +217,7 @@ public class ContextMenuDialogUnitTest {
 
     @Test
     public void testShowPopupWindow_NotFocusableInA11y() throws Exception {
-        AccessibilityState.setIsScreenReaderEnabledForTesting(true);
+        AccessibilityState.setIsKnownScreenReaderEnabledForTesting(true);
 
         mDialog = createContextMenuDialog(/* isPopup= */ true, /* shouldRemoveScrim= */ false);
         mDialog.show();

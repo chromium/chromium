@@ -103,7 +103,7 @@ public class AccessibilitySettingsTest {
 
         // Enable screen reader to display all settings options.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> AccessibilityState.setIsScreenReaderEnabledForTesting(true));
+                () -> AccessibilityState.setIsKnownScreenReaderEnabledForTesting(true));
         when(mDelegate.shouldShowImageDescriptionsSetting()).thenReturn(true);
 
         mSettingsActivityTestRule.launchPreference(
@@ -119,7 +119,7 @@ public class AccessibilitySettingsTest {
     @After
     public void tearDown() {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> AccessibilityState.setIsScreenReaderEnabledForTesting(false));
+                () -> AccessibilityState.setIsKnownScreenReaderEnabledForTesting(false));
         when(mDelegate.shouldShowImageDescriptionsSetting()).thenReturn(false);
     }
 

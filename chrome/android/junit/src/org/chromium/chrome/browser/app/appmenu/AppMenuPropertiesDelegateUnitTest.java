@@ -22,7 +22,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -89,7 +88,6 @@ import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.AppBannerManagerJni;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -220,11 +218,6 @@ public class AppMenuPropertiesDelegateUnitTest {
         doReturn(mShoppingService).when(mShoppingServiceFactoryJniMock).getForProfile(any());
         BuildConfig.IS_DESKTOP_ANDROID = false;
         ResettersForTesting.register(() -> BuildConfig.IS_DESKTOP_ANDROID = false);
-    }
-
-    @After
-    public void tearDown() {
-        AccessibilityState.setIsScreenReaderEnabledForTesting(false);
     }
 
     private void setupFeatureDefaults() {
