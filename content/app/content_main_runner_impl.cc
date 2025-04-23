@@ -135,7 +135,9 @@
 
 #if BUILDFLAG(IS_IOS)
 #include "base/threading/thread_restrictions.h"
+#if !BUILDFLAG(IS_IOS_TVOS)
 #include "content/app/ios/appex/child_process_sandbox.h"
+#endif  // !BUILDFLAG(IS_IOS_TVOS)
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -1048,7 +1050,7 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
       process_type == switches::kZygoteProcess) {
     PreSandboxInit();
   }
-#elif BUILDFLAG(IS_IOS)
+#elif BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
   ChildProcessEnterSandbox();
 #endif
 
