@@ -58,6 +58,8 @@ using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::Test;
 using Role = ::blink::mojom::AILanguageModelPromptRole;
+using SetInputCallback = ::optimization_guide::OptimizationGuideModelExecutor::
+    Session::SetInputCallback;
 
 constexpr uint32_t kTestMaxContextToken = 10u;
 constexpr uint32_t kTestInitialPromptsToken = 5u;
@@ -324,9 +326,10 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
                                 1
                           : 1);
                 });
-            ON_CALL(*session, SetInput(_))
+            ON_CALL(*session, SetInput(_, _))
                 .WillByDefault([&, initial = true](
-                                   MultimodalMessage request_metadata) mutable {
+                                   MultimodalMessage request_metadata,
+                                   SetInputCallback callback) mutable {
                   if (initial && !options.expected_context.empty()) {
                     initial = false;
                     EXPECT_THAT(ToString(request_metadata),
@@ -359,8 +362,9 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
 
             SetUpMockSession(*session);
 
-            ON_CALL(*session, SetInput(_))
-                .WillByDefault([&](MultimodalMessage request_metadata) {
+            ON_CALL(*session, SetInput(_, _))
+                .WillByDefault([&](MultimodalMessage request_metadata,
+                                   SetInputCallback callback) {
                   EXPECT_THAT(ToString(request_metadata),
                               options.expected_cloned_context +
                                   options.expected_prompt);
@@ -580,12 +584,14 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
                     std::move(callback).Run(mock_size_in_tokens);
                   });
 
-          EXPECT_CALL(*session, SetInput(_))
+          EXPECT_CALL(*session, SetInput(_, _))
               .Times(2)
-              .WillOnce([&](MultimodalMessage request) {
-                EXPECT_THAT(ToString(request), "U: A\nM: ");
-              })
-              .WillOnce([&](MultimodalMessage request) {
+              .WillOnce(
+                  [&](MultimodalMessage request, SetInputCallback callback) {
+                    EXPECT_THAT(ToString(request), "U: A\nM: ");
+                  })
+              .WillOnce([&](MultimodalMessage request,
+                            SetInputCallback callback) {
                 // Prompt history should be omitted if it would overflow.
                 EXPECT_THAT(ToString(request), should_overflow_context
                                                    ? "U: B\nM: "
@@ -956,8 +962,9 @@ TEST_F(AILanguageModelTest, MultimodalInput) {
             .WillRepeatedly(Return(on_device_model::Capabilities{
                 on_device_model::CapabilityFlags::kImageInput,
                 on_device_model::CapabilityFlags::kAudioInput}));
-        EXPECT_CALL(*session, SetInput(_))
-            .WillOnce([&](MultimodalMessage request_metadata) {
+        EXPECT_CALL(*session, SetInput(_, _))
+            .WillOnce([&](MultimodalMessage request_metadata,
+                          SetInputCallback callback) {
               EXPECT_THAT(ToString(request_metadata),
                           "U: Test prompt\n"
                           "U: <image>\n"

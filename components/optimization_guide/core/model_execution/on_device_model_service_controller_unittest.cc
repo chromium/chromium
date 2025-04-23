@@ -3276,7 +3276,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ImageExecutionSuccess) {
         .capabilities = {on_device_model::CapabilityFlags::kImageInput},
     });
     ASSERT_TRUE(session);
-    session->SetInput(request.Clone());
+    session->SetInput(request.Clone(), {});
     session->ExecuteModel(proto::ExampleForTestingRequest(),
                           response.GetStreamingCallback());
     ASSERT_TRUE(response.GetFinalStatus());
@@ -3290,7 +3290,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ImageExecutionSuccess) {
     ResponseHolder response;
     auto session = CreateSession();
     ASSERT_TRUE(session);
-    session->SetInput(std::move(request));
+    session->SetInput(std::move(request), {});
     session->ExecuteModel(proto::ExampleForTestingRequest(),
                           response.GetStreamingCallback());
     ASSERT_TRUE(response.GetFinalStatus());
@@ -3339,7 +3339,7 @@ TEST_F(OnDeviceModelServiceControllerTest, OmitEmptyInputs) {
   auto session = CreateSession();
   ASSERT_TRUE(session);
   MultimodalMessage request((proto::ExampleForTestingRequest()));
-  session->SetInput(std::move(request));
+  session->SetInput(std::move(request), {});
   session->ExecuteModel(proto::ExampleForTestingRequest(),
                         response_.GetStreamingCallback());
   ASSERT_TRUE(response_.GetFinalStatus());
@@ -3619,6 +3619,76 @@ TEST_F(OnDeviceModelServiceControllerTest, PriorityClone) {
             "Priority: background\nContext: execute:foo off:0 max:1024\n");
   EXPECT_EQ(GetResponse(*clone, "foo"),
             "Priority: background\nContext: execute:foo off:0 max:1024\n");
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, SetInputCallback) {
+  Initialize(standard_assets_);
+
+  base::HistogramTester histogram_tester;
+  auto session = CreateSession();
+  ASSERT_TRUE(session);
+
+  MultimodalMessage request((UserInputRequest("foo")));
+  base::test::TestFuture<
+      base::expected<size_t, OptimizationGuideModelExecutionError>>
+      future;
+  session->SetInput(std::move(request), future.GetCallback());
+  EXPECT_EQ(*future.Get(), std::string("ctx:foo").size());
+
+  session->ExecuteModel(PageUrlRequest("bar"),
+                        response_.GetStreamingCallback());
+  ASSERT_TRUE(response_.GetFinalStatus());
+  EXPECT_EQ(response_.value(),
+            "Context: ctx:foo off:0 max:8192\nContext: execute:foobar off:0 "
+            "max:1024\n");
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, SetInputCallbackCancelled) {
+  Initialize(standard_assets_);
+
+  base::HistogramTester histogram_tester;
+  auto session = CreateSession();
+  ASSERT_TRUE(session);
+
+  MultimodalMessage request((UserInputRequest("foo")));
+  base::test::TestFuture<
+      base::expected<size_t, OptimizationGuideModelExecutionError>>
+      future1;
+  base::test::TestFuture<
+      base::expected<size_t, OptimizationGuideModelExecutionError>>
+      future2;
+  session->SetInput(request.Clone(), future1.GetCallback());
+  session->SetInput(std::move(request), future2.GetCallback());
+
+  // First request is cancelled, second request completes.
+  EXPECT_EQ(
+      future1.Get().error().error(),
+      OptimizationGuideModelExecutionError::ModelExecutionError::kCancelled);
+  EXPECT_EQ(*future2.Get(), std::string("ctx:foo").size());
+
+  session->ExecuteModel(PageUrlRequest("bar"),
+                        response_.GetStreamingCallback());
+  ASSERT_TRUE(response_.GetFinalStatus());
+  EXPECT_EQ(response_.value(),
+            "Context: ctx:foo off:0 max:8192\nContext: execute:foobar off:0 "
+            "max:1024\n");
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, SetInputCallbackError) {
+  Initialize(standard_assets_);
+
+  base::HistogramTester histogram_tester;
+  auto session = CreateSession();
+  ASSERT_TRUE(session);
+
+  MultimodalMessage request((proto::ExampleForTestingRequest()));
+  base::test::TestFuture<
+      base::expected<size_t, OptimizationGuideModelExecutionError>>
+      future;
+  session->SetInput(std::move(request), future.GetCallback());
+  EXPECT_EQ(future.Get().error().error(),
+            OptimizationGuideModelExecutionError::ModelExecutionError::
+                kInvalidRequest);
 }
 
 }  // namespace optimization_guide

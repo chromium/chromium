@@ -59,7 +59,9 @@ class MockSession : public OptimizationGuideModelExecutor::Session {
               GetTokenLimits,
               (),
               (const, override));
-  MOCK_METHOD(void, SetInput, (MultimodalMessage request));
+  MOCK_METHOD(void,
+              SetInput,
+              (MultimodalMessage request, SetInputCallback callback));
   MOCK_METHOD(void,
               AddContext,
               (const google::protobuf::MessageLite& request_metadata));

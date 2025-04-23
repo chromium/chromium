@@ -63,7 +63,9 @@ class OnDeviceContext : public on_device_model::mojom::ContextClient {
   ~OnDeviceContext() override;
 
   // Constructs the input context and begins processing it.
-  bool SetInput(MultimodalMessageReadView request);
+  bool SetInput(
+      MultimodalMessageReadView request,
+      OptimizationGuideModelExecutor::Session::SetInputCallback callback);
 
   // Get the session that we've sent the input to, creating it if does not
   // exist (e.g. due to a disconnect.)
@@ -101,6 +103,7 @@ class OnDeviceContext : public on_device_model::mojom::ContextClient {
   on_device_model::mojom::InputPtr input_;
   on_device_model::mojom::Priority priority_ =
       on_device_model::mojom::Priority::kForeground;
+  OptimizationGuideModelExecutor::Session::SetInputCallback callback_;
   mojo::Receiver<on_device_model::mojom::ContextClient> client_{this};
 };
 

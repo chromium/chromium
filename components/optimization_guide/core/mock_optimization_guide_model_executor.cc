@@ -48,9 +48,11 @@ void MockSession::Delegate(OptimizationGuideModelExecutor::Session* impl) {
   ON_CALL(*this, GetTokenLimits).WillByDefault([impl]() -> const TokenLimits& {
     return impl->GetTokenLimits();
   });
-  ON_CALL(*this, SetInput).WillByDefault([impl](MultimodalMessage input) {
-    impl->SetInput(std::move(input));
-  });
+  ON_CALL(*this, SetInput)
+      .WillByDefault(
+          [impl](MultimodalMessage input, SetInputCallback callback) {
+            impl->SetInput(std::move(input), std::move(callback));
+          });
   ON_CALL(*this, AddContext).WillByDefault([impl](const auto& input) {
     impl->AddContext(input);
   });

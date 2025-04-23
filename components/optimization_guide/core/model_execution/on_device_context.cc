@@ -36,10 +36,19 @@ OnDeviceContext::OnDeviceContext(OnDeviceOptions opts,
     : opts_(std::move(opts)), feature_(feature) {}
 OnDeviceContext::~OnDeviceContext() = default;
 
-bool OnDeviceContext::SetInput(MultimodalMessageReadView request) {
+bool OnDeviceContext::SetInput(
+    MultimodalMessageReadView request,
+    OptimizationGuideModelExecutor::Session::SetInputCallback callback) {
+  callback_ = std::move(callback);
   auto input =
       opts_.adapter->ConstructInputString(request, /*want_input_context=*/true);
   if (!input) {
+    if (callback_) {
+      std::move(callback_).Run(base::unexpected(
+          OptimizationGuideModelExecutionError::FromModelExecutionError(
+              OptimizationGuideModelExecutionError::ModelExecutionError::
+                  kInvalidRequest)));
+    }
     return false;
   }
   // Keep the old session alive until the new session is ready. This prevents
@@ -108,6 +117,9 @@ void OnDeviceContext::AddContext() {
 }
 
 void OnDeviceContext::OnComplete(uint32_t tokens_processed) {
+  if (callback_) {
+    std::move(callback_).Run(tokens_processed);
+  }
   client_.reset();
   base::UmaHistogramCounts10000(
       base::StrCat({"OptimizationGuide.ModelExecution."

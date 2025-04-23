@@ -301,7 +301,7 @@ void AILanguageModel::InitializeContextWithInitialPrompts(
   context_ = std::make_unique<Context>(max_token, std::move(initial_prompts));
 
   // Begin processing the initial prompts immediately.
-  session_->SetInput(context_->MakeRequest(session_->GetCapabilities()));
+  session_->SetInput(context_->MakeRequest(session_->GetCapabilities()), {});
 
   std::move(callback).Run(TakePendingRemote(), GetLanguageModelInstanceInfo());
 }
@@ -396,7 +396,7 @@ void AILanguageModel::PromptGetInputSizeCompletion(
       session_->GetCapabilities();
   MultimodalMessage request = context_->MakeRequest(capabilities);
   AddCurrentRequest(request, current_item, capabilities);
-  session_->SetInput(std::move(request));
+  session_->SetInput(std::move(request), {});
   session_->ExecuteModelWithResponseJsonSchema(
       PromptApiRequest(), response_json_schema,
       base::BindRepeating(&AILanguageModel::ModelExecutionCallback,

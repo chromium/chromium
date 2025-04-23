@@ -65,7 +65,7 @@ class OptimizationGuideModelExecutionError {
  private:
   explicit OptimizationGuideModelExecutionError(ModelExecutionError error);
 
-  const ModelExecutionError error_;
+  ModelExecutionError error_;
 };
 
 }  // namespace optimization_guide
