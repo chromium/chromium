@@ -55,6 +55,8 @@ class FileSystemAccessMetadata : public DeepScanningMetadata {
   mutable std::string mime_type_;
   mutable bool mime_type_computed_ = false;
 
+  const GURL tab_url_;
+
   base::WeakPtrFactory<FileSystemAccessMetadata> weakptr_factory_{this};
 };
 

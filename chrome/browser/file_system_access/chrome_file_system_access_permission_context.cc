@@ -522,7 +522,8 @@ void DoSafeBrowsingCheckOnUIThread(
     if (rfh) {
       DCHECK_NE(rfh->GetLifecycleState(),
                 content::RenderFrameHost::LifecycleState::kPrerendering);
-      item->web_contents = content::WebContents::FromRenderFrameHost(rfh);
+      item->web_contents =
+          content::WebContents::FromRenderFrameHost(rfh)->GetWeakPtr();
     }
   }
 

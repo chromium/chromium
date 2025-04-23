@@ -734,7 +734,7 @@ class DownloadProtectionServiceTestBase
     result->size = 100;
     result->frame_url = GURL("https://example.com/foo/bar");
     result->has_user_gesture = true;
-    result->web_contents = web_contents();
+    result->web_contents = web_contents()->GetWeakPtr();
     result->browser_context = profile();
     return result;
   }

@@ -23,6 +23,7 @@ class FileSystemAccessMetadataTest : public ChromeRenderViewHostTestHarness {
         temp_dir_.GetPath().Append(FILE_PATH_LITERAL("temp_file.txt")),
         temp_dir_.GetPath().Append(FILE_PATH_LITERAL("target_file.txt")));
 
+    NavigateAndCommit(tab_url_);
     metadata_ = std::make_unique<FileSystemAccessMetadata>(std::move(fsa_item));
   }
 
@@ -43,7 +44,7 @@ class FileSystemAccessMetadataTest : public ChromeRenderViewHostTestHarness {
     item->frame_url = frame_url_;
     item->has_user_gesture = true;
 
-    item->web_contents = raw_ptr<content::WebContents>(web_contents());
+    item->web_contents = web_contents()->GetWeakPtr();
     item->browser_context = raw_ptr<content::BrowserContext>(profile());
     return item;
   }
@@ -68,6 +69,7 @@ TEST_F(FileSystemAccessMetadataTest, BasicAccessors) {
   EXPECT_EQ(metadata_->GetHash(), hash_);
   EXPECT_EQ(metadata_->GetTotalBytes(), 100);
   EXPECT_EQ(metadata_->GetURL(), frame_url_);
+  EXPECT_EQ(metadata_->GetTabUrl(), tab_url_);
   EXPECT_TRUE(metadata_->HasUserGesture());
 
   // Methods with fixed return values.
@@ -75,12 +77,6 @@ TEST_F(FileSystemAccessMetadataTest, BasicAccessors) {
   EXPECT_FALSE(metadata_->IsTopLevelEncryptedArchive());
   EXPECT_EQ(metadata_->GetDangerType(),
             download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
-}
-
-TEST_F(FileSystemAccessMetadataTest, GetTabUrl) {
-  // Setup web contents with URL.
-  NavigateAndCommit(tab_url_);
-  EXPECT_EQ(metadata_->GetTabUrl(), tab_url_);
 }
 
 TEST_F(FileSystemAccessMetadataTest, GetMimeType) {
