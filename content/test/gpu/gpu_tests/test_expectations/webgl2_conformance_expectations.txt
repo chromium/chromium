@@ -489,6 +489,9 @@ crbug.com/891953 [ android ] WebglExtension_OVR_multiview2 [ Failure ]
 # Conformance expectations
 # ========================
 
+# Test needs to be revised for new mipmap/texture completeness rules.
+crbug.com/angleproject/42267266 [ passthrough ] conformance2/textures/misc/immutable-tex-render-feedback.html [ Failure ]
+
 # Failing new updated tests
 crbug.com/406187744 conformance/offscreencanvas/offscreencanvas-transfer-image-bitmap.html [ Failure ]
 crbug.com/406187744 conformance2/offscreencanvas/offscreencanvas-transfer-image-bitmap.html [ Failure ]
