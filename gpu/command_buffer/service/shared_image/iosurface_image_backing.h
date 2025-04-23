@@ -99,6 +99,8 @@ struct IOSurfaceBackingEGLState : base::RefCounted<IOSurfaceBackingEGLState> {
 
   bool is_bind_pending_ = false;
 
+  int num_ongoing_accesses_ = 0;
+
   ~IOSurfaceBackingEGLState();
 };
 
@@ -264,7 +266,7 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
 
   // Used to determine whether to release the texture in EndAccess() in use
   // cases that need to ensure IOSurface synchronization.
-  uint num_ongoing_read_accesses_ GUARDED_BY(lock_) = 0;
+  int num_ongoing_read_accesses_ GUARDED_BY(lock_) = 0;
   // Used with the above variable to catch cases where clients are performing
   // disallowed concurrent read/write accesses.
   bool ongoing_write_access_ GUARDED_BY(lock_) = false;

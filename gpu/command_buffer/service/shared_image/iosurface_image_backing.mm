@@ -921,9 +921,6 @@ void IOSurfaceImageBacking::DawnRepresentation::EndAccess() {
     iosurface_backing->SetClearedInternal();
   }
 
-  // Not possible to reach this with any other type of backing.
-  DCHECK_EQ(backing()->GetType(), SharedImageBackingType::kIOSurface);
-
   // Dawn's Metal backend has enqueued MTLSharedEvents which consumers of the
   // IOSurface must wait upon before attempting to use that IOSurface on
   // another MTLDevice. Store these events in the underlying
@@ -1636,6 +1633,8 @@ gfx::GpuMemoryBufferHandle IOSurfaceImageBacking::GetGpuMemoryBufferHandle() {
 bool IOSurfaceImageBacking::BeginAccess(bool readonly) {
   AssertLockAcquired();
 
+  CHECK_GE(num_ongoing_read_accesses_, 0);
+
   if (!readonly && ongoing_write_access_) {
     DLOG(ERROR) << "Unable to begin write access because another "
                    "write access is in progress";
@@ -1648,7 +1647,7 @@ bool IOSurfaceImageBacking::BeginAccess(bool readonly) {
                      "write access is in progress";
       return false;
     }
-    if (!readonly && num_ongoing_read_accesses_) {
+    if (!readonly && num_ongoing_read_accesses_ > 0) {
       DLOG(ERROR) << "Unable to begin write access because a read access is in "
                      "progress";
       return false;
@@ -1668,7 +1667,7 @@ void IOSurfaceImageBacking::EndAccess(bool readonly) {
   AssertLockAcquired();
 
   if (readonly) {
-    CHECK_GT(num_ongoing_read_accesses_, 0u);
+    CHECK_GT(num_ongoing_read_accesses_, 0);
     if (!(usage().Has(SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE))) {
       CHECK(!ongoing_write_access_);
     }
@@ -1676,7 +1675,7 @@ void IOSurfaceImageBacking::EndAccess(bool readonly) {
   } else {
     CHECK(ongoing_write_access_);
     if (!(usage().Has(SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE))) {
-      CHECK_EQ(num_ongoing_read_accesses_, 0u);
+      CHECK_EQ(num_ongoing_read_accesses_, 0);
     }
     ongoing_write_access_ = false;
   }
@@ -1692,6 +1691,8 @@ bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
   if (!BeginAccess(readonly)) {
     return false;
   }
+
+  CHECK_GE(egl_state->num_ongoing_accesses_, 0);
 
   gl::GLDisplayEGL* display = gl::GLDisplayEGL::GetDisplayForCurrentContext();
   CHECK(display);
@@ -1722,6 +1723,7 @@ bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
   // then early-out.
   if (!egl_state->is_bind_pending()) {
     CHECK(!egl_state->egl_surfaces_.empty());
+    egl_state->num_ongoing_accesses_++;
     return true;
   }
 
@@ -1752,6 +1754,7 @@ bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
           plane_index, buffer_format);
       if (!egl_surface) {
         LOG(ERROR) << "Failed to create ScopedEGLSurfaceIOSurface.";
+        EndAccess(readonly);
         return false;
       }
 
@@ -1776,10 +1779,12 @@ bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
     // Bind the IOSurface to the GL texture.
     if (!egl_state->egl_surfaces_[plane_index]->BindTexImage()) {
       LOG(ERROR) << "Failed to bind ScopedEGLSurfaceIOSurface to target";
+      EndAccess(readonly);
       return false;
     }
   }
   egl_state->clear_bind_pending();
+  egl_state->num_ongoing_accesses_++;
 
   return true;
 }
@@ -1789,12 +1794,15 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateEndAccess(
     bool readonly) {
   AssertLockAcquired();
 
-  EndAccess(readonly);
-
   // Early out if BeginAccess didn't succeed and we didn't bind any surfaces.
   if (egl_state->is_bind_pending()) {
     return;
   }
+
+  CHECK_GT(egl_state->num_ongoing_accesses_, 0);
+  egl_state->num_ongoing_accesses_--;
+
+  EndAccess(readonly);
 
   gl::GLDisplayEGL* display = gl::GLDisplayEGL::GetDisplayForCurrentContext();
   CHECK(display);
@@ -1836,7 +1844,7 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateEndAccess(
   const bool is_swangle =
       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader;
 
-  if (is_swangle && num_ongoing_read_accesses_ == 0) {
+  if (is_swangle && egl_state->num_ongoing_accesses_ == 0) {
     CHECK_EQ(static_cast<int>(egl_state->gl_textures_.size()),
              format().NumberOfPlanes());
     CHECK_EQ(static_cast<int>(egl_state->egl_surfaces_.size()),
