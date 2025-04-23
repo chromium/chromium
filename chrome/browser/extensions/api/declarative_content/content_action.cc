@@ -23,6 +23,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_user_script_loader.h"
 #include "extensions/browser/extension_web_contents_observer.h"
+#include "extensions/browser/icon_util.h"
 #include "extensions/browser/script_injection_tracker.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
@@ -407,8 +408,8 @@ std::unique_ptr<ContentAction> SetIcon::Create(
   gfx::ImageSkia icon;
   const base::Value::Dict* canvas_set = dict->FindDict("imageData");
   if (canvas_set &&
-      ExtensionAction::ParseIconFromCanvasDictionary(*canvas_set, &icon) !=
-          ExtensionAction::IconParseResult::kSuccess) {
+      extensions::ParseIconFromCanvasDictionary(*canvas_set, &icon) !=
+          extensions::IconParseResult::kSuccess) {
     *error = kInvalidIconDictionary;
     return nullptr;
   }

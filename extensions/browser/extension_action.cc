@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/base64.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
@@ -18,7 +17,6 @@
 #include "extensions/common/icons/extension_icon_set.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/grit/extensions_browser_resources.h"
-#include "skia/public/mojom/bitmap.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPaint.h"
@@ -73,9 +71,11 @@ bool HasValue(const std::map<int, T>& map, int tab_id) {
 }  // namespace
 
 // static
+// LINT.IfChange(ActionIconSize)
 extension_misc::ExtensionIcons ExtensionAction::ActionIconSize() {
   return extension_misc::EXTENSION_ICON_BITTY;
 }
+// LINT.ThenChange(/extensions/browser/icon_util.cc:ActionIconSize)
 
 // static
 gfx::Image ExtensionAction::FallbackIcon() {
@@ -117,44 +117,6 @@ GURL ExtensionAction::GetPopupUrl(int tab_id) const {
 
 void ExtensionAction::SetIcon(int tab_id, const gfx::Image& image) {
   SetValue(&icon_, tab_id, image);
-}
-
-ExtensionAction::IconParseResult ExtensionAction::ParseIconFromCanvasDictionary(
-    const base::Value::Dict& dict,
-    gfx::ImageSkia* icon) {
-  for (const auto item : dict) {
-    std::string byte_string;
-    const void* bytes = nullptr;
-    size_t num_bytes = 0;
-    if (item.second.is_blob()) {
-      bytes = item.second.GetBlob().data();
-      num_bytes = item.second.GetBlob().size();
-    } else if (item.second.is_string()) {
-      if (!base::Base64Decode(item.second.GetString(), &byte_string)) {
-        return IconParseResult::kDecodeFailure;
-      }
-      bytes = byte_string.c_str();
-      num_bytes = byte_string.length();
-    } else {
-      continue;
-    }
-    SkBitmap bitmap;
-    if (!skia::mojom::InlineBitmap::Deserialize(bytes, num_bytes, &bitmap)) {
-      return IconParseResult::kUnpickleFailure;
-    }
-    // A well-behaved renderer will never send a null bitmap to us here.
-    CHECK(!bitmap.isNull());
-
-    // Chrome helpfully scales the provided icon(s), but let's not go overboard.
-    const int kActionIconMaxSize = 10 * ActionIconSize();
-    if (bitmap.drawsNothing() || bitmap.width() > kActionIconMaxSize) {
-      continue;
-    }
-
-    float scale = static_cast<float>(bitmap.width()) / ActionIconSize();
-    icon->AddRepresentation(gfx::ImageSkiaRep(bitmap, scale));
-  }
-  return IconParseResult::kSuccess;
 }
 
 gfx::Image ExtensionAction::GetExplicitlySetIcon(int tab_id) const {

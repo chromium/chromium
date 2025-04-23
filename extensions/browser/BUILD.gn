@@ -374,6 +374,8 @@ source_set("browser_sources") {
     "granted_file_entry.h",
     "host_access_request_helper.cc",
     "host_access_request_helper.h",
+    "icon_util.cc",
+    "icon_util.h",
     "image_loader.cc",
     "image_loader.h",
     "image_loader_factory.cc",

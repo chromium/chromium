@@ -31,9 +31,9 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "extensions/browser/event_router.h"
-#include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
+#include "extensions/browser/icon_util.h"
 #include "extensions/browser/install_prefs_helper.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
@@ -381,9 +381,9 @@ ExtensionFunction::ResponseAction OmniboxSendSuggestionsFunction::Run() {
             CHECK(!image_data.empty());
             // TODO(crbug.com/408069174): Move ParseIconFromCanvasDictionary
             // outside `ExtensionAction` into a common file.
-            if (ExtensionAction::ParseIconFromCanvasDictionary(image_data,
-                                                               &image_skia) !=
-                ExtensionAction::IconParseResult::kSuccess) {
+            if (extensions::ParseIconFromCanvasDictionary(image_data,
+                                                          &image_skia) !=
+                extensions::IconParseResult::kSuccess) {
               return RespondNow(Error(base::StringPrintf(
                   ExtensionOmniboxEventRouter::kActionIconError,
                   suggestion.description, action.name)));

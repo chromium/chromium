@@ -12,7 +12,6 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/map_util.h"
-#include "base/values.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_id.h"
@@ -23,7 +22,6 @@ class GURL;
 
 namespace gfx {
 class Image;
-class ImageSkia;
 }  // namespace gfx
 
 namespace extensions {
@@ -42,12 +40,6 @@ class ExtensionAction {
     kToggleSidePanel,
     // We don't need a SHOW_CONTEXT_MENU because that's handled separately in
     // the UI.
-  };
-
-  enum class IconParseResult {
-    kSuccess,
-    kDecodeFailure,
-    kUnpickleFailure,
   };
 
   static extension_misc::ExtensionIcons ActionIconSize();
@@ -102,12 +94,6 @@ class ExtensionAction {
 
   // Set this action's icon bitmap on a specific tab.
   void SetIcon(int tab_id, const gfx::Image& image);
-
-  // Tries to parse |*icon| from a dictionary {"19": imageData19, "38":
-  // imageData38}, and returns the result of the parsing attempt.
-  static IconParseResult ParseIconFromCanvasDictionary(
-      const base::Value::Dict& dict,
-      gfx::ImageSkia* icon);
 
   // Gets the icon that has been set using |SetIcon| for the tab.
   gfx::Image GetExplicitlySetIcon(int tab_id) const;
