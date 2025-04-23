@@ -10,12 +10,9 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/extension_event_histogram_value.h"
-#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/permission_set.h"
-
-static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class PrefService;
 class Profile;

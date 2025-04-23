@@ -8,11 +8,8 @@
 #include <optional>
 #include <string>
 
-#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "ui/gfx/image/image_skia.h"
-
-static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace base {
 class FilePath;

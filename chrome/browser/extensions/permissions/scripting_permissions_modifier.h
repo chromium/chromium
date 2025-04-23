@@ -10,10 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/url_pattern_set.h"
-
-static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class GURL;
 class URLPattern;

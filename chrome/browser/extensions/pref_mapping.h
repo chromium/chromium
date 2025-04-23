@@ -12,10 +12,7 @@
 #include "base/containers/span.h"
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
-#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/permissions/api_permission.h"
-
-static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

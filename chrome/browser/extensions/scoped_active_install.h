@@ -11,10 +11,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/install_observer.h"
 #include "chrome/browser/extensions/install_tracker.h"
-#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
-
-static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

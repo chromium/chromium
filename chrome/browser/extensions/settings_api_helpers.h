@@ -6,9 +6,6 @@
 #define CHROME_BROWSER_EXTENSIONS_SETTINGS_API_HELPERS_H_
 
 #include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
-#include "extensions/buildflags/buildflags.h"
-
-static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 class BrowserContext;

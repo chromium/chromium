@@ -8,9 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/blocklist.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/buildflags/buildflags.h"
-
-static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 class ExtensionPrefs;
