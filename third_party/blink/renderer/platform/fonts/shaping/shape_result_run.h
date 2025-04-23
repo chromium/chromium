@@ -263,15 +263,18 @@ struct PLATFORM_EXPORT ShapeResultRun final
     GlyphDataCollection(const GlyphDataCollection& other)
         : data_(other.data_), offsets_(other.offsets_) {}
 
-    HarfBuzzRunGlyphData& operator[](unsigned index) {
-      CHECK_LT(index, size());
-      return data_[index];
-    }
+    unsigned size() const { return data_.size(); }
+    bool IsEmpty() const { return size() == 0; }
 
-    const HarfBuzzRunGlyphData& operator[](unsigned index) const {
-      CHECK_LT(index, size());
+    HarfBuzzRunGlyphData& operator[](unsigned index) {
       return data_[index];
     }
+    const HarfBuzzRunGlyphData& operator[](unsigned index) const {
+      return data_[index];
+    }
+    const HarfBuzzRunGlyphData& front() const { return data_.front(); }
+    HarfBuzzRunGlyphData& back() { return data_.back(); }
+    const HarfBuzzRunGlyphData& back() const { return data_.back(); }
 
     bool HasNonZeroOffsets() const { return offsets_.HasStorage(); }
 
@@ -290,9 +293,6 @@ struct PLATFORM_EXPORT ShapeResultRun final
       return offsets_.GetIterator<has_non_zero_glyph_offsets>();
     }
 
-    GlyphOffset* GetMayBeOffsets() { return offsets_.GetStorage(); }
-    const GlyphOffset* GetMayBeOffsets() const { return offsets_.GetStorage(); }
-
     // Note: Caller should be adjust |HarfBuzzRunGlyphData.character_index|.
     void CopyFrom(const GlyphDataCollection& other1,
                   const GlyphDataCollection& other2) {
@@ -300,10 +300,8 @@ struct PLATFORM_EXPORT ShapeResultRun final
       DCHECK(!other1.IsEmpty());
       DCHECK(!other2.IsEmpty());
       static_assert(std::is_trivially_copyable_v<HarfBuzzRunGlyphData>);
-      std::copy(other1.data_.data(), other1.data_.data() + other1.size(),
-                data_.data());
-      std::copy(other2.data_.data(), other2.data_.data() + other2.size(),
-                data_.data() + other1.size());
+      std::ranges::copy(other1.data_, data_.data());
+      std::ranges::copy(other2.data_, data_.data() + other1.size());
       offsets_.CopyFrom(other1.offsets_, other1.size(), other2.offsets_,
                         other2.size());
     }
@@ -345,22 +343,6 @@ struct PLATFORM_EXPORT ShapeResultRun final
     }
     const_reverse_iterator rend() const {
       return std::make_reverse_iterator(begin());
-    }
-
-    unsigned size() const { return data_.size(); }
-    bool IsEmpty() const { return size() == 0; }
-
-    const HarfBuzzRunGlyphData& front() const {
-      CHECK(!IsEmpty());
-      return (*this)[0];
-    }
-    HarfBuzzRunGlyphData& back() {
-      CHECK(!IsEmpty());
-      return (*this)[size() - 1];
-    }
-    const HarfBuzzRunGlyphData& back() const {
-      CHECK(!IsEmpty());
-      return (*this)[size() - 1];
     }
 
     void Reverse() {
