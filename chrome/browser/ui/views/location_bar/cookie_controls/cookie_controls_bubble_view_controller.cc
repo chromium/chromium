@@ -36,8 +36,6 @@
 
 namespace {
 
-using FeatureType = ::content_settings::TrackingProtectionFeatureType;
-
 constexpr int kProgressBarHeight = 3;
 
 // Unique identifier within the CookieControlsBubbleView hierarchy.
@@ -209,8 +207,7 @@ void CookieControlsBubbleViewController::OnStatusChanged(
     bool protections_on,
     CookieControlsEnforcement enforcement,
     CookieBlocking3pcdStatus blocking_status,
-    base::Time expiration,
-    std::vector<content_settings::TrackingProtectionFeature> features) {
+    base::Time expiration) {
   // Leave the UI unchanged during reloading; it will update after the page
   // loads.
   if (is_reloading_state_) {

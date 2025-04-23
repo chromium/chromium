@@ -5,9 +5,6 @@
 package org.chromium.components.content_settings;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.content_settings.CookieControlsBridge.TrackingProtectionFeature;
-
-import java.util.List;
 
 /** Interface for a class that wants to receive cookie updates from CookieControlsBridge. */
 @NullMarked
@@ -37,10 +34,7 @@ public interface CookieControlsObserver {
      * @param features A list of tracking protection features and status info for each.
      */
     default void onTrackingProtectionStatusChanged(
-            boolean controlsVisible,
-            boolean protectionsOn,
-            long expiration,
-            List<TrackingProtectionFeature> features) {}
+            boolean controlsVisible, boolean protectionsOn, long expiration) {}
 
     /** Called when we should surface a visual indicator due to potential site breakage. */
     default void onHighlightCookieControl(boolean shouldHighlight) {}

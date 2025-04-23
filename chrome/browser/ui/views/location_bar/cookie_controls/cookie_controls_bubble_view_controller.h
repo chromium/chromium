@@ -36,9 +36,7 @@ class CookieControlsBubbleViewController
                        bool protections_on,
                        CookieControlsEnforcement enforcement,
                        CookieBlocking3pcdStatus blocking_status,
-                       base::Time expiration,
-                       std::vector<content_settings::TrackingProtectionFeature>
-                           features) override;
+                       base::Time expiration) override;
   void OnFinishedPageReloadWithChangedSettings() override;
 
   void SetSubjectUrlNameForTesting(const std::u16string& name);
@@ -67,19 +65,11 @@ class CookieControlsBubbleViewController
                                           base::Time expiration);
   void ApplyThirdPartyCookiesBlockedState();
 
-  std::u16string GetStatusLabel(
-      content_settings::TrackingProtectionBlockingStatus blocking_status);
-
   void FillDescriptionAndToggle(CookieControlsEnforcement enforcement,
                                 base::Time expiration);
 
   void FillViewForThirdPartyCookies(CookieControlsEnforcement enforcement,
                                     base::Time expiration);
-
-  void FillViewForTrackingProtection(
-      CookieControlsEnforcement enforcement,
-      base::Time expiration,
-      std::vector<content_settings::TrackingProtectionFeature> features);
 
   void CloseBubble();
 

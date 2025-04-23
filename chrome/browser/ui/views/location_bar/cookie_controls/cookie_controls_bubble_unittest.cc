@@ -20,7 +20,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/features.h"
-#include "components/content_settings/core/common/tracking_protection_feature.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
@@ -33,9 +32,6 @@
 #include "ui/views/vector_icons.h"
 
 const int kDaysToExpiration = 30;
-
-using Status = ::content_settings::TrackingProtectionBlockingStatus;
-using FeatureType = ::content_settings::TrackingProtectionFeatureType;
 
 class MockCookieControlsBubbleView : public CookieControlsBubbleView {
  public:
@@ -202,27 +198,13 @@ class CookieControlsBubbleViewControllerTest : public TestWithBrowserView {
     return time;
   }
 
-  std::vector<content_settings::TrackingProtectionFeature>
-  GetTrackingProtectionFeatures() {
-    if (protections_on_) {
-      if (blocking_status_ == CookieBlocking3pcdStatus::kLimited) {
-        return {
-            {FeatureType::kThirdPartyCookies, enforcement_, Status::kLimited}};
-      } else {
-        return {
-            {FeatureType::kThirdPartyCookies, enforcement_, Status::kBlocked}};
-      }
-    }
-    return {{FeatureType::kThirdPartyCookies, enforcement_, Status::kAllowed}};
-  }
-
   void OnStatusChanged(int days_to_expiration = 0) {
     auto expiration = days_to_expiration
                           ? base::Time::Now() + base::Days(days_to_expiration)
                           : base::Time();
-    view_controller()->OnStatusChanged(
-        controls_visible_, protections_on_, enforcement_, blocking_status_,
-        expiration, GetTrackingProtectionFeatures());
+    view_controller()->OnStatusChanged(controls_visible_, protections_on_,
+                                       enforcement_, blocking_status_,
+                                       expiration);
   }
 
  protected:

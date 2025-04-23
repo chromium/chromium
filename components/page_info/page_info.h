@@ -319,9 +319,7 @@ class PageInfo : private content_settings::CookieControlsObserver,
                        bool protections_on,
                        CookieControlsEnforcement enforcement,
                        CookieBlocking3pcdStatus blocking_status,
-                       base::Time expiration,
-                       std::vector<content_settings::TrackingProtectionFeature>
-                           features) override;
+                       base::Time expiration) override;
 
   // Populates this object's UI state with provided security context. This
   // function does not update visible UI-- that's part of Present*().

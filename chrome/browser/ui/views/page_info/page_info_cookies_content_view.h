@@ -125,9 +125,6 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   void MaybeAddSyncDisclaimer();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  std::u16string GetStatusLabel(
-      content_settings::TrackingProtectionBlockingStatus blocking_status);
-
   base::OnceClosure initialized_callback_ = base::NullCallback();
 
   raw_ptr<PageInfo, DanglingUntriaged> presenter_ = nullptr;

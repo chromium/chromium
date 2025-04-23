@@ -99,26 +99,6 @@ public class CookieControlsBridge {
         return CookieControlsBridgeJni.get().isCookieControlsEnabled(handle);
     }
 
-    /* TODO(crbug.com/410047514: Delete this as part of 3PCD cleanup) */
-    /** Container for the struct defined in tracking_protection_feature.h on the C++ side. */
-    public static class TrackingProtectionFeature {
-        // The feature that this struct applies to.
-        public @TrackingProtectionFeatureType int featureType;
-        // If enforced then how (by policy, setting, etc).
-        public @CookieControlsEnforcement int enforcement;
-        // The status of the feature (whether it's allowed, blocked, limited, etc).
-        public @TrackingProtectionBlockingStatus int status;
-
-        public TrackingProtectionFeature(
-                @TrackingProtectionFeatureType int featureType,
-                @CookieControlsEnforcement int enforcement,
-                @TrackingProtectionBlockingStatus int status) {
-            this.featureType = featureType;
-            this.enforcement = enforcement;
-            this.status = status;
-        }
-    }
-
     @CalledByNative
     private void onStatusChanged(
             boolean controlsVisible,

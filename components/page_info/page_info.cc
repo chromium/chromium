@@ -363,13 +363,11 @@ PageInfo::~PageInfo() {
 #endif
 }
 
-void PageInfo::OnStatusChanged(
-    bool controls_visible,
-    bool protections_on,
-    CookieControlsEnforcement enforcement,
-    CookieBlocking3pcdStatus blocking_status,
-    base::Time expiration,
-    std::vector<content_settings::TrackingProtectionFeature> features) {
+void PageInfo::OnStatusChanged(bool controls_visible,
+                               bool protections_on,
+                               CookieControlsEnforcement enforcement,
+                               CookieBlocking3pcdStatus blocking_status,
+                               base::Time expiration) {
   if (controls_visible_ != controls_visible ||
       protections_on_ != protections_on || enforcement != enforcement_ ||
       blocking_status != blocking_status_ ||
