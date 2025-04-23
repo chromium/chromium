@@ -293,6 +293,57 @@ LayoutUnit WebkitTextAlignAndJustifySelfOffset(
   }
 }
 
+LogicalStaticPosition::InlineEdge InlineAxisEdge(
+    const BlockNode& child,
+    const ComputedStyle* parent_style) {
+  StyleSelfAlignmentData normal_value_behavior = {ItemPosition::kStart,
+                                                  OverflowAlignment::kDefault};
+  const ItemPosition align_self =
+      child.Style()
+          .ResolvedJustifySelf(normal_value_behavior, parent_style)
+          .GetPosition();
+
+  DCHECK_NE(align_self, ItemPosition::kAuto);
+  DCHECK_NE(align_self, ItemPosition::kNormal);
+
+  if (align_self == ItemPosition::kEnd ||
+      align_self == ItemPosition::kLastBaseline ||
+      align_self == ItemPosition::kRight) {
+    return LogicalStaticPosition::kInlineEnd;
+  } else if (align_self == ItemPosition::kCenter) {
+    return LogicalStaticPosition::kInlineCenter;
+  } else {
+    return LogicalStaticPosition::kInlineStart;
+  }
+}
+
+LogicalStaticPosition::BlockEdge BlockAxisEdge(
+    const BlockNode& child,
+    const ComputedStyle* parent_style) {
+  StyleSelfAlignmentData normal_value_behavior = {ItemPosition::kStart,
+                                                  OverflowAlignment::kDefault};
+  const ItemPosition align_self =
+      child.Style()
+          .ResolvedAlignSelf(normal_value_behavior, parent_style)
+          .GetPosition();
+
+  DCHECK_NE(align_self, ItemPosition::kAuto);
+  DCHECK_NE(align_self, ItemPosition::kNormal);
+  DCHECK_NE(align_self, ItemPosition::kLeft)
+      << "left, right are only for justify";
+  DCHECK_NE(align_self, ItemPosition::kRight)
+      << "left, right are only for justify";
+
+  if (align_self == ItemPosition::kEnd ||
+      align_self == ItemPosition::kLastBaseline) {
+    return LogicalStaticPosition::kBlockEnd;
+  } else if (align_self == ItemPosition::kCenter) {
+    return LogicalStaticPosition::kBlockCenter;
+  } else {
+    return LogicalStaticPosition::kBlockStart;
+  }
+}
+
 }  // namespace
 
 BlockLayoutAlgorithm::BlockLayoutAlgorithm(const LayoutAlgorithmParams& params)
@@ -1507,12 +1558,39 @@ void BlockLayoutAlgorithm::HandleOutOfFlowPositioned(
     static_offset.inline_offset += CalculateOutOfFlowStaticInlineLevelOffset(
         Style(), origin_bfc_offset, GetExclusionSpace(),
         ChildAvailableSize().inline_size);
-  }
 
-  container_builder_.AddOutOfFlowChildCandidate(
-      child, static_offset, LogicalStaticPosition::kInlineStart,
-      LogicalStaticPosition::kBlockStart, LogicalStaticPosition::kBlock,
-      line_clamp_data_.ShouldHideForPaint());
+    container_builder_.AddOutOfFlowChildCandidate(
+        child, static_offset, LogicalStaticPosition::kInlineStart,
+        LogicalStaticPosition::kBlockStart, LogicalStaticPosition::kBlock,
+        line_clamp_data_.ShouldHideForPaint());
+  } else {
+    auto inline_axis_edge = InlineAxisEdge(child, &Style());
+    auto block_axis_edge = BlockAxisEdge(child, &Style());
+
+    // The alignment container for block OOF elements is a zero-thickness line
+    // in the inline direction. As such, we need to adjust the inline static
+    // position offset for end/center alignment to ensure the OOF ends up
+    // aligned correctly within its alignment container. The block offset will
+    // not change.
+    //
+    // https://drafts.csswg.org/css-position-3/#staticpos-rect
+    LayoutUnit available_inline_size = ChildAvailableSize().inline_size;
+    switch (inline_axis_edge) {
+      case LogicalStaticPosition::InlineEdge::kInlineCenter:
+        static_offset.inline_offset += available_inline_size / 2;
+        break;
+      case LogicalStaticPosition::InlineEdge::kInlineEnd:
+        static_offset.inline_offset += available_inline_size;
+        break;
+      case LogicalStaticPosition::InlineEdge::kInlineStart:
+        // The static position is already correct in this case.
+        break;
+    }
+
+    container_builder_.AddOutOfFlowChildCandidate(
+        child, static_offset, inline_axis_edge, block_axis_edge,
+        LogicalStaticPosition::kBlock, line_clamp_data_.ShouldHideForPaint());
+  }
 }
 
 void BlockLayoutAlgorithm::HandleFloat(
