@@ -295,7 +295,7 @@ bool GtkUi::Initialize() {
 
   indicators_count = 0;
 
-  platform_->OnInitialized(GetDummyWindow());
+  platform_->OnInitialized();
 
   return true;
 }
