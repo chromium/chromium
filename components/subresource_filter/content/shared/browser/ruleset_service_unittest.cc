@@ -524,15 +524,12 @@ class SubresourceFilteringRulesetServiceDeathTest
   }
 
  private:
-  static const char kInheritedTempDirKey[];
+  static constexpr char kInheritedTempDirKey[] =
+      "SUBRESOURCE_FILTERING_RULESET_SERVICE_DEATH_TEST_TEMP_DIR";
 
   std::unique_ptr<base::Environment> environment_;
   base::FilePath inherited_temp_dir_;
 };
-
-// static
-const char SubresourceFilteringRulesetServiceDeathTest::kInheritedTempDirKey[] =
-    "SUBRESOURCE_FILTERING_RULESET_SERVICE_DEATH_TEST_TEMP_DIR";
 
 TEST_F(SubresourceFilteringRulesetServiceTest, PathsAreSane) {
   IndexedRulesetVersion indexed_version(
